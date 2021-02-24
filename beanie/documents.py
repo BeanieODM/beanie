@@ -3,6 +3,7 @@ from typing import Optional, List, Type
 from bson import ObjectId
 from pydantic import Field
 from pydantic.main import BaseModel
+from pymongo.results import DeleteResult
 
 from beanie.collections import Collection
 from beanie.cursor import Cursor
@@ -83,17 +84,18 @@ class Document(BaseModel):
         )
         await self._sync()
 
-    async def delete(self) -> None:
+    async def delete(self) -> DeleteResult:
         """
         Delete the document
 
         :return: None
         """
-        await self.collection().delete_one(self)
+        result = await self.collection().delete_one(self)
         self.id = None
+        return result
 
     @classmethod
-    async def get(cls, document_id) -> "Document":
+    async def get(cls, document_id: PydanticObjectId) -> "Document":
         """
         Get the document bu id
 
@@ -121,7 +123,7 @@ class Document(BaseModel):
         return cls.collection().all()
 
     @classmethod
-    def find(cls, query) -> Cursor:
+    def find(cls, query: dict) -> Cursor:
         """
         Find many documents by criteria
 
@@ -142,6 +144,26 @@ class Document(BaseModel):
         :return: AsyncGenerator of aggregated items
         """
         return cls.collection().aggregate(query=query, item_model=item_model)
+
+    @classmethod
+    async def delete_many(cls, query: dict) -> DeleteResult:
+        """
+        Delete many documents by criteria
+
+        :param query: The search criteria
+        :return: List of the documents
+        """
+        return await cls.collection().delete_many(query=query)
+
+    @classmethod
+    async def delete_all(cls) -> DeleteResult:
+        """
+        Delete all the documents
+
+        :param query: The search criteria
+        :return: List of the documents
+        """
+        return await cls.collection().delete_all()
 
     class Config:
         json_encoders = {

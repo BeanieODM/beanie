@@ -8,6 +8,7 @@ from pymongo.results import UpdateResult, DeleteResult
 from beanie.cursor import Cursor
 from beanie.exceptions import DocumentNotFound
 from beanie.fields import PydanticObjectId
+from beanie.utils import check_document_type
 
 if typing.TYPE_CHECKING:
     from beanie.documents import Document
@@ -33,6 +34,7 @@ class Collection:
 
         self.document_model.set_collection(self)
 
+    @check_document_type
     async def insert_one(self, document: "Document") -> "Document":
         """
         Insert one document into the collection
@@ -40,16 +42,13 @@ class Collection:
         :param document: Document
         :return: Inserted document with updated id field
         """
-        if not isinstance(document, self.document_model):
-            raise TypeError(
-                "Document must be object of the Document class"
-            )
         result = await self.motor_collection.insert_one(
             document.dict(by_alias=True, exclude={"id"})
         )
         document.id = PydanticObjectId(result.inserted_id)
         return document
 
+    @check_document_type
     async def replace_one(self, document: "Document") -> UpdateResult:
         """
         Replace already created (stored to the collection) document
@@ -57,10 +56,6 @@ class Collection:
         :param document: document
         :return: UpdateResult instance
         """
-        if not isinstance(document, self.document_model):
-            raise TypeError(
-                "Document must be object of the Document class"
-            )
         if document.id is None:
             raise ValueError("Document must have id")
         result = await self.motor_collection.replace_one(
@@ -70,6 +65,7 @@ class Collection:
             raise DocumentNotFound
         return result
 
+    @check_document_type
     async def update_one(
         self,
         document: "Document",
@@ -84,10 +80,6 @@ class Collection:
         :param filter_query: The selection criteria for the update. Optional.
         :return: UpdateResult instance
         """
-        if not isinstance(document, self.document_model):
-            raise TypeError(
-                "Document must be object of the Document class"
-            )
         if filter_query is None:
             return await self.motor_collection.update_one(
                 {"_id": document.id}, update_query
@@ -111,6 +103,7 @@ class Collection:
             filter_query, update_query
         )
 
+    @check_document_type
     async def delete_one(self, document: "Document") -> DeleteResult:
         """
         Delete the document
@@ -118,11 +111,24 @@ class Collection:
         :param document: Document to delete
         :return: DeleteResult instance
         """
-        if not isinstance(document, self.document_model):
-            raise TypeError(
-                "Document must be object of the Document class"
-            )
         return await self.motor_collection.delete_one({"_id": document.id})
+
+    async def delete_many(self, query: dict) -> DeleteResult:
+        """
+        Delete many documents
+
+        :param query: The selection criteria
+        :return: DeleteResult instance
+        """
+        return await self.motor_collection.delete_many(query)
+
+    async def delete_all(self) -> DeleteResult:
+        """
+        Delete all the documents
+
+        :return: DeleteResult instance
+        """
+        return await self.delete_many({})
 
     async def find_one(self, query: dict) -> Union["Document", None]:
         """

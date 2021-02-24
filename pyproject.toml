@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beanie"
-version = "0.1.0"
+version = "0.1.1"
 description = "Pydantic-based Mongo ORM"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"

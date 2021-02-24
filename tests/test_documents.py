@@ -161,3 +161,30 @@ async def test_aggregate_with_item_model(collection, document_not_inserted):
             raise KeyError
         ids.append(i.id)
     assert set(ids) == {"cuatro", "dos", "uno"}
+
+
+async def test_delete_many(collection, document_not_inserted):
+    for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
+        document_not_inserted.test_str = s
+        await collection.insert_one(document_not_inserted)
+    await DocumentTestModel.delete_many({"test_str": "uno"})
+    documents = await DocumentTestModel.all().to_list()
+    assert len(documents) == 3
+
+
+async def test_delete_many_not_found(collection, document_not_inserted):
+    for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
+        document_not_inserted.test_str = s
+        await collection.insert_one(document_not_inserted)
+    await DocumentTestModel.delete_many({"test_str": "wrong"})
+    documents = await DocumentTestModel.all().to_list()
+    assert len(documents) == 7
+
+
+async def test_delete_all(collection, document_not_inserted):
+    for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
+        document_not_inserted.test_str = s
+        await collection.insert_one(document_not_inserted)
+    await DocumentTestModel.delete_all()
+    documents = await DocumentTestModel.all().to_list()
+    assert len(documents) == 0

@@ -172,6 +172,22 @@ Delete the document
 
     await document.delete()
 
+^^^^^^^^^^^^^^^^^^^^^^^
+Delete many documents
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    await DocumentTestModel.delete_many({"test_str": "wrong"})
+
+^^^^^^^^^^^^^^^^^^^^^^^
+Delete all the documents
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    await DocumentTestModel.delete_all()
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Aggregate from the document model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -257,6 +273,22 @@ Delete the document
 .. code-block:: python
 
     await collection.delete_one(document)
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Delete many documents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    await collection.delete_many({"test_str": "uno"})
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Delete all the documents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    await collection.delete_all()
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Get the document

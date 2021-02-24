@@ -22,7 +22,7 @@ copyright = "2021, Roman"
 author = "Roman"
 
 # The full version, including alpha/beta/rc tags
-release = "0.1.4"
+release = "0.1.1"
 
 
 # -- General configuration ---------------------------------------------------

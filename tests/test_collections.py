@@ -92,6 +92,33 @@ async def test_delete_one(collection, document_not_inserted, loop):
     assert new_document is None
 
 
+async def test_delete_many(collection, document_not_inserted):
+    for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
+        document_not_inserted.test_str = s
+        await collection.insert_one(document_not_inserted)
+    await collection.delete_many({"test_str": "uno"})
+    documents = await collection.all().to_list()
+    assert len(documents) == 3
+
+
+async def test_delete_many_not_found(collection, document_not_inserted):
+    for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
+        document_not_inserted.test_str = s
+        await collection.insert_one(document_not_inserted)
+    await collection.delete_many({"test_str": "wrong"})
+    documents = await collection.all().to_list()
+    assert len(documents) == 7
+
+
+async def test_delete_all(collection, document_not_inserted):
+    for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
+        document_not_inserted.test_str = s
+        await collection.insert_one(document_not_inserted)
+    await collection.delete_all()
+    documents = await collection.all().to_list()
+    assert len(documents) == 0
+
+
 async def test_delete_one_wrong_type(collection):
     with pytest.raises(TypeError):
         await collection.delete_one("wrong_type")
@@ -151,7 +178,6 @@ async def test_find(collection, document_not_inserted):
         document_not_inserted.test_str = s
         await collection.insert_one(document_not_inserted)
     num = 0
-    print(collection.find({"test_str": "uno"}))
     async for _ in collection.find({"test_str": "uno"}):
         num += 1
     assert num == 4
