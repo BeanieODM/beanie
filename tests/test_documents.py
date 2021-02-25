@@ -55,8 +55,8 @@ async def test_update_without_filter_query(document):
     assert len(new_document.test_list) == buf_len + 1
 
 
-async def test_update_with_filter_query(document):
-    await document.update(
+async def test_update_one_with_filter_query(document):
+    await document.update_one(
         update_query={"$set": {"test_list.$.test_str": "foo_foo"}},
         filter_query={"_id": document.id, "test_list.test_str": "foo"},
     )
@@ -84,48 +84,48 @@ async def test_find_one_not_found(document):
     assert new_document is None
 
 
-async def test_find_one_more_than_one_found(document_not_inserted, collection):
+async def test_find_one_more_than_one_found(document_not_inserted):
     for s in ["one", "one", "three"]:
         document_not_inserted.test_str = s
-        await collection.insert_one(document_not_inserted)
+        await DocumentTestModel.insert_one(document_not_inserted)
     new_document = await DocumentTestModel.find_one({"test_str": "one"})
     assert new_document.test_str == "one"
 
 
-async def test_all(collection, document_not_inserted):
+async def test_find_all(document_not_inserted):
     for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
         document_not_inserted.test_str = s
-        await collection.insert_one(document_not_inserted)
+        await DocumentTestModel.insert_one(document_not_inserted)
     result = []
-    async for document in DocumentTestModel.all():
+    async for document in DocumentTestModel.find_all():
         result.append(document)
     assert len(result) == 7
 
 
-async def test_find(collection, document_not_inserted):
+async def test_find_many(document_not_inserted):
     for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
         document_not_inserted.test_str = s
-        await collection.insert_one(document_not_inserted)
+        await DocumentTestModel.insert_one(document_not_inserted)
     result = []
-    async for document in DocumentTestModel.find({"test_str": "uno"}):
+    async for document in DocumentTestModel.find_many({"test_str": "uno"}):
         result.append(document)
     assert len(result) == 4
 
 
-async def test_find_not_found(collection, document_not_inserted):
+async def test_find_many_not_found(document_not_inserted):
     for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
         document_not_inserted.test_str = s
-        await collection.insert_one(document_not_inserted)
+        await DocumentTestModel.insert_one(document_not_inserted)
     result = []
-    async for document in DocumentTestModel.find({"test_str": "wrong"}):
+    async for document in DocumentTestModel.find_many({"test_str": "wrong"}):
         result.append(document)
     assert len(result) == 0
 
 
-async def test_aggregate(collection, document_not_inserted):
+async def test_aggregate(document_not_inserted):
     for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
         document_not_inserted.test_str = s
-        await collection.insert_one(document_not_inserted)
+        await DocumentTestModel.insert_one(document_not_inserted)
     result = []
     async for aggregation in DocumentTestModel.aggregate(
         [{"$group": {"_id": "$test_str", "total": {"$sum": "$test_int"}}}]
@@ -137,14 +137,14 @@ async def test_aggregate(collection, document_not_inserted):
     assert {"_id": "uno", "total": 168} in result
 
 
-async def test_aggregate_with_item_model(collection, document_not_inserted):
+async def test_aggregate_with_item_model( document_not_inserted):
     class OutputItem(BaseModel):
         id: str = Field(None, alias="_id")
         total: int
 
     for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
         document_not_inserted.test_str = s
-        await collection.insert_one(document_not_inserted)
+        await DocumentTestModel.insert_one(document_not_inserted)
     ids = []
     async for i in DocumentTestModel.aggregate(
         [{"$group": {"_id": "$test_str", "total": {"$sum": "$test_int"}}}],
@@ -163,28 +163,28 @@ async def test_aggregate_with_item_model(collection, document_not_inserted):
     assert set(ids) == {"cuatro", "dos", "uno"}
 
 
-async def test_delete_many(collection, document_not_inserted):
+async def test_delete_many( document_not_inserted):
     for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
         document_not_inserted.test_str = s
-        await collection.insert_one(document_not_inserted)
+        await DocumentTestModel.insert_one(document_not_inserted)
     await DocumentTestModel.delete_many({"test_str": "uno"})
-    documents = await DocumentTestModel.all().to_list()
+    documents = await DocumentTestModel.find_all().to_list()
     assert len(documents) == 3
 
 
-async def test_delete_many_not_found(collection, document_not_inserted):
+async def test_delete_many_not_found(document_not_inserted):
     for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
         document_not_inserted.test_str = s
-        await collection.insert_one(document_not_inserted)
+        await DocumentTestModel.insert_one(document_not_inserted)
     await DocumentTestModel.delete_many({"test_str": "wrong"})
-    documents = await DocumentTestModel.all().to_list()
+    documents = await DocumentTestModel.find_all().to_list()
     assert len(documents) == 7
 
 
-async def test_delete_all(collection, document_not_inserted):
+async def test_delete_all(document_not_inserted):
     for s in ["uno", "uno", "uno", "uno", "dos", "dos", "cuatro"]:
         document_not_inserted.test_str = s
-        await collection.insert_one(document_not_inserted)
+        await DocumentTestModel.insert_one(document_not_inserted)
     await DocumentTestModel.delete_all()
-    documents = await DocumentTestModel.all().to_list()
+    documents = await DocumentTestModel.find_all().to_list()
     assert len(documents) == 0

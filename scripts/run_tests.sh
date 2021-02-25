@@ -1,1 +1,1 @@
-poetry run python -m pytest --cov=beanie --cov-branch --cov-fail-under=85 tests/
+poetry run python -m pytest --cov=beanie --cov-branch --cov-fail-under=95 tests/

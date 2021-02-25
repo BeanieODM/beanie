@@ -2,7 +2,7 @@ import motor.motor_asyncio
 import pytest
 from pydantic import BaseSettings
 
-from beanie import Collection
+from beanie.general import init_beanie
 from tests.models import DocumentTestModel, SubDocument
 
 object_storage = {}
@@ -28,17 +28,9 @@ async def init(loop):
         Settings().mongo_dsn, serverSelectionTimeoutMS=100
     )
     db = client.beanie_db
-    test_collection = Collection(
-        name="test_collection", db=db, document_model=DocumentTestModel
-    )
-    object_storage["collection"] = test_collection
+    init_beanie(database=db, document_models=[DocumentTestModel])
     yield None
-    await test_collection.motor_collection.drop()
-
-
-@pytest.fixture
-def collection():
-    return object_storage["collection"]
+    await DocumentTestModel.collection().drop()
 
 
 @pytest.fixture
@@ -52,7 +44,6 @@ def document_not_inserted():
 
 @pytest.fixture
 async def document(
-    document_not_inserted, collection, loop
+        document_not_inserted, loop
 ) -> DocumentTestModel:
-    document = await collection.insert_one(document_not_inserted)
-    return document
+    return await document_not_inserted.create()

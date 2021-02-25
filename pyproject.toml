@@ -45,3 +45,11 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --cov-report term-missing --cov=beanie"
+testpaths = [
+    "tests",
+    "integration",
+]
