@@ -76,9 +76,9 @@ Init
 Create
 ---------
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Create a document
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Create a document (and insert it)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -127,56 +127,6 @@ Insert many documents
 Find
 ---------
 
-
-
----------
-Update
----------
-
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Replace one document (full update)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: python
-
-    document.test_str = "REPLACED_VALUE"
-    await document.replace()
-
-
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Replace the document (full update)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: python
-
-    document.test_str = "REPLACED_VALUE"
-    await document.replace()
-
-
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Update the document (partial update)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-in this example, I'll add an item to the document's "test_list" field
-
-.. code-block:: python
-
-    to_insert = SubDocument(test_str="test")
-    await document.update(update_query={"$push": {"test_list": to_insert.dict()}})
-
-
----------
-Delete
----------
-
-
-
----------
-Aggregate
----------
-
-
-
 ^^^^^^^^^^^^^^^^^^^^^^^
 Get the document
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -194,34 +144,114 @@ Find one document
     document = await DocumentTestModel.find_one({"test_str": "kipasa"})
 
 ^^^^^^^^^^^^^^^^^^^^^^^
-Find the documents
+Find many documents
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-    async for document in DocumentTestModel.find({"test_str": "uno"}):
+    async for document in DocumentTestModel.find_many({"test_str": "uno"}):
         print(document)
 
 OR
 
 .. code-block:: python
 
-    documents =  await DocumentTestModel.find({"test_str": "uno"}).to_list()
+    documents =  await DocumentTestModel.find_many({"test_str": "uno"}).to_list()
 
-^^^^^^^^^^^^^^^^^^^^^^^
-Get all the documents
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Find all the documents
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-    async for document in DocumentTestModel.all()
+    async for document in DocumentTestModel.find_all()
         print(document)
 
 OR
 
 .. code-block:: python
 
-    documents = await DocumentTestModel.all().to_list()
+    documents = await DocumentTestModel.find_all().to_list()
+
+---------
+Update
+---------
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Replace the document (full update)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    document.test_str = "REPLACED_VALUE"
+    await document.replace()
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Replace one document
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Replace one doc data by another
+
+.. code-block:: python
+
+    new_doc = DocumentTestModel(
+        test_int=0,
+        test_str='REPLACED_VALUE',
+        test_list=[]
+    )
+    await DocumentTestModel.replace_one({"_id": document.id}, new_doc)
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Update the document (partial update)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+in this example, I'll add an item to the document's "test_list" field
+
+.. code-block:: python
+
+    to_insert = SubDocument(test_str="test")
+    await document.update(update_query={"$push": {"test_list": to_insert.dict()}})
+
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Update one document
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. code-block:: python
+
+    await DocumentTestModel.update_one(
+        update_query={"$set": {"test_list.$.test_str": "foo_foo"}},
+        filter_query={"_id": document.id, "test_list.test_str": "foo"},
+    )
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Update many documents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. code-block:: python
+
+    await DocumentTestModel.update_many(
+        update_query={"$set": {"test_str": "bar"}},
+        filter_query={"test_str": "foo"},
+    )
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Update all the documents
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. code-block:: python
+
+    await DocumentTestModel.update_all(
+        update_query={"$set": {"test_str": "bar"}}
+    )
+
+
+---------
+Delete
+---------
 
 ^^^^^^^^^^^^^^^^^^^^^^^
 Delete the document
@@ -232,24 +262,34 @@ Delete the document
     await document.delete()
 
 ^^^^^^^^^^^^^^^^^^^^^^^
+Delete one documents
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    await DocumentTestModel.delete_one({"test_str": "uno"})
+
+^^^^^^^^^^^^^^^^^^^^^^^
 Delete many documents
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-    await DocumentTestModel.delete_many({"test_str": "wrong"})
+    await DocumentTestModel.delete_many({"test_str": "dos"})
 
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Delete all the documents
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
     await DocumentTestModel.delete_all()
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Aggregate from the document model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+---------
+Aggregate
+---------
+
 
 .. code-block:: python
 

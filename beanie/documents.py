@@ -153,7 +153,7 @@ class Document(BaseModel):
         :return: None
         """
         result = await cls.collection().replace_one(
-            filter_query, document.dict(by_alias=True)
+            filter_query, document.dict(by_alias=True, exclude={"id"})
         )
         if not result.raw_result["updatedExisting"]:
             raise DocumentNotFound

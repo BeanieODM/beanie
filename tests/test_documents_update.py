@@ -9,8 +9,10 @@ from tests.models import DocumentTestModel, SubDocument
 
 
 async def test_replace_one(document):
-    document.test_str = "REPLACED_VALUE"
-    await DocumentTestModel.replace_one(document)
+    new_doc = DocumentTestModel(
+        test_int=0, test_str="REPLACED_VALUE", test_list=[]
+    )
+    await DocumentTestModel.replace_one({"_id": document.id}, new_doc)
     new_document = await DocumentTestModel.get(document.id)
     assert new_document.test_str == "REPLACED_VALUE"
 
