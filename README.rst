@@ -3,11 +3,11 @@ Description
 ============
 
 
-Beanie - is asynchronous ORM for MongoDB, based on `Motor <https://motor.readthedocs.io/en/stable/>`_ and `Pydantic <https://pydantic-docs.helpmanual.io/>`_.
+Beanie - is an asynchronous ORM for MongoDB, based on `Motor <https://motor.readthedocs.io/en/stable/>`_ and `Pydantic <https://pydantic-docs.helpmanual.io/>`_.
 
-Beanie uses an abstraction over Pydantic Models Motor collections to work with mongo. Document class allows to create, replace, update, get, find and aggregate.
+It uses an abstraction over Pydantic models and Motor collections to work with the database. Class Document allows to create, replace, update, get, find and aggregate.
 
-Here you can see, how to use Beanie in simple examples:
+Here you can see, how to use Beanie, in simple examples:
 
 ============
 Installation
@@ -77,7 +77,7 @@ Create
 ---------
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Create a document (and insert it)
+Create a document (insert it)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
