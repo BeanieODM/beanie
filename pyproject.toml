@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "beanie"
-version = "0.1.1"
-description = "Pydantic-based Mongo ORM"
+version = "0.2.0"
+description = "MongoDB ORM based on Pydantic and Motor"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
 homepage = "https://github.com/roman-right/beanie"
@@ -45,3 +45,11 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --cov-report term-missing --cov=beanie"
+testpaths = [
+    "tests",
+    "integration",
+]
