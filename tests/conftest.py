@@ -1,9 +1,15 @@
+from typing import List
+
 import motor.motor_asyncio
 import pytest
 from pydantic import BaseSettings
 
 from beanie.general import init_beanie
-from tests.models import DocumentTestModel, SubDocument
+from tests.models import (
+    DocumentTestModel,
+    SubDocument,
+    DocumentTestModelWithCustomCollection,
+)
 
 object_storage = {}
 
@@ -28,7 +34,13 @@ async def init(loop):
         Settings().mongo_dsn, serverSelectionTimeoutMS=100
     )
     db = client.beanie_db
-    init_beanie(database=db, document_models=[DocumentTestModel])
+    init_beanie(
+        database=db,
+        document_models=[
+            DocumentTestModel,
+            DocumentTestModelWithCustomCollection,
+        ],
+    )
     yield None
     await DocumentTestModel.collection().drop()
 
@@ -43,7 +55,36 @@ def document_not_inserted():
 
 
 @pytest.fixture
-async def document(
-        document_not_inserted, loop
-) -> DocumentTestModel:
+def documents_not_inserted():
+    def generate_documents(
+        number: int, test_str: str = None
+    ) -> List[DocumentTestModel]:
+        return [
+            DocumentTestModel(
+                test_int=i,
+                test_list=[
+                    SubDocument(test_str="foo"),
+                    SubDocument(test_str="bar"),
+                ],
+                test_str="kipasa" if test_str is None else test_str,
+            )
+            for i in range(number)
+        ]
+
+    return generate_documents
+
+
+@pytest.fixture
+async def document(document_not_inserted, loop) -> DocumentTestModel:
     return await document_not_inserted.create()
+
+
+@pytest.fixture
+def documents(documents_not_inserted):
+    async def generate_documents(number: int, test_str: str = None):
+        result = await DocumentTestModel.insert_many(
+            documents_not_inserted(number, test_str)
+        )
+        return result.inserted_ids
+
+    return generate_documents

@@ -4,10 +4,14 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
 from pydantic import Field
 from pydantic.main import BaseModel
-from pymongo.results import DeleteResult, UpdateResult
+from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
 
 from beanie.cursor import Cursor
-from beanie.exceptions import DocumentWasNotSaved, DocumentNotFound, DocumentAlreadyCreated
+from beanie.exceptions import (
+    DocumentWasNotSaved,
+    DocumentNotFound,
+    DocumentAlreadyCreated,
+)
 from beanie.fields import PydanticObjectId
 
 
@@ -36,7 +40,9 @@ class Document(BaseModel):
         :param database:
         :return:
         """
-        if hasattr(cls, 'DocumentMeta') and hasattr(cls.DocumentMeta, 'collection_name'):
+        if hasattr(cls, "DocumentMeta") and hasattr(
+            cls.DocumentMeta, "collection_name"
+        ):
             collection = database[cls.DocumentMeta.collection_name]
         else:
             collection = database[cls.__name__]
@@ -61,7 +67,7 @@ class Document(BaseModel):
         return cls._collection_storage.get(cls.__name__, None)
 
     @classmethod
-    async def insert_one(cls, document: "Document"):
+    async def insert_one(cls, document: "Document") -> InsertOneResult:
         """
         Insert one document to the collection
         :return: Document
@@ -77,7 +83,10 @@ class Document(BaseModel):
         :return: Document
         """
         return await cls.collection().insert_many(
-            [document.dict(by_alias=True, exclude={"id"}) for document in documents]
+            [
+                document.dict(by_alias=True, exclude={"id"})
+                for document in documents
+            ]
         )
 
     async def create(self) -> "Document":
@@ -93,26 +102,79 @@ class Document(BaseModel):
         self.id = PydanticObjectId(result.inserted_id)
         return self
 
+    @classmethod
+    async def find_one(cls, filter_query: dict) -> Union["Document", None]:
+        """
+        Find one document by criteria
+
+        :param filter_query: The selection criteria
+        :return: Document
+        """
+        document = await cls.collection().find_one(filter_query)
+        if document is None:
+            return None
+        return cls.parse_obj(document)
+
+    @classmethod
+    def find_many(cls, filter_query: dict) -> Cursor:
+        """
+        Find many documents by criteria
+
+        :param filter_query: The selection criteria.
+        :return: AsyncGenerator of the documents
+        """
+        cursor = cls.collection().find(filter_query)
+        return Cursor(motor_cursor=cursor, model=cls)
+
+    @classmethod
+    def find_all(cls) -> Cursor:
+        """
+        Get all the documents
+
+        :return: AsyncGenerator of the documents
+        """
+        return cls.find_many(filter_query={})
+
+    @classmethod
+    async def get(
+        cls, document_id: PydanticObjectId
+    ) -> Union["Document", None]:
+        """
+        Get document by id
+
+        :return:
+        """
+        return await cls.find_one({"_id": document_id})
+
+    @classmethod
+    async def replace_one(cls, filter_query: dict, document: "Document"):
+        """
+        Fully update one document in the database
+        :return: None
+        """
+        result = await cls.collection().replace_one(
+            filter_query, document.dict(by_alias=True)
+        )
+        if not result.raw_result["updatedExisting"]:
+            raise DocumentNotFound
+        return result
+
     async def replace(self) -> "Document":
         """
         Fully update the document in the database
         :return: None
         """
-
         if self.id is None:
             raise DocumentWasNotSaved
-        result = await self.collection().replace_one(
-            {"_id": self.id}, self.dict(by_alias=True)
-        )
-        if not result.raw_result["updatedExisting"]:
-            raise DocumentNotFound
+
+        await self.replace_one({"_id": self.id}, self)
         return self
 
     @classmethod
     async def update_one(
-            cls,
-            filter_query: dict,
-            update_query: dict,
+        cls,
+        filter_query: dict,
+        update_query: dict,
     ) -> UpdateResult:
         """
         Partially update already created document
@@ -121,13 +183,11 @@ class Document(BaseModel):
         :param filter_query: The selection criteria for the update. Optional.
         :return: UpdateResult instance
         """
-        return await cls.collection().update_one(
-            filter_query, update_query
-        )
+        return await cls.collection().update_one(filter_query, update_query)
 
     @classmethod
     async def update_many(
-            cls, filter_query: dict, update_query: dict
+        cls, filter_query: dict, update_query: dict
     ) -> UpdateResult:
         """
         Partially update many documents
@@ -136,36 +196,26 @@ class Document(BaseModel):
         :param update_query: The modifications to apply.
         :return: UpdateResult instance
         """
-        return await cls.collection().update_many(
-            filter_query, update_query
-        )
+        return await cls.collection().update_many(filter_query, update_query)
 
     @classmethod
-    async def update_all(
-            cls, update_query: dict
-    ) -> UpdateResult:
+    async def update_all(cls, update_query: dict) -> UpdateResult:
         """
         Partially update all the documents
 
         :param update_query: The modifications to apply.
         :return: UpdateResult instance
         """
-        return await cls.update_many(
-            {}, update_query
-        )
+        return await cls.update_many({}, update_query)
 
-    async def update(
-            self, update_query: dict
-    ) -> None:
+    async def update(self, update_query: dict) -> None:
         """
         Partially update the document in the database
 
         :param update_query: The modifications to apply.
         :return: None
         """
-        await self.update_one(
-            {"_id": self.id}, update_query=update_query
-        )
+        await self.update_one({"_id": self.id}, update_query=update_query)
         await self._sync()
 
     @classmethod
@@ -206,50 +256,8 @@ class Document(BaseModel):
         return await self.delete_one({"_id": self.id})
 
     @classmethod
-    async def find_one(cls, filter_query: dict) -> Union["Document", None]:
-        """
-        Find one document by criteria
-
-        :param filter_query: The selection criteria
-        :return: Document
-        """
-        document = await cls.collection().find_one(filter_query)
-        if document is None:
-            return None
-        return cls.parse_obj(document)
-
-    @classmethod
-    def find_many(cls, filter_query: dict) -> Cursor:
-        """
-        Find many documents by criteria
-
-        :param filter_query: The selection criteria.
-        :return: AsyncGenerator of the documents
-        """
-        cursor = cls.collection().find(filter_query)
-        return Cursor(motor_cursor=cursor, model=cls)
-
-    @classmethod
-    def find_all(cls) -> Cursor:
-        """
-        Get all the documents
-
-        :return: AsyncGenerator of the documents
-        """
-        return cls.find_many(filter_query={})
-
-    @classmethod
-    async def get(cls, document_id: PydanticObjectId) -> Union["Document", None]:
-        """
-        Get document by id
-
-        :return:
-        """
-        return await cls.find_one({"_id": document_id})
-
-    @classmethod
     def aggregate(
-            cls, aggregation_query: List[dict], item_model: Type[BaseModel] = None
+        cls, aggregation_query: List[dict], item_model: Type[BaseModel] = None
     ) -> Cursor:
         """
         Aggregate
