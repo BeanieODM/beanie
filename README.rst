@@ -1,4 +1,4 @@
-.. image:: https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/logo.svg
+.. image:: https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/with_text.svg
 
 Beanie - is an asynchronous ODM for MongoDB, based on `Motor <https://motor.readthedocs.io/en/stable/>`_ and `Pydantic <https://pydantic-docs.helpmanual.io/>`_.
 
