@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "beanie"
-version = "0.2.0"
-description = "MongoDB ORM based on Pydantic and Motor"
+version = "0.2.1"
+description = "MongoDB ODM based on Pydantic and Motor"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
 homepage = "https://github.com/roman-right/beanie"
 repository = "https://github.com/roman-right/beanie"
-keywords = ["mongo", "mongodb", "pydantic", "orm"]
+keywords = ["mongo", "mongodb", "pydantic", "odm"]
 include = [
     "LICENSE",
 ]
