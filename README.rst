@@ -1,9 +1,6 @@
-============
-Description
-============
+.. image:: https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/with_text.svg
 
-
-Beanie - is an asynchronous ORM for MongoDB, based on `Motor <https://motor.readthedocs.io/en/stable/>`_ and `Pydantic <https://pydantic-docs.helpmanual.io/>`_.
+Beanie - is an asynchronous ODM for MongoDB, based on `Motor <https://motor.readthedocs.io/en/stable/>`_ and `Pydantic <https://pydantic-docs.helpmanual.io/>`_.
 
 It uses an abstraction over Pydantic models and Motor collections to work with the database. Class Document allows to create, replace, update, get, find and aggregate.
 
@@ -90,9 +87,9 @@ Create a document (insert it)
 
     await document.create()
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 Insert one document
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -104,9 +101,9 @@ Insert one document
 
     await DocumentTestModel.insert_one(document)
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 Insert many documents
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -123,29 +120,29 @@ Insert many documents
 
     await DocumentTestModel.insert_many([document_1, document_2])
 
----------
+----
 Find
----------
+----
 
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 Get the document
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
     document = await DocumentTestModel.get(DOCUMENT_ID)
 
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 Find one document
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
     document = await DocumentTestModel.find_one({"test_str": "kipasa"})
 
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 Find many documents
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -158,9 +155,9 @@ OR
 
     documents =  await DocumentTestModel.find_many({"test_str": "uno"}).to_list()
 
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 Find all the documents
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -173,22 +170,22 @@ OR
 
     documents = await DocumentTestModel.find_all().to_list()
 
----------
+------
 Update
----------
+------
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Replace the document (full update)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
     document.test_str = "REPLACED_VALUE"
     await document.replace()
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 Replace one document
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 Replace one doc data by another
 
@@ -201,9 +198,9 @@ Replace one doc data by another
     )
     await DocumentTestModel.replace_one({"_id": document.id}, new_doc)
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Update the document (partial update)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 in this example, I'll add an item to the document's "test_list" field
 
@@ -212,11 +209,9 @@ in this example, I'll add an item to the document's "test_list" field
     to_insert = SubDocument(test_str="test")
     await document.update(update_query={"$push": {"test_list": to_insert.dict()}})
 
-
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 Update one document
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -225,10 +220,9 @@ Update one document
         filter_query={"_id": document.id, "test_list.test_str": "foo"},
     )
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 Update many documents
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -237,10 +231,9 @@ Update many documents
         filter_query={"test_str": "foo"},
     )
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 Update all the documents
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -249,37 +242,37 @@ Update all the documents
     )
 
 
----------
+------
 Delete
----------
+------
 
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 Delete the document
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
     await document.delete()
 
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 Delete one documents
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
     await DocumentTestModel.delete_one({"test_str": "uno"})
 
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 Delete many documents
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
     await DocumentTestModel.delete_many({"test_str": "dos"})
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 Delete all the documents
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
