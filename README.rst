@@ -39,9 +39,9 @@ Init
 
     from typing import List
 
-    from beanie import Document
     import motor
-    from pydantic import BaseSettings, BaseModel
+    from beanie import Document
+    from pydantic import BaseModel
 
 
     # CREATE BEANIE DOCUMENT STRUCTURE
@@ -55,6 +55,7 @@ Init
         test_list: List[SubDocument]
         test_str: str
 
+
     # CREATE MOTOR CLIENT AND DB
 
     client = motor.motor_asyncio.AsyncIOMotorClient(
@@ -66,7 +67,6 @@ Init
     # INIT BEANIE
 
     init_beanie(database=db, document_models=[DocumentTestModel])
-
 
 ---------
 Create
