@@ -39,11 +39,10 @@ Init
 
     from typing import List
 
+    from beanie import Document
     import motor
     from pydantic import BaseSettings, BaseModel
 
-    from collections import Collection
-    from documents import Document
 
     # CREATE BEANIE DOCUMENT STRUCTURE
 
