@@ -15,6 +15,6 @@ async def test_init():
 
 async def test_custom_collection():
     collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithCustomCollection.collection()
+        DocumentTestModelWithCustomCollection.Collection.motor_collection
     )
     assert collection.name == "custom"

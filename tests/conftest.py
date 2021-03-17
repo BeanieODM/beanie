@@ -34,7 +34,7 @@ async def init(loop):
         Settings().mongo_dsn, serverSelectionTimeoutMS=100
     )
     db = client.beanie_db
-    init_beanie(
+    await init_beanie(
         database=db,
         document_models=[
             DocumentTestModel,
@@ -42,7 +42,7 @@ async def init(loop):
         ],
     )
     yield None
-    await DocumentTestModel.collection().drop()
+    await DocumentTestModel.Collection.motor_collection.drop()
 
 
 @pytest.fixture
