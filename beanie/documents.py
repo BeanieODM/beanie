@@ -257,12 +257,12 @@ class Document(BaseModel):
         :return:
         """
         collection_class = getattr(cls, "Collection", None)
-        collection = await collection_factory(
+        collection_meta = await collection_factory(
             database=database,
             document_class=cls,
             collection_class=collection_class,
         )
-        setattr(cls, "CollectionMeta", collection)
+        setattr(cls, "CollectionMeta", collection_meta)
 
     @classmethod
     def get_collection_meta(cls):

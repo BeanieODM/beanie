@@ -312,3 +312,55 @@ OR
         [{"$group": {"_id": "$test_str", "total": {"$sum": "$test_int"}}}],
         item_model=OutputModel
     ).to_list()
+
+----------------
+Collection setup
+----------------
+
+Optionally collection of the document could be set up by the internal `Collection` class. Follow the examples:
+
+^^^^^^^^^^^^^^^
+Collection name
+^^^^^^^^^^^^^^^
+
+The name of the collection could be set up by the field `name` of the Collection class. By default, the collection will have the same name as the document class.
+
+.. code-block:: python
+
+    class DocumentTestModelWithCustomCollectionName(Document):
+        test_int: int
+        test_list: List[SubDocument]
+        test_str: str
+
+        class Collection:
+            name = "custom_collection"
+
+^^^^^^^
+Indexes
+^^^^^^^
+
+The indexes could be set up by the `indexes` field. It is a list where items could be:
+
+- single key. Name of the document's field
+- list of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (example: `pymongo.ASCENDING`)
+- `pymongo.IndexModel` instance - the most flexible option. `Documentation <https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel>`_
+
+.. code-block:: python
+
+    class DocumentTestModelWithIndex(Document):
+        test_int: int
+        test_list: List[SubDocument]
+        test_str: str
+
+        class Collection:
+            indexes = [
+                "test_int",
+                [
+                    ("test_int", pymongo.ASCENDING),
+                    ("test_str", pymongo.DESCENDING),
+                ],
+                IndexModel(
+                    [("test_str", pymongo.DESCENDING)],
+                    name="test_string_index_DESCENDING",
+                ),
+            ]

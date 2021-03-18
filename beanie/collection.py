@@ -42,8 +42,8 @@ async def collection_factory(
     """
     # parse collection parameters
     if collection_class:
-        collection_parameters = CollectionInputParameters(
-            **vars(collection_class)
+        collection_parameters = CollectionInputParameters.parse_obj(
+            vars(collection_class)
         )
     else:
         collection_parameters = CollectionInputParameters()
