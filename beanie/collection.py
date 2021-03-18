@@ -59,7 +59,7 @@ async def collection_factory(
     if collection_parameters.indexes:
         await collection.create_indexes(collection_parameters.indexes)
 
-    # create internal Collection class for the Document
+    # create internal CollectionMeta class for the Document
     class CollectionMeta:
         name: str = collection_parameters.name
         motor_collection: AsyncIOMotorCollection = collection
