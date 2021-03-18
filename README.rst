@@ -371,3 +371,14 @@ The indexes could be set up by the `indexes` field. It is a list where items cou
                     name="test_string_index_DESCENDING",
                 ),
             ]
+
+--------------------
+Use Motor Collection
+--------------------
+
+In case, when you need more low-level control, you can get access to the engine of the Beanie `Document` - `AsyncIO Motor Collection <https://motor.readthedocs.io/en/stable/api-asyncio/asyncio_motor_collection.html>`_
+
+.. code-block:: python
+
+    motor_collection = DocumentTestModel.get_motor_collection()
+    await motor_collection.drop_index("index_name")
