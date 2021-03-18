@@ -14,7 +14,7 @@ Installation
 PIP
 ----
 
-.. code-block:: bash
+.. code-block:: shell
 
     pip install beanie
 
@@ -23,7 +23,7 @@ PIP
 Poetry
 ------
 
-.. code-block:: bash
+.. code-block:: shell
 
     poetry add beanie
 
@@ -37,10 +37,12 @@ Init
 
 .. code-block:: python
 
+    import asyncio
     from typing import List
 
     import motor
     from beanie import Document
+    from beanie import init_beanie
     from pydantic import BaseModel
 
 
@@ -56,17 +58,22 @@ Init
         test_str: str
 
 
-    # CREATE MOTOR CLIENT AND DB
+    async def main():
+        # CREATE MOTOR CLIENT AND DB
 
-    client = motor.motor_asyncio.AsyncIOMotorClient(
-        "mongodb://user:pass@host:27017/db",
-        serverSelectionTimeoutMS=100
-    )
-    db = client.beanie_db
+        client = motor.motor_asyncio.AsyncIOMotorClient(
+            "mongodb://user:pass@host:27017/db",
+            serverSelectionTimeoutMS=100
+        )
+        db = client.beanie_db
 
-    # INIT BEANIE
+        # INIT BEANIE
 
-    init_beanie(database=db, document_models=[DocumentTestModel])
+        await init_beanie(database=db, document_models=[DocumentTestModel])
+
+
+    asyncio.run(main())
+
 
 ---------
 Create
