@@ -1,6 +1,8 @@
 from typing import List
 
+import pymongo
 from pydantic import BaseModel
+from pymongo import IndexModel
 
 from beanie import Document
 
@@ -15,11 +17,29 @@ class DocumentTestModel(Document):
     test_str: str
 
 
-class DocumentTestModelWithCustomCollection(Document):
+class DocumentTestModelWithCustomCollectionName(Document):
     test_int: int
     test_list: List[SubDocument]
     test_str: str
 
     class Collection:
         name = "custom"
-        indexes = ["test_int"]
+
+
+class DocumentTestModelWithIndex(Document):
+    test_int: int
+    test_list: List[SubDocument]
+    test_str: str
+
+    class Collection:
+        indexes = [
+            "test_int",
+            [
+                ("test_int", pymongo.ASCENDING),
+                ("test_str", pymongo.DESCENDING),
+            ],
+            IndexModel(
+                [("test_str", pymongo.DESCENDING)],
+                name="test_string_index_DESCENDING",
+            ),
+        ]

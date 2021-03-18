@@ -8,7 +8,8 @@ from beanie.general import init_beanie
 from tests.models import (
     DocumentTestModel,
     SubDocument,
-    DocumentTestModelWithCustomCollection,
+    DocumentTestModelWithCustomCollectionName,
+    DocumentTestModelWithIndex,
 )
 
 object_storage = {}
@@ -38,11 +39,12 @@ async def init(loop):
         database=db,
         document_models=[
             DocumentTestModel,
-            DocumentTestModelWithCustomCollection,
+            DocumentTestModelWithCustomCollectionName,
+            DocumentTestModelWithIndex,
         ],
     )
     yield None
-    await DocumentTestModel.Collection.motor_collection.drop()
+    await DocumentTestModel.get_motor_collection().drop()
 
 
 @pytest.fixture

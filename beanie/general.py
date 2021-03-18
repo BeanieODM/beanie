@@ -9,4 +9,4 @@ async def init_beanie(
     database: AsyncIOMotorDatabase, document_models: List[Type[Document]]
 ):
     for model in document_models:
-        await model._init_collection(database)
+        await model.init_collection(database)

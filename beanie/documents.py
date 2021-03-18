@@ -12,13 +12,13 @@ from beanie.exceptions import (
     DocumentWasNotSaved,
     DocumentNotFound,
     DocumentAlreadyCreated,
+    CollectionWasNotInitialized,
 )
 from beanie.fields import PydanticObjectId
 
 
 class Document(BaseModel):
     id: Optional[PydanticObjectId] = Field(None, alias="_id")
-    _collection_storage = {}  # TODO think about better solution for this
 
     def __init__(self, *args, **kwargs):
         """
@@ -28,26 +28,7 @@ class Document(BaseModel):
         :param kwargs:
         """
         super(Document, self).__init__(*args, **kwargs)
-        if getattr(self, "Collection", None) is None:
-            raise AttributeError(
-                "No collection is associated with this document model"
-            )
-
-    @classmethod
-    async def _init_collection(cls, database: AsyncIOMotorDatabase):
-        """
-        Internal Collection class creator
-
-        :param database:
-        :return:
-        """
-        collection_class = getattr(cls, "Collection", None)
-        collection = await collection_factory(
-            database=database,
-            document_class=cls,
-            collection_class=collection_class,
-        )
-        setattr(cls, "Collection", collection)
+        self.get_motor_collection()
 
     async def _sync(self) -> None:
         """
@@ -64,7 +45,7 @@ class Document(BaseModel):
         Insert one document to the collection
         :return: Document
         """
-        return await cls.Collection.motor_collection.insert_one(
+        return await cls.get_motor_collection().insert_one(
             document.dict(by_alias=True, exclude={"id"})
         )
 
@@ -74,7 +55,7 @@ class Document(BaseModel):
         Insert many documents to the collection
         :return: Document
         """
-        return await cls.Collection.motor_collection.insert_many(
+        return await cls.get_motor_collection().insert_many(
             [
                 document.dict(by_alias=True, exclude={"id"})
                 for document in documents
@@ -88,7 +69,7 @@ class Document(BaseModel):
         """
         if self.id is not None:
             raise DocumentAlreadyCreated
-        result = await self.Collection.motor_collection.insert_one(
+        result = await self.get_motor_collection().insert_one(
             self.dict(by_alias=True, exclude={"id"})
         )
         self.id = PydanticObjectId(result.inserted_id)
@@ -102,7 +83,7 @@ class Document(BaseModel):
         :param filter_query: The selection criteria
         :return: Document
         """
-        document = await cls.Collection.motor_collection.find_one(filter_query)
+        document = await cls.get_motor_collection().find_one(filter_query)
         if document is None:
             return None
         return cls.parse_obj(document)
@@ -115,7 +96,7 @@ class Document(BaseModel):
         :param filter_query: The selection criteria.
         :return: AsyncGenerator of the documents
         """
-        cursor = cls.Collection.motor_collection.find(filter_query)
+        cursor = cls.get_motor_collection().find(filter_query)
         return Cursor(motor_cursor=cursor, model=cls)
 
     @classmethod
@@ -144,7 +125,7 @@ class Document(BaseModel):
         Fully update one document in the database
         :return: None
         """
-        result = await cls.Collection.motor_collection.replace_one(
+        result = await cls.get_motor_collection().replace_one(
             filter_query, document.dict(by_alias=True, exclude={"id"})
         )
         if not result.raw_result["updatedExisting"]:
@@ -175,7 +156,7 @@ class Document(BaseModel):
         :param filter_query: The selection criteria for the update. Optional.
         :return: UpdateResult instance
         """
-        return await cls.Collection.motor_collection.update_one(
+        return await cls.get_motor_collection().update_one(
             filter_query, update_query
         )
 
@@ -190,7 +171,7 @@ class Document(BaseModel):
         :param update_query: The modifications to apply.
         :return: UpdateResult instance
         """
-        return await cls.Collection.motor_collection.update_many(
+        return await cls.get_motor_collection().update_many(
             filter_query, update_query
         )
 
@@ -222,7 +203,7 @@ class Document(BaseModel):
         :param filter_query: The selection criteria
         :return: DeleteResult instance
         """
-        return await cls.Collection.motor_collection.delete_one(filter_query)
+        return await cls.get_motor_collection().delete_one(filter_query)
 
     @classmethod
     async def delete_many(cls, filter_query: dict) -> DeleteResult:
@@ -232,7 +213,7 @@ class Document(BaseModel):
         :param filter_query: The selection criteria
         :return: DeleteResult instance
         """
-        return await cls.Collection.motor_collection.delete_many(filter_query)
+        return await cls.get_motor_collection().delete_many(filter_query)
 
     @classmethod
     async def delete_all(cls) -> DeleteResult:
@@ -262,8 +243,38 @@ class Document(BaseModel):
         :param item_model: Model of item to return in the list of aggregations
         :return: AsyncGenerator of aggregated items
         """
-        cursor = cls.Collection.motor_collection.aggregate(aggregation_query)
+        cursor = cls.get_motor_collection().aggregate(aggregation_query)
         return Cursor(motor_cursor=cursor, model=item_model)
+
+    # Collections
+
+    @classmethod
+    async def init_collection(cls, database: AsyncIOMotorDatabase):
+        """
+        Internal Collection class creator
+
+        :param database:
+        :return:
+        """
+        collection_class = getattr(cls, "Collection", None)
+        collection = await collection_factory(
+            database=database,
+            document_class=cls,
+            collection_class=collection_class,
+        )
+        setattr(cls, "CollectionMeta", collection)
+
+    @classmethod
+    def get_collection_meta(cls):
+        collection_meta = getattr(cls, "CollectionMeta", None)
+        if collection_meta is None:
+            raise CollectionWasNotInitialized
+        return collection_meta
+
+    @classmethod
+    def get_motor_collection(cls):
+        collection_meta = cls.get_collection_meta()
+        return collection_meta.motor_collection
 
     class Config:
         json_encoders = {

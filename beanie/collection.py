@@ -30,10 +30,10 @@ async def collection_factory(
     database: AsyncIOMotorDatabase,
     document_class: Type,
     collection_class: Optional[Type] = None,
-):
+) -> Type:
     """
     Collection factory.
-    Creates internal Collection class for the Document on the init step,
+    Creates internal CollectionMeta class for the Document on the init step,
 
     :param database: Motor database instance
     :param document_class: a class, inherited from Document class
@@ -60,9 +60,9 @@ async def collection_factory(
         await collection.create_indexes(collection_parameters.indexes)
 
     # create internal Collection class for the Document
-    class Collection:
+    class CollectionMeta:
         name: str = collection_parameters.name
         motor_collection: AsyncIOMotorCollection = collection
         indexes: List = collection_parameters.indexes
 
-    return Collection
+    return CollectionMeta
