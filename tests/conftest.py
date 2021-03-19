@@ -8,7 +8,6 @@ from beanie.general import init_beanie
 from tests.models import (
     DocumentTestModel,
     SubDocument,
-    DocumentTestModelWithCustomCollection,
 )
 
 object_storage = {}
@@ -38,7 +37,7 @@ async def init(loop):
         database=db,
         document_models=[
             DocumentTestModel,
-            DocumentTestModelWithCustomCollection,
+            "tests.models.DocumentTestModelWithCustomCollection",
         ],
     )
     yield None
