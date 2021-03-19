@@ -1,13 +1,14 @@
 from typing import Optional, List, Type, Union
 
 from bson import ObjectId
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
 from pydantic import Field
 from pydantic.main import BaseModel
 from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
 
 from beanie.collection import collection_factory
 from beanie.cursor import Cursor
+from beanie.deprecated import get_collection_class_from_document_meta_class
 from beanie.exceptions import (
     DocumentWasNotSaved,
     DocumentNotFound,
@@ -249,14 +250,17 @@ class Document(BaseModel):
     # Collections
 
     @classmethod
-    async def init_collection(cls, database: AsyncIOMotorDatabase):
+    async def init_collection(cls, database: AsyncIOMotorDatabase) -> None:
         """
-        Internal Collection class creator
+        Internal CollectionMeta class creator
 
-        :param database:
-        :return:
+        :param database: AsyncIOMotorDatabase
+        :return: None
         """
-        collection_class = getattr(cls, "Collection", None)
+        # TODO remove deprecated function
+        collection_class = get_collection_class_from_document_meta_class(
+            cls
+        ) or getattr(cls, "Collection", None)
         collection_meta = await collection_factory(
             database=database,
             document_class=cls,
@@ -265,15 +269,26 @@ class Document(BaseModel):
         setattr(cls, "CollectionMeta", collection_meta)
 
     @classmethod
-    def get_collection_meta(cls):
+    def _get_collection_meta(cls) -> Type:
+        """
+        Get internal CollectionMeta class, which was created on
+        the collection initialization step
+
+        :return: CollectionMeta class
+        """
         collection_meta = getattr(cls, "CollectionMeta", None)
         if collection_meta is None:
             raise CollectionWasNotInitialized
         return collection_meta
 
     @classmethod
-    def get_motor_collection(cls):
-        collection_meta = cls.get_collection_meta()
+    def get_motor_collection(cls) -> AsyncIOMotorCollection:
+        """
+        Get Motor Collection to access low level control
+
+        :return: AsyncIOMotorCollection
+        """
+        collection_meta = cls._get_collection_meta()
         return collection_meta.motor_collection
 
     class Config:
