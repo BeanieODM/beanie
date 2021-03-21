@@ -25,7 +25,7 @@ class SortDirection(int, Enum):
     DESCENDING = pymongo.DESCENDING
 
 
-class FindOperationKWRAGS(BaseModel):
+class FindOperationKWARGS(BaseModel):
     skip: Optional[int] = None
     limit: Optional[int] = None
     sort: Union[None, str, List[Tuple[str, SortDirection]]] = None
@@ -126,7 +126,7 @@ class Document(BaseModel):
                      specifying the sort order for this query.
         :return: AsyncGenerator of the documents
         """
-        kwargs = FindOperationKWRAGS(skip=skip, limit=limit, sort=sort).dict(
+        kwargs = FindOperationKWARGS(skip=skip, limit=limit, sort=sort).dict(
             exclude_none=True
         )
         cursor = cls.get_motor_collection().find(filter_query, **kwargs)
