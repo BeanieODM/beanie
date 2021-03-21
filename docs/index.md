@@ -142,7 +142,7 @@ Parameters:
 - filter_query: The selection criteria
 - skip: The number of documents to omit.
 - limit: The maximum number of results to return.
-- sort: key or a list of (key, direction) pairs specifying the sort order for this query.
+- sort: A key or a list of (key, direction) pairs specifying the sort order for this query.
 
 #### Find all the documents
 
@@ -161,7 +161,7 @@ Parameters:
 
 - skip: The number of documents to omit.
 - limit: The maximum number of results to return.
-- sort: key or a list of (key, direction) pairs specifying the sort order for this query.
+- sort: A key or a list of (key, direction) pairs specifying the sort order for this query.
 
 ### Update
 

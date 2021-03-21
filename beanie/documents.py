@@ -122,7 +122,7 @@ class Document(BaseModel):
         :param filter_query: The selection criteria.
         :param skip: The number of documents to omit.
         :param limit: The maximum number of results to return.
-        :param sort: key or a list of (key, direction) pairs
+        :param sort: A key or a list of (key, direction) pairs
                      specifying the sort order for this query.
         :return: AsyncGenerator of the documents
         """
@@ -144,7 +144,7 @@ class Document(BaseModel):
 
         :param skip: The number of documents to omit.
         :param limit: The maximum number of results to return.
-        :param sort: key or a list of (key, direction) pairs
+        :param sort: A key or a list of (key, direction) pairs
                      specifying the sort order for this query.
         :return: AsyncGenerator of the documents
         """
