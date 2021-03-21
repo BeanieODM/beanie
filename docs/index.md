@@ -126,28 +126,42 @@ document = await DocumentTestModel.find_one({"test_str": "kipasa"})
 #### Find many documents
 
 ```python
-async for document in DocumentTestModel.find_many({"test_str": "uno"}):
+async for document in DocumentTestModel.find_many({"test_str": "uno"}, limit=100):
     print(document)
 ```
 
 OR
 
 ```python
-documents = await DocumentTestModel.find_many({"test_str": "uno"}).to_list()
+documents = await DocumentTestModel.find_many({"test_str": "uno"}, 
+                                              sort="test_int").to_list()
 ```
+
+Parameters:
+
+- filter_query: The selection criteria
+- skip: The number of documents to omit.
+- limit: The maximum number of results to return.
+- sort: A key or a list of (key, direction) pairs specifying the sort order for this query.
 
 #### Find all the documents
 
 ```python
-async for document in DocumentTestModel.find_all()
+async for document in DocumentTestModel.find_all(limit=100):
     print(document)
 ```
 
 OR
 
 ```python
-documents = await DocumentTestModel.find_all().to_list()
+documents = await DocumentTestModel.find_all(skip=10).to_list()
 ```
+
+Parameters:
+
+- skip: The number of documents to omit.
+- limit: The maximum number of results to return.
+- sort: A key or a list of (key, direction) pairs specifying the sort order for this query.
 
 ### Update
 

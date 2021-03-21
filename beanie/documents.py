@@ -1,8 +1,10 @@
-from typing import Optional, List, Type, Union
+from enum import Enum
+from typing import Optional, List, Type, Union, Tuple
 
+import pymongo
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pydantic import Field
+from pydantic import Field, validator
 from pydantic.main import BaseModel
 from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
 
@@ -16,6 +18,23 @@ from beanie.exceptions import (
     CollectionWasNotInitialized,
 )
 from beanie.fields import PydanticObjectId
+
+
+class SortDirection(int, Enum):
+    ASCENDING = pymongo.ASCENDING
+    DESCENDING = pymongo.DESCENDING
+
+
+class FindOperationKWARGS(BaseModel):
+    skip: Optional[int] = None
+    limit: Optional[int] = None
+    sort: Union[None, str, List[Tuple[str, SortDirection]]] = None
+
+    @validator("sort")
+    def name_must_contain_space(cls, v):
+        if isinstance(v, str):
+            return [(v, pymongo.ASCENDING)]
+        return v
 
 
 class Document(BaseModel):
@@ -90,24 +109,48 @@ class Document(BaseModel):
         return cls.parse_obj(document)
 
     @classmethod
-    def find_many(cls, filter_query: dict) -> Cursor:
+    def find_many(
+        cls,
+        filter_query: dict,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+    ) -> Cursor:
         """
         Find many documents by criteria
 
         :param filter_query: The selection criteria.
+        :param skip: The number of documents to omit.
+        :param limit: The maximum number of results to return.
+        :param sort: A key or a list of (key, direction) pairs
+                     specifying the sort order for this query.
         :return: AsyncGenerator of the documents
         """
-        cursor = cls.get_motor_collection().find(filter_query)
+        kwargs = FindOperationKWARGS(skip=skip, limit=limit, sort=sort).dict(
+            exclude_none=True
+        )
+        cursor = cls.get_motor_collection().find(filter_query, **kwargs)
         return Cursor(motor_cursor=cursor, model=cls)
 
     @classmethod
-    def find_all(cls) -> Cursor:
+    def find_all(
+        cls,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+    ) -> Cursor:
         """
         Get all the documents
 
+        :param skip: The number of documents to omit.
+        :param limit: The maximum number of results to return.
+        :param sort: A key or a list of (key, direction) pairs
+                     specifying the sort order for this query.
         :return: AsyncGenerator of the documents
         """
-        return cls.find_many(filter_query={})
+        return cls.find_many(
+            filter_query={}, skip=skip, limit=limit, sort=sort
+        )
 
     @classmethod
     async def get(
