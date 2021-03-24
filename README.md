@@ -28,3 +28,9 @@ poetry add beanie
 
 - **[Changelog](https://roman-right.github.io/beanie/changelog)** - list of all the valuable changes
 - **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share ideas or just say `Hello!!`
+
+### Articles
+
+- [Announcing Beanie - MongoDB ODM](https://dev.to/romanright/announcing-beanie-mongodb-odm-56e)
+- [Build a Cocktail API with Beanie and MongoDB](https://developer.mongodb.com/article/beanie-odm-fastapi-cocktails/)
+- [MongoDB indexes with Beanie](https://dev.to/romanright/mongodb-indexes-with-beanie-43e8)
