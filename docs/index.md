@@ -1,7 +1,7 @@
 #
 ![Beanie](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/with_text.svg)
 
-Beanie - is an asynchronous ODM for MongoDB, based on [Motor](https://motor.readthedocs.io/en/stable/)
+[Beanie](https://github.com/roman-right/beanie) - is an asynchronous ODM for MongoDB, based on [Motor](https://motor.readthedocs.io/en/stable/)
 and [Pydantic](https://pydantic-docs.helpmanual.io/).
 
 It uses an abstraction over Pydantic models and Motor collections to work with the database. Class Document allows to
@@ -330,9 +330,7 @@ class DocumentTestModelWithIndex(Document):
 
 ### Use Motor Collection
 
-In case, when you need more low-level control, you can get access to the engine of the Beanie `Document`
-
-- [AsyncIO Motor Collection](https://motor.readthedocs.io/en/stable/api-asyncio/asyncio_motor_collection.html)
+In case, when you need more low-level control, you can get access to the engine of the Beanie `Document`- [AsyncIO Motor Collection](https://motor.readthedocs.io/en/stable/api-asyncio/asyncio_motor_collection.html)
 
 ```python
 motor_collection = DocumentTestModel.get_motor_collection()
