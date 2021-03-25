@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beanie"
-version = "0.3.1"
+version = "0.3.2"
 description = "MongoDB ODM based on Pydantic and Motor"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
