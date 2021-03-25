@@ -25,7 +25,7 @@ class FindOperationKWARGS(BaseModel):
 
 
 class InspectionStatuses(str, Enum):
-    ERROR = "ERROR"
+    FAIL = "FAIL"
     OK = "OK"
 
 

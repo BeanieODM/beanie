@@ -47,3 +47,10 @@ class DocumentTestModelWithIndex(Document):
 
 class DocumentTestModelStringImport(Document):
     test_int: int
+
+
+class DocumentTestModelFailInspection(Document):
+    test_int_2: int
+
+    class Collection:
+        name = "DocumentTestModel"

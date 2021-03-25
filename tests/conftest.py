@@ -11,6 +11,7 @@ from tests.models import (
     SubDocument,
     DocumentTestModelWithCustomCollectionName,
     DocumentTestModelWithIndex,
+    DocumentTestModelFailInspection,
 )
 
 object_storage = {}
@@ -46,12 +47,14 @@ async def init(loop, db):
             DocumentTestModel,
             DocumentTestModelWithCustomCollectionName,
             DocumentTestModelWithIndex,
+            DocumentTestModelFailInspection,
         ],
     )
     yield None
     await DocumentTestModel.get_motor_collection().drop()
     await DocumentTestModelWithCustomCollectionName.get_motor_collection().drop()  # noqa: E501
     await DocumentTestModelWithIndex.get_motor_collection().drop()
+    await DocumentTestModelFailInspection.get_motor_collection().drop()
     await DocumentTestModelWithIndex.get_motor_collection().drop_indexes()
 
 

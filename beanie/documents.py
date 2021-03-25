@@ -336,7 +336,7 @@ class Document(BaseModel):
                 cls.parse_obj(json_document)
             except ValidationError as e:
                 if inspection_result.status == InspectionStatuses.OK:
-                    inspection_result.status = InspectionStatuses.ERROR
+                    inspection_result.status = InspectionStatuses.FAIL
                 inspection_result.errors.append(
                     InspectionError(
                         document_id=json_document["_id"], error=str(e)
