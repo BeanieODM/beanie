@@ -1,10 +1,8 @@
-from enum import Enum
 from typing import Optional, List, Type, Union, Tuple
 
-import pymongo
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pydantic import Field, validator
+from pydantic import Field, ValidationError
 from pydantic.main import BaseModel
 from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
 
@@ -18,23 +16,13 @@ from beanie.exceptions import (
     CollectionWasNotInitialized,
 )
 from beanie.fields import PydanticObjectId
-
-
-class SortDirection(int, Enum):
-    ASCENDING = pymongo.ASCENDING
-    DESCENDING = pymongo.DESCENDING
-
-
-class FindOperationKWARGS(BaseModel):
-    skip: Optional[int] = None
-    limit: Optional[int] = None
-    sort: Union[None, str, List[Tuple[str, SortDirection]]] = None
-
-    @validator("sort")
-    def name_must_contain_space(cls, v):
-        if isinstance(v, str):
-            return [(v, pymongo.ASCENDING)]
-        return v
+from beanie.internal_models import (
+    InspectionResult,
+    InspectionStatuses,
+    InspectionError,
+    SortDirection,
+    FindOperationKWARGS,
+)
 
 
 class Document(BaseModel):
@@ -333,6 +321,28 @@ class Document(BaseModel):
         """
         collection_meta = cls._get_collection_meta()
         return collection_meta.motor_collection
+
+    @classmethod
+    async def inspect_collection(cls) -> InspectionResult:
+        """
+        Check, if documents, stored in the MongoDB collection
+        are compatible with the Document schema
+
+        :return: InspectionResult
+        """
+        inspection_result = InspectionResult()
+        async for json_document in cls.get_motor_collection().find({}):
+            try:
+                cls.parse_obj(json_document)
+            except ValidationError as e:
+                if inspection_result.status == InspectionStatuses.OK:
+                    inspection_result.status = InspectionStatuses.ERROR
+                inspection_result.errors.append(
+                    InspectionError(
+                        document_id=json_document["_id"], error=str(e)
+                    )
+                )
+        return inspection_result
 
     class Config:
         json_encoders = {
