@@ -1,3 +1,4 @@
+from random import randint
 from typing import List
 
 import motor.motor_asyncio
@@ -8,6 +9,8 @@ from beanie.general import init_beanie
 from tests.models import (
     DocumentTestModel,
     SubDocument,
+    DocumentTestModelWithCustomCollectionName,
+    DocumentTestModelWithIndex,
 )
 
 object_storage = {}
@@ -27,21 +30,29 @@ class Settings(BaseSettings):
         )
 
 
-@pytest.fixture(autouse=True)
-async def init(loop):
+@pytest.fixture()
+async def db(loop):
     client = motor.motor_asyncio.AsyncIOMotorClient(
         Settings().mongo_dsn, serverSelectionTimeoutMS=100
     )
-    db = client.beanie_db
-    init_beanie(
+    return client.beanie_db
+
+
+@pytest.fixture(autouse=True)
+async def init(loop, db):
+    await init_beanie(
         database=db,
         document_models=[
             DocumentTestModel,
-            "tests.models.DocumentTestModelWithCustomCollection",
+            DocumentTestModelWithCustomCollectionName,
+            DocumentTestModelWithIndex,
         ],
     )
     yield None
-    await DocumentTestModel.collection().drop()
+    await DocumentTestModel.get_motor_collection().drop()
+    await DocumentTestModelWithCustomCollectionName.get_motor_collection().drop()  # noqa: E501
+    await DocumentTestModelWithIndex.get_motor_collection().drop()
+    await DocumentTestModelWithIndex.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture
@@ -56,11 +67,11 @@ def document_not_inserted():
 @pytest.fixture
 def documents_not_inserted():
     def generate_documents(
-        number: int, test_str: str = None
+        number: int, test_str: str = None, random: bool = False
     ) -> List[DocumentTestModel]:
         return [
             DocumentTestModel(
-                test_int=i,
+                test_int=randint(0, 1000000) if random else i,
                 test_list=[
                     SubDocument(test_str="foo"),
                     SubDocument(test_str="bar"),
@@ -80,9 +91,11 @@ async def document(document_not_inserted, loop) -> DocumentTestModel:
 
 @pytest.fixture
 def documents(documents_not_inserted):
-    async def generate_documents(number: int, test_str: str = None):
+    async def generate_documents(
+        number: int, test_str: str = None, random: bool = False
+    ):
         result = await DocumentTestModel.insert_many(
-            documents_not_inserted(number, test_str)
+            documents_not_inserted(number, test_str, random)
         )
         return result.inserted_ids
 

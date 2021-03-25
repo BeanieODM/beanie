@@ -12,3 +12,7 @@ class DocumentAlreadyCreated(Exception):
 
 class DocumentWasNotSaved(Exception):
     pass
+
+
+class CollectionWasNotInitialized(Exception):
+    pass

@@ -1,0 +1,5 @@
+site_name: Beanie
+nav:
+    - Quick Start: index.md
+    - Changelog: changelog.md
+theme: readthedocs
