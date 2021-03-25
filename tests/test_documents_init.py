@@ -45,7 +45,7 @@ async def test_document_string_import(db):
     await init_beanie(
         database=db,
         document_models=[
-            DocumentTestModelStringImport,
+            "tests.models.DocumentTestModelStringImport",
         ],
     )
     document = DocumentTestModelStringImport(test_int=1)

@@ -66,6 +66,17 @@ async def main():
 asyncio.run(main())
 ```
 
+`init_beanie` supports not only list of classes for the document_models parameter, but also strings with the dot separated paths. Example:
+
+```python
+await init_beanie(
+        database=db,
+        document_models=[
+            "app.models.DemoDocument",
+        ],
+    )
+```
+
 ### Create
 
 #### Create a document (insert it)
