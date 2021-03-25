@@ -30,12 +30,16 @@ class Settings(BaseSettings):
         )
 
 
-@pytest.fixture(autouse=True)
-async def init(loop):
+@pytest.fixture()
+async def db(loop):
     client = motor.motor_asyncio.AsyncIOMotorClient(
         Settings().mongo_dsn, serverSelectionTimeoutMS=100
     )
-    db = client.beanie_db
+    return client.beanie_db
+
+
+@pytest.fixture(autouse=True)
+async def init(loop, db):
     await init_beanie(
         database=db,
         document_models=[
@@ -46,6 +50,9 @@ async def init(loop):
     )
     yield None
     await DocumentTestModel.get_motor_collection().drop()
+    await DocumentTestModelWithCustomCollectionName.get_motor_collection().drop()  # noqa: E501
+    await DocumentTestModelWithIndex.get_motor_collection().drop()
+    await DocumentTestModelWithIndex.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture

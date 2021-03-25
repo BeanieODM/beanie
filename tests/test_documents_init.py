@@ -1,11 +1,12 @@
 import pytest
 from motor.motor_asyncio import AsyncIOMotorCollection
 
-from beanie import Document
+from beanie import Document, init_beanie
 from beanie.exceptions import CollectionWasNotInitialized
 from tests.models import (
     DocumentTestModelWithCustomCollectionName,
     DocumentTestModelWithIndex,
+    DocumentTestModelStringImport,
 )
 
 
@@ -38,3 +39,16 @@ async def test_index_creation():
         },
         "test_string_index_DESCENDING": {"key": [("test_str", -1)], "v": 2},
     }
+
+
+async def test_document_string_import(db):
+    await init_beanie(
+        database=db,
+        document_models=[
+            "tests.models.DocumentTestModelStringImport",
+        ],
+    )
+    document = DocumentTestModelStringImport(test_int=1)
+    assert document.id is None
+    await document.create()
+    assert document.id is not None

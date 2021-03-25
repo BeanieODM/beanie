@@ -43,3 +43,7 @@ class DocumentTestModelWithIndex(Document):
                 name="test_string_index_DESCENDING",
             ),
         ]
+
+
+class DocumentTestModelStringImport(Document):
+    test_int: int
