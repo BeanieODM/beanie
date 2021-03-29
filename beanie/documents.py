@@ -4,6 +4,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
 from pydantic import Field, ValidationError
 from pydantic.main import BaseModel
+from pymongo.client_session import ClientSession
 from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
 
 from beanie.collection import collection_factory
@@ -48,17 +49,21 @@ class Document(BaseModel):
             setattr(self, key, value)
 
     @classmethod
-    async def insert_one(cls, document: "Document") -> InsertOneResult:
+    async def insert_one(
+        cls, document: "Document", session: ClientSession = None
+    ) -> InsertOneResult:
         """
         Insert one document to the collection
         :return: Document
         """
         return await cls.get_motor_collection().insert_one(
-            document.dict(by_alias=True, exclude={"id"})
+            document.dict(by_alias=True, exclude={"id"}), session=session
         )
 
     @classmethod
-    async def insert_many(cls, documents: List["Document"]):
+    async def insert_many(
+        cls, documents: List["Document"], session: ClientSession = None
+    ):
         """
         Insert many documents to the collection
         :return: Document
@@ -67,10 +72,11 @@ class Document(BaseModel):
             [
                 document.dict(by_alias=True, exclude={"id"})
                 for document in documents
-            ]
+            ],
+            session=session,
         )
 
-    async def create(self) -> "Document":
+    async def create(self, session: ClientSession = None) -> "Document":
         """
         Create the document in the database
         :return: Document
@@ -78,20 +84,24 @@ class Document(BaseModel):
         if self.id is not None:
             raise DocumentAlreadyCreated
         result = await self.get_motor_collection().insert_one(
-            self.dict(by_alias=True, exclude={"id"})
+            self.dict(by_alias=True, exclude={"id"}), session=session
         )
         self.id = PydanticObjectId(result.inserted_id)
         return self
 
     @classmethod
-    async def find_one(cls, filter_query: dict) -> Union["Document", None]:
+    async def find_one(
+        cls, filter_query: dict, session: ClientSession = None
+    ) -> Union["Document", None]:
         """
         Find one document by criteria
 
         :param filter_query: The selection criteria
         :return: Document
         """
-        document = await cls.get_motor_collection().find_one(filter_query)
+        document = await cls.get_motor_collection().find_one(
+            filter_query, session=session
+        )
         if document is None:
             return None
         return cls.parse_obj(document)
@@ -103,6 +113,7 @@ class Document(BaseModel):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: ClientSession = None,
     ) -> Cursor:
         """
         Find many documents by criteria
@@ -117,7 +128,9 @@ class Document(BaseModel):
         kwargs = FindOperationKWARGS(skip=skip, limit=limit, sort=sort).dict(
             exclude_none=True
         )
-        cursor = cls.get_motor_collection().find(filter_query, **kwargs)
+        cursor = cls.get_motor_collection().find(
+            filter_query, session=session, **kwargs
+        )
         return Cursor(motor_cursor=cursor, model=cls)
 
     @classmethod
@@ -126,6 +139,7 @@ class Document(BaseModel):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: ClientSession = None,
     ) -> Cursor:
         """
         Get all the documents
@@ -137,34 +151,41 @@ class Document(BaseModel):
         :return: AsyncGenerator of the documents
         """
         return cls.find_many(
-            filter_query={}, skip=skip, limit=limit, sort=sort
+            filter_query={}, skip=skip, limit=limit, sort=sort, session=session
         )
 
     @classmethod
     async def get(
-        cls, document_id: PydanticObjectId
+        cls, document_id: PydanticObjectId, session: ClientSession = None
     ) -> Union["Document", None]:
         """
         Get document by id
 
         :return:
         """
-        return await cls.find_one({"_id": document_id})
+        return await cls.find_one({"_id": document_id}, session=session)
 
     @classmethod
-    async def replace_one(cls, filter_query: dict, document: "Document"):
+    async def replace_one(
+        cls,
+        filter_query: dict,
+        document: "Document",
+        session: ClientSession = None,
+    ):
         """
         Fully update one document in the database
         :return: None
         """
         result = await cls.get_motor_collection().replace_one(
-            filter_query, document.dict(by_alias=True, exclude={"id"})
+            filter_query,
+            document.dict(by_alias=True, exclude={"id"}),
+            session=session,
         )
         if not result.raw_result["updatedExisting"]:
             raise DocumentNotFound
         return result
 
-    async def replace(self) -> "Document":
+    async def replace(self, session: ClientSession = None) -> "Document":
         """
         Fully update the document in the database
         :return: None
@@ -172,7 +193,7 @@ class Document(BaseModel):
         if self.id is None:
             raise DocumentWasNotSaved
 
-        await self.replace_one({"_id": self.id}, self)
+        await self.replace_one({"_id": self.id}, self, session=session)
         return self
 
     @classmethod
@@ -180,6 +201,7 @@ class Document(BaseModel):
         cls,
         filter_query: dict,
         update_query: dict,
+        session: ClientSession = None,
     ) -> UpdateResult:
         """
         Partially update already created document
@@ -189,12 +211,15 @@ class Document(BaseModel):
         :return: UpdateResult instance
         """
         return await cls.get_motor_collection().update_one(
-            filter_query, update_query
+            filter_query, update_query, session=session
         )
 
     @classmethod
     async def update_many(
-        cls, filter_query: dict, update_query: dict
+        cls,
+        filter_query: dict,
+        update_query: dict,
+        session: ClientSession = None,
     ) -> UpdateResult:
         """
         Partially update many documents
@@ -204,69 +229,86 @@ class Document(BaseModel):
         :return: UpdateResult instance
         """
         return await cls.get_motor_collection().update_many(
-            filter_query, update_query
+            filter_query, update_query, session=session
         )
 
     @classmethod
-    async def update_all(cls, update_query: dict) -> UpdateResult:
+    async def update_all(
+        cls, update_query: dict, session: ClientSession = None
+    ) -> UpdateResult:
         """
         Partially update all the documents
 
         :param update_query: The modifications to apply.
         :return: UpdateResult instance
         """
-        return await cls.update_many({}, update_query)
+        return await cls.update_many({}, update_query, session=session)
 
-    async def update(self, update_query: dict) -> None:
+    async def update(
+        self, update_query: dict, session: ClientSession = None
+    ) -> None:
         """
         Partially update the document in the database
 
         :param update_query: The modifications to apply.
         :return: None
         """
-        await self.update_one({"_id": self.id}, update_query=update_query)
+        await self.update_one(
+            {"_id": self.id}, update_query=update_query, session=session
+        )
         await self._sync()
 
     @classmethod
-    async def delete_one(cls, filter_query: dict) -> DeleteResult:
+    async def delete_one(
+        cls, filter_query: dict, session: ClientSession = None
+    ) -> DeleteResult:
         """
         Delete one document
 
         :param filter_query: The selection criteria
         :return: DeleteResult instance
         """
-        return await cls.get_motor_collection().delete_one(filter_query)
+        return await cls.get_motor_collection().delete_one(
+            filter_query, session=session
+        )
 
     @classmethod
-    async def delete_many(cls, filter_query: dict) -> DeleteResult:
+    async def delete_many(
+        cls, filter_query: dict, session: ClientSession = None
+    ) -> DeleteResult:
         """
         Delete many documents
 
         :param filter_query: The selection criteria
         :return: DeleteResult instance
         """
-        return await cls.get_motor_collection().delete_many(filter_query)
+        return await cls.get_motor_collection().delete_many(
+            filter_query, session=session
+        )
 
     @classmethod
-    async def delete_all(cls) -> DeleteResult:
+    async def delete_all(cls, session: ClientSession = None) -> DeleteResult:
         """
         Delete all the documents
 
         :return: DeleteResult instance
         """
-        return await cls.delete_many({})
+        return await cls.delete_many({}, session=session)
 
-    async def delete(self) -> DeleteResult:
+    async def delete(self, session: ClientSession = None) -> DeleteResult:
         """
         Delete the document
 
         :return:
         """
-        return await self.delete_one({"_id": self.id})
+        return await self.delete_one({"_id": self.id}, session=session)
 
     @classmethod
     def aggregate(
-        cls, aggregation_query: List[dict], item_model: Type[BaseModel] = None
+        cls,
+        aggregation_query: List[dict],
+        item_model: Type[BaseModel] = None,
+        session: ClientSession = None,
     ) -> Cursor:
         """
         Aggregate
@@ -275,7 +317,9 @@ class Document(BaseModel):
         :param item_model: Model of item to return in the list of aggregations
         :return: AsyncGenerator of aggregated items
         """
-        cursor = cls.get_motor_collection().aggregate(aggregation_query)
+        cursor = cls.get_motor_collection().aggregate(
+            aggregation_query, session=session
+        )
         return Cursor(motor_cursor=cursor, model=item_model)
 
     # Collections
@@ -323,7 +367,9 @@ class Document(BaseModel):
         return collection_meta.motor_collection
 
     @classmethod
-    async def inspect_collection(cls) -> InspectionResult:
+    async def inspect_collection(
+        cls, session: ClientSession = None
+    ) -> InspectionResult:
         """
         Check, if documents, stored in the MongoDB collection
         are compatible with the Document schema
@@ -331,7 +377,9 @@ class Document(BaseModel):
         :return: InspectionResult
         """
         inspection_result = InspectionResult()
-        async for json_document in cls.get_motor_collection().find({}):
+        async for json_document in cls.get_motor_collection().find(
+            {}, session=session
+        ):
             try:
                 cls.parse_obj(json_document)
             except ValidationError as e:

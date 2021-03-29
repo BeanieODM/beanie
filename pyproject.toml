@@ -23,6 +23,7 @@ pytest = "^5.4.2"
 pytest-aiohttp = "^0.3.0"
 pytest-cov = "^2.8.1"
 Pygments = "^2.8.0"
+dnspython = "^2.1.0"
 
 
 [build-system]

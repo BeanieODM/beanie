@@ -18,8 +18,10 @@ async def test_replace_one(document):
 
 
 async def test_replace(document):
-    document.test_str = "REPLACED_VALUE"
-    await document.replace()
+    update_data = {"test_str": "REPLACED_VALUE"}
+    new_doc = document.copy(update=update_data)
+    # document.test_str = "REPLACED_VALUE"
+    await new_doc.replace()
     new_document = await DocumentTestModel.get(document.id)
     assert new_document.test_str == "REPLACED_VALUE"
 

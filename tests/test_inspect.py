@@ -10,7 +10,7 @@ async def test_inspect_ok(documents):
 
 
 async def test_inspect_fail(documents):
-    await documents(10, "smthe")
+    await documents(10, "smth")
     result = await DocumentTestModelFailInspection.inspect_collection()
     assert result.status == InspectionStatuses.FAIL
     assert len(result.errors) == 10

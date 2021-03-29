@@ -1,15 +1,65 @@
-version: '3.7'
+#version: '3.7'
+#
+#services:
+#  mongodb_container:
+#    image: bitnami/mongodb:latest
+#    environment:
+#      MONGODB_USERNAME: beanie
+#      MONGODB_PASSWORD: beanie
+#      MONGODB_DATABASE: beanie_db
+#    ports:
+#      - 27017:27017
+#    volumes:
+#      - mongodb_data_container:/data/db
+#volumes:
+#  mongodb_data_container:
+
+version: '2'
 
 services:
-  mongodb_container:
-    image: bitnami/mongodb:latest
+  mongodb-primary:
+    image: 'docker.io/bitnami/mongodb:4.4-debian-10'
     environment:
-      MONGODB_USERNAME: beanie
-      MONGODB_PASSWORD: beanie
-      MONGODB_DATABASE: beanie_db
+      - MONGODB_USERNAME=beanie
+      - MONGODB_PASSWORD=beanie
+      - MONGODB_DATABASE=beanie_db
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-primary
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_PASSWORD=password123
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
     ports:
       - 27017:27017
     volumes:
-      - mongodb_data_container:/data/db
+      - 'mongodb_master_data:/bitnami/mongodb'
+
+  mongodb-secondary:
+    image: 'docker.io/bitnami/mongodb:4.4-debian-10'
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_USERNAME=beanie
+      - MONGODB_PASSWORD=beanie
+      - MONGODB_DATABASE=beanie_db
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-secondary
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=password123
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
+
+  mongodb-arbiter:
+    image: 'docker.io/bitnami/mongodb:4.4-debian-10'
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_USERNAME=beanie
+      - MONGODB_PASSWORD=beanie
+      - MONGODB_DATABASE=beanie_db
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-arbiter
+      - MONGODB_REPLICA_SET_MODE=arbiter
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=password123
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
+
 volumes:
-  mongodb_data_container:
+  mongodb_master_data:
+    driver: local
