@@ -39,8 +39,10 @@ class MigrationNode:
         await Migration(is_current=True, name=self.name).create()
 
     async def run(self, mode: RunningMode):
-        migration_node = self
         if mode.direction == RunningDirections.FORWARD:
+            migration_node = self.next_migration
+            if migration_node is None:
+                return None
             if mode.distance == 0:
                 while True:
                     await migration_node.run_forward()
@@ -54,6 +56,9 @@ class MigrationNode:
                     if migration_node is None:
                         break
         elif mode.direction == RunningDirections.BACKWARD:
+            migration_node = self.prev_migration
+            if migration_node is None:
+                return None
             if mode.distance == 0:
                 while True:
                     await migration_node.run_backward()
@@ -111,6 +116,7 @@ class MigrationNode:
         db = get_db(client)
         await init_beanie(database=db, document_models=[Migration])
         current_migration = await Migration.find_one({"is_current": True})
+        print("CURRENT", current_migration)
 
         root_migration_node = MigrationNode("root")
         prev_migration_node = root_migration_node
@@ -132,6 +138,7 @@ class MigrationNode:
                 current_migration is not None
                 and current_migration.name == name
             ):
+                print("HERE")
                 root_migration_node = migration_node
 
         return root_migration_node
