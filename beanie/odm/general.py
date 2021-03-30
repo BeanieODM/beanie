@@ -4,7 +4,7 @@ from typing import List, Type, Union
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from beanie import Document
+from beanie.odm.documents import Document
 
 
 def get_model(dot_path: str) -> Type[Document]:

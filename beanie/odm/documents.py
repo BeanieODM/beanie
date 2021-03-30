@@ -7,17 +7,18 @@ from pydantic.main import BaseModel
 from pymongo.client_session import ClientSession
 from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
 
-from beanie.collection import collection_factory
-from beanie.cursor import Cursor
-from beanie.deprecated import get_collection_class_from_document_meta_class
+from beanie.odm.collection import collection_factory
+from beanie.odm.cursor import Cursor
+from beanie.odm.deprecated import get_collection_class_from_document_meta_class
 from beanie.exceptions import (
     DocumentWasNotSaved,
     DocumentNotFound,
     DocumentAlreadyCreated,
     CollectionWasNotInitialized,
+    ReplaceError,
 )
-from beanie.fields import PydanticObjectId
-from beanie.internal_models import (
+from beanie.odm.fields import PydanticObjectId
+from beanie.odm.models import (
     InspectionResult,
     InspectionStatuses,
     InspectionError,
@@ -62,17 +63,27 @@ class Document(BaseModel):
 
     @classmethod
     async def insert_many(
-        cls, documents: List["Document"], session: ClientSession = None
+        cls,
+        documents: List["Document"],
+        keep_ids: bool = False,
+        session: ClientSession = None,
     ):
+
         """
         Insert many documents to the collection
         :return: Document
         """
-        return await cls.get_motor_collection().insert_many(
-            [
+        if keep_ids:
+            documents_list = [
+                document.dict(by_alias=True) for document in documents
+            ]
+        else:
+            documents_list = [
                 document.dict(by_alias=True, exclude={"id"})
                 for document in documents
-            ],
+            ]
+        return await cls.get_motor_collection().insert_many(
+            documents_list,
             session=session,
         )
 
@@ -184,6 +195,20 @@ class Document(BaseModel):
         if not result.raw_result["updatedExisting"]:
             raise DocumentNotFound
         return result
+
+    @classmethod
+    async def replace_many(
+        cls, documents: List["Document"], session: ClientSession = None
+    ):
+        ids_list = [document.id for document in documents]
+        if await cls.count_documents({"_id": {"$in": ids_list}}) != len(
+            ids_list
+        ):
+            raise ReplaceError(
+                "Some of the documents are not exist in the collection"
+            )
+        await cls.delete_many({"_id": {"$in": ids_list}})
+        await cls.insert_many(documents, keep_ids=True)
 
     async def replace(self, session: ClientSession = None) -> "Document":
         """
@@ -321,6 +346,10 @@ class Document(BaseModel):
             aggregation_query, session=session
         )
         return Cursor(motor_cursor=cursor, model=item_model)
+
+    @classmethod
+    async def count_documents(cls, filter_query: dict):
+        return await cls.get_motor_collection().count_documents(filter_query)
 
     # Collections
 

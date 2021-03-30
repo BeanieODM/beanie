@@ -1,4 +1,4 @@
-from beanie.internal_models import InspectionStatuses
+from beanie.odm.models import InspectionStatuses
 from tests.models import DocumentTestModel, DocumentTestModelFailInspection
 
 

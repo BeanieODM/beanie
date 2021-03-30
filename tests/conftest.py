@@ -5,7 +5,7 @@ import motor.motor_asyncio
 import pytest
 from pydantic import BaseSettings
 
-from beanie.general import init_beanie
+from beanie.odm.general import init_beanie
 from tests.models import (
     DocumentTestModel,
     SubDocument,

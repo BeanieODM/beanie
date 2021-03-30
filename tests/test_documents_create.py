@@ -1,7 +1,7 @@
 import pytest
 
 from beanie.exceptions import DocumentAlreadyCreated
-from beanie.fields import PydanticObjectId
+from beanie.odm.fields import PydanticObjectId
 from tests.models import DocumentTestModel
 
 

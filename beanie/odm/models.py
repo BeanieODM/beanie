@@ -4,7 +4,7 @@ from typing import List, Optional, Union, Tuple
 import pymongo
 from pydantic import BaseModel, validator
 
-from beanie.fields import PydanticObjectId
+from beanie.odm.fields import PydanticObjectId
 
 
 class SortDirection(int, Enum):

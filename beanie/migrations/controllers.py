@@ -36,7 +36,7 @@ class DummyOutput:
         return result_dict
 
 
-class Migration(ABC):
+class BaseMigrationController(ABC):
     @abstractmethod
     async def run(self, session):
         pass
@@ -47,22 +47,23 @@ class Migration(ABC):
         pass
 
 
-class IterativeMigration(Migration):
+class IterativeMigration(BaseMigrationController):
     def __init__(self, function):
         self.function = function
-        migration_signature = signature(function)
-
-        input_signature = migration_signature.parameters.get(
+        self.function_signature = signature(function)
+        input_signature = self.function_signature.parameters.get(
             "input_document"
         )  # TODO check class
         self.input_document_class: Type[Document] = input_signature.annotation
 
-        output_signature = migration_signature.parameters.get(
+        output_signature = self.function_signature.parameters.get(
             "output_document"
         )
         self.output_document_class: Type[
             Document
         ] = output_signature.annotation
+
+        self.batch_size = 1000
 
     def __call__(self, *args, **kwargs):
         pass
@@ -73,17 +74,27 @@ class IterativeMigration(Migration):
 
     async def run(self, session):
         output_documents = []
-        documents_ids = []
         async for input_document in self.input_document_class.find_all():
             output = DummyOutput()
-            await self.function(
-                1, input_document, output
-            )  # TODO fix `self` things
+            function_kwargs = {
+                "input_document": input_document,
+                "output_document": output,
+            }
+            if "self" in self.function_signature.parameters:
+                function_kwargs["self"] = None
+            await self.function(**function_kwargs)
             output_dict = input_document.dict()
             output_dict.update(output.dict())
             output_document = self.output_document_class.parse_obj(output_dict)
             output_documents.append(output_document)
-            documents_ids.append(output_document.id)
-        await self.input_document_class.delete_all(session=session)
-        # raise Exception
-        await self.output_document_class.insert_many(output_documents)
+
+            if len(output_documents) == self.batch_size:
+                await self.output_document_class.replace_many(
+                    documents=output_documents
+                )
+                output_documents = []
+
+        if output_documents:
+            await self.output_document_class.replace_many(
+                documents=output_documents
+            )

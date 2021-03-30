@@ -1,7 +1,7 @@
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from beanie.fields import PydanticObjectId
+from beanie.odm.fields import PydanticObjectId
 
 
 class M(BaseModel):

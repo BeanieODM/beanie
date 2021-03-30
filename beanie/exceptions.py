@@ -20,3 +20,7 @@ class CollectionWasNotInitialized(Exception):
 
 class MigrationException(Exception):
     pass
+
+
+class ReplaceError(Exception):
+    pass
