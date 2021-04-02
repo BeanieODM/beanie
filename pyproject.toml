@@ -14,9 +14,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pydantic = "^1.5.1"
+pydantic = "^1.8"
 motor = "^2.1.0"
 click = "^7.1.2"
+toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.3.0"
@@ -58,3 +59,7 @@ testpaths = [
 
 [tool.poetry.scripts]
 beanie = "beanie.executors.migrate:migrations"
+
+[tool.beanie.migrations]
+path = "beanie/example_migration"
+db = "beanie_db"
