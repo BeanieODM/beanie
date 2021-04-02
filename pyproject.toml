@@ -16,6 +16,7 @@ readme = "README.md"
 python = "^3.8"
 pydantic = "^1.5.1"
 motor = "^2.1.0"
+click = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.3.0"
@@ -54,3 +55,6 @@ testpaths = [
     "tests",
     "integration",
 ]
+
+[tool.poetry.scripts]
+beanie = "beanie.executors.migrate:migrations"

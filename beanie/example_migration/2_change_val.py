@@ -9,4 +9,4 @@ class Forward:
         input_document: DocumentTestModel,
         output_document: DocumentTestModel,
     ):
-        output_document.test_str = input_document.test_str + "_TEST"
+        output_document.test_str = input_document.test_str + "_SMTH"

@@ -1,44 +1,50 @@
-import importlib
-import pkgutil
+import importlib.util
+from pathlib import Path
 from typing import Type, Optional
 
-import motor
-
-from beanie import init_beanie
+from beanie import init_beanie, Document
 from beanie.migrations.controllers import BaseMigrationController
+from beanie.migrations.database import DDHandler
 from beanie.migrations.models import Migration, RunningMode, RunningDirections
-
-
-def get_cli():
-    return motor.motor_asyncio.AsyncIOMotorClient(
-        serverSelectionTimeoutMS=1000
-    )
-
-
-def get_db(client):
-    return client.beanie_db
 
 
 class MigrationNode:
     def __init__(
         self,
-        name,
-        forward_class=None,
-        backward_class=None,
-        next_migration=None,
-        prev_migration=None,
+        name: str,
+        forward_class: Optional[Type[Document]] = None,
+        backward_class: Optional[Type[Document]] = None,
+        next_migration: Optional["MigrationNode"] = None,
+        prev_migration: Optional["MigrationNode"] = None,
     ):
-        self.name: str = name
+        """
+        TODO doc it
+        :param name:
+        :param forward_class:
+        :param backward_class:
+        :param next_migration:
+        :param prev_migration:
+        """
+        self.name = name
         self.forward_class = forward_class
         self.backward_class = backward_class
-        self.next_migration: Optional["MigrationNode"] = next_migration
-        self.prev_migration: Optional["MigrationNode"] = prev_migration
+        self.next_migration = next_migration
+        self.prev_migration = prev_migration
 
     async def update_current_migration(self):  # TODO more options
+        """
+        TODO doc it
+        :return:
+        """
         await Migration.delete_all()
         await Migration(is_current=True, name=self.name).create()
 
     async def run(self, mode: RunningMode):
+        """
+        TODO doc it
+        :param mode:
+        :return:
+        """
         if mode.direction == RunningDirections.FORWARD:
             migration_node = self.next_migration
             if migration_node is None:
@@ -84,14 +90,19 @@ class MigrationNode:
 
     @staticmethod
     async def run_migration_class(cls: Type):
+        """
+        TODO doc it
+        :param cls:
+        :return:
+        """
         migrations = [
             getattr(cls, migration)
             for migration in dir(cls)
             if isinstance(getattr(cls, migration), BaseMigrationController)
         ]
 
-        client = get_cli()
-        db = get_db(client)
+        client = DDHandler().get_cli()
+        db = DDHandler().get_db()
 
         async with await client.start_session() as s:
             async with s.start_transaction():
@@ -105,28 +116,32 @@ class MigrationNode:
                     await migration.run(session=s)
 
     @classmethod
-    async def build(cls, path):
+    async def build(cls, path: Path):
+        """
+        TODO doc it
+        :param path:
+        :return:
+        """
         names = []
-        package = importlib.import_module(path)
-        for loader, name, is_pkg in pkgutil.walk_packages(package.__path__):
-            names.append(name)
+        for module in path.glob("*.py"):
+            names.append(module.name)
         names.sort()
 
-        client = get_cli()
-        db = get_db(client)
+        db = DDHandler().get_db()
         await init_beanie(database=db, document_models=[Migration])
         current_migration = await Migration.find_one({"is_current": True})
-        print("CURRENT", current_migration)
 
         root_migration_node = MigrationNode("root")
         prev_migration_node = root_migration_node
         for name in names:
-            module = importlib.import_module(
-                f"{path}.{name}"
-            )  # TODO make it better way
+            spec = importlib.util.spec_from_file_location(
+                (path / name).stem, (path / name).absolute()
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
             forward_class = getattr(module, "Forward", None)
-            print(package, forward_class)
-            backward_class = getattr(package, "Backward", None)
+            backward_class = getattr(module, "Backward", None)
+
             migration_node = MigrationNode(
                 name=name,
                 prev_migration=prev_migration_node,
@@ -134,11 +149,11 @@ class MigrationNode:
                 backward_class=backward_class,
             )
             prev_migration_node.next_migration = migration_node
+
             if (
                 current_migration is not None
                 and current_migration.name == name
             ):
-                print("HERE")
                 root_migration_node = migration_node
 
         return root_migration_node

@@ -25,10 +25,7 @@ class Settings(BaseSettings):
 
     @property
     def mongo_dsn(self):
-        return (
-            f"mongodb://{self.mongo_user}:{self.mongo_pass}"
-            f"@{self.mongo_host}:27017/{self.mongo_db}"
-        )
+        return f"mongodb://root:password123" f"@{self.mongo_host}:27017"
 
 
 @pytest.fixture()

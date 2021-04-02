@@ -5,6 +5,9 @@ from typing import Type, Optional, Union, List
 from beanie import Document
 
 
+# TODO rename module
+
+
 class DummyOutput:
     def __init__(self):
         super(DummyOutput, self).__setattr__("_internal_structure_dict", {})
