@@ -26,6 +26,7 @@ pytest-aiohttp = "^0.3.0"
 pytest-cov = "^2.8.1"
 Pygments = "^2.8.0"
 dnspython = "^2.1.0"
+mkdocs-material = "^7.1.0"
 
 
 [build-system]
@@ -62,4 +63,4 @@ beanie = "beanie.executors.migrate:migrations"
 
 [tool.beanie.migrations]
 path = "beanie/example_migration"
-db = "beanie_db"
+database_name = "beanie_db"

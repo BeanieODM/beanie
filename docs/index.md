@@ -1,4 +1,3 @@
-#
 ![Beanie](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/with_text.svg)
 
 [Beanie](https://github.com/roman-right/beanie) - is an asynchronous ODM for MongoDB, based on [Motor](https://motor.readthedocs.io/en/stable/)

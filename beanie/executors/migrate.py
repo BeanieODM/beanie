@@ -29,19 +29,19 @@ def toml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
 class MigrationSettings(BaseSettings):
     direction: RunningDirections = RunningDirections.FORWARD
     distance: int = 0
-    uri: str
-    db: str
+    connection_uri: str
+    database_name: str
     path: Path
 
     class Config:
         env_prefix = "beanie_"
         fields = {
-            "uri": {
+            "connection_uri": {
                 "env": [
                     "uri",
+                    "connection_uri",
                     "connection_string",
                     "mongodb_dsn",
-                    "mongodb_url",
                     "mongodb_uri",
                 ]
             },
@@ -69,7 +69,7 @@ def migrations():
 
 
 async def run_migrate(settings: MigrationSettings):
-    DDHandler().set_db(settings.uri, settings.db)
+    DDHandler().set_db(settings.connection_uri, settings.database_name)
     root = await MigrationNode.build(settings.path)
     mode = RunningMode(
         direction=settings.direction, distance=settings.distance
@@ -83,23 +83,32 @@ async def run_migrate(settings: MigrationSettings):
     "direction",
     required=False,
     flag_value="FORWARD",
-    help="Direction of the migration",
+    help="Roll the migrations forward. This is default",
 )
 @click.option(
     "--backward",
     "direction",
     required=False,
     flag_value="BACKWARD",
-    help="Direction of the migration",
+    help="Roll the migrations backward",
 )
 @click.option(
     "-d",
     "--distance",
     required=False,
-    help="How many migrations should be done",
+    help="How many migrations should be done since the current? "
+    "0 - all the migrations. Default is 0",
 )
-@click.option("--uri", required=False, type=str, help="MongoDB connection URI")
-@click.option("--db", required=False, type=str, help="DataBase name")
+@click.option(
+    "-uri",
+    "--connection-uri",
+    required=False,
+    type=str,
+    help="MongoDB connection URI",
+)
+@click.option(
+    "-db", "--database_name", required=False, type=str, help="DataBase name"
+)
 @click.option(
     "-p",
     "--path",
@@ -107,16 +116,16 @@ async def run_migrate(settings: MigrationSettings):
     type=str,
     help="Path to the migrations directory",
 )
-def migrate(direction, distance, uri, db, path):
+def migrate(direction, distance, connection_uri, database_name, path):
     settings_kwargs = {}
     if direction:
         settings_kwargs["direction"] = direction
     if distance:
         settings_kwargs["distance"] = distance
-    if uri:
-        settings_kwargs["uri"] = uri
-    if db:
-        settings_kwargs["db"] = db
+    if connection_uri:
+        settings_kwargs["connection_uri"] = connection_uri
+    if database_name:
+        settings_kwargs["database_name"] = database_name
     if path:
         settings_kwargs["path"] = path
     settings = MigrationSettings(**settings_kwargs)
