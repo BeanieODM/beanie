@@ -3,9 +3,13 @@ from pathlib import Path
 from typing import Type, Optional
 
 from beanie import init_beanie, Document
-from beanie.migrations.controllers import BaseMigrationController
+from beanie.migrations.controllers.iterative import BaseMigrationController
 from beanie.migrations.database import DDHandler
-from beanie.migrations.models import Migration, RunningMode, RunningDirections
+from beanie.migrations.models import (
+    MigrationLog,
+    RunningMode,
+    RunningDirections,
+)
 
 
 class MigrationNode:
@@ -36,8 +40,10 @@ class MigrationNode:
         TODO doc it
         :return:
         """
-        await Migration.delete_all()
-        await Migration(is_current=True, name=self.name).create()
+        await MigrationLog.update_many(
+            {"is_current": True}, {"$set": {"is_current": False}}
+        )
+        await MigrationLog(is_current=True, name=self.name).create()
 
     async def run(self, mode: RunningMode):
         """
@@ -62,9 +68,7 @@ class MigrationNode:
                     if migration_node is None:
                         break
         elif mode.direction == RunningDirections.BACKWARD:
-            migration_node = self.prev_migration
-            if migration_node is None:
-                return None
+            migration_node = self
             if mode.distance == 0:
                 while True:
                     await migration_node.run_backward()
@@ -106,11 +110,11 @@ class MigrationNode:
 
         async with await client.start_session() as s:
             async with s.start_transaction():
-                structures = []
+                models = []
                 for migration in migrations:
-                    structures += migration.structures
+                    models += migration.models
 
-                await init_beanie(database=db, document_models=structures)
+                await init_beanie(database=db, document_models=models)
 
                 for migration in migrations:
                     await migration.run(session=s)
@@ -128,11 +132,12 @@ class MigrationNode:
         names.sort()
 
         db = DDHandler().get_db()
-        await init_beanie(database=db, document_models=[Migration])
-        current_migration = await Migration.find_one({"is_current": True})
+        await init_beanie(database=db, document_models=[MigrationLog])
+        current_migration = await MigrationLog.find_one({"is_current": True})
 
         root_migration_node = MigrationNode("root")
         prev_migration_node = root_migration_node
+
         for name in names:
             spec = importlib.util.spec_from_file_location(
                 (path / name).stem, (path / name).absolute()
@@ -141,7 +146,6 @@ class MigrationNode:
             spec.loader.exec_module(module)
             forward_class = getattr(module, "Forward", None)
             backward_class = getattr(module, "Backward", None)
-
             migration_node = MigrationNode(
                 name=name,
                 prev_migration=prev_migration_node,
@@ -149,6 +153,7 @@ class MigrationNode:
                 backward_class=backward_class,
             )
             prev_migration_node.next_migration = migration_node
+            prev_migration_node = migration_node
 
             if (
                 current_migration is not None

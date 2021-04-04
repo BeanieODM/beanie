@@ -1,21 +1,20 @@
+from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
+from pydantic import Field
 from pydantic.main import BaseModel
 
 from beanie import Document
 
 
-class MigrationStatuses(str, Enum):
-    STARTED = "STARTED"
-    OK = "OK"
-    FAIL = "FAIL"
-
-
-class Migration(Document):
+class MigrationLog(Document):
+    ts: datetime = Field(default_factory=datetime.now)
     name: str
     is_current: bool
-    status: MigrationStatuses = MigrationStatuses.STARTED
+
+    class Collection:
+        name = "migrations_log"
 
 
 class RunningDirections(str, Enum):
@@ -31,4 +30,4 @@ class RunningMode(BaseModel):
 class ParsedMigrations(BaseModel):
     path: str
     names: List[str]
-    current: Optional[Migration] = None
+    current: Optional[MigrationLog] = None

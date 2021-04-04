@@ -1,11 +1,8 @@
-from abc import abstractmethod, ABC
 from inspect import signature
 from typing import Type, Optional, Union, List
 
 from beanie import Document
-
-
-# TODO rename module
+from beanie.migrations.controllers.base import BaseMigrationController
 
 
 class DummyOutput:
@@ -39,17 +36,6 @@ class DummyOutput:
         return result_dict
 
 
-class BaseMigrationController(ABC):
-    @abstractmethod
-    async def run(self, session):
-        pass
-
-    @property
-    @abstractmethod
-    def structures(self) -> List[Type[Document]]:
-        pass
-
-
 class IterativeMigration(BaseMigrationController):
     def __init__(self, function):
         self.function = function
@@ -72,7 +58,7 @@ class IterativeMigration(BaseMigrationController):
         pass
 
     @property
-    def structures(self) -> List[Type[Document]]:
+    def models(self) -> List[Type[Document]]:
         return [self.input_document_class, self.output_document_class]
 
     async def run(self, session):
@@ -101,3 +87,6 @@ class IterativeMigration(BaseMigrationController):
             await self.output_document_class.replace_many(
                 documents=output_documents
             )
+
+
+iterative_migration = IterativeMigration
