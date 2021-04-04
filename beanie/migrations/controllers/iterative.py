@@ -1,4 +1,4 @@
-from inspect import signature
+from inspect import signature, isclass
 from typing import Type, Optional, Union, List
 
 from beanie import Document
@@ -42,15 +42,25 @@ class IterativeMigration(BaseMigrationController):
         self.function_signature = signature(function)
         input_signature = self.function_signature.parameters.get(
             "input_document"
-        )  # TODO check class
+        )
         self.input_document_class: Type[Document] = input_signature.annotation
-
         output_signature = self.function_signature.parameters.get(
             "output_document"
         )
         self.output_document_class: Type[
             Document
         ] = output_signature.annotation
+
+        if (
+            not isclass(self.input_document_class)
+            or not issubclass(self.input_document_class, Document)
+            or not isclass(self.output_document_class)
+            or not issubclass(self.output_document_class, Document)
+        ):
+            raise TypeError(
+                "input_document and output_document "
+                "must have annotation of Document subclass"
+            )
 
         self.batch_size = 1000
 

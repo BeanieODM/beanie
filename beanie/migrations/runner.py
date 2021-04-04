@@ -35,7 +35,7 @@ class MigrationNode:
         self.next_migration = next_migration
         self.prev_migration = prev_migration
 
-    async def update_current_migration(self):  # TODO more options
+    async def update_current_migration(self):
         """
         TODO doc it
         :return:
