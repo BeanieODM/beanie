@@ -1,15 +1,18 @@
 import importlib.util
+import logging
 from pathlib import Path
 from typing import Type, Optional
 
 from beanie import init_beanie, Document
 from beanie.migrations.controllers.iterative import BaseMigrationController
-from beanie.migrations.database import DDHandler
+from beanie.migrations.database import DBHandler
 from beanie.migrations.models import (
     MigrationLog,
     RunningMode,
     RunningDirections,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class MigrationNode:
@@ -56,12 +59,14 @@ class MigrationNode:
             if migration_node is None:
                 return None
             if mode.distance == 0:
+                logger.info("Running migrations forward without limit")
                 while True:
                     await migration_node.run_forward()
                     migration_node = migration_node.next_migration
                     if migration_node is None:
                         break
             else:
+                logger.info(f"Running {mode.distance} migrations forward")
                 for i in range(mode.distance):
                     await migration_node.run_forward()
                     migration_node = migration_node.next_migration
@@ -70,12 +75,14 @@ class MigrationNode:
         elif mode.direction == RunningDirections.BACKWARD:
             migration_node = self
             if mode.distance == 0:
+                logger.info("Running migrations backward without limit")
                 while True:
                     await migration_node.run_backward()
                     migration_node = migration_node.prev_migration
                     if migration_node is None:
                         break
             else:
+                logger.info(f"Running {mode.distance} migrations backward")
                 for i in range(mode.distance):
                     await migration_node.run_backward()
                     migration_node = migration_node.prev_migration
@@ -92,8 +99,7 @@ class MigrationNode:
             await self.run_migration_class(self.backward_class)
         await self.update_current_migration()
 
-    @staticmethod
-    async def run_migration_class(cls: Type):
+    async def run_migration_class(self, cls: Type):
         """
         TODO doc it
         :param cls:
@@ -105,8 +111,8 @@ class MigrationNode:
             if isinstance(getattr(cls, migration), BaseMigrationController)
         ]
 
-        client = DDHandler().get_cli()
-        db = DDHandler().get_db()
+        client = DBHandler().get_cli()
+        db = DBHandler().get_db()
 
         async with await client.start_session() as s:
             async with s.start_transaction():
@@ -117,6 +123,10 @@ class MigrationNode:
                 await init_beanie(database=db, document_models=models)
 
                 for migration in migrations:
+                    logger.info(
+                        f"Running migration {migration.function.__name__} "
+                        f"from module {self.name}"
+                    )
                     await migration.run(session=s)
 
     @classmethod
@@ -126,12 +136,13 @@ class MigrationNode:
         :param path:
         :return:
         """
+        logger.info("Building migration list")
         names = []
         for module in path.glob("*.py"):
             names.append(module.name)
         names.sort()
 
-        db = DDHandler().get_db()
+        db = DBHandler().get_db()
         await init_beanie(database=db, document_models=[MigrationLog])
         current_migration = await MigrationLog.find_one({"is_current": True})
 

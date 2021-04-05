@@ -38,6 +38,7 @@ class DummyOutput:
 
 def iterative_migration(
     document_models: Optional[List[Type[Document]]] = None,
+    batch_size: int = 10000,
 ):
     class IterativeMigration(BaseMigrationController):
         def __init__(self, function):
@@ -67,7 +68,7 @@ def iterative_migration(
                     "must have annotation of Document subclass"
                 )
 
-            self.batch_size = 1000
+            self.batch_size = batch_size
 
         def __call__(self, *args, **kwargs):
             pass

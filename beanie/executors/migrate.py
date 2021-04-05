@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -9,9 +10,11 @@ import toml
 from pydantic import BaseSettings
 
 from beanie.migrations import template
-from beanie.migrations.database import DDHandler
+from beanie.migrations.database import DBHandler
 from beanie.migrations.models import RunningMode, RunningDirections
 from beanie.migrations.runner import MigrationNode
+
+logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 
 def toml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
@@ -69,7 +72,7 @@ def migrations():
 
 
 async def run_migrate(settings: MigrationSettings):
-    DDHandler().set_db(settings.connection_uri, settings.database_name)
+    DBHandler().set_db(settings.connection_uri, settings.database_name)
     root = await MigrationNode.build(settings.path)
     mode = RunningMode(
         direction=settings.direction, distance=settings.distance
