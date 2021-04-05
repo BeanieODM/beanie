@@ -5,7 +5,7 @@ from beanie import Document
 from beanie.migrations.controllers.base import BaseMigrationController
 
 
-def FreeFallMigration(document_models: List[Type[Document]]):
+def free_fall_migration(document_models: List[Type[Document]]):
     class FreeFallMigrationController(BaseMigrationController):
         def __init__(self, function):
             self.function = function
@@ -26,6 +26,3 @@ def FreeFallMigration(document_models: List[Type[Document]]):
             await self.function(**function_kwargs)
 
     return FreeFallMigrationController
-
-
-free_fall_migration = FreeFallMigration

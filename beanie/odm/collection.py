@@ -55,9 +55,19 @@ async def collection_factory(
     # create motor collection
     collection = database[collection_parameters.name]
 
+    # indexes
+    old_indexes = (await collection.index_information()).keys()
+    new_indexes = ["_id_"]
+
     # create indexes
     if collection_parameters.indexes:
-        await collection.create_indexes(collection_parameters.indexes)
+        new_indexes += await collection.create_indexes(
+            collection_parameters.indexes
+        )
+
+    # delete indexes
+    for index in set(old_indexes) - set(new_indexes):
+        await collection.drop_index(index)
 
     # create internal CollectionMeta class for the Document
     class CollectionMeta:

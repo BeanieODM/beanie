@@ -36,67 +36,80 @@ class DummyOutput:
         return result_dict
 
 
-class IterativeMigration(BaseMigrationController):
-    def __init__(self, function):
-        self.function = function
-        self.function_signature = signature(function)
-        input_signature = self.function_signature.parameters.get(
-            "input_document"
-        )
-        self.input_document_class: Type[Document] = input_signature.annotation
-        output_signature = self.function_signature.parameters.get(
-            "output_document"
-        )
-        self.output_document_class: Type[
-            Document
-        ] = output_signature.annotation
-
-        if (
-            not isclass(self.input_document_class)
-            or not issubclass(self.input_document_class, Document)
-            or not isclass(self.output_document_class)
-            or not issubclass(self.output_document_class, Document)
-        ):
-            raise TypeError(
-                "input_document and output_document "
-                "must have annotation of Document subclass"
+def iterative_migration(
+    document_models: Optional[List[Type[Document]]] = None,
+):
+    class IterativeMigration(BaseMigrationController):
+        def __init__(self, function):
+            self.function = function
+            self.function_signature = signature(function)
+            input_signature = self.function_signature.parameters.get(
+                "input_document"
             )
+            self.input_document_class: Type[
+                Document
+            ] = input_signature.annotation
+            output_signature = self.function_signature.parameters.get(
+                "output_document"
+            )
+            self.output_document_class: Type[
+                Document
+            ] = output_signature.annotation
 
-        self.batch_size = 1000
+            if (
+                not isclass(self.input_document_class)
+                or not issubclass(self.input_document_class, Document)
+                or not isclass(self.output_document_class)
+                or not issubclass(self.output_document_class, Document)
+            ):
+                raise TypeError(
+                    "input_document and output_document "
+                    "must have annotation of Document subclass"
+                )
 
-    def __call__(self, *args, **kwargs):
-        pass
+            self.batch_size = 1000
 
-    @property
-    def models(self) -> List[Type[Document]]:
-        return [self.input_document_class, self.output_document_class]
+        def __call__(self, *args, **kwargs):
+            pass
 
-    async def run(self, session):
-        output_documents = []
-        async for input_document in self.input_document_class.find_all():
-            output = DummyOutput()
-            function_kwargs = {
-                "input_document": input_document,
-                "output_document": output,
-            }
-            if "self" in self.function_signature.parameters:
-                function_kwargs["self"] = None
-            await self.function(**function_kwargs)
-            output_dict = input_document.dict()
-            output_dict.update(output.dict())
-            output_document = self.output_document_class.parse_obj(output_dict)
-            output_documents.append(output_document)
+        @property
+        def models(self) -> List[Type[Document]]:
+            if document_models is not None:
+                return list(
+                    set(
+                        [self.input_document_class, self.output_document_class]
+                        + document_models
+                    )
+                )
+            return [self.input_document_class, self.output_document_class]
 
-            if len(output_documents) == self.batch_size:
+        async def run(self, session):
+            output_documents = []
+            async for input_document in self.input_document_class.find_all():
+                output = DummyOutput()
+                function_kwargs = {
+                    "input_document": input_document,
+                    "output_document": output,
+                }
+                if "self" in self.function_signature.parameters:
+                    function_kwargs["self"] = None
+                await self.function(**function_kwargs)
+                output_dict = input_document.dict()
+                output_dict.update(output.dict())
+                output_document = self.output_document_class.parse_obj(
+                    output_dict
+                )
+                output_documents.append(output_document)
+
+                if len(output_documents) == self.batch_size:
+                    await self.output_document_class.replace_many(
+                        documents=output_documents
+                    )
+                    output_documents = []
+
+            if output_documents:
                 await self.output_document_class.replace_many(
                     documents=output_documents
                 )
-                output_documents = []
 
-        if output_documents:
-            await self.output_document_class.replace_many(
-                documents=output_documents
-            )
-
-
-iterative_migration = IterativeMigration
+    return IterativeMigration
