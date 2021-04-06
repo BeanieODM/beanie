@@ -9,7 +9,6 @@ from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
 
 from beanie.odm.collection import collection_factory
 from beanie.odm.cursor import Cursor
-from beanie.odm.deprecated import get_collection_class_from_document_meta_class
 from beanie.exceptions import (
     DocumentWasNotSaved,
     DocumentNotFound,
@@ -361,10 +360,7 @@ class Document(BaseModel):
         :param database: AsyncIOMotorDatabase
         :return: None
         """
-        # TODO remove deprecated function
-        collection_class = get_collection_class_from_document_meta_class(
-            cls
-        ) or getattr(cls, "Collection", None)
+        collection_class = getattr(cls, "Collection", None)
         collection_meta = await collection_factory(
             database=database,
             document_class=cls,
