@@ -18,3 +18,10 @@ async def test_inspect_fail(documents):
         "1 validation error for DocumentTestModelFailInspection"
         in result.errors[0].error
     )
+
+
+async def test_inspect_ok_with_session(documents, session):
+    await documents(10, "smth")
+    result = await DocumentTestModel.inspect_collection(session=session)
+    assert result.status == InspectionStatuses.OK
+    assert result.errors == []

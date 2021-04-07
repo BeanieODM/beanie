@@ -339,6 +339,7 @@ class Document(BaseModel):
 
         :param aggregation_query: Query with aggregation commands
         :param item_model: Model of item to return in the list of aggregations
+        :param session: ClientSession
         :return: AsyncGenerator of aggregated items
         """
         cursor = cls.get_motor_collection().aggregate(

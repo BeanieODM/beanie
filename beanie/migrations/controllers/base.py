@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Type
 
-from beanie import Document
+from beanie.odm.documents import Document
 
 
 class BaseMigrationController(ABC):

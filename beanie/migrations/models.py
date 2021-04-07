@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import Field
 from pydantic.main import BaseModel
 
-from beanie import Document
+from beanie.odm.documents import Document
 
 
 class MigrationLog(Document):

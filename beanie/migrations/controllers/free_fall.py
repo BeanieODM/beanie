@@ -1,7 +1,7 @@
 from inspect import signature
 from typing import Type, List
 
-from beanie import Document
+from beanie.odm.documents import Document
 from beanie.migrations.controllers.base import BaseMigrationController
 
 

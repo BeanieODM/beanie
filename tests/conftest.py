@@ -29,11 +29,22 @@ class Settings(BaseSettings):
 
 
 @pytest.fixture()
-async def db(loop):
-    client = motor.motor_asyncio.AsyncIOMotorClient(
+def cli():
+    return motor.motor_asyncio.AsyncIOMotorClient(
         Settings().mongo_dsn, serverSelectionTimeoutMS=100
     )
-    return client.beanie_db
+
+
+@pytest.fixture()
+def db(cli):
+    return cli.beanie_db
+
+
+@pytest.fixture()
+async def session(cli, loop):
+    s = await cli.start_session()
+    yield s
+    await s.end_session()
 
 
 @pytest.fixture(autouse=True)

@@ -1,7 +1,7 @@
 from inspect import signature, isclass
 from typing import Type, Optional, Union, List
 
-from beanie import Document
+from beanie.odm.documents import Document
 from beanie.migrations.controllers.base import BaseMigrationController
 
 

@@ -3,7 +3,8 @@ import logging
 from pathlib import Path
 from typing import Type, Optional
 
-from beanie import init_beanie, Document
+from beanie.odm.documents import Document
+from beanie.odm.general import init_beanie
 from beanie.migrations.controllers.iterative import BaseMigrationController
 from beanie.migrations.database import DBHandler
 from beanie.migrations.models import (

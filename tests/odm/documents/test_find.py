@@ -150,3 +150,38 @@ async def test_find_many_not_found(documents):
     await documents(1, "cuatro")
     result = await DocumentTestModel.find_many({"test_str": "wrong"}).to_list()
     assert len(result) == 0
+
+
+async def test_get_with_session(document, session):
+    new_document = await DocumentTestModel.get(document.id, session=session)
+    assert new_document == document
+
+
+async def test_find_one_with_session(documents, session):
+    inserted_one = await documents(1, "kipasa")
+    await documents(10, "smthe else")
+
+    expected_doc_id = PydanticObjectId(inserted_one[0])
+
+    new_document = await DocumentTestModel.find_one(
+        {"test_str": "kipasa"}, session=session
+    )
+    assert new_document.id == expected_doc_id
+
+
+async def test_find_all_with_session(documents, session):
+    await documents(4, "uno")
+    await documents(2, "dos")
+    await documents(1, "cuatro")
+    result = await DocumentTestModel.find_all(session=session).to_list()
+    assert len(result) == 7
+
+
+async def test_find_many_with_session(documents, session):
+    await documents(4, "uno")
+    await documents(2, "dos")
+    await documents(1, "cuatro")
+    result = await DocumentTestModel.find_many(
+        {"test_str": "uno"}, session=session
+    ).to_list()
+    assert len(result) == 4
