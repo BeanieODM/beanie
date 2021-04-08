@@ -311,7 +311,21 @@ class DocumentTestModelWithCustomCollectionName(Document):
 
 #### Indexes
 
-The indexes could be set up by the `indexes` field. It is a list where items could be:
+##### Simple indexes
+
+To setup an index over a single field the `Indexed` function can be used to wrap the type:
+
+```python
+from beanie import Indexed
+
+class DocumentTestModelWithIndex(Document):
+    test_int: Indexed(int)
+    test_list: List[SubDocument]
+    test_str: str
+```
+
+##### Complex indexes
+More complex indexes can be set up by the `indexes` field in a Collection class. It is a list where items could be:
 
 - single key. Name of the document's field
 - list of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
@@ -338,6 +352,8 @@ class DocumentTestModelWithIndex(Document):
             ),
         ]
 ```
+
+Complex and simple indices can be used in tandem.
 
 ### Use Motor Collection
 
