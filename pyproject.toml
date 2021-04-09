@@ -57,6 +57,12 @@ testpaths = [
     "tests",
     "integration",
 ]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+    'ignore:function ham\(\) is deprecated:DeprecationWarning',
+]
 
 [tool.poetry.scripts]
 beanie = "beanie.executors.migrate:migrations"

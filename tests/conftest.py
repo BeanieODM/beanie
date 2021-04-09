@@ -47,7 +47,7 @@ async def session(cli, loop):
     await s.end_session()
 
 
-@pytest.fixture(autouse=True)
+# @pytest.fixture(autouse=True)
 async def init(loop, db):
     await init_beanie(
         database=db,

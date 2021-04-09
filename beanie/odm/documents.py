@@ -348,7 +348,9 @@ class Document(BaseModel):
         return Cursor(motor_cursor=cursor, model=item_model)
 
     @classmethod
-    async def count_documents(cls, filter_query: dict):
+    async def count_documents(cls, filter_query: Optional[dict] = None):
+        if filter_query is None:
+            filter_query = {}
         return await cls.get_motor_collection().count_documents(filter_query)
 
     # Collections
