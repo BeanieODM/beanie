@@ -5,7 +5,8 @@ from beanie import Document, init_beanie
 from beanie.exceptions import CollectionWasNotInitialized
 from tests.models import (
     DocumentTestModelWithCustomCollectionName,
-    DocumentTestModelWithIndex,
+    DocumentTestModelWithSimpleIndex,
+    DocumentTestModelWithComplexIndex,
     DocumentTestModelStringImport,
 )
 
@@ -25,15 +26,26 @@ async def test_collection_with_custom_name():
     assert collection.name == "custom"
 
 
-async def test_index_creation():
+async def test_simple_index_creation():
     collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithIndex.get_motor_collection()
+        DocumentTestModelWithSimpleIndex.get_motor_collection()
+    )
+    index_info = await collection.index_information()
+    assert index_info["test_int_1"] == {"key": [("test_int", 1)], "v": 2}
+    assert index_info["test_str_text"]["key"] == [
+        ("_fts", "text"),
+        ("_ftsx", 1),
+    ]
+
+
+async def test_complex_index_creation():
+    collection: AsyncIOMotorCollection = (
+        DocumentTestModelWithComplexIndex.get_motor_collection()
     )
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
         "test_int_1": {"key": [("test_int", 1)], "v": 2},
-        "test_indexed_int_1": {"key": [("test_indexed_int", 1)], "v": 2},
         "test_int_1_test_str_-1": {
             "key": [("test_int", 1), ("test_str", -1)],
             "v": 2,

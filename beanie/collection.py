@@ -5,14 +5,14 @@ from pydantic.main import BaseModel
 from pymongo import IndexModel, ASCENDING
 
 
-def Indexed(typ):
+def Indexed(typ, index_type=ASCENDING):
     """
     Returns a subclass of `typ` with an extra attribute `_indexed` et to True.
     When instantiated the type of the result will actually be `typ`.
     """
 
     class NewType(typ):
-        _indexed = True
+        _indexed = index_type
 
         def __new__(cls, *args, **kwargs):
             return typ.__new__(typ, *args, **kwargs)
@@ -73,7 +73,7 @@ async def collection_factory(
 
     # Indexed field wrapped with Indexed()
     found_indexes = [
-        IndexModel([(fname, ASCENDING)])
+        IndexModel([(fname, fvalue.type_._indexed)])
         for fname, fvalue in document_class.__fields__.items()
         if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
     ]

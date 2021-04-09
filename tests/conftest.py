@@ -10,7 +10,8 @@ from tests.models import (
     DocumentTestModel,
     SubDocument,
     DocumentTestModelWithCustomCollectionName,
-    DocumentTestModelWithIndex,
+    DocumentTestModelWithSimpleIndex,
+    DocumentTestModelWithComplexIndex,
 )
 
 object_storage = {}
@@ -40,19 +41,21 @@ async def db(loop):
 
 @pytest.fixture(autouse=True)
 async def init(loop, db):
+    models = [
+        DocumentTestModel,
+        DocumentTestModelWithCustomCollectionName,
+        DocumentTestModelWithSimpleIndex,
+        DocumentTestModelWithComplexIndex,
+    ]
     await init_beanie(
         database=db,
-        document_models=[
-            DocumentTestModel,
-            DocumentTestModelWithCustomCollectionName,
-            DocumentTestModelWithIndex,
-        ],
+        document_models=models,
     )
     yield None
-    await DocumentTestModel.get_motor_collection().drop()
-    await DocumentTestModelWithCustomCollectionName.get_motor_collection().drop()  # noqa: E501
-    await DocumentTestModelWithIndex.get_motor_collection().drop()
-    await DocumentTestModelWithIndex.get_motor_collection().drop_indexes()
+
+    for model in models:
+        await model.get_motor_collection().drop()
+        await model.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture
