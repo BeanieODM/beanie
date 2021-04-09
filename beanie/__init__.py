@@ -3,5 +3,5 @@ from beanie.documents import Document
 from beanie.general import init_beanie
 from beanie.collection import Indexed
 
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 __all__ = ["Document", "Cursor", "init_beanie", "Indexed"]
