@@ -26,9 +26,14 @@ class DocumentTestModelWithCustomCollectionName(Document):
         name = "custom"
 
 
-class DocumentTestModelWithIndex(Document):
+class DocumentTestModelWithSimpleIndex(Document):
+    test_int: Indexed(int)
+    test_list: List[SubDocument]
+    test_str: Indexed(str, index_type=pymongo.TEXT)
+
+
+class DocumentTestModelWithComplexIndex(Document):
     test_int: int
-    test_indexed_int: Indexed(int)
     test_list: List[SubDocument]
     test_str: str
 
