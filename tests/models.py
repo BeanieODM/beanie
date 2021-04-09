@@ -4,7 +4,7 @@ import pymongo
 from pydantic import BaseModel
 from pymongo import IndexModel
 
-from beanie import Document
+from beanie import Document, Indexed
 
 
 class SubDocument(BaseModel):
@@ -28,6 +28,7 @@ class DocumentTestModelWithCustomCollectionName(Document):
 
 class DocumentTestModelWithIndex(Document):
     test_int: int
+    test_indexed_int: Indexed(int)
     test_list: List[SubDocument]
     test_str: str
 

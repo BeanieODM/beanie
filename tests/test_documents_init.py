@@ -33,6 +33,7 @@ async def test_index_creation():
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
         "test_int_1": {"key": [("test_int", 1)], "v": 2},
+        "test_indexed_int_1": {"key": [("test_indexed_int", 1)], "v": 2},
         "test_int_1_test_str_-1": {
             "key": [("test_int", 1), ("test_str", -1)],
             "v": 2,

@@ -2,7 +2,23 @@ from typing import List, Optional, Type
 
 from motor.motor_asyncio import AsyncIOMotorCollection, AsyncIOMotorDatabase
 from pydantic.main import BaseModel
-from pymongo import IndexModel
+from pymongo import IndexModel, ASCENDING
+
+
+def Indexed(typ):
+    """
+    Returns a subclass of `typ` with an extra attribute `_indexed` et to True.
+    When instantiated the type of the result will actually be `typ`.
+    """
+
+    class NewType(typ):
+        _indexed = True
+
+        def __new__(cls, *args, **kwargs):
+            return typ.__new__(typ, *args, **kwargs)
+
+    NewType.__name__ = f"Indexed {typ.__name__}"
+    return NewType
 
 
 class IndexModelField(IndexModel):
@@ -55,14 +71,25 @@ async def collection_factory(
     # create motor collection
     collection = database[collection_parameters.name]
 
-    # create indexes
+    # Indexed field wrapped with Indexed()
+    found_indexes = [
+        IndexModel([(fname, ASCENDING)])
+        for fname, fvalue in document_class.__fields__.items()
+        if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
+    ]
+
+    # get indexes from the Collection class
     if collection_parameters.indexes:
-        await collection.create_indexes(collection_parameters.indexes)
+        found_indexes += collection_parameters.indexes
+
+    # Create indices
+    if found_indexes:
+        await collection.create_indexes(found_indexes)
 
     # create internal CollectionMeta class for the Document
     class CollectionMeta:
         name: str = collection_parameters.name
         motor_collection: AsyncIOMotorCollection = collection
-        indexes: List = collection_parameters.indexes
+        indexes: List = found_indexes
 
     return CollectionMeta
