@@ -87,12 +87,12 @@ class Document(BaseModel):
         Create the document in the database
         :return: Document
         """
-        if self.id is not None:
-            raise DocumentAlreadyCreated
+
+        exclude = None if self.id else {"id"}
         result = await self.get_motor_collection().insert_one(
-            self.dict(by_alias=True, exclude={"id"})
+            self.dict(by_alias=True, exclude=exclude)
         )
-        self.id = PydanticObjectId(result.inserted_id)
+        self.id = result.inserted_id
         return self
 
     @classmethod
