@@ -32,4 +32,4 @@ Beanie project changes
 [0.3.1]: https://pypi.org/project/beanie/0.3.1
 [0.3.2]: https://pypi.org/project/beanie/0.3.2
 [0.3.3]: https://pypi.org/project/beanie/0.3.3
-[0.3.4]: https://pypi.org/project/beanie/0.3.3
+[0.3.4]: https://pypi.org/project/beanie/0.3.4
