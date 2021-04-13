@@ -1,6 +1,7 @@
 from inspect import signature, isclass
 from typing import Type, Optional, Union, List
 
+from beanie.general_utils import update_dict
 from beanie.odm.documents import Document
 from beanie.migrations.controllers.base import BaseMigrationController
 
@@ -96,7 +97,7 @@ def iterative_migration(
                     function_kwargs["self"] = None
                 await self.function(**function_kwargs)
                 output_dict = input_document.dict()
-                output_dict.update(output.dict())
+                update_dict(output_dict, output.dict())
                 output_document = self.output_document_class.parse_obj(
                     output_dict
                 )

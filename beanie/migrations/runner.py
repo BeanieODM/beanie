@@ -137,11 +137,9 @@ class MigrationNode:
         :param path:
         :return:
         """
-        print(path.resolve())
         logger.info("Building migration list")
         names = []
         for module in path.glob("*.py"):
-            print(module)
             names.append(module.name)
         names.sort()
 
