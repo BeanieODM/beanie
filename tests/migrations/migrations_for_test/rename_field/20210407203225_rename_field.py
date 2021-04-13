@@ -34,7 +34,7 @@ class Forward:
 
 class Backward:
     @iterative_migration()
-    async def name_to_title(
+    async def title_to_name(
         self, input_document: Note, output_document: OldNote
     ):
         output_document.name = input_document.title

@@ -121,8 +121,6 @@ async def run_migrate(settings: MigrationSettings):
 )
 def migrate(direction, distance, connection_uri, database_name, path):
     settings_kwargs = {}
-    print(path)
-    print("HERE!!")
     if direction:
         settings_kwargs["direction"] = direction
     if distance:
@@ -134,7 +132,7 @@ def migrate(direction, distance, connection_uri, database_name, path):
     if path:
         settings_kwargs["path"] = path
     settings = MigrationSettings(**settings_kwargs)
-    print(settings.path)
+
     asyncio.run(run_migrate(settings))
 
 

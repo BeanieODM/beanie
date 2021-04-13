@@ -2,7 +2,7 @@ import pytest
 
 from beanie.exceptions import DocumentAlreadyCreated
 from beanie.odm.fields import PydanticObjectId
-from tests.models import DocumentTestModel
+from tests.odm.models import DocumentTestModel
 
 
 async def test_insert_one(document_not_inserted):

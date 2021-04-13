@@ -1,7 +1,7 @@
 import pymongo
 
 from beanie.odm.fields import PydanticObjectId
-from tests.models import DocumentTestModel
+from tests.odm.models import DocumentTestModel
 
 
 async def test_get(document):

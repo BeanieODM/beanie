@@ -1,5 +1,5 @@
 from beanie.odm.models import InspectionStatuses
-from tests.models import DocumentTestModel, DocumentTestModelFailInspection
+from tests.odm.models import DocumentTestModel, DocumentTestModelFailInspection
 
 
 async def test_inspect_ok(documents):

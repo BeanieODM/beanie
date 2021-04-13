@@ -6,7 +6,7 @@ import pytest
 from pydantic import BaseSettings
 
 from beanie.odm.general import init_beanie
-from tests.models import (
+from tests.odm.models import (
     DocumentTestModel,
     SubDocument,
     DocumentTestModelWithCustomCollectionName,

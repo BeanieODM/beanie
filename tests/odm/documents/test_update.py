@@ -6,7 +6,7 @@ from beanie.exceptions import (
     ReplaceError,
 )
 from beanie.odm.fields import PydanticObjectId
-from tests.models import DocumentTestModel, SubDocument
+from tests.odm.models import DocumentTestModel, SubDocument
 
 
 # REPLACE

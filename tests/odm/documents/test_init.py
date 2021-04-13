@@ -3,7 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 
 from beanie import Document, init_beanie
 from beanie.exceptions import CollectionWasNotInitialized
-from tests.models import (
+from tests.odm.models import (
     DocumentTestModelWithCustomCollectionName,
     DocumentTestModelWithIndex,
     DocumentTestModelStringImport,

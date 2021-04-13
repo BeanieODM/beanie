@@ -1,4 +1,4 @@
-from tests.models import DocumentTestModel
+from tests.odm.models import DocumentTestModel
 
 
 async def test_to_list(documents):
