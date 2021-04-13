@@ -13,6 +13,14 @@ class Tag(BaseModel):
     name: str
 
 
+class OldNote(Document):
+    name: str
+    tag: Tag
+
+    class Collection:
+        name = "notes"
+
+
 class Note(Document):
     title: str
     tag: Tag
@@ -23,20 +31,20 @@ class Note(Document):
 
 @pytest.fixture()
 async def notes(loop, db):
-    await init_beanie(database=db, document_models=[Note])
-    await Note.delete_all()
+    await init_beanie(database=db, document_models=[OldNote])
+    await OldNote.delete_all()
     for i in range(10):
-        note = Note(title=str(i), tag=Tag(name="test", color="red"))
+        note = OldNote(name=str(i), tag=Tag(name="test", color="red"))
         await note.create()
     yield
-    await Note.delete_all()
+    await OldNote.delete_all()
 
 
-async def test_migration_change_subfield_value(settings, notes, db):
+async def test_migration_free_fall(settings, notes, db):
     migration_settings = MigrationSettings(
         connection_uri=settings.mongodb_dsn,
         database_name=settings.mongodb_db_name,
-        path="tests/migrations/migrations_for_test/change_subfield_value",
+        path="tests/migrations/migrations_for_test/free_fall",
     )
     await run_migrate(migration_settings)
 
@@ -44,11 +52,11 @@ async def test_migration_change_subfield_value(settings, notes, db):
     inspection = await Note.inspect_collection()
     assert inspection.status == InspectionStatuses.OK
     note = await Note.find_one({})
-    assert note.tag.color == "blue"
+    assert note.title == "0"
 
     migration_settings.direction = RunningDirections.BACKWARD
     await run_migrate(migration_settings)
-    inspection = await Note.inspect_collection()
+    inspection = await OldNote.inspect_collection()
     assert inspection.status == InspectionStatuses.OK
-    note = await Note.find_one({})
-    assert note.tag.color == "red"
+    note = await OldNote.find_one({})
+    assert note.name == "0"

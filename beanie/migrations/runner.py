@@ -39,14 +39,18 @@ class MigrationNode:
         self.next_migration = next_migration
         self.prev_migration = prev_migration
 
+    @staticmethod
+    async def clean_current_migration():
+        await MigrationLog.update_many(
+            {"is_current": True}, {"$set": {"is_current": False}}
+        )
+
     async def update_current_migration(self):
         """
         TODO doc it
         :return:
         """
-        await MigrationLog.update_many(
-            {"is_current": True}, {"$set": {"is_current": False}}
-        )
+        await self.clean_current_migration()
         await MigrationLog(is_current=True, name=self.name).create()
 
     async def run(self, mode: RunningMode):
@@ -98,7 +102,10 @@ class MigrationNode:
     async def run_backward(self):
         if self.backward_class is not None:
             await self.run_migration_class(self.backward_class)
-        await self.update_current_migration()
+        if self.prev_migration is not None:
+            await self.prev_migration.update_current_migration()
+        else:
+            await self.clean_current_migration()
 
     async def run_migration_class(self, cls: Type):
         """

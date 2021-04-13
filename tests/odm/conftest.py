@@ -18,21 +18,13 @@ object_storage = {}
 
 
 class Settings(BaseSettings):
-    mongo_host: str = "localhost"
-    mongo_user: str = "beanie"
-    mongo_pass: str = "beanie"
-    mongo_db: str = "beanie_db"
-
-    @property
-    def mongo_dsn(self):
-        return f"mongodb://root:password123" f"@{self.mongo_host}:27017"
+    mongodb_dsn: str
+    mongodb_db_name: str = "beanie_db"
 
 
 @pytest.fixture()
 def cli():
-    return motor.motor_asyncio.AsyncIOMotorClient(
-        Settings().mongo_dsn, serverSelectionTimeoutMS=100
-    )
+    return motor.motor_asyncio.AsyncIOMotorClient(Settings().mongodb_dsn)
 
 
 @pytest.fixture()
@@ -47,7 +39,7 @@ async def session(cli, loop):
     await s.end_session()
 
 
-# @pytest.fixture(autouse=True)
+@pytest.fixture(autouse=True)
 async def init(loop, db):
     await init_beanie(
         database=db,
