@@ -1,21 +1,21 @@
 from enum import Enum
-from typing import Optional, List, Type, Union, Tuple
+from typing import List, Optional, Tuple, Type, Union
 
 import pymongo
 from bson import ObjectId
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
+from motor.motor_asyncio import AsyncIOMotorCollection, AsyncIOMotorDatabase
 from pydantic import Field, validator
-from pydantic.main import BaseModel
-from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
+from pydantic.main import BaseModel, PrivateAttr
+from pymongo.results import DeleteResult, InsertOneResult, UpdateResult
 
 from beanie.collection import collection_factory
 from beanie.cursor import Cursor
 from beanie.deprecated import get_collection_class_from_document_meta_class
 from beanie.exceptions import (
-    DocumentWasNotSaved,
-    DocumentNotFound,
-    DocumentAlreadyCreated,
     CollectionWasNotInitialized,
+    DocumentAlreadyCreated,
+    DocumentNotFound,
+    DocumentWasNotSaved,
 )
 from beanie.fields import PydanticObjectId
 
