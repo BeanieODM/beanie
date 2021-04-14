@@ -349,6 +349,12 @@ class Document(BaseModel):
 
     @classmethod
     async def count_documents(cls, filter_query: Optional[dict] = None):
+        """
+        Number of documents in the collections
+
+        :param filter_query: The selection criteria
+        :return:
+        """
         if filter_query is None:
             filter_query = {}
         return await cls.get_motor_collection().count_documents(filter_query)

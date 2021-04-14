@@ -1,6 +1,18 @@
 # Changelog
 Beanie project changes
 
+## [0.4.0b1] - 2021-04-14
+### Added
+- Migrations. [Documentation](https://roman-right.github.io/beanie/quickstart/migrations/).
+- `inspect_collection` Document method
+- `count_documents` Document method
+
+### Changed
+- Session can be provided to the most of the Document methods
+
+### Removed
+- Internal `DocumentMeta` class.
+
 ## [0.3.4] - 2021-04-09
 ### Changed
 - `Indexed(...)` field supports index types. [Documentation](https://roman-right.github.io/beanie/#indexes). **Thanks [Joran van Apeldoorn](https://github.com/jorants)**
@@ -32,4 +44,5 @@ Beanie project changes
 [0.3.1]: https://pypi.org/project/beanie/0.3.1
 [0.3.2]: https://pypi.org/project/beanie/0.3.2
 [0.3.3]: https://pypi.org/project/beanie/0.3.3
-[0.3.4]: https://pypi.org/project/beanie/0.3.3
+[0.3.4]: https://pypi.org/project/beanie/0.3.4
+[0.4.0b1]: https://pypi.org/project/beanie/0.4.0b1
