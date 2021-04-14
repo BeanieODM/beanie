@@ -1,6 +1,9 @@
 site_name: Documentation
 nav:
-    - Quick Start: index.md
+    - Home: index.md
+    - Quick Start:
+        - ODM: quickstart/odm.md
+        - Migrations: quickstart/migrations.md
     - Changelog: changelog.md
 theme:
     name: material
