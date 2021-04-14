@@ -10,19 +10,36 @@ create, replace, update, get, find and aggregate.
 
 #### PIP
 
+##### Stable
+
 ```shell
 pip install beanie
 ```
 
+##### Beta with migrations
+
+```shell
+pip install beanie==0.4.b1
+```
+
 #### Poetry
+
+##### Stable
 
 ```shell
 poetry add beanie
 ```
 
+##### Beta with migrations
+
+```shell
+poetry add beanie==0.4.b1
+```
+
 ### Quick Start
 
-**[Documentation](https://roman-right.github.io/beanie/)** - here you can find all the methods descriptions and usage examples
+**[Documentation](https://roman-right.github.io/beanie/)** - here you can find all the methods descriptions and usage
+examples
 
 ### Resources
 

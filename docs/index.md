@@ -8,17 +8,32 @@ create, replace, update, get, find and aggregate.
 
 ## Installation
 
-### PIP
+##### Stable
 
 ```shell
 pip install beanie
 ```
 
-### Poetry
+##### Beta with migrations
+
+```shell
+pip install beanie==0.4.b1
+```
+
+#### Poetry
+
+##### Stable
 
 ```shell
 poetry add beanie
 ```
+
+##### Beta with migrations
+
+```shell
+poetry add beanie==0.4.b1
+```
+
 
 ## Quick Start
 
