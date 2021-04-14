@@ -10,7 +10,8 @@ from tests.odm.models import (
     DocumentTestModel,
     SubDocument,
     DocumentTestModelWithCustomCollectionName,
-    DocumentTestModelWithIndex,
+    DocumentTestModelWithSimpleIndex,
+    DocumentTestModelWithComplexIndex,
     DocumentTestModelFailInspection,
 )
 
@@ -41,21 +42,22 @@ async def session(cli, loop):
 
 @pytest.fixture(autouse=True)
 async def init(loop, db):
+    models = [
+        DocumentTestModel,
+        DocumentTestModelWithCustomCollectionName,
+        DocumentTestModelWithSimpleIndex,
+        DocumentTestModelWithComplexIndex,
+        DocumentTestModelFailInspection,
+    ]
     await init_beanie(
         database=db,
-        document_models=[
-            DocumentTestModel,
-            DocumentTestModelWithCustomCollectionName,
-            DocumentTestModelWithIndex,
-            DocumentTestModelFailInspection,
-        ],
+        document_models=models,
     )
     yield None
-    await DocumentTestModel.get_motor_collection().drop()
-    await DocumentTestModelWithCustomCollectionName.get_motor_collection().drop()  # noqa: E501
-    await DocumentTestModelWithIndex.get_motor_collection().drop()
-    await DocumentTestModelFailInspection.get_motor_collection().drop()
-    await DocumentTestModelWithIndex.get_motor_collection().drop_indexes()
+
+    for model in models:
+        await model.get_motor_collection().drop()
+        await model.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture

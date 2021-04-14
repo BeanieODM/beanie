@@ -1,6 +1,23 @@
 from bson import ObjectId
 from bson.errors import InvalidId
 from pydantic.json import ENCODERS_BY_TYPE
+from pymongo import ASCENDING
+
+
+def Indexed(typ, index_type=ASCENDING):
+    """
+    Returns a subclass of `typ` with an extra attribute `_indexed` et to True.
+    When instantiated the type of the result will actually be `typ`.
+    """
+
+    class NewType(typ):
+        _indexed = index_type
+
+        def __new__(cls, *args, **kwargs):
+            return typ.__new__(typ, *args, **kwargs)
+
+    NewType.__name__ = f"Indexed {typ.__name__}"
+    return NewType
 
 
 class PydanticObjectId(ObjectId):

@@ -61,11 +61,20 @@ async def collection_factory(
     old_indexes = (await collection.index_information()).keys()
     new_indexes = ["_id_"]
 
-    # create indexes
+    # Indexed field wrapped with Indexed()
+    found_indexes = [
+        IndexModel([(fname, fvalue.type_._indexed)])
+        for fname, fvalue in document_class.__fields__.items()
+        if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
+    ]
+
+    # get indexes from the Collection class
     if collection_parameters.indexes:
-        new_indexes += await collection.create_indexes(
-            collection_parameters.indexes
-        )
+        found_indexes += collection_parameters.indexes
+
+    # create indices
+    if found_indexes:
+        new_indexes += await collection.create_indexes(found_indexes)
 
     # delete indexes
     if allow_index_dropping:
@@ -76,6 +85,6 @@ async def collection_factory(
     class CollectionMeta:
         name: str = collection_parameters.name
         motor_collection: AsyncIOMotorCollection = collection
-        indexes: List = collection_parameters.indexes
+        indexes: List = found_indexes
 
     return CollectionMeta

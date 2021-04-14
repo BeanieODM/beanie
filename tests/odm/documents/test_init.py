@@ -5,7 +5,8 @@ from beanie import Document, init_beanie
 from beanie.exceptions import CollectionWasNotInitialized
 from tests.odm.models import (
     DocumentTestModelWithCustomCollectionName,
-    DocumentTestModelWithIndex,
+    DocumentTestModelWithSimpleIndex,
+    DocumentTestModelWithComplexIndex,
     DocumentTestModelStringImport,
     DocumentTestModelWithDroppedIndex,
 )
@@ -26,9 +27,21 @@ async def test_collection_with_custom_name():
     assert collection.name == "custom"
 
 
-async def test_index_creation():
+async def test_simple_index_creation():
     collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithIndex.get_motor_collection()
+        DocumentTestModelWithSimpleIndex.get_motor_collection()
+    )
+    index_info = await collection.index_information()
+    assert index_info["test_int_1"] == {"key": [("test_int", 1)], "v": 2}
+    assert index_info["test_str_text"]["key"] == [
+        ("_fts", "text"),
+        ("_ftsx", 1),
+    ]
+
+
+async def test_complex_index_creation():
+    collection: AsyncIOMotorCollection = (
+        DocumentTestModelWithComplexIndex.get_motor_collection()
     )
     index_info = await collection.index_information()
     assert index_info == {
@@ -44,14 +57,14 @@ async def test_index_creation():
 
 async def test_index_dropping_is_allowed(db):
     await init_beanie(
-        database=db, document_models=[DocumentTestModelWithIndex]
+        database=db, document_models=[DocumentTestModelWithComplexIndex]
     )
     await init_beanie(
         database=db, document_models=[DocumentTestModelWithDroppedIndex]
     )
 
     collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithIndex.get_motor_collection()
+        DocumentTestModelWithComplexIndex.get_motor_collection()
     )
     index_info = await collection.index_information()
     assert index_info == {
@@ -62,7 +75,7 @@ async def test_index_dropping_is_allowed(db):
 
 async def test_index_dropping_is_not_allowed(db):
     await init_beanie(
-        database=db, document_models=[DocumentTestModelWithIndex]
+        database=db, document_models=[DocumentTestModelWithComplexIndex]
     )
     await init_beanie(
         database=db,
@@ -71,7 +84,7 @@ async def test_index_dropping_is_not_allowed(db):
     )
 
     collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithIndex.get_motor_collection()
+        DocumentTestModelWithComplexIndex.get_motor_collection()
     )
     index_info = await collection.index_information()
     assert index_info == {
