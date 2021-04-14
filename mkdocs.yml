@@ -1,5 +1,17 @@
-site_name: Beanie
+site_name: Documentation
 nav:
-    - Quick Start: index.md
+    - Home: index.md
+    - Quick Start:
+        - ODM: quickstart/odm.md
+        - Migrations: quickstart/migrations.md
     - Changelog: changelog.md
-theme: readthedocs
+theme:
+    name: material
+    palette:
+        primary: white
+    logo: assets/logo.svg
+    favicon: assets/favicon.png
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences

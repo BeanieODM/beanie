@@ -14,8 +14,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pydantic = "^1.5.1"
+pydantic = "^1.8"
 motor = "^2.1.0"
+click = "^7.1.2"
+toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.3.0"
@@ -23,6 +25,8 @@ pytest = "^5.4.2"
 pytest-aiohttp = "^0.3.0"
 pytest-cov = "^2.8.1"
 Pygments = "^2.8.0"
+dnspython = "^2.1.0"
+mkdocs-material = "^7.1.0"
 
 
 [build-system]
@@ -53,3 +57,16 @@ testpaths = [
     "tests",
     "integration",
 ]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+    'ignore:function ham\(\) is deprecated:DeprecationWarning',
+]
+
+[tool.poetry.scripts]
+beanie = "beanie.executors.migrate:migrations"
+
+[tool.beanie.migrations]
+path = "beanie/example_migration"
+database_name = "beanie_db"

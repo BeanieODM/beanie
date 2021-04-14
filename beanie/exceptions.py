@@ -16,3 +16,11 @@ class DocumentWasNotSaved(Exception):
 
 class CollectionWasNotInitialized(Exception):
     pass
+
+
+class MigrationException(Exception):
+    pass
+
+
+class ReplaceError(Exception):
+    pass
