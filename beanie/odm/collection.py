@@ -29,6 +29,7 @@ class CollectionInputParameters(BaseModel):
 async def collection_factory(
     database: AsyncIOMotorDatabase,
     document_class: Type,
+    allow_index_dropping: bool,
     collection_class: Optional[Type] = None,
 ) -> Type:
     """
@@ -37,6 +38,7 @@ async def collection_factory(
 
     :param database: Motor database instance
     :param document_class: a class, inherited from Document class
+    :param allow_index_dropping: if index dropping is allowed
     :param collection_class: Collection, which was set up by user
     :return: Collection class
     """
@@ -66,8 +68,9 @@ async def collection_factory(
         )
 
     # delete indexes
-    for index in set(old_indexes) - set(new_indexes):
-        await collection.drop_index(index)
+    if allow_index_dropping:
+        for index in set(old_indexes) - set(new_indexes):
+            await collection.drop_index(index)
 
     # create internal CollectionMeta class for the Document
     class CollectionMeta:

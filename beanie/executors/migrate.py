@@ -35,6 +35,7 @@ class MigrationSettings(BaseSettings):
     connection_uri: str
     database_name: str
     path: Path
+    allow_index_dropping: bool = True
 
     class Config:
         env_prefix = "beanie_"
@@ -77,7 +78,9 @@ async def run_migrate(settings: MigrationSettings):
     mode = RunningMode(
         direction=settings.direction, distance=settings.distance
     )
-    await root.run(mode=mode)
+    await root.run(
+        mode=mode, allow_index_dropping=settings.allow_index_dropping
+    )
 
 
 @migrations.command()
@@ -119,7 +122,19 @@ async def run_migrate(settings: MigrationSettings):
     type=str,
     help="Path to the migrations directory",
 )
-def migrate(direction, distance, connection_uri, database_name, path):
+@click.option(
+    "--allow-index-dropping/--forbid-index-dropping",
+    required=False,
+    default=True,
+)
+def migrate(
+    direction,
+    distance,
+    connection_uri,
+    database_name,
+    path,
+    allow_index_dropping,
+):
     settings_kwargs = {}
     if direction:
         settings_kwargs["direction"] = direction
@@ -131,6 +146,8 @@ def migrate(direction, distance, connection_uri, database_name, path):
         settings_kwargs["database_name"] = database_name
     if path:
         settings_kwargs["path"] = path
+    if allow_index_dropping:
+        settings_kwargs["allow_index_dropping"] = allow_index_dropping
     settings = MigrationSettings(**settings_kwargs)
 
     asyncio.run(run_migrate(settings))

@@ -53,7 +53,7 @@ class MigrationNode:
         await self.clean_current_migration()
         await MigrationLog(is_current=True, name=self.name).create()
 
-    async def run(self, mode: RunningMode):
+    async def run(self, mode: RunningMode, allow_index_dropping: bool):
         """
         TODO doc it
         :param mode:
@@ -66,14 +66,18 @@ class MigrationNode:
             if mode.distance == 0:
                 logger.info("Running migrations forward without limit")
                 while True:
-                    await migration_node.run_forward()
+                    await migration_node.run_forward(
+                        allow_index_dropping=allow_index_dropping
+                    )
                     migration_node = migration_node.next_migration
                     if migration_node is None:
                         break
             else:
                 logger.info(f"Running {mode.distance} migrations forward")
                 for i in range(mode.distance):
-                    await migration_node.run_forward()
+                    await migration_node.run_forward(
+                        allow_index_dropping=allow_index_dropping
+                    )
                     migration_node = migration_node.next_migration
                     if migration_node is None:
                         break
@@ -82,35 +86,44 @@ class MigrationNode:
             if mode.distance == 0:
                 logger.info("Running migrations backward without limit")
                 while True:
-                    await migration_node.run_backward()
+                    await migration_node.run_backward(
+                        allow_index_dropping=allow_index_dropping
+                    )
                     migration_node = migration_node.prev_migration
                     if migration_node is None:
                         break
             else:
                 logger.info(f"Running {mode.distance} migrations backward")
                 for i in range(mode.distance):
-                    await migration_node.run_backward()
+                    await migration_node.run_backward(
+                        allow_index_dropping=allow_index_dropping
+                    )
                     migration_node = migration_node.prev_migration
                     if migration_node is None:
                         break
 
-    async def run_forward(self):
+    async def run_forward(self, allow_index_dropping):
         if self.forward_class is not None:
-            await self.run_migration_class(self.forward_class)
+            await self.run_migration_class(
+                self.forward_class, allow_index_dropping=allow_index_dropping
+            )
         await self.update_current_migration()
 
-    async def run_backward(self):
+    async def run_backward(self, allow_index_dropping):
         if self.backward_class is not None:
-            await self.run_migration_class(self.backward_class)
+            await self.run_migration_class(
+                self.backward_class, allow_index_dropping=allow_index_dropping
+            )
         if self.prev_migration is not None:
             await self.prev_migration.update_current_migration()
         else:
             await self.clean_current_migration()
 
-    async def run_migration_class(self, cls: Type):
+    async def run_migration_class(self, cls: Type, allow_index_dropping: bool):
         """
         TODO doc it
         :param cls:
+        :param allow_index_dropping:
         :return:
         """
         migrations = [
@@ -128,7 +141,11 @@ class MigrationNode:
                 for migration in migrations:
                     models += migration.models
 
-                await init_beanie(database=db, document_models=models)
+                await init_beanie(
+                    database=db,
+                    document_models=models,
+                    allow_index_dropping=allow_index_dropping,
+                )
 
                 for migration in migrations:
                     logger.info(

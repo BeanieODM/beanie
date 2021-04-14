@@ -7,6 +7,7 @@ from tests.odm.models import (
     DocumentTestModelWithCustomCollectionName,
     DocumentTestModelWithIndex,
     DocumentTestModelStringImport,
+    DocumentTestModelWithDroppedIndex,
 )
 
 
@@ -26,6 +27,49 @@ async def test_collection_with_custom_name():
 
 
 async def test_index_creation():
+    collection: AsyncIOMotorCollection = (
+        DocumentTestModelWithIndex.get_motor_collection()
+    )
+    index_info = await collection.index_information()
+    assert index_info == {
+        "_id_": {"key": [("_id", 1)], "v": 2},
+        "test_int_1": {"key": [("test_int", 1)], "v": 2},
+        "test_int_1_test_str_-1": {
+            "key": [("test_int", 1), ("test_str", -1)],
+            "v": 2,
+        },
+        "test_string_index_DESCENDING": {"key": [("test_str", -1)], "v": 2},
+    }
+
+
+async def test_index_dropping_is_allowed(db):
+    await init_beanie(
+        database=db, document_models=[DocumentTestModelWithIndex]
+    )
+    await init_beanie(
+        database=db, document_models=[DocumentTestModelWithDroppedIndex]
+    )
+
+    collection: AsyncIOMotorCollection = (
+        DocumentTestModelWithIndex.get_motor_collection()
+    )
+    index_info = await collection.index_information()
+    assert index_info == {
+        "_id_": {"key": [("_id", 1)], "v": 2},
+        "test_int_1": {"key": [("test_int", 1)], "v": 2},
+    }
+
+
+async def test_index_dropping_is_not_allowed(db):
+    await init_beanie(
+        database=db, document_models=[DocumentTestModelWithIndex]
+    )
+    await init_beanie(
+        database=db,
+        document_models=[DocumentTestModelWithDroppedIndex],
+        allow_index_dropping=False,
+    )
+
     collection: AsyncIOMotorCollection = (
         DocumentTestModelWithIndex.get_motor_collection()
     )

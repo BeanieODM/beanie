@@ -32,18 +32,24 @@ def get_model(dot_path: str) -> Type[Document]:
 async def init_beanie(
     database: AsyncIOMotorDatabase,
     document_models: List[Union[Type[Document], str]],
+    allow_index_dropping: bool = True,
 ):
     """
     Beanie initialization
 
     :param database: AsyncIOMotorDatabase instance
     :param document_models: model classes or strings with dot separated paths
+    :param allow_index_dropping: if index dropping is allowed
     :return: None
     """
     collection_inits = []
     for model in document_models:
         if isinstance(model, str):
             model = get_model(model)
-        collection_inits.append(model.init_collection(database))
+        collection_inits.append(
+            model.init_collection(
+                database, allow_index_dropping=allow_index_dropping
+            )
+        )
 
     await asyncio.gather(*collection_inits)

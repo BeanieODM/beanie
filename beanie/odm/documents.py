@@ -356,17 +356,21 @@ class Document(BaseModel):
     # Collections
 
     @classmethod
-    async def init_collection(cls, database: AsyncIOMotorDatabase) -> None:
+    async def init_collection(
+        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+    ) -> None:
         """
         Internal CollectionMeta class creator
 
         :param database: AsyncIOMotorDatabase
+        :param allow_index_dropping: if index dropping is allowed
         :return: None
         """
         collection_class = getattr(cls, "Collection", None)
         collection_meta = await collection_factory(
             database=database,
             document_class=cls,
+            allow_index_dropping=allow_index_dropping,
             collection_class=collection_class,
         )
         setattr(cls, "CollectionMeta", collection_meta)
