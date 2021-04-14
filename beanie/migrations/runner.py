@@ -26,12 +26,13 @@ class MigrationNode:
         prev_migration: Optional["MigrationNode"] = None,
     ):
         """
-        TODO doc it
-        :param name:
-        :param forward_class:
-        :param backward_class:
-        :param next_migration:
-        :param prev_migration:
+        Node of the migration linked list
+
+        :param name: name of the migration
+        :param forward_class: Forward class of the migration
+        :param backward_class: Backward class of the migration
+        :param next_migration: link to the next migration
+        :param prev_migration: link to the previous migration
         """
         self.name = name
         self.forward_class = forward_class
@@ -47,7 +48,8 @@ class MigrationNode:
 
     async def update_current_migration(self):
         """
-        TODO doc it
+        Set sel as a current migration
+
         :return:
         """
         await self.clean_current_migration()
@@ -55,9 +57,11 @@ class MigrationNode:
 
     async def run(self, mode: RunningMode, allow_index_dropping: bool):
         """
-        TODO doc it
-        :param mode:
-        :return:
+        Migrate
+
+        :param mode: RunningMode
+        :param allow_index_dropping: if index dropping is allowed
+        :return: None
         """
         if mode.direction == RunningDirections.FORWARD:
             migration_node = self.next_migration
@@ -121,9 +125,10 @@ class MigrationNode:
 
     async def run_migration_class(self, cls: Type, allow_index_dropping: bool):
         """
-        TODO doc it
+        Run Backward or Forward migration class
+
         :param cls:
-        :param allow_index_dropping:
+        :param allow_index_dropping: if index dropping is allowed
         :return:
         """
         migrations = [
@@ -157,8 +162,9 @@ class MigrationNode:
     @classmethod
     async def build(cls, path: Path):
         """
-        TODO doc it
-        :param path:
+        Build the migrations linked list
+
+        :param path: Relative path to the migrations directory
         :return:
         """
         logger.info("Building migration list")
