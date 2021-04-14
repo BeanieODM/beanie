@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beanie"
-version = "0.3.4"
+version = "0.4.0b1"
 description = "Asynchronous Python ODM for MongoDB"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
