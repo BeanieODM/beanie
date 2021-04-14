@@ -22,5 +22,5 @@ poetry add beanie
 
 ## Quick Start
 
-- [ODM](/quickstart/odm/)
-- [Migrations](/quickstart/migrations)
+- [ODM](quickstart/odm/)
+- [Migrations](quickstart/migrations)
