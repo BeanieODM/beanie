@@ -265,7 +265,7 @@ results = await DocumentTestModel.aggregate(
 ).to_list()
 ```
 
-### Relations
+## Relations
 
 All the documents have unique id field `_id` of type `PydanticObjectId` which is associated with reserved `_id` field of the document in the MongoDB. To make relation between one document model and another this field can be used:
 
