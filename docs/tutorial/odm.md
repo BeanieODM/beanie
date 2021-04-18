@@ -265,6 +265,20 @@ results = await DocumentTestModel.aggregate(
 ).to_list()
 ```
 
+## Relations
+
+All the documents have unique id field `_id` of type `PydanticObjectId` which is associated with reserved `_id` field of the document in the MongoDB. To make relation between one document model and another this field can be used:
+
+```python
+class Note(Document):
+  text: str
+
+class NoteBook(Document):
+    notes: List[PydanticObjectId]
+```
+
+Now it is possible to store `Note` ids to the `notes` field of the `NoteBook` class to save the relation.
+
 ## Collection setup
 
 Optionally collection of the document could be set up by the internal `Collection` class. Follow the examples:

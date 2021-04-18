@@ -11,8 +11,8 @@ def get_model(dot_path: str) -> Type[Document]:
     """
     Get the model by the path in format bar.foo.Model
 
-    :param dot_path: dot seprated path to the model
-    :return: class of the model
+    :param dot_path: str - dot seprated path to the model
+    :return: Type[Document] - class of the model
     """
     try:
         module_name, class_name = dot_path.rsplit(".", 1)
@@ -37,9 +37,11 @@ async def init_beanie(
     """
     Beanie initialization
 
-    :param database: AsyncIOMotorDatabase instance
-    :param document_models: model classes or strings with dot separated paths
-    :param allow_index_dropping: if index dropping is allowed
+    :param database: AsyncIOMotorDatabase - motor database instance
+    :param document_models: List[Union[Type[Document], str]] - model classes
+    or strings with dot separated paths
+    :param allow_index_dropping: bool - if index dropping is allowed.
+    Default True
     :return: None
     """
     collection_inits = []

@@ -1,6 +1,13 @@
 # Changelog
 Beanie project changes
 
+## [0.4.0] - 2021-04-18
+### Added
+- [ODM Documentation](https://roman-right.github.io/beanie/documentation/odm/)
+
+### Changed
+- [Documentation](https://roman-right.github.io/beanie/)
+
 ## [0.4.0b1] - 2021-04-14
 ### Added
 - Migrations. [Documentation](https://roman-right.github.io/beanie/quickstart/migrations/).
@@ -46,3 +53,4 @@ Beanie project changes
 [0.3.3]: https://pypi.org/project/beanie/0.3.3
 [0.3.4]: https://pypi.org/project/beanie/0.3.4
 [0.4.0b1]: https://pypi.org/project/beanie/0.4.0b1
+[0.4.0]: https://pypi.org/project/beanie/0.4.0
