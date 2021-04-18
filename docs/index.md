@@ -37,5 +37,5 @@ poetry add beanie==0.4.b1
 
 ## Quick Start
 
-- [ODM](quickstart/odm/)
-- [Migrations](quickstart/migrations)
+- [ODM](tutorial/odm/)
+- [Migrations](tutorial/migrations)

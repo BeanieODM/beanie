@@ -27,6 +27,13 @@ from beanie.odm.models import (
 
 
 class Document(BaseModel):
+    """
+    Document Mapping class.
+
+    Inherited from Pydantic BaseModel ß includes all the respective methods.
+    Contains id filed - MongoDB document ObjectID "_id" field
+    """
+
     id: Optional[PydanticObjectId] = Field(None, alias="_id")
 
     def __init__(self, *args, **kwargs):
@@ -54,6 +61,8 @@ class Document(BaseModel):
     ) -> InsertOneResult:
         """
         Insert one document to the collection
+        :param document: Document - document to insert
+        :param session: ClientSession - pymongo session
         :return: Document
         """
         return await cls.get_motor_collection().insert_one(
@@ -70,6 +79,11 @@ class Document(BaseModel):
 
         """
         Insert many documents to the collection
+
+        :param documents:  List["Document"] - documents to insert
+        :param keep_ids: bool - should it insert documents with ids
+        or ignore it? Default False - ignore
+        :param session: ClientSession - pymongo session
         :return: Document
         """
         if keep_ids:
@@ -106,8 +120,8 @@ class Document(BaseModel):
         """
         Find one document by criteria
 
-        :param filter_query: The selection criteria
-        :return: Document
+        :param filter_query: dict - The selection criteria
+        :return: Union["Document", None]
         """
         document = await cls.get_motor_collection().find_one(
             filter_query, session=session
@@ -128,12 +142,14 @@ class Document(BaseModel):
         """
         Find many documents by criteria
 
-        :param filter_query: The selection criteria.
-        :param skip: The number of documents to omit.
-        :param limit: The maximum number of results to return.
-        :param sort: A key or a list of (key, direction) pairs
-                     specifying the sort order for this query.
-        :return: AsyncGenerator of the documents
+        :param filter_query: dict - The selection criteria.
+        :param skip: Optional[int] - The number of documents to omit.
+        :param limit: Optional[int] - The maximum number of results to return.
+        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
+        or a list of (key, direction) pairs specifying the sort order
+        for this query.
+        :param session: ClientSession - pymongo session
+        :return: Cursor - AsyncGenerator of the documents
         """
         kwargs = FindOperationKWARGS(skip=skip, limit=limit, sort=sort).dict(
             exclude_none=True
@@ -154,11 +170,13 @@ class Document(BaseModel):
         """
         Get all the documents
 
-        :param skip: The number of documents to omit.
-        :param limit: The maximum number of results to return.
-        :param sort: A key or a list of (key, direction) pairs
-                     specifying the sort order for this query.
-        :return: AsyncGenerator of the documents
+        :param skip: Optional[int] - The number of documents to omit.
+        :param limit: Optional[int] - The maximum number of results to return.
+        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
+        or a list of (key, direction) pairs specifying the sort order
+        for this query.
+        :param session: ClientSession - pymongo session
+        :return: Cursor - AsyncGenerator of the documents
         """
         return cls.find_many(
             filter_query={}, skip=skip, limit=limit, sort=sort, session=session
@@ -171,7 +189,7 @@ class Document(BaseModel):
         """
         Get document by id
 
-        :return:
+        :return: Union["Document", None]
         """
         return await cls.find_one({"_id": document_id}, session=session)
 
@@ -184,6 +202,11 @@ class Document(BaseModel):
     ):
         """
         Fully update one document in the database
+
+        :param filter_query: dict - the selection criteria.
+        :param document: Document - the document which will replace the found
+        one.
+        :param session: ClientSession - pymongo session.
         :return: None
         """
         result = await cls.get_motor_collection().replace_one(
@@ -198,7 +221,13 @@ class Document(BaseModel):
     @classmethod
     async def replace_many(
         cls, documents: List["Document"], session: ClientSession = None
-    ):
+    ) -> None:
+        """
+
+        :param documents: List["Document"]
+        :param session: ClientSession - pymongo session.
+        :return: None
+        """
         ids_list = [document.id for document in documents]
         if await cls.count_documents({"_id": {"$in": ids_list}}) != len(
             ids_list
@@ -206,12 +235,14 @@ class Document(BaseModel):
             raise ReplaceError(
                 "Some of the documents are not exist in the collection"
             )
-        await cls.delete_many({"_id": {"$in": ids_list}})
-        await cls.insert_many(documents, keep_ids=True)
+        await cls.delete_many({"_id": {"$in": ids_list}}, session=session)
+        await cls.insert_many(documents, keep_ids=True, session=session)
 
     async def replace(self, session: ClientSession = None) -> "Document":
         """
         Fully update the document in the database
+
+        :param session: ClientSession - pymongo session.
         :return: None
         """
         if self.id is None:
@@ -230,9 +261,10 @@ class Document(BaseModel):
         """
         Partially update already created document
 
-        :param update_query: The modifications to apply.
-        :param filter_query: The selection criteria for the update. Optional.
-        :return: UpdateResult instance
+        :param filter_query: dict - the modifications to apply.
+        :param update_query: dict - the selection criteria for the update.
+        :param session: ClientSession - pymongo session.
+        :return: UpdateResult - pymongo UpdateResult instance
         """
         return await cls.get_motor_collection().update_one(
             filter_query, update_query, session=session
@@ -248,9 +280,10 @@ class Document(BaseModel):
         """
         Partially update many documents
 
-        :param filter_query: The selection criteria for the update.
-        :param update_query: The modifications to apply.
-        :return: UpdateResult instance
+        :param filter_query: dict - the selection criteria for the update.
+        :param update_query: dict - the modifications to apply.
+        :param session: ClientSession - pymongo session.
+        :return: UpdateResult - pymongo UpdateResult instance
         """
         return await cls.get_motor_collection().update_many(
             filter_query, update_query, session=session
@@ -263,8 +296,9 @@ class Document(BaseModel):
         """
         Partially update all the documents
 
-        :param update_query: The modifications to apply.
-        :return: UpdateResult instance
+        :param update_query: dict - the modifications to apply.
+        :param session: ClientSession - pymongo session.
+        :return: UpdateResult - pymongo UpdateResult instance
         """
         return await cls.update_many({}, update_query, session=session)
 
@@ -274,7 +308,8 @@ class Document(BaseModel):
         """
         Partially update the document in the database
 
-        :param update_query: The modifications to apply.
+        :param update_query: dict - the modifications to apply.
+        :param session: ClientSession - pymongo session.
         :return: None
         """
         await self.update_one(
@@ -289,8 +324,9 @@ class Document(BaseModel):
         """
         Delete one document
 
-        :param filter_query: The selection criteria
-        :return: DeleteResult instance
+        :param filter_query: dict - the selection criteria
+        :param session: ClientSession - pymongo session.
+        :return: DeleteResult - pymongo DeleteResult instance
         """
         return await cls.get_motor_collection().delete_one(
             filter_query, session=session
@@ -303,8 +339,9 @@ class Document(BaseModel):
         """
         Delete many documents
 
-        :param filter_query: The selection criteria
-        :return: DeleteResult instance
+        :param filter_query: dict - the selection criteria.
+        :param session: ClientSession - pymongo session.
+        :return: DeleteResult - pymongo DeleteResult instance.
         """
         return await cls.get_motor_collection().delete_many(
             filter_query, session=session
@@ -315,7 +352,8 @@ class Document(BaseModel):
         """
         Delete all the documents
 
-        :return: DeleteResult instance
+        :param session: ClientSession - pymongo session.
+        :return: DeleteResult - pymongo DeleteResult instance.
         """
         return await cls.delete_many({}, session=session)
 
@@ -323,7 +361,8 @@ class Document(BaseModel):
         """
         Delete the document
 
-        :return:
+        :param session: ClientSession - pymongo session.
+        :return: DeleteResult - pymongo DeleteResult instance.
         """
         return await self.delete_one({"_id": self.id}, session=session)
 
@@ -337,10 +376,11 @@ class Document(BaseModel):
         """
         Aggregate
 
-        :param aggregation_query: Query with aggregation commands
-        :param item_model: Model of item to return in the list of aggregations
-        :param session: ClientSession
-        :return: AsyncGenerator of aggregated items
+        :param aggregation_query: List[dict] - query with aggregation commands
+        :param item_model: Type[BaseModel] - model of item to return in the
+        list of aggregations
+        :param session: ClientSession - pymongo session.
+        :return: Cursor - AsyncGenerator of aggregated items
         """
         cursor = cls.get_motor_collection().aggregate(
             aggregation_query, session=session
@@ -348,12 +388,12 @@ class Document(BaseModel):
         return Cursor(motor_cursor=cursor, model=item_model)
 
     @classmethod
-    async def count_documents(cls, filter_query: Optional[dict] = None):
+    async def count_documents(cls, filter_query: Optional[dict] = None) -> int:
         """
         Number of documents in the collections
 
-        :param filter_query: The selection criteria
-        :return:
+        :param filter_query: dict - the selection criteria
+        :return: int
         """
         if filter_query is None:
             filter_query = {}
@@ -368,8 +408,8 @@ class Document(BaseModel):
         """
         Internal CollectionMeta class creator
 
-        :param database: AsyncIOMotorDatabase
-        :param allow_index_dropping: if index dropping is allowed
+        :param database: AsyncIOMotorDatabase - motor database instance
+        :param allow_index_dropping: bool - if index dropping is allowed
         :return: None
         """
         collection_class = getattr(cls, "Collection", None)

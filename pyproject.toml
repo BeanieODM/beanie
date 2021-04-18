@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beanie"
-version = "0.4.0b1"
+version = "0.4.0"
 description = "Asynchronous Python ODM for MongoDB"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
@@ -27,6 +27,7 @@ pytest-cov = "^2.8.1"
 Pygments = "^2.8.0"
 dnspython = "^2.1.0"
 mkdocs-material = "^7.1.0"
+pydoc-markdown = "^3.10.1"
 
 
 [build-system]

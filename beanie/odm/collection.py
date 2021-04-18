@@ -36,11 +36,12 @@ async def collection_factory(
     Collection factory.
     Creates internal CollectionMeta class for the Document on the init step,
 
-    :param database: Motor database instance
-    :param document_class: a class, inherited from Document class
-    :param allow_index_dropping: if index dropping is allowed
-    :param collection_class: Collection, which was set up by user
-    :return: Collection class
+    :param database: AsyncIOMotorDatabase - Motor database instance
+    :param document_class: Type - a class, inherited from Document class
+    :param allow_index_dropping: bool - if index dropping is allowed
+    :param collection_class: Optional[Type] - Collection, which was set up
+    by user
+    :return: Type - Collection class
     """
     # parse collection parameters
     if collection_class:

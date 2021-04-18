@@ -21,6 +21,10 @@ def Indexed(typ, index_type=ASCENDING):
 
 
 class PydanticObjectId(ObjectId):
+    """
+    Object Id field. Compatible with Pydantic.
+    """
+
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
