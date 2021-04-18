@@ -168,7 +168,7 @@ class Backward:
         output_document.tag.name = input_document.tag.title
 ```
 
-All the migrations examples can be found by [link](https://github.com/roman-right/beanie/tree/feature/migrations/tests/migrations/migrations_for_test)
+All the migrations examples can be found by [link](https://github.com/roman-right/beanie/tree/main/tests/migrations/migrations_for_test)
 
 ### Free fall migrations
 
@@ -236,4 +236,4 @@ class Backward:
 
 ```
 
-All the migrations examples can be found by [link](https://github.com/roman-right/beanie/tree/feature/migrations/tests/migrations/migrations_for_test)
+All the migrations examples can be found by [link](https://github.com/roman-right/beanie/tree/main/tests/migrations/migrations_for_test)
