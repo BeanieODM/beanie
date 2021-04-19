@@ -2,8 +2,8 @@ from inspect import signature, isclass
 from typing import Type, Optional, Union, List
 
 from beanie.general_utils import update_dict
-from beanie.odm.documents import Document
 from beanie.migrations.controllers.base import BaseMigrationController
+from beanie.odm.documents import Document
 
 
 class DummyOutput:
@@ -76,14 +76,13 @@ def iterative_migration(
 
         @property
         def models(self) -> List[Type[Document]]:
-            if document_models is not None:
-                return list(
-                    set(
-                        [self.input_document_class, self.output_document_class]
-                        + document_models
-                    )
-                )
-            return [self.input_document_class, self.output_document_class]
+            preset_models = document_models
+            if preset_models is None:
+                preset_models = []
+            return preset_models + [
+                self.input_document_class,
+                self.output_document_class,
+            ]
 
         async def run(self, session):
             output_documents = []

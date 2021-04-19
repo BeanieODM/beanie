@@ -142,17 +142,13 @@ class MigrationNode:
 
         async with await client.start_session() as s:
             async with s.start_transaction():
-                models = []
                 for migration in migrations:
-                    models += migration.models
-
-                await init_beanie(
-                    database=db,
-                    document_models=models,
-                    allow_index_dropping=allow_index_dropping,
-                )
-
-                for migration in migrations:
+                    for model in migration.models:
+                        await init_beanie(
+                            database=db,
+                            document_models=[model],  # TODO this is slow
+                            allow_index_dropping=allow_index_dropping,
+                        )
                     logger.info(
                         f"Running migration {migration.function.__name__} "
                         f"from module {self.name}"
