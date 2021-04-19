@@ -1,5 +1,3 @@
-import os
-
 import pytest
 from pydantic.main import BaseModel
 
@@ -35,7 +33,6 @@ async def notes(loop, db):
 
 
 async def test_migration_change_value(settings, notes, db):
-    os.chdir("/home/ro/Projects/Pet/beanie")  # TODO fix this
     migration_settings = MigrationSettings(
         connection_uri=settings.mongodb_dsn,
         database_name=settings.mongodb_db_name,

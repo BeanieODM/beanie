@@ -1,9 +1,7 @@
 from random import randint
 from typing import List
 
-import motor.motor_asyncio
 import pytest
-from pydantic import BaseSettings
 
 from beanie.odm.general import init_beanie
 from tests.odm.models import (
@@ -16,21 +14,6 @@ from tests.odm.models import (
 )
 
 object_storage = {}
-
-
-class Settings(BaseSettings):
-    mongodb_dsn: str
-    mongodb_db_name: str = "beanie_db"
-
-
-@pytest.fixture()
-def cli():
-    return motor.motor_asyncio.AsyncIOMotorClient(Settings().mongodb_dsn)
-
-
-@pytest.fixture()
-def db(cli):
-    return cli.beanie_db
 
 
 @pytest.fixture()
