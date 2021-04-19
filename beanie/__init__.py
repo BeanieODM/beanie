@@ -5,7 +5,7 @@ from beanie.odm.general import init_beanie
 from beanie.odm.documents import Document
 from beanie.odm.cursor import Cursor
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 __all__ = [
     # ODM
     "Document",

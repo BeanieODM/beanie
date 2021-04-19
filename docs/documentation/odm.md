@@ -63,7 +63,8 @@ Creates internal CollectionMeta class for the Document on the init step,
 - `database`: AsyncIOMotorDatabase - Motor database instance
 - `document_class`: Type - a class, inherited from Document class
 - `allow_index_dropping`: bool - if index dropping is allowed
-- `collection_class`: Optional[Type] - Collection, which was set up by user
+- `collection_class`: Optional[Type] - Collection, which was set up
+by user
 
 **Returns**:
 
@@ -101,9 +102,10 @@ Beanie initialization
 **Arguments**:
 
 - `database`: AsyncIOMotorDatabase - motor database instance
-- `document_models`: List[Union[Type[Document], str]] - model
-classes or strings with dot separated paths
-- `allow_index_dropping`: bool - if index dropping is allowed. Default True
+- `document_models`: List[Union[Type[Document], str]] - model classes
+or strings with dot separated paths
+- `allow_index_dropping`: bool - if index dropping is allowed.
+Default True
 
 **Returns**:
 
@@ -170,7 +172,8 @@ Insert many documents to the collection
 **Arguments**:
 
 - `documents`: List["Document"] - documents to insert
-- `keep_ids`: bool - should it insert documents with ids or ignore it? Default False - ignore
+- `keep_ids`: bool - should it insert documents with ids
+or ignore it? Default False - ignore
 - `session`: ClientSession - pymongo session
 
 **Returns**:
@@ -223,8 +226,9 @@ Find many documents by criteria
 - `filter_query`: dict - The selection criteria.
 - `skip`: Optional[int] - The number of documents to omit.
 - `limit`: Optional[int] - The maximum number of results to return.
-- `sort`: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs
-             specifying the sort order for this query.
+- `sort`: Union[None, str, List[Tuple[str, SortDirection]]] - A key
+or a list of (key, direction) pairs specifying the sort order
+for this query.
 - `session`: ClientSession - pymongo session
 
 **Returns**:
@@ -245,8 +249,9 @@ Get all the documents
 
 - `skip`: Optional[int] - The number of documents to omit.
 - `limit`: Optional[int] - The maximum number of results to return.
-- `sort`: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs
-             specifying the sort order for this query.
+- `sort`: Union[None, str, List[Tuple[str, SortDirection]]] - A key
+or a list of (key, direction) pairs specifying the sort order
+for this query.
 - `session`: ClientSession - pymongo session
 
 **Returns**:
@@ -280,7 +285,8 @@ Fully update one document in the database
 **Arguments**:
 
 - `filter_query`: dict - the selection criteria.
-- `document`: Document - the document which will replace the found one.
+- `document`: Document - the document which will replace the found
+one.
 - `session`: ClientSession - pymongo session.
 
 **Returns**:
@@ -484,7 +490,8 @@ Aggregate
 **Arguments**:
 
 - `aggregation_query`: List[dict] - query with aggregation commands
-- `item_model`: Type[BaseModel] - model of item to return in the list of aggregations
+- `item_model`: Type[BaseModel] - model of item to return in the
+list of aggregations
 - `session`: ClientSession - pymongo session.
 
 **Returns**:
@@ -570,7 +577,8 @@ InspectionResult
 class Cursor()
 ```
 
-Cursor class. Wrapper over AsyncIOMotorCursor, which parse result with model
+Cursor class. Wrapper over AsyncIOMotorCursor,
+which parse result with model
 
 <a name="cursor.Cursor.to_list"></a>
 #### to\_list
