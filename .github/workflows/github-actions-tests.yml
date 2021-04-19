@@ -2,7 +2,7 @@ name: Tests
 on: [ pull_request ]
 
 jobs:
-  ci:
+  run-tests:
     strategy:
       fail-fast: false
       matrix:
