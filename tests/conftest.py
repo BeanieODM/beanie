@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 import motor
 import pytest
 from pydantic import BaseSettings
@@ -7,7 +5,7 @@ from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     mongodb_dsn: str = "mongodb://localhost:27017"
-    mongodb_db_name: str = str(uuid4())
+    mongodb_db_name: str = "beanie_db"
 
 
 @pytest.fixture
