@@ -1,4 +1,4 @@
-from typing import Optional, List, Type, Union, Tuple
+from typing import Dict, Optional, List, Type, Union, Tuple
 
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
@@ -124,7 +124,7 @@ class Document(BaseModel):
         :return: Union["Document", None]
         """
         document = await cls.get_motor_collection().find_one(
-            filter_query, session=session
+            filter=filter_query, projection=cls._get_projection(), session=session
         )
         if document is None:
             return None
@@ -155,7 +155,7 @@ class Document(BaseModel):
             exclude_none=True
         )
         cursor = cls.get_motor_collection().find(
-            filter_query, session=session, **kwargs
+            filter=filter_query, projection=cls._get_projection(), session=session, **kwargs
         )
         return Cursor(motor_cursor=cursor, model=cls)
 
@@ -398,6 +398,38 @@ class Document(BaseModel):
         if filter_query is None:
             filter_query = {}
         return await cls.get_motor_collection().count_documents(filter_query)
+
+    # Projections
+    @classmethod
+    def _init_projection(cls) -> Dict[str, int]:
+        """
+        Initializes the projection dictionary, this will be done only once
+
+        :return: Dict[str, int] - The projection dict
+        """
+        document_projection: Dict[str, int] = {}
+        for name, field in cls.__fields__.items():
+            if field.alias:
+                document_projection[field.alias] = 1
+            else:
+                document_projection[name] = 1
+        setattr(cls, "_projection", document_projection)
+        return document_projection
+
+    @classmethod
+    def _get_projection(cls) -> Dict[str, int]:
+        """
+        Get the projection dictionary or create it if it has
+        not been built yet.
+
+        :return: Dict[str, int] - The projection dict
+        """
+        document_projection: Dict[str, int] = getattr(
+            cls, "_projection", None)
+        if document_projection is None:
+            document_projection = cls._init_projection()
+
+        return document_projection
 
     # Collections
 
