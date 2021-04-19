@@ -13,7 +13,7 @@ include = [
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.6.1,<4.0"
 pydantic = "^1.8"
 motor = "^2.1.0"
 click = "^7.1.2"
