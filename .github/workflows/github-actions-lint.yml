@@ -1,0 +1,20 @@
+name: Lint
+on: [ pull_request ]
+
+jobs:
+  lint:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ 3.9 ]
+        os: [ ubuntu-18.04 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: flake8 install
+        run: pip3 install flake8
+      - name: lint
+        run: flake8 beanie/ tests/

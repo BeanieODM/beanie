@@ -25,7 +25,7 @@ class Cursor:
 
     async def to_list(
         self, length: Optional[int] = None
-    ) -> Union[List["Document"], List[dict]]:
+    ) -> Union[List["Document"], List[dict]]:  # noqa
         """
         Get list of documents
 
