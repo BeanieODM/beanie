@@ -124,7 +124,8 @@ class Document(BaseModel):
         :return: Union["Document", None]
         """
         document = await cls.get_motor_collection().find_one(
-            filter=filter_query, projection=cls._get_projection(), session=session
+            filter=filter_query, projection=cls._get_projection(),
+            session=session
         )
         if document is None:
             return None
@@ -155,7 +156,8 @@ class Document(BaseModel):
             exclude_none=True
         )
         cursor = cls.get_motor_collection().find(
-            filter=filter_query, projection=cls._get_projection(), session=session, **kwargs
+            filter=filter_query, projection=cls._get_projection(),
+            session=session, **kwargs
         )
         return Cursor(motor_cursor=cursor, model=cls)
 
