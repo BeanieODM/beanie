@@ -1,2 +1,2 @@
-flake8 beanie/
-flake8 tests/
+poetry run python -m flake8 beanie/
+poetry run python -m flake8 tests/
