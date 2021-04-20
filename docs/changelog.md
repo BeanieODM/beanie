@@ -1,6 +1,13 @@
 # Changelog
 Beanie project changes
 
+## [0.4.2] - 2021-04-20
+### Added
+- Python ^3.6.1 support.
+
+### Fixed
+- Documents init order in migrations
+
 ## [0.4.1] - 2021-04-19
 ### Added
 - Projections support to reduce database load. [Issue](https://github.com/roman-right/beanie/issues/16). **Thanks [Nicholas Smith](https://github.com/nzsmith1)**
@@ -59,3 +66,4 @@ Beanie project changes
 [0.4.0b1]: https://pypi.org/project/beanie/0.4.0b1
 [0.4.0]: https://pypi.org/project/beanie/0.4.0
 [0.4.1]: https://pypi.org/project/beanie/0.4.1
+[0.4.2]: https://pypi.org/project/beanie/0.4.2
