@@ -29,3 +29,5 @@ jobs:
         run: poetry install
       - name: run tests
         run: bash scripts/run_tests.sh
+      - name: lint
+        run: bash scripts/lint.sh
