@@ -18,8 +18,6 @@ def cli(settings, loop):
     return motor.motor_asyncio.AsyncIOMotorClient(settings.mongodb_dsn)
 
 
-
-
 @pytest.fixture()
 def db(cli, settings, loop):
     return cli[settings.mongodb_db_name]

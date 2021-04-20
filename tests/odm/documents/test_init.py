@@ -114,7 +114,9 @@ async def test_document_string_import(db):
 
 async def test_projection():
     projection = DocumentTestModel._get_projection()
-    assert projection == {"_id": 1,
-                          "test_int": 1,
-                          "test_list": 1,
-                          "test_str": 1}
+    assert projection == {
+        "_id": 1,
+        "test_int": 1,
+        "test_list": 1,
+        "test_str": 1,
+    }
