@@ -21,5 +21,7 @@ jobs:
           poetry-version: ${{ matrix.poetry-version }}
       - name: poetry install
         run: poetry install
-      - name: lint
-        run: bash scripts/lint.sh
+      - name: lint code
+        run: poetry run python -m flake8 beanie/
+      - name: lint tests
+        run: poetry run python -m flake8 tests/
