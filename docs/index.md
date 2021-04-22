@@ -81,3 +81,8 @@ async def main():
 - **[GitHub](https://github.com/roman-right/beanie)** - GitHub page of the project
 - **[Changelog](https://roman-right.github.io/beanie/changelog)** - list of all the valuable changes
 - **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share ideas or just say `Hello!!`
+
+----
+Supported by [JetBrains](https://jb.gg/OpenSource)
+
+[![JetBrains](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/jetbrains.svg)](https://jb.gg/OpenSource)
