@@ -1,11 +1,13 @@
-![Beanie](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/with_text.svg)
+[![Beanie](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/with_text.svg)](https://github.com/roman-right/beanie)
 
-[Beanie](https://github.com/roman-right/beanie) - is an Asynchronous Python ODM for MongoDB, based on [Motor](https://motor.readthedocs.io/en/stable/)
-and [Pydantic](https://pydantic-docs.helpmanual.io/).
+[Beanie](https://github.com/roman-right/beanie) - is an Asynchronous Python object-document mapper (ODM) for MongoDB, based on [Motor](https://motor.readthedocs.io/en/stable/) and [Pydantic](https://pydantic-docs.helpmanual.io/).
 
-It uses an abstraction over Pydantic models and Motor collections to work with the database. Class **Document** allows to: create, replace, update, get, find and aggregate.
+When using Beanie each database collection has a corresponding `Document` that is used to interact with that collection.
+In addition to retrieving data, Beanie allows you to add, update, or delete documents from the collection as well.
 
-Beanie supports migrations out of the box.
+Beanie saves you time by removing boiler-plate code and it helps you focus on the parts of your app that actually matter.
+
+Data and schema migrations are supported by Beanie out of the box.
 
 ### Installation
 
@@ -55,11 +57,11 @@ async def main():
     all_notes = await Note.find_all().to_list()
 ```
 
-### Materials
+### Documentation
 
 #### ODM
 - **[Tutorial](https://roman-right.github.io/beanie/tutorial/odm/)** - ODM usage examples
-- **[Documentation](https://roman-right.github.io/beanie/documentation/odm/)** - Full list of the ODM classes and
+- **[API](https://roman-right.github.io/beanie/documentation/odm/)** - Full list of the ODM classes and
   methods with descriptions
 
 #### Migrations
@@ -75,6 +77,7 @@ async def main():
 - **[Announcing Beanie - MongoDB ODM](https://dev.to/romanright/announcing-beanie-mongodb-odm-56e)**
 - **[Build a Cocktail API with Beanie and MongoDB](https://developer.mongodb.com/article/beanie-odm-fastapi-cocktails/)**
 - **[MongoDB indexes with Beanie](https://dev.to/romanright/mongodb-indexes-with-beanie-43e8)**
+- **[Beanie Projections. Reducing network and database load.](https://dev.to/romanright/beanie-projections-reducing-network-and-database-load-3bih)**
 
 ### Resources
 
