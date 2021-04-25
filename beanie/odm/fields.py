@@ -39,8 +39,8 @@ class PydanticObjectId(ObjectId):
             raise TypeError("Id must be of type PydanticObjectId")
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update_dict(
+    def __modify_schema__(cls, field_schema: dict):
+        field_schema.update(
             type="string",
             examples=["5eb7cf5a86d9755df3a6c593", "5eb7cfb05e32e07750a1756a"],
         )
