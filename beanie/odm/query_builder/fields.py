@@ -15,6 +15,12 @@ class CollectionField:
     def __getattr__(self, item):
         return CollectionField(path=f"{self.path}.{item}")
 
+    def __str__(self):
+        return self.path
+
+    def __repr__(self):
+        return self.path
+
     def __eq__(self, other):
         return EQ(field=self, other=other)
 

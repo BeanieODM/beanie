@@ -7,8 +7,6 @@ from pydantic.main import BaseModel
 from pymongo.client_session import ClientSession
 from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
 
-from beanie.odm.collection import collection_factory
-from beanie.odm.cursor import Cursor
 from beanie.exceptions import (
     DocumentWasNotSaved,
     DocumentNotFound,
@@ -16,16 +14,18 @@ from beanie.exceptions import (
     CollectionWasNotInitialized,
     ReplaceError,
 )
+from beanie.odm.collection import collection_factory
+from beanie.odm.cursor import Cursor
 from beanie.odm.fields import PydanticObjectId
 from beanie.odm.models import (
     InspectionResult,
     InspectionStatuses,
     InspectionError,
     SortDirection,
-    FindOperationKWARGS,
+    # FindOperationKWARGS,
 )
 from beanie.odm.query_builder.fields import CollectionField
-from beanie.odm.query_builder.query import FindQuery
+from beanie.odm.query_builder.queries.find import FindOne, FindMany
 
 
 class Document(BaseModel):
@@ -116,7 +116,7 @@ class Document(BaseModel):
         return self
 
     @classmethod
-    async def find_one(
+    def find_one(
         cls, filter_query: dict, session: ClientSession = None
     ) -> Union["Document", None]:
         """
@@ -125,14 +125,7 @@ class Document(BaseModel):
         :param filter_query: dict - The selection criteria
         :return: Union["Document", None]
         """
-        document = await cls.get_motor_collection().find_one(
-            filter=filter_query,
-            projection=cls._get_projection(),
-            session=session,
-        )
-        if document is None:
-            return None
-        return cls.parse_obj(document)
+        return FindOne(document_class=cls).find_one(filter_query)
 
     @classmethod
     def find_many(
@@ -155,16 +148,19 @@ class Document(BaseModel):
         :param session: ClientSession - pymongo session
         :return: Cursor - AsyncGenerator of the documents
         """
-        kwargs = FindOperationKWARGS(skip=skip, limit=limit, sort=sort).dict(
-            exclude_none=True
-        )
-        cursor = cls.get_motor_collection().find(
-            filter=filter_query,
-            projection=cls._get_projection(),
-            session=session,
-            **kwargs
-        )
-        return Cursor(motor_cursor=cursor, model=cls)
+
+        return FindMany(document_class=cls).find_many(filter_query)
+
+        # kwargs = FindOperationKWARGS(skip=skip, limit=limit, sort=sort).dict(
+        #     exclude_none=True
+        # )
+        # cursor = cls.get_motor_collection().find(
+        #     filter=filter_query,
+        #     projection=cls._get_projection(),
+        #     session=session,
+        #     **kwargs
+        # )
+        # return Cursor(motor_cursor=cursor, model=cls)
 
     @classmethod
     def find_all(
@@ -511,10 +507,6 @@ class Document(BaseModel):
                     )
                 )
         return inspection_result
-
-    @classmethod
-    def q(cls):
-        return FindQuery(document_class=cls)
 
     class Config:
         json_encoders = {

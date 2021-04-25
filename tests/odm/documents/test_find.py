@@ -20,6 +20,11 @@ async def test_find_one(documents):
 
     expected_doc_id = PydanticObjectId(inserted_one[0])
 
+    print(
+        DocumentTestModel.find_one({"test_str": "kipasa"}),
+        type(DocumentTestModel.find_one({"test_str": "kipasa"})),
+    )
+
     new_document = await DocumentTestModel.find_one({"test_str": "kipasa"})
     assert new_document.id == expected_doc_id
 
