@@ -1,6 +1,10 @@
 # Changelog
 Beanie project changes
 
+## [0.4.3] - 2021-04-25
+### Fixed
+- PydanticObjectId openapi generation
+
 ## [0.4.2] - 2021-04-20
 ### Added
 - Python ^3.6.1 support.
@@ -67,3 +71,4 @@ Beanie project changes
 [0.4.0]: https://pypi.org/project/beanie/0.4.0
 [0.4.1]: https://pypi.org/project/beanie/0.4.1
 [0.4.2]: https://pypi.org/project/beanie/0.4.2
+[0.4.3]: https://pypi.org/project/beanie/0.4.3
