@@ -24,6 +24,8 @@ from beanie.odm.models import (
     SortDirection,
     FindOperationKWARGS,
 )
+from beanie.odm.query_builder.fields import CollectionField
+from beanie.odm.query_builder.query import FindQuery
 
 
 class Document(BaseModel):
@@ -457,6 +459,10 @@ class Document(BaseModel):
         )
         setattr(cls, "CollectionMeta", collection_meta)
 
+        for k, v in cls.__fields__.items():
+            path = v.alias or v.name
+            setattr(cls, k, CollectionField(path=path))
+
     @classmethod
     def _get_collection_meta(cls) -> Type:
         """
@@ -505,6 +511,10 @@ class Document(BaseModel):
                     )
                 )
         return inspection_result
+
+    @classmethod
+    def q(cls):
+        return FindQuery(document_class=cls)
 
     class Config:
         json_encoders = {

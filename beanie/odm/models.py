@@ -18,7 +18,7 @@ class SortDirection(int, Enum):
 
 class FindOperationKWARGS(BaseModel):
     """
-    KWARGS Parser for find operations
+    KWARGS Parser for find operators
     """
 
     skip: Optional[int] = None
