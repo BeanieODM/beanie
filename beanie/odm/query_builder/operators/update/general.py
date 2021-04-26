@@ -5,8 +5,10 @@ class BaseGeneralUpdateOperator(BaseUpdateOperator):
     operator = None
 
     def __init__(self, expression):
+        print(expression)
         self.expression = expression
 
+    @property
     def query(self):
         return {self.operator: self.expression}
 
