@@ -1,71 +1,88 @@
 from typing import Dict, Union, Any, Type
 
 from beanie.odm.query_builder.fields import CollectionField
+from beanie.odm.query_builder.operators.update import BaseUpdateOperator
+from beanie.odm.query_builder.operators.update.general import (
+    Set,
+    CurrentDate,
+    Inc,
+    Min,
+    Max,
+    Mul,
+    Rename,
+    SetOnInsert,
+    Unset,
+)
 
 
 class UpdateQuery:
     def __init__(self, document_class: Type["Document"], filter_query=None):
         self.document_class = document_class
         self.filter_query = filter_query
-        self.update_query = {}
-
-    def base_expression(
-        self, expression: Dict[Union[CollectionField, str], Any], operator: str
-    ):
-        existed_expression = self.update_query.get(operator) or {}
-        self.update_query[operator] = existed_expression.update(expression)
-        return self
+        self.update_expressions = []
 
     def set(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self.base_expression(expression=expression, operator="$set")
+        return self.update_expressions.append(Set(expression))
 
     def current_date(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self.base_expression(
-            expression=expression, operator="$currentDate"
-        )
+        return self.update_expressions.append(CurrentDate(expression))
 
     def inc(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self.base_expression(expression=expression, operator="$inc")
+        return self.update_expressions.append(Inc(expression))
 
     def min(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self.base_expression(expression=expression, operator="$min")
+        return self.update_expressions.append(Min(expression))
 
     def max(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self.base_expression(expression=expression, operator="$max")
+        return self.update_expressions.append(Max(expression))
 
     def mul(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self.base_expression(expression=expression, operator="$mul")
+        return self.update_expressions.append(Mul(expression))
 
     def rename(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self.base_expression(expression=expression, operator="$rename")
+        return self.update_expressions.append(Rename(expression))
 
     def set_on_insert(
         self, expression: Dict[Union[CollectionField, str], Any]
     ):
-        return self.base_expression(
-            expression=expression, operator="$setOnInsert"
-        )
+        return self.update_expressions.append(SetOnInsert(expression))
 
     def unset(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self.base_expression(expression=expression, operator="$unset")
+        return self.update_expressions.append(Unset(expression))
+
+    @property
+    def update_query(self):
+        query = {}
+        for expression in self.update_expressions:
+            if isinstance(expression, BaseUpdateOperator):
+                query.update(expression.query)
+            elif isinstance(expression, dict):
+                query.update(expression)
+            else:
+                raise Exception  # TODO come up with exception
+        return query
+
+    def update(self, *args):
+        self.update_expressions += args
+        return self
 
 
 class UpdateMany(UpdateQuery):
-    def update_many(self, update_query):
-        self.update_query.update(update_query)
+    def update_many(self, *args):
+        return self.update(*args)
 
     def __await__(self):
-        yield self.document_class.get_motor_collection().update_many(
+        yield from self.document_class.get_motor_collection().update_many(
             self.filter_query, self.update_query
         )
 
 
 class UpdateOne(UpdateQuery):
-    def update_one(self, update_query):
-        self.update_query.update(update_query)
+    def update_one(self, *args):
+        return self.update(*args)
 
     def __await__(self):
-        yield self.document_class.get_motor_collection().update_one(
+        yield from self.document_class.get_motor_collection().update_one(
             self.filter_query,
             self.update_query,
             # session=

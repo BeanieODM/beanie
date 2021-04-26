@@ -11,22 +11,11 @@ class BaseLogicalOperator(BaseFindOperator):
         ...
 
 
-def get_expression_dict(expression: Union[BaseFindOperator, dict]):
-    if isinstance(expression, BaseFindOperator):
-        return expression.query
-    elif isinstance(expression, dict):
-        return expression
-    else:
-        raise Exception  # TODO come up with exception
-
-
 class LogicalOperatorForList(BaseLogicalOperator):  # TODO rename
     operator = ""
 
-    def __init__(self, *expressions: Union[BaseFindOperator, dict]):
-        self.expressions = [
-            get_expression_dict(expression) for expression in expressions
-        ]
+    def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
+        self.expressions = list(expressions)
 
     @property
     def query(self):
@@ -37,21 +26,26 @@ class LogicalOperatorForList(BaseLogicalOperator):  # TODO rename
         return {self.operator: self.expressions}
 
 
-class OR(LogicalOperatorForList):
+class Or(LogicalOperatorForList):
     operator = "$or"
 
 
-class AND(LogicalOperatorForList):
+class And(LogicalOperatorForList):
     operator = "$and"
 
 
-class NOR(LogicalOperatorForList):
-    operator = "$nor"
+class Nor(BaseLogicalOperator):
+    def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
+        self.expressions = list(expressions)
+
+    @property
+    def query(self):
+        return {"$nor": self.expressions}
 
 
-class NOT(BaseLogicalOperator):
+class Not(BaseLogicalOperator):
     def __init__(self, expression):
-        self.expression = get_expression_dict(expression)
+        self.expression = expression
 
     @property
     def query(self):

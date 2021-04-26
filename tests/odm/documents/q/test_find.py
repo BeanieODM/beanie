@@ -7,7 +7,7 @@ async def test_find_many(documents):
     await documents(1, "cuatro")
     result = (
         await DocumentTestModel.q()
-        .find_many(DocumentTestModel.test_str == "uno")()
+        .find(DocumentTestModel.test_str == "uno")()
         .to_list()
     )
     print(result)

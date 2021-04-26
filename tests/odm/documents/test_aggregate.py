@@ -28,11 +28,11 @@ async def test_aggregate_with_item_model(documents):
     ids = []
     async for i in DocumentTestModel.aggregate(
         [{"$group": {"_id": "$test_str", "total": {"$sum": "$test_int"}}}],
-        item_model=OutputItem,
+        aggregation_model=OutputItem,
     ):
+        print(i)
         if i.id == "cuatro":
             assert i.total == 0
-
         elif i.id == "dos":
             assert i.total == 1
         elif i.id == "uno":

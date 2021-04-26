@@ -1,5 +1,6 @@
+from beanie.odm.models import SortDirection
 from beanie.odm.query_builder.operators.find.comparsion import (
-    EQ,
+    Eq,
     GT,
     GTE,
     LT,
@@ -8,21 +9,15 @@ from beanie.odm.query_builder.operators.find.comparsion import (
 )
 
 
-class CollectionField:
-    def __init__(self, path: str):
-        self.path = path
-
+class CollectionField(str):
     def __getattr__(self, item):
-        return CollectionField(path=f"{self.path}.{item}")
+        return CollectionField(f"{self}.{item}")
 
-    def __str__(self):
-        return self.path
-
-    def __repr__(self):
-        return self.path
+    def __hash__(self):
+        return hash(str(self))
 
     def __eq__(self, other):
-        return EQ(field=self, other=other)
+        return Eq(field=self, other=other)
 
     def __gt__(self, other):
         return GT(field=self, other=other)
@@ -38,3 +33,9 @@ class CollectionField:
 
     def __ne__(self, other):
         return NE(field=self, other=other)
+
+    def __pos__(self):
+        return self, SortDirection.ASCENDING
+
+    def __neg__(self):
+        return self, SortDirection.DESCENDING

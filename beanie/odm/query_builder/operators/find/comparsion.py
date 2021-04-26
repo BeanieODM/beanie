@@ -6,23 +6,21 @@ class BaseComparisonOperator(BaseFindOperator):
 
     def __init__(
         self,
-        other,
         field,
+        other,
     ):
         self.field = field
         self.other = other
 
     @property
     def query(self):
-        return {
-            str(self.field): {self.operator: self.other}
-        }  # TODO check without str
+        return {self.field: {self.operator: self.other}}
 
 
-class EQ(BaseComparisonOperator):
+class Eq(BaseComparisonOperator):
     @property
     def query(self):
-        return {str(self.field): self.other}  # TODO check without str
+        return {self.field: self.other}
 
 
 class GT(BaseComparisonOperator):
@@ -33,12 +31,12 @@ class GTE(BaseComparisonOperator):
     operator = "$gte"
 
 
-class IN(BaseComparisonOperator):
-    operator = "$nin"
-
-
-class NOT_IN(BaseComparisonOperator):
+class In(BaseComparisonOperator):
     operator = "$in"
+
+
+class NotIn(BaseComparisonOperator):
+    operator = "$nin"
 
 
 class LT(BaseComparisonOperator):
