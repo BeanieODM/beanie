@@ -63,7 +63,7 @@ document = DocumentTestModel(
     test_str="kipasa",
 )
 
-await document.create()
+await document.insert()
 ```
 
 ### Insert one document
@@ -112,15 +112,16 @@ document = await DocumentTestModel.find_one({"test_str": "kipasa"})
 ### Find many documents
 
 ```python
-async for document in DocumentTestModel.find({"test_str": "uno"}, limit=100):
-    print(document)
+async for document in DocumentTestModel.find_many({"test_str": "uno"},
+                                                  limit=100):
+  print(document)
 ```
 
 OR
 
 ```python
-documents = await DocumentTestModel.find({"test_str": "uno"},
-                                         sort="test_int").to_list()
+documents = await DocumentTestModel.find_many({"test_str": "uno"},
+                                              sort="test_int").to_list()
 ```
 
 Parameters:

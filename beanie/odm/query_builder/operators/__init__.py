@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from collections import Mapping
+from copy import copy, deepcopy
 
 
 class BaseOperator(Mapping):
@@ -22,3 +23,12 @@ class BaseOperator(Mapping):
 
     def __str__(self):
         return str(self.query)
+
+    def __copy__(self):
+        return copy(self.query)
+
+    def __deepcopy__(self, memodict={}):
+        return deepcopy(self.query)
+
+    def copy(self):
+        return copy(self)

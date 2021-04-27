@@ -100,7 +100,7 @@ async def test_find_many(documents):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    result = await DocumentTestModel.find(
+    result = await DocumentTestModel.find_many(
         DocumentTestModel.test_str == "uno"
     ).to_list()
     assert len(result) == 4
@@ -110,7 +110,7 @@ async def test_find_many_limit(documents):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    result = await DocumentTestModel.find(
+    result = await DocumentTestModel.find_many(
         {"test_str": "uno"}, limit=2
     ).to_list()
     assert len(result) == 2
@@ -120,7 +120,7 @@ async def test_find_many_skip(documents):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    result = await DocumentTestModel.find(
+    result = await DocumentTestModel.find_many(
         {"test_str": "uno"}, skip=1
     ).to_list()
     assert len(result) == 3
@@ -130,7 +130,7 @@ async def test_find_many_sort(documents):
     await documents(4, "uno", True)
     await documents(2, "dos", True)
     await documents(1, "cuatro", True)
-    result = await DocumentTestModel.find(
+    result = await DocumentTestModel.find_many(
         {"test_str": "uno"}, sort="test_int"
     ).to_list()
     assert (
@@ -140,7 +140,7 @@ async def test_find_many_sort(documents):
         <= result[3].test_int
     )
 
-    result = await DocumentTestModel.find(
+    result = await DocumentTestModel.find_many(
         {"test_str": "uno"}, sort=[("test_int", pymongo.DESCENDING)]
     ).to_list()
     assert (
@@ -155,7 +155,7 @@ async def test_find_many_not_found(documents):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    result = await DocumentTestModel.find({"test_str": "wrong"}).to_list()
+    result = await DocumentTestModel.find_many({"test_str": "wrong"}).to_list()
     assert len(result) == 0
 
 
@@ -188,7 +188,7 @@ async def test_find_many_with_session(documents, session):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    result = await DocumentTestModel.find(
+    result = await DocumentTestModel.find_many(
         {"test_str": "uno"}, session=session
     ).to_list()
     assert len(result) == 4

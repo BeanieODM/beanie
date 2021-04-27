@@ -22,11 +22,14 @@ from beanie.odm.models import (
     SortDirection,
 )
 from beanie.odm.query_builder.fields import CollectionField
+from beanie.odm.query_builder.interfaces.update import (
+    UpdateExtraMethodsInterface,
+)
 from beanie.odm.query_builder.queries.aggregation import AggregationQuery
 from beanie.odm.query_builder.queries.find import FindOne, FindMany
 
 
-class Document(BaseModel):
+class Document(BaseModel, UpdateExtraMethodsInterface):
     """
     Document Mapping class.
 
@@ -54,6 +57,9 @@ class Document(BaseModel):
         new_instance = await self.get(self.id)
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
+
+    def _pass_update_expression(self, expression):
+        return self.update(expression)
 
     @classmethod
     async def insert_one(
@@ -100,9 +106,9 @@ class Document(BaseModel):
             session=session,
         )
 
-    async def create(self, session: ClientSession = None) -> "Document":
+    async def insert(self, session: ClientSession = None) -> "Document":
         """
-        Create the document in the database
+        Insert the document to the database
         :return: Document
         """
         if self.id is not None:
@@ -112,6 +118,13 @@ class Document(BaseModel):
         )
         self.id = PydanticObjectId(result.inserted_id)
         return self
+
+    async def create(self, session: ClientSession = None) -> "Document":
+        """
+        Insert the document to the database. The same as self.insert()
+        :return: Document
+        """
+        return await self.insert(session=session)
 
     @classmethod
     def find_one(cls, *args, session: ClientSession = None) -> FindOne:
@@ -123,7 +136,7 @@ class Document(BaseModel):
         return FindOne(document_class=cls).find_one(*args)
 
     @classmethod
-    def find(
+    def find_many(
         cls,
         *args,
         skip: Optional[int] = None,
@@ -142,8 +155,7 @@ class Document(BaseModel):
         :param session: ClientSession - pymongo session
         :return: Cursor - AsyncGenerator of the documents
         """
-
-        return FindMany(document_class=cls).find(
+        return FindMany(document_class=cls).find_many(
             *args, sort=sort, skip=skip, limit=limit
         )
 
@@ -166,7 +178,43 @@ class Document(BaseModel):
         :param session: ClientSession - pymongo session
         :return: Cursor - AsyncGenerator of the documents
         """
-        return cls.find({}, skip=skip, limit=limit, sort=sort, session=session)
+        return cls.find_many(
+            {}, skip=skip, limit=limit, sort=sort, session=session
+        )
+
+    @classmethod
+    def all(
+        cls,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: ClientSession = None,
+    ) -> FindMany:
+        """
+        Get all the documents
+
+        :param skip: Optional[int] - The number of documents to omit.
+        :param limit: Optional[int] - The maximum number of results to return.
+        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
+        or a list of (key, direction) pairs specifying the sort order
+        for this query.
+        :param session: ClientSession - pymongo session
+        :return: Cursor - AsyncGenerator of the documents
+        """
+        return cls.find_all(skip=skip, limit=limit, sort=sort, session=session)
+
+    @classmethod
+    def find(
+        cls,
+        *args,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: ClientSession = None,
+    ) -> FindMany:
+        return cls.find(
+            *args, skip=skip, limit=limit, sort=sort, session=session
+        )
 
     @classmethod
     async def get(
@@ -366,7 +414,7 @@ class Document(BaseModel):
         :return: InspectionResult
         """
         inspection_result = InspectionResult()
-        async for json_document in cls.get_motor_collection().find(
+        async for json_document in cls.get_motor_collection().find_many(
             {}, session=session
         ):
             try:

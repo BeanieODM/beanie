@@ -40,7 +40,7 @@ async def notes(loop, db):
     await OldNote.delete_all()
     for i in range(10):
         note = OldNote(title=str(i), tag=OldTag(name="test", color="red"))
-        await note.create()
+        await note.insert()
     yield
     await OldNote.delete_all()
 

@@ -41,6 +41,8 @@ class BaseCursorQuery:
         :param length: Optional[int] - length of the list
         :return: Union[List["Document"], List[dict]]
         """
+        print("HERE")
+        print(self.motor_cursor)
         motor_list = await self.motor_cursor.to_list(length)
         if self.return_model:
             return [self.return_model.parse_obj(i) for i in motor_list]

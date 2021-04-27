@@ -23,7 +23,7 @@ from tests.odm.models import DocumentTestModel
 
 async def test_replace_many(documents):
     await documents(10, "foo")
-    created_documents = await DocumentTestModel.find(
+    created_documents = await DocumentTestModel.find_many(
         {"test_str": "foo"}
     ).to_list()
     to_replace = []
@@ -32,7 +32,7 @@ async def test_replace_many(documents):
         to_replace.append(document)
     await DocumentTestModel.replace_many(to_replace)
 
-    replaced_documetns = await DocumentTestModel.find(
+    replaced_documetns = await DocumentTestModel.find_many(
         {"test_str": "REPLACED_VALUE"}
     ).to_list()
     assert len(replaced_documetns) == 5
@@ -40,7 +40,7 @@ async def test_replace_many(documents):
 
 async def test_replace_many_not_all_the_docs_found(documents):
     await documents(10, "foo")
-    created_documents = await DocumentTestModel.find(
+    created_documents = await DocumentTestModel.find_many(
         {"test_str": "foo"}
     ).to_list()
     to_replace = []
@@ -86,12 +86,16 @@ async def test_update_one(document):
 async def test_update_many(documents):
     await documents(10, "foo")
     await documents(7, "bar")
-    await DocumentTestModel.find({"test_str": "foo"}).update(
+    await DocumentTestModel.find_many({"test_str": "foo"}).update(
         {"$set": {"test_str": "bar"}}
     )
-    bar_documetns = await DocumentTestModel.find({"test_str": "bar"}).to_list()
+    bar_documetns = await DocumentTestModel.find_many(
+        {"test_str": "bar"}
+    ).to_list()
     assert len(bar_documetns) == 17
-    foo_documetns = await DocumentTestModel.find({"test_str": "foo"}).to_list()
+    foo_documetns = await DocumentTestModel.find_many(
+        {"test_str": "foo"}
+    ).to_list()
     assert len(foo_documetns) == 0
 
 
@@ -101,11 +105,15 @@ async def test_update_all(documents):
     await DocumentTestModel.update_all(
         {"$set": {"test_str": "smth_else"}},
     )
-    bar_documetns = await DocumentTestModel.find({"test_str": "bar"}).to_list()
+    bar_documetns = await DocumentTestModel.find_many(
+        {"test_str": "bar"}
+    ).to_list()
     assert len(bar_documetns) == 0
-    foo_documetns = await DocumentTestModel.find({"test_str": "foo"}).to_list()
+    foo_documetns = await DocumentTestModel.find_many(
+        {"test_str": "foo"}
+    ).to_list()
     assert len(foo_documetns) == 0
-    smth_else_documetns = await DocumentTestModel.find(
+    smth_else_documetns = await DocumentTestModel.find_many(
         {"test_str": "smth_else"}
     ).to_list()
     assert len(smth_else_documetns) == 17

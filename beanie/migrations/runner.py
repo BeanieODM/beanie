@@ -53,7 +53,7 @@ class MigrationNode:
         :return:
         """
         await self.clean_current_migration()
-        await MigrationLog(is_current=True, name=self.name).create()
+        await MigrationLog(is_current=True, name=self.name).insert()
 
     async def run(self, mode: RunningMode, allow_index_dropping: bool):
         """

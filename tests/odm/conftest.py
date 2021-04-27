@@ -74,7 +74,7 @@ def documents_not_inserted():
 
 @pytest.fixture
 async def document(document_not_inserted, loop) -> DocumentTestModel:
-    return await document_not_inserted.create()
+    return await document_not_inserted.insert()
 
 
 @pytest.fixture

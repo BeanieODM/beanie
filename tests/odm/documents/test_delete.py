@@ -23,7 +23,7 @@ async def test_delete_many(documents):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    await DocumentTestModel.find({"test_str": "uno"}).delete()
+    await DocumentTestModel.find_many({"test_str": "uno"}).delete()
     documents = await DocumentTestModel.find_all().to_list()
     assert len(documents) == 3
 
@@ -32,7 +32,7 @@ async def test_delete_many_not_found(documents):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    await DocumentTestModel.find({"test_str": "wrong"}).delete()
+    await DocumentTestModel.find_many({"test_str": "wrong"}).delete()
     documents = await DocumentTestModel.find_all().to_list()
     assert len(documents) == 7
 
