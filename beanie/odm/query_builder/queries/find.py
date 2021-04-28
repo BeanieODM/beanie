@@ -1,10 +1,13 @@
-from typing import Union, Optional, List, Tuple
+from typing import Union, Optional, List, Tuple, Type
+
+from pydantic import BaseModel
 
 from beanie.exceptions import DocumentNotFound
 from beanie.odm.models import SortDirection
 from beanie.odm.query_builder.interfaces.general_update import (
     GeneralUpdateMethods,
 )
+from beanie.odm.query_builder.queries.aggregation import AggregationQuery
 from beanie.odm.query_builder.queries.cursor import BaseCursorQuery
 from beanie.odm.query_builder.queries.delete import (
     DeleteQuery,
@@ -123,6 +126,18 @@ class FindMany(BaseCursorQuery, FindQuery):
             await self.document_class.get_motor_collection().count_documents(
                 self.find_parameters.get_filter_query()
             )
+        )
+
+    def aggregate(
+        self,
+        aggregation_pipeline,
+        aggregation_model: Type[BaseModel] = None,
+    ) -> AggregationQuery:
+        return AggregationQuery(
+            aggregation_pipeline=aggregation_pipeline,
+            document_class=self.document_class,
+            aggregation_model=aggregation_model,
+            find_parameters=self.find_parameters,
         )
 
 

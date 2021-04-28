@@ -212,7 +212,7 @@ class Document(BaseModel, GeneralUpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: ClientSession = None,
     ) -> FindMany:
-        return cls.find(
+        return cls.find_many(
             *args, skip=skip, limit=limit, sort=sort, session=session
         )
 
@@ -304,13 +304,12 @@ class Document(BaseModel, GeneralUpdateMethods):
     @classmethod
     def aggregate(
         cls,
-        aggregation_query,
+        aggregation_pipeline,
         aggregation_model: Type[BaseModel] = None,
         session: ClientSession = None,
     ) -> AggregationQuery:
-        return AggregationQuery(
-            aggregation_query,
-            document_class=cls,
+        return cls.find_all().aggregate(
+            aggregation_pipeline=aggregation_pipeline,
             aggregation_model=aggregation_model,
         )
 
