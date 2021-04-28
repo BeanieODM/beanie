@@ -1,71 +1,73 @@
 from beanie.odm.query_builder.operators.find.comparsion import In, NotIn
-from tests.odm.query_builder.models import A
+from tests.odm.query_builder.models import Sample
 
 
 def test_nesting():
-    assert A.id == "_id"
+    assert Sample.id == "_id"
 
-    q = A.find_many(A.i == 1)
-    assert q.find_parameters.get_filter_query() == {"i": 1}
-    assert A.i == "i"
+    q = Sample.find_many(Sample.integer == 1)
+    assert q.find_parameters.get_filter_query() == {"integer": 1}
+    assert Sample.integer == "integer"
 
-    q = A.find_many(A.b.i == 1)
-    assert q.find_parameters.get_filter_query() == {"b.i": 1}
-    assert A.b.i == "b.i"
+    q = Sample.find_many(Sample.nested.integer == 1)
+    assert q.find_parameters.get_filter_query() == {"nested.integer": 1}
+    assert Sample.nested.integer == "nested.integer"
 
-    q = A.find_many(A.c_d.s == "test")
-    assert q.find_parameters.get_filter_query() == {"c_d.s": "test"}
-    assert A.c_d.s == "c_d.s"
+    q = Sample.find_many(Sample.union.s == "test")
+    assert q.find_parameters.get_filter_query() == {"union.s": "test"}
+    assert Sample.union.s == "union.s"
 
-    q = A.find_many(A.b.o_d == None)  # noqa
-    assert q.find_parameters.get_filter_query() == {"b.o_d": None}
-    assert A.b.o_d == "b.o_d"
+    q = Sample.find_many(Sample.nested.optional == None)  # noqa
+    assert q.find_parameters.get_filter_query() == {"nested.optional": None}
+    assert Sample.nested.optional == "nested.optional"
 
-    q = A.find_many(A.b.i == 1).find_many(A.b.c_d.s == "test")
+    q = Sample.find_many(Sample.nested.integer == 1).find_many(
+        Sample.nested.union.s == "test"
+    )
     assert q.find_parameters.get_filter_query() == {
-        "$and": [{"b.i": 1}, {"b.c_d.s": "test"}]
+        "$and": [{"nested.integer": 1}, {"nested.union.s": "test"}]
     }
 
 
 def test_eq():
-    q = A.find_many(A.i == 1)
-    assert q.find_parameters.get_filter_query() == {"i": 1}
+    q = Sample.find_many(Sample.integer == 1)
+    assert q.find_parameters.get_filter_query() == {"integer": 1}
 
 
 def test_gt():
-    q = A.find_many(A.i > 1)
-    assert q.find_parameters.get_filter_query() == {"i": {"$gt": 1}}
+    q = Sample.find_many(Sample.integer > 1)
+    assert q.find_parameters.get_filter_query() == {"integer": {"$gt": 1}}
 
 
 def test_gte():
-    q = A.find_many(A.i >= 1)
-    assert q.find_parameters.get_filter_query() == {"i": {"$gte": 1}}
+    q = Sample.find_many(Sample.integer >= 1)
+    assert q.find_parameters.get_filter_query() == {"integer": {"$gte": 1}}
 
 
 def test_in():
-    q = A.find_many(In(A.i, [1, 2, 3, 4]))
+    q = Sample.find_many(In(Sample.integer, [1, 2, 3, 4]))
     assert dict(q.find_parameters.get_filter_query()) == {
-        "i": {"$in": [1, 2, 3, 4]}
+        "integer": {"$in": [1, 2, 3, 4]}
     }
 
 
 def test_lt():
-    q = A.find_many(A.i < 1)
-    assert q.find_parameters.get_filter_query() == {"i": {"$lt": 1}}
+    q = Sample.find_many(Sample.integer < 1)
+    assert q.find_parameters.get_filter_query() == {"integer": {"$lt": 1}}
 
 
 def test_lte():
-    q = A.find_many(A.i <= 1)
-    assert q.find_parameters.get_filter_query() == {"i": {"$lte": 1}}
+    q = Sample.find_many(Sample.integer <= 1)
+    assert q.find_parameters.get_filter_query() == {"integer": {"$lte": 1}}
 
 
 def test_ne():
-    q = A.find_many(A.i != 1)
-    assert q.find_parameters.get_filter_query() == {"i": {"$ne": 1}}
+    q = Sample.find_many(Sample.integer != 1)
+    assert q.find_parameters.get_filter_query() == {"integer": {"$ne": 1}}
 
 
 def test_nin():
-    q = A.find_many(NotIn(A.i, [1, 2, 3, 4]))
+    q = Sample.find_many(NotIn(Sample.integer, [1, 2, 3, 4]))
     assert dict(q.find_parameters.get_filter_query()) == {
-        "i": {"$nin": [1, 2, 3, 4]}
+        "integer": {"$nin": [1, 2, 3, 4]}
     }

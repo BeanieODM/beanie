@@ -1,13 +1,13 @@
 from typing import Type
 
-from beanie.odm.query_builder.interfaces.update import (
-    UpdateExtraMethodsInterface,
+from beanie.odm.query_builder.interfaces.general_update import (
+    GeneralUpdateMethods,
 )
 from beanie.odm.query_builder.operators.update import BaseUpdateOperator
 from beanie.odm.query_builder.queries.parameters import FindParameters
 
 
-class UpdateQuery(UpdateExtraMethodsInterface):
+class UpdateQuery(GeneralUpdateMethods):
     def __init__(
         self, document_class: Type["Document"], find_parameters: FindParameters
     ):

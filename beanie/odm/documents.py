@@ -22,14 +22,14 @@ from beanie.odm.models import (
     SortDirection,
 )
 from beanie.odm.query_builder.fields import CollectionField
-from beanie.odm.query_builder.interfaces.update import (
-    UpdateExtraMethodsInterface,
+from beanie.odm.query_builder.interfaces.general_update import (
+    GeneralUpdateMethods,
 )
 from beanie.odm.query_builder.queries.aggregation import AggregationQuery
 from beanie.odm.query_builder.queries.find import FindOne, FindMany
 
 
-class Document(BaseModel, UpdateExtraMethodsInterface):
+class Document(BaseModel, GeneralUpdateMethods):
     """
     Document Mapping class.
 

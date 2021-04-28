@@ -9,49 +9,49 @@ from beanie.odm.query_builder.operators.update.general import (
     Max,
     Min,
 )
-from tests.odm.query_builder.models import A
+from tests.odm.query_builder.models import Sample
 
 
 def test_set():
-    q = Set({A.i: 2})
-    assert q == {"$set": {"i": 2}}
+    q = Set({Sample.integer: 2})
+    assert q == {"$set": {"integer": 2}}
 
 
 def test_current_date():
-    q = CurrentDate({A.i: 2})
-    assert q == {"$currentDate": {"i": 2}}
+    q = CurrentDate({Sample.integer: 2})
+    assert q == {"$currentDate": {"integer": 2}}
 
 
 def test_inc():
-    q = Inc({A.i: 2})
-    assert q == {"$inc": {"i": 2}}
+    q = Inc({Sample.integer: 2})
+    assert q == {"$inc": {"integer": 2}}
 
 
 def test_min():
-    q = Min({A.i: 2})
-    assert q == {"$min": {"i": 2}}
+    q = Min({Sample.integer: 2})
+    assert q == {"$min": {"integer": 2}}
 
 
 def test_max():
-    q = Max({A.i: 2})
-    assert q == {"$max": {"i": 2}}
+    q = Max({Sample.integer: 2})
+    assert q == {"$max": {"integer": 2}}
 
 
 def test_mul():
-    q = Mul({A.i: 2})
-    assert q == {"$mul": {"i": 2}}
+    q = Mul({Sample.integer: 2})
+    assert q == {"$mul": {"integer": 2}}
 
 
 def test_rename():
-    q = Rename({A.i: 2})
-    assert q == {"$rename": {"i": 2}}
+    q = Rename({Sample.integer: 2})
+    assert q == {"$rename": {"integer": 2}}
 
 
 def test_set_on_insert():
-    q = SetOnInsert({A.i: 2})
-    assert q == {"$setOnInsert": {"i": 2}}
+    q = SetOnInsert({Sample.integer: 2})
+    assert q == {"$setOnInsert": {"integer": 2}}
 
 
 def test_unset():
-    q = Unset({A.i: 2})
-    assert q == {"$unset": {"i": 2}}
+    q = Unset({Sample.integer: 2})
+    assert q == {"$unset": {"integer": 2}}

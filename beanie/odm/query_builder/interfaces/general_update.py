@@ -15,7 +15,7 @@ from beanie.odm.query_builder.operators.update.general import (
 )
 
 
-class UpdateExtraMethodsInterface:
+class GeneralUpdateMethods:
     @abstractmethod
     def _pass_update_expression(self, expression):
         ...

@@ -2,8 +2,8 @@ from typing import Union, Optional, List, Tuple
 
 from beanie.exceptions import DocumentNotFound
 from beanie.odm.models import SortDirection
-from beanie.odm.query_builder.interfaces.update import (
-    UpdateExtraMethodsInterface,
+from beanie.odm.query_builder.interfaces.general_update import (
+    GeneralUpdateMethods,
 )
 from beanie.odm.query_builder.queries.cursor import BaseCursorQuery
 from beanie.odm.query_builder.queries.delete import (
@@ -19,7 +19,7 @@ from beanie.odm.query_builder.queries.update import (
 )
 
 
-class FindQuery(UpdateExtraMethodsInterface):
+class FindQuery(GeneralUpdateMethods):
     UpdateQueryType = UpdateQuery
     DeleteQueryType = DeleteQuery
 

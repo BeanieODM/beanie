@@ -1,3 +1,4 @@
+import datetime
 from typing import Union, Optional
 
 from pydantic import BaseModel
@@ -5,25 +6,27 @@ from pydantic import BaseModel
 from beanie import Document
 
 
-class D(BaseModel):
+class Option2(BaseModel):
     f: float
 
 
-class C(BaseModel):
+class Option1(BaseModel):
     s: str
-    d: D
 
 
-class B(BaseModel):
-    i: int
-    c: C
-    c_d: Union[C, D]
-    o_d: Optional[D]
+class Nested(BaseModel):
+    integer: int
+    option_1: Option1
+    union: Union[Option1, Option2]
+    optional: Optional[Option2]
 
 
-class A(Document):
-    b: B
-    i: int
-    c: C
-    c_d: Union[C, D]
-    o_d: Optional[D]
+class Sample(Document):
+    timestamp: datetime.datetime
+    increment: int
+    integer: int
+    float_num: float
+    string: str
+    nested: Nested
+    optional: Optional[Option2]
+    union: Union[Option1, Option2]
