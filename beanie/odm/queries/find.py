@@ -10,7 +10,7 @@ from beanie.odm.interfaces.update import (
 )
 from beanie.odm.models import SortDirection
 from beanie.odm.operators.find.logical import And
-from beanie.odm.projections import get_projection
+from beanie.odm.utils.projection import get_projection
 from beanie.odm.queries.aggregation import AggregationPipeline
 from beanie.odm.queries.cursor import BaseCursorQuery
 from beanie.odm.queries.delete import (

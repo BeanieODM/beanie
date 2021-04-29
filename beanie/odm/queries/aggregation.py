@@ -3,7 +3,7 @@ from typing import Type, List, Union, Mapping, Optional
 from aiohttp import ClientSession
 from pydantic import BaseModel
 
-from beanie.odm.projections import get_projection
+from beanie.odm.utils.projection import get_projection
 from beanie.odm.queries.cursor import BaseCursorQuery
 
 

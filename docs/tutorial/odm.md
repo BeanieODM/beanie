@@ -178,7 +178,7 @@ in this example, I'll add an item to the document's "test_list" field
 
 ```python
 to_insert = SubDocument(test_str="test")
-await document.update_dict(update_query={"$push": {"test_list": to_insert.dict()}})
+await document.update(update_query={"$push": {"test_list": to_insert.dict()}})
 ```
 
 ### Update one document

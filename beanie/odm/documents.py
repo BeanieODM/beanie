@@ -13,7 +13,7 @@ from beanie.exceptions import (
     CollectionWasNotInitialized,
     ReplaceError,
 )
-from beanie.odm.collection import collection_factory
+from beanie.odm.utils.collection import collection_factory
 from beanie.odm.fields import PydanticObjectId, CollectionField
 from beanie.odm.interfaces.update import (
     UpdateMethods,
