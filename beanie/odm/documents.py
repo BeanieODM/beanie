@@ -13,6 +13,7 @@ from beanie.exceptions import (
     CollectionWasNotInitialized,
     ReplaceError,
 )
+from beanie.odm.operators.find.comparsion import In
 from beanie.odm.utils.collection import collection_factory
 from beanie.odm.fields import PydanticObjectId, CollectionField
 from beanie.odm.interfaces.update import (
@@ -270,11 +271,11 @@ class Document(BaseModel, UpdateMethods):
         :return: None
         """
         ids_list = [document.id for document in documents]
-        if await cls.find({"_id": {"$in": ids_list}}).count() != len(ids_list):
+        if await cls.find(In(cls.id, ids_list)).count() != len(ids_list):
             raise ReplaceError(
                 "Some of the documents are not exist in the collection"
             )
-        await cls.find({"_id": {"$in": ids_list}}, session=session).delete()
+        await cls.find(In(cls.id, ids_list), session=session).delete()
         await cls.insert_many(documents, keep_ids=True, session=session)
 
     async def replace(self, session: ClientSession = None) -> "Document":
