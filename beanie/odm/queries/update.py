@@ -1,5 +1,7 @@
 from typing import Type
 
+from aiohttp import ClientSession
+
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
@@ -11,6 +13,7 @@ class UpdateQuery(UpdateMethods):
         self.document_model = document_model
         self.find_query = find_query
         self.update_expressions = []
+        self.session = None
 
     def _pass_update_expression(self, expression):
         self.update_expressions.append(expression)
@@ -32,24 +35,29 @@ class UpdateQuery(UpdateMethods):
         self.update_expressions += args
         return self
 
+    def set_session(self, session: ClientSession = None):
+        if session is not None:
+            self.session = session
+        return self
+
 
 class UpdateMany(UpdateQuery):
-    def update_many(self, *args):
+    def update_many(self, *args, session: ClientSession = None):
+        self.set_session(session=session)
         return self.update(*args)
 
     def __await__(self):
         yield from self.document_model.get_motor_collection().update_many(
-            self.find_query, self.update_query
+            self.find_query, self.update_query, session=self.session
         )
 
 
 class UpdateOne(UpdateQuery):
-    def update_one(self, *args):
+    def update_one(self, *args, session: ClientSession = None):
+        self.set_session(session=session)
         return self.update(*args)
 
     def __await__(self):
         yield from self.document_model.get_motor_collection().update_one(
-            self.find_query,
-            self.update_query,
-            # session=
+            self.find_query, self.update_query, session=self.session
         )

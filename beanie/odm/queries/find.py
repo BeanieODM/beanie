@@ -1,5 +1,6 @@
 from typing import Union, Optional, List, Tuple, Type, Mapping
 
+from aiohttp import ClientSession
 from pydantic import BaseModel
 
 from beanie.exceptions import DocumentNotFound
@@ -32,6 +33,7 @@ class FindQuery(UpdateMethods):
         self.document_model = document_model
         self.find_expressions: List[Union[dict, Mapping]] = []
         self.projection_model = document_model
+        self.session = None
 
     def get_filter_query(self):
         if self.find_expressions:
@@ -39,27 +41,33 @@ class FindQuery(UpdateMethods):
         else:
             return {}
 
-    def _pass_update_expression(self, expression):
-        return self.UpdateQueryType(
-            document_model=self.document_model,
-            find_query=self.get_filter_query(),
-        ).update(expression)
+    def update(self, *args, session: ClientSession = None):
+        self.set_session(session=session)
+        return (
+            self.UpdateQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+            )
+            .update(*args)
+            .set_session(session=self.session)
+        )
 
-    def update(self, *args):
-        return self.UpdateQueryType(
-            document_model=self.document_model,
-            find_query=self.get_filter_query(),
-        ).update(*args)
-
-    def delete(self):
+    def delete(self, session: ClientSession = None):
+        self.set_session(session=session)
         return self.DeleteQueryType(
             document_model=self.document_model,
             find_query=self.get_filter_query(),
-        )
+        ).set_session(session=session)
 
     def project(self, projection_model: Optional[Type[BaseModel]]):
         if projection_model is None:
             self.projection_model = projection_model
+        return self
+
+    def set_session(self, session: ClientSession = None):
+        if session is not None:
+            self.session = session
+        return self
 
 
 class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
@@ -73,34 +81,21 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         self.limit_number: int = 0
         self.init_cursor(return_model=document_model)
 
-    @property
-    def motor_cursor(self):
-        projection = (
-            get_projection(self.projection_model)
-            if self.projection_model
-            else None
-        )
-        return self.document_model.get_motor_collection().find(
-            filter=self.get_filter_query(),
-            sort=self.sort_expressions,
-            projection=projection,
-            skip=self.skip_number,
-            limit=self.limit_number,
-        )
-
     def find_many(
         self,
         *args,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[BaseModel]] = None
+        projection_model: Optional[Type[BaseModel]] = None,
+        session: ClientSession = None
     ):
         self.find_expressions += args
         self.skip(skip)
         self.limit(limit)
         self.sort(sort)
         self.project(projection_model)
+        self.set_session(session=session)
         return self
 
     def find(
@@ -109,14 +104,16 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[BaseModel]] = None
+        projection_model: Optional[Type[BaseModel]] = None,
+        session: ClientSession = None
     ):
         return self.find_many(
             *args,
             skip=skip,
             limit=limit,
             sort=sort,
-            projection_model=projection_model
+            projection_model=projection_model,
+            session=session
         )
 
     def sort(self, *args):
@@ -154,11 +151,11 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
             self.limit_number = n
         return self
 
-    def update_many(self, *args):
-        return self.update(*args)
+    def update_many(self, *args, session: ClientSession = None):
+        return self.update(*args, session=session)
 
-    def delete_many(self):
-        return self.delete()
+    def delete_many(self, session: ClientSession = None):
+        return self.delete(session=session)
 
     async def count(self):
         return (
@@ -171,12 +168,30 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         self,
         aggregation_pipeline,
         aggregation_model: Type[BaseModel] = None,
+        session: ClientSession = None,
     ) -> AggregationPipeline:
+        self.set_session(session=session)
         return AggregationPipeline(
             aggregation_pipeline=aggregation_pipeline,
             document_model=self.document_model,
             projection_model=aggregation_model,
             find_query=self.get_filter_query(),
+        ).set_session(session=self.session)
+
+    @property
+    def motor_cursor(self):
+        projection = (
+            get_projection(self.projection_model)
+            if self.projection_model
+            else None
+        )
+        return self.document_model.get_motor_collection().find(
+            filter=self.get_filter_query(),
+            sort=self.sort_expressions,
+            projection=projection,
+            skip=self.skip_number,
+            limit=self.limit_number,
+            session=self.session,
         )
 
 
@@ -185,22 +200,28 @@ class FindOne(FindQuery):
     DeleteQueryType = DeleteOne
 
     def find_one(
-        self, *args, projection_model: Optional[Type[BaseModel]] = None
+        self,
+        *args,
+        projection_model: Optional[Type[BaseModel]] = None,
+        session: ClientSession = None
     ):
         self.find_expressions += args
         self.project(projection_model)
+        self.set_session(session=session)
         return self
 
     def update_one(self, *args):
         return self.update(*args)
 
-    def delete_one(self):
-        return self.delete()
+    def delete_one(self, session: ClientSession = None):
+        return self.delete(session=session)
 
-    async def replace_one(self, document):
+    async def replace_one(self, document, session: ClientSession = None):
+        self.set_session(session=session)
         result = await self.document_model.get_motor_collection().replace_one(
             self.get_filter_query(),
             document.dict(by_alias=True, exclude={"id"}),
+            session=self.session,
         )
 
         if not result.raw_result["updatedExisting"]:
@@ -213,11 +234,13 @@ class FindOne(FindQuery):
             if self.projection_model
             else None
         )
-        document = yield from self.document_model.get_motor_collection().find_one(
-            filter=self.get_filter_query(),
-            projection=projection,
-            # session=session,
-        )  # noqa
+        document = (
+            yield from self.document_model.get_motor_collection().find_one(
+                filter=self.get_filter_query(),
+                projection=projection,
+                session=self.session,
+            )
+        )
         if document is None:
             return None
         return self.document_model.parse_obj(document)

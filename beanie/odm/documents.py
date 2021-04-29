@@ -135,7 +135,9 @@ class Document(BaseModel, UpdateMethods):
         :return: Union["Document", None]
         """
         return FindOne(document_model=cls).find_one(
-            *args, projection_model=projection_model
+            *args,
+            projection_model=projection_model,
+            session=session,
         )
 
     @classmethod
@@ -165,6 +167,7 @@ class Document(BaseModel, UpdateMethods):
             skip=skip,
             limit=limit,
             projection_model=projection_model,
+            session=session,
         )
 
     @classmethod
@@ -286,7 +289,9 @@ class Document(BaseModel, UpdateMethods):
         if self.id is None:
             raise DocumentWasNotSaved
 
-        await self.find_one({"_id": self.id}).replace_one(self)
+        await self.find_one({"_id": self.id}).replace_one(
+            self, session=session
+        )
         return self
 
     @classmethod
@@ -298,7 +303,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: ClientSession - pymongo session.
         :return: UpdateResult - pymongo UpdateResult instance
         """
-        return cls.find_all().update_many(*args)
+        return cls.find_all().update_many(*args, session=session)
 
     async def update(self, *args, session: ClientSession = None) -> None:
         """
@@ -308,7 +313,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: ClientSession - pymongo session.
         :return: None
         """
-        await self.find_one({"_id": self.id}).update(*args)
+        await self.find_one({"_id": self.id}).update(*args, session=session)
         await self._sync()
 
     @classmethod
@@ -319,7 +324,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: ClientSession - pymongo session.
         :return: DeleteResult - pymongo DeleteResult instance.
         """
-        return await cls.find_all().delete()
+        return await cls.find_all().delete(session=session)
 
     async def delete(self, session: ClientSession = None) -> DeleteResult:
         """
@@ -328,7 +333,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: ClientSession - pymongo session.
         :return: DeleteResult - pymongo DeleteResult instance.
         """
-        return await self.find_one({"_id": self.id}).delete()
+        return await self.find_one({"_id": self.id}).delete(session=session)
 
     @classmethod
     def aggregate(
@@ -340,6 +345,7 @@ class Document(BaseModel, UpdateMethods):
         return cls.find_all().aggregate(
             aggregation_pipeline=aggregation_pipeline,
             aggregation_model=aggregation_model,
+            session=session,
         )
 
     @classmethod

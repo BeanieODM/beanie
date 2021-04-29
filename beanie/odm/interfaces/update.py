@@ -11,14 +11,14 @@ from beanie.odm.operators.update.general import (
 
 class UpdateMethods:
     @abstractmethod
-    def _pass_update_expression(self, expression):
+    def update(self, *args):
         ...
 
     def set(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self._pass_update_expression(Set(expression))
+        return self.update(Set(expression))
 
     def current_date(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self._pass_update_expression(CurrentDate(expression))
+        return self.update(CurrentDate(expression))
 
     def inc(self, expression: Dict[Union[CollectionField, str], Any]):
-        return self._pass_update_expression(Inc(expression))
+        return self.update(Inc(expression))
