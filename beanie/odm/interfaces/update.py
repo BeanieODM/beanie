@@ -21,7 +21,6 @@ class UpdateMethods:
         expression: Dict[Union[CollectionField, str], Any],
         session: Optional[ClientSession] = None,
     ):
-        print(type(self.update()), self.update)
         return self.update(Set(expression), session=session)
 
     def current_date(
