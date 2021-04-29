@@ -3,20 +3,18 @@ from tests.odm.query_builder.models import Sample
 
 
 async def test_find_query():
-    q = Sample.find_many(
-        Sample.integer == 1
-    ).find_parameters.get_filter_query()
+    q = Sample.find_many(Sample.integer == 1).get_filter_query()
     assert q == {"integer": 1}
 
     q = Sample.find_many(
         Sample.integer == 1, Sample.nested.integer >= 2
-    ).find_parameters.get_filter_query()
+    ).get_filter_query()
     assert q == {"$and": [{"integer": 1}, {"nested.integer": {"$gte": 2}}]}
 
     q = (
         Sample.find_many(Sample.integer == 1)
         .find_many(Sample.nested.integer >= 2)
-        .find_parameters.get_filter_query()
+        .get_filter_query()
     )
     assert q == {"$and": [{"integer": 1}, {"nested.integer": {"$gte": 2}}]}
 
@@ -44,10 +42,10 @@ async def test_find_many(preset_documents):
 
 async def test_find_many_skip(preset_documents):
     q = Sample.find_many(Sample.integer > 1, skip=2)
-    assert q.find_parameters.skip_number == 2
+    assert q.skip_number == 2
 
     q = Sample.find_many(Sample.integer > 1).skip(2)
-    assert q.find_parameters.skip_number == 2
+    assert q.skip_number == 2
 
     result = (
         await Sample.find_many(Sample.increment > 2)
@@ -74,10 +72,10 @@ async def test_find_many_skip(preset_documents):
 
 async def test_find_many_limit(preset_documents):
     q = Sample.find_many(Sample.integer > 1, limit=2)
-    assert q.find_parameters.limit_number == 2
+    assert q.limit_number == 2
 
     q = Sample.find_many(Sample.integer > 1).limit(2)
-    assert q.find_parameters.limit_number == 2
+    assert q.limit_number == 2
 
     result = (
         await Sample.find_many(Sample.increment > 2)
@@ -141,28 +139,20 @@ async def test_get(preset_documents):
 
 async def test_sort(preset_documents):
     q = Sample.find_many(Sample.integer > 1, sort="-integer")
-    assert q.find_parameters.sort_expressions == [
-        ("integer", SortDirection.DESCENDING)
-    ]
+    assert q.sort_expressions == [("integer", SortDirection.DESCENDING)]
 
     q = Sample.find_many(Sample.integer > 1, sort="integer")
-    assert q.find_parameters.sort_expressions == [
-        ("integer", SortDirection.ASCENDING)
-    ]
+    assert q.sort_expressions == [("integer", SortDirection.ASCENDING)]
 
     q = Sample.find_many(Sample.integer > 1).sort("-integer")
-    assert q.find_parameters.sort_expressions == [
-        ("integer", SortDirection.DESCENDING)
-    ]
+    assert q.sort_expressions == [("integer", SortDirection.DESCENDING)]
 
     q = (
         Sample.find_many(Sample.integer > 1)
         .find_many(Sample.integer < 100)
         .sort("-integer")
     )
-    assert q.find_parameters.sort_expressions == [
-        ("integer", SortDirection.DESCENDING)
-    ]
+    assert q.sort_expressions == [("integer", SortDirection.DESCENDING)]
 
     result = await Sample.find_many(
         Sample.integer > 1, sort="-integer"

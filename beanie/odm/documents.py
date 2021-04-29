@@ -1,4 +1,4 @@
-from typing import Dict, Optional, List, Type, Union, Tuple
+from typing import Optional, List, Type, Union, Tuple
 
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
@@ -56,9 +56,6 @@ class Document(BaseModel, UpdateMethods):
         new_instance = await self.get(self.id)
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
-
-    def _pass_update_expression(self, expression):
-        return self.update(expression)
 
     @classmethod
     async def insert_one(
@@ -126,13 +123,20 @@ class Document(BaseModel, UpdateMethods):
         return await self.insert(session=session)
 
     @classmethod
-    def find_one(cls, *args, session: ClientSession = None) -> FindOne:
+    def find_one(
+        cls,
+        *args,
+        projection_model: Optional[Type[BaseModel]] = None,
+        session: ClientSession = None,
+    ) -> FindOne:
         """
         Find one document by criteria
 
         :return: Union["Document", None]
         """
-        return FindOne(document_model=cls).find_one(*args)
+        return FindOne(document_model=cls).find_one(
+            *args, projection_model=projection_model
+        )
 
     @classmethod
     def find_many(
@@ -141,6 +145,7 @@ class Document(BaseModel, UpdateMethods):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: Optional[Type[BaseModel]] = None,
         session: ClientSession = None,
     ) -> FindMany:
         """
@@ -155,7 +160,11 @@ class Document(BaseModel, UpdateMethods):
         :return: Cursor - AsyncGenerator of the documents
         """
         return FindMany(document_model=cls).find_many(
-            *args, sort=sort, skip=skip, limit=limit
+            *args,
+            sort=sort,
+            skip=skip,
+            limit=limit,
+            projection_model=projection_model,
         )
 
     @classmethod
@@ -164,6 +173,7 @@ class Document(BaseModel, UpdateMethods):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: Optional[Type[BaseModel]] = None,
         session: ClientSession = None,
     ) -> FindMany:
         """
@@ -178,7 +188,12 @@ class Document(BaseModel, UpdateMethods):
         :return: Cursor - AsyncGenerator of the documents
         """
         return cls.find_many(
-            {}, skip=skip, limit=limit, sort=sort, session=session
+            {},
+            skip=skip,
+            limit=limit,
+            sort=sort,
+            projection_model=projection_model,
+            session=session,
         )
 
     @classmethod
@@ -187,20 +202,19 @@ class Document(BaseModel, UpdateMethods):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: Optional[Type[BaseModel]] = None,
         session: ClientSession = None,
     ) -> FindMany:
         """
-        Get all the documents
-
-        :param skip: Optional[int] - The number of documents to omit.
-        :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
-        or a list of (key, direction) pairs specifying the sort order
-        for this query.
-        :param session: ClientSession - pymongo session
-        :return: Cursor - AsyncGenerator of the documents
+        the same as find_all
         """
-        return cls.find_all(skip=skip, limit=limit, sort=sort, session=session)
+        return cls.find_all(
+            skip=skip,
+            limit=limit,
+            sort=sort,
+            projection_model=projection_model,
+            session=session,
+        )
 
     @classmethod
     def find(
@@ -209,10 +223,26 @@ class Document(BaseModel, UpdateMethods):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: Optional[Type[BaseModel]] = None,
         session: ClientSession = None,
     ) -> FindMany:
+        """
+        The same as find_many
+        :param args:
+        :param skip:
+        :param limit:
+        :param sort:
+        :param projection_model:
+        :param session:
+        :return:
+        """
         return cls.find_many(
-            *args, skip=skip, limit=limit, sort=sort, session=session
+            *args,
+            skip=skip,
+            limit=limit,
+            sort=sort,
+            projection_model=projection_model,
+            session=session,
         )
 
     @classmethod
@@ -320,39 +350,6 @@ class Document(BaseModel, UpdateMethods):
         :return: int
         """
         return await cls.find_all().count()
-
-    # Projections
-    @classmethod
-    def _init_projection(cls) -> Dict[str, int]:
-        """
-        Initializes the projection dictionary, this will be done only once
-
-        :return: Dict[str, int] - The projection dict
-        """
-        document_projection: Dict[str, int] = {}
-        for name, field in cls.__fields__.items():
-            if field.alias:
-                document_projection[field.alias] = 1
-            else:
-                document_projection[name] = 1
-        setattr(cls, "_projection", document_projection)
-        return document_projection
-
-    @classmethod
-    def _get_projection(cls) -> Dict[str, int]:
-        """
-        Get the projection dictionary or create it if it has
-        not been built yet.
-
-        :return: Dict[str, int] - The projection dict
-        """
-        document_projection: Dict[str, int] = getattr(cls, "_projection", None)
-        if document_projection is None:
-            document_projection = cls._init_projection()
-
-        return document_projection
-
-    # Collections
 
     @classmethod
     async def init_collection(

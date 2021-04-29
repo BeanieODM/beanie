@@ -4,15 +4,12 @@ from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
 from beanie.odm.operators.update import BaseUpdateOperator
-from beanie.odm.queries.parameters import FindParameters
 
 
 class UpdateQuery(UpdateMethods):
-    def __init__(
-        self, document_model: Type["Document"], find_parameters: FindParameters
-    ):
+    def __init__(self, document_model: Type["Document"], find_query: dict):
         self.document_model = document_model
-        self.find_parameters = find_parameters
+        self.find_query = find_query
         self.update_expressions = []
 
     def _pass_update_expression(self, expression):
@@ -42,7 +39,7 @@ class UpdateMany(UpdateQuery):
 
     def __await__(self):
         yield from self.document_model.get_motor_collection().update_many(
-            self.find_parameters.get_filter_query(), self.update_query
+            self.find_query, self.update_query
         )
 
 
@@ -52,7 +49,7 @@ class UpdateOne(UpdateQuery):
 
     def __await__(self):
         yield from self.document_model.get_motor_collection().update_one(
-            self.find_parameters.get_filter_query(),
+            self.find_query,
             self.update_query,
             # session=
         )
