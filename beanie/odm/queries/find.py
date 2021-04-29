@@ -167,14 +167,14 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
     def aggregate(
         self,
         aggregation_pipeline,
-        aggregation_model: Type[BaseModel] = None,
+        projection_model: Type[BaseModel] = None,
         session: ClientSession = None,
     ) -> AggregationPipeline:
         self.set_session(session=session)
         return AggregationPipeline(
             aggregation_pipeline=aggregation_pipeline,
             document_model=self.document_model,
-            projection_model=aggregation_model,
+            projection_model=projection_model,
             find_query=self.get_filter_query(),
         ).set_session(session=self.session)
 

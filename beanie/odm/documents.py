@@ -344,7 +344,7 @@ class Document(BaseModel, UpdateMethods):
     ) -> AggregationPipeline:
         return cls.find_all().aggregate(
             aggregation_pipeline=aggregation_pipeline,
-            aggregation_model=aggregation_model,
+            projection_model=aggregation_model,
             session=session,
         )
 
