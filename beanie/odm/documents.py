@@ -270,13 +270,11 @@ class Document(BaseModel, UpdateMethods):
         :return: None
         """
         ids_list = [document.id for document in documents]
-        if await cls.count_documents({"_id": {"$in": ids_list}}) != len(
-            ids_list
-        ):
+        if await cls.find({"_id": {"$in": ids_list}}).count() != len(ids_list):
             raise ReplaceError(
                 "Some of the documents are not exist in the collection"
             )
-        await cls.delete_many({"_id": {"$in": ids_list}}, session=session)
+        await cls.find({"_id": {"$in": ids_list}}, session=session).delete()
         await cls.insert_many(documents, keep_ids=True, session=session)
 
     async def replace(self, session: ClientSession = None) -> "Document":
@@ -415,7 +413,7 @@ class Document(BaseModel, UpdateMethods):
         :return: InspectionResult
         """
         inspection_result = InspectionResult()
-        async for json_document in cls.get_motor_collection().find_many(
+        async for json_document in cls.get_motor_collection().find(
             {}, session=session
         ):
             try:
