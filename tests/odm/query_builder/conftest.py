@@ -3,7 +3,13 @@ from datetime import datetime, timedelta
 import pytest
 
 from beanie import init_beanie
-from tests.odm.query_builder.models import Sample, Nested, Option2, Option1
+from tests.odm.query_builder.models import (
+    Sample,
+    Nested,
+    Option2,
+    Option1,
+    GeoObject,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -23,7 +29,15 @@ async def init(loop, db):
 
 
 @pytest.fixture
-async def preset_documents():
+def point():
+    return {
+        "longitude": 13.404954,
+        "latitude": 52.520008,
+    }
+
+
+@pytest.fixture
+async def preset_documents(point):
     docs = []
     for i in range(10):
         timestamp = datetime.utcnow() - timedelta(days=i)
@@ -35,6 +49,12 @@ async def preset_documents():
         option_2 = Option2(f=3.14)
         union = option_1 if i % 2 else option_2
         optional = option_2 if not i % 3 else None
+        geo = GeoObject(
+            coordinates=[
+                point["longitude"] + i / 10,
+                point["latitude"] + i / 10,
+            ]
+        )
         nested = Nested(
             integer=integer_2,
             option_1=option_1,
@@ -51,6 +71,7 @@ async def preset_documents():
             nested=nested,
             optional=optional,
             union=union,
+            geo=geo,
         )
         docs.append(sample)
     await Sample.insert_many(documents=docs)

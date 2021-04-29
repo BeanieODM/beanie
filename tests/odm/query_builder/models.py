@@ -1,5 +1,5 @@
 import datetime
-from typing import Union, Optional
+from typing import Union, Optional, Tuple
 
 from pydantic import BaseModel
 
@@ -21,6 +21,11 @@ class Nested(BaseModel):
     optional: Optional[Option2]
 
 
+class GeoObject(BaseModel):
+    type: str = "Point"
+    coordinates: Tuple[float, float]
+
+
 class Sample(Document):
     timestamp: datetime.datetime
     increment: int
@@ -30,3 +35,4 @@ class Sample(Document):
     nested: Nested
     optional: Optional[Option2]
     union: Union[Option1, Option2]
+    geo: GeoObject

@@ -1,4 +1,4 @@
-from beanie.odm.query_builder.operators.update.general import (
+from beanie.odm.operators.update.general import (
     Set,
     CurrentDate,
     Inc,

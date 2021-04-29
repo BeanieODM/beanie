@@ -1,4 +1,4 @@
-from beanie.odm.query_builder.operators.find.comparsion import (
+from beanie.odm.operators.find.comparsion import (
     Eq,
     GT,
     GTE,

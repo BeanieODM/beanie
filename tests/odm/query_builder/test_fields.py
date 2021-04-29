@@ -1,4 +1,4 @@
-from beanie.odm.query_builder.operators.find.comparsion import In, NotIn
+from beanie.odm.operators.find.comparsion import In, NotIn
 from tests.odm.query_builder.models import Sample
 
 

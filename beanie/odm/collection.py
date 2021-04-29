@@ -28,7 +28,7 @@ class CollectionInputParameters(BaseModel):
 
 async def collection_factory(
     database: AsyncIOMotorDatabase,
-    document_class: Type,
+    document_model: Type,
     allow_index_dropping: bool,
     collection_class: Optional[Type] = None,
 ) -> Type:
@@ -37,7 +37,7 @@ async def collection_factory(
     Creates internal CollectionMeta class for the Document on the init step,
 
     :param database: AsyncIOMotorDatabase - Motor database instance
-    :param document_class: Type - a class, inherited from Document class
+    :param document_model: Type - a class, inherited from Document class
     :param allow_index_dropping: bool - if index dropping is allowed
     :param collection_class: Optional[Type] - Collection, which was set up
     by user
@@ -53,7 +53,7 @@ async def collection_factory(
 
     # set collection name
     if not collection_parameters.name:
-        collection_parameters.name = document_class.__name__
+        collection_parameters.name = document_model.__name__
 
     # create motor collection
     collection = database[collection_parameters.name]
@@ -65,7 +65,7 @@ async def collection_factory(
     # Indexed field wrapped with Indexed()
     found_indexes = [
         IndexModel([(fname, fvalue.type_._indexed)])
-        for fname, fvalue in document_class.__fields__.items()
+        for fname, fvalue in document_model.__fields__.items()
         if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
     ]
 

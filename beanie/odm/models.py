@@ -1,19 +1,10 @@
-from enum import Enum
 from typing import List, Optional, Union, Tuple
 
 import pymongo
 from pydantic import BaseModel, validator
 
+from beanie.odm.enums import SortDirection, InspectionStatuses
 from beanie.odm.fields import PydanticObjectId
-
-
-class SortDirection(int, Enum):
-    """
-    Sorting directions
-    """
-
-    ASCENDING = pymongo.ASCENDING
-    DESCENDING = pymongo.DESCENDING
 
 
 class FindOperationKWARGS(BaseModel):
@@ -30,15 +21,6 @@ class FindOperationKWARGS(BaseModel):
         if isinstance(v, str):
             return [(v, pymongo.ASCENDING)]
         return v
-
-
-class InspectionStatuses(str, Enum):
-    """
-    Statuses of the collection inspection
-    """
-
-    FAIL = "FAIL"
-    OK = "OK"
 
 
 class InspectionError(BaseModel):

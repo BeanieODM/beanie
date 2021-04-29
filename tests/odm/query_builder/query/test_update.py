@@ -1,4 +1,4 @@
-from beanie.odm.query_builder.operators.update.general import Set, Max
+from beanie.odm.operators.update.general import Set, Max
 from tests.odm.query_builder.models import Sample
 
 

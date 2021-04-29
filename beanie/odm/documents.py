@@ -14,22 +14,21 @@ from beanie.exceptions import (
     ReplaceError,
 )
 from beanie.odm.collection import collection_factory
-from beanie.odm.fields import PydanticObjectId
+from beanie.odm.fields import PydanticObjectId, CollectionField
+from beanie.odm.interfaces.update import (
+    UpdateMethods,
+)
 from beanie.odm.models import (
     InspectionResult,
     InspectionStatuses,
     InspectionError,
     SortDirection,
 )
-from beanie.odm.query_builder.fields import CollectionField
-from beanie.odm.query_builder.interfaces.general_update import (
-    GeneralUpdateMethods,
-)
-from beanie.odm.query_builder.queries.aggregation import AggregationQuery
-from beanie.odm.query_builder.queries.find import FindOne, FindMany
+from beanie.odm.queries.aggregation import AggregationPipeline
+from beanie.odm.queries.find import FindOne, FindMany
 
 
-class Document(BaseModel, GeneralUpdateMethods):
+class Document(BaseModel, UpdateMethods):
     """
     Document Mapping class.
 
@@ -133,7 +132,7 @@ class Document(BaseModel, GeneralUpdateMethods):
 
         :return: Union["Document", None]
         """
-        return FindOne(document_class=cls).find_one(*args)
+        return FindOne(document_model=cls).find_one(*args)
 
     @classmethod
     def find_many(
@@ -155,7 +154,7 @@ class Document(BaseModel, GeneralUpdateMethods):
         :param session: ClientSession - pymongo session
         :return: Cursor - AsyncGenerator of the documents
         """
-        return FindMany(document_class=cls).find_many(
+        return FindMany(document_model=cls).find_many(
             *args, sort=sort, skip=skip, limit=limit
         )
 
@@ -307,7 +306,7 @@ class Document(BaseModel, GeneralUpdateMethods):
         aggregation_pipeline,
         aggregation_model: Type[BaseModel] = None,
         session: ClientSession = None,
-    ) -> AggregationQuery:
+    ) -> AggregationPipeline:
         return cls.find_all().aggregate(
             aggregation_pipeline=aggregation_pipeline,
             aggregation_model=aggregation_model,
@@ -369,7 +368,7 @@ class Document(BaseModel, GeneralUpdateMethods):
         collection_class = getattr(cls, "Collection", None)
         collection_meta = await collection_factory(
             database=database,
-            document_class=cls,
+            document_model=cls,
             allow_index_dropping=allow_index_dropping,
             collection_class=collection_class,
         )
