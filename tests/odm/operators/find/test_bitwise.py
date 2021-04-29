@@ -4,7 +4,7 @@ from beanie.odm.operators.find.bitwise import (
     BitsAnyClear,
     BitsAnySet,
 )
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 async def test_bits_all_clear():

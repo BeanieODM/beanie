@@ -5,7 +5,7 @@ from beanie.odm.operators.update.array import (
     Pop,
     Push,
 )
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 def test_add_to_set():

@@ -15,7 +15,7 @@ from beanie.exceptions import (
 )
 from beanie.odm.operators.find.comparsion import In
 from beanie.odm.utils.collection import collection_factory
-from beanie.odm.fields import PydanticObjectId, CollectionField
+from beanie.odm.fields import PydanticObjectId, ExpressionField
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
@@ -378,7 +378,7 @@ class Document(BaseModel, UpdateMethods):
 
         for k, v in cls.__fields__.items():
             path = v.alias or v.name
-            setattr(cls, k, CollectionField(path))
+            setattr(cls, k, ExpressionField(path))
 
     @classmethod
     def _get_collection_meta(cls) -> Type:

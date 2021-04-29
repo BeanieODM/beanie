@@ -1,5 +1,5 @@
 from beanie.odm.operators.update.general import Set, Max
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 async def test_update_query():

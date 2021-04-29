@@ -1,4 +1,4 @@
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 async def test_delete_many(preset_documents):

@@ -6,7 +6,7 @@ from beanie.odm.operators.find.evaluation import (
     Text,
     Where,
 )
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 async def test_expr():

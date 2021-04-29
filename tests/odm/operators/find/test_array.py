@@ -1,5 +1,5 @@
 from beanie.odm.operators.find.array import All, ElemMatch, Size
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 async def test_all():

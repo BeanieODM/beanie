@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 from beanie.odm.models import SortDirection
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 async def test_find_query():

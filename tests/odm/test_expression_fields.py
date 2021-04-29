@@ -1,5 +1,5 @@
 from beanie.odm.operators.find.comparsion import In, NotIn
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 def test_nesting():

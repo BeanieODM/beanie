@@ -4,7 +4,7 @@ from beanie.odm.operators.find.geospatial import (
     Near,
     NearSphere,
 )
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 async def test_geo_intersects():
