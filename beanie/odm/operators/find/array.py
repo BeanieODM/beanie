@@ -1,13 +1,10 @@
-from abc import abstractmethod
+from abc import ABC
 
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseFindArrayOperator(BaseFindOperator):
-    @property
-    @abstractmethod
-    def query(self):
-        ...
+class BaseFindArrayOperator(BaseFindOperator, ABC):
+    ...
 
 
 class All(BaseFindArrayOperator):

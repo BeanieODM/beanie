@@ -1,15 +1,12 @@
-from abc import abstractmethod
+from abc import ABC
 from enum import Enum
 from typing import List, Optional
 
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseFindGeospatialOperator(BaseFindOperator):
-    @property
-    @abstractmethod
-    def query(self):
-        ...
+class BaseFindGeospatialOperator(BaseFindOperator, ABC):
+    ...
 
 
 class GeoIntersects(BaseFindGeospatialOperator):

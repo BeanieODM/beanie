@@ -1,14 +1,11 @@
-from abc import abstractmethod
+from abc import ABC
 from typing import Optional
 
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseFindEvaluationOperator(BaseFindOperator):
-    @property
-    @abstractmethod
-    def query(self):
-        ...
+class BaseFindEvaluationOperator(BaseFindOperator, ABC):
+    ...
 
 
 class Expr(BaseFindEvaluationOperator):

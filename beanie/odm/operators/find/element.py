@@ -1,14 +1,11 @@
-from abc import abstractmethod
+from abc import ABC
 from typing import List, Union
 
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseFindElementOperator(BaseFindOperator):
-    @property
-    @abstractmethod
-    def query(self):
-        ...
+class BaseFindElementOperator(BaseFindOperator, ABC):
+    ...
 
 
 class Exists(BaseFindElementOperator):

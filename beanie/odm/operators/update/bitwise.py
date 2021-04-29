@@ -1,13 +1,10 @@
-from abc import abstractmethod
+from abc import ABC
 
 from beanie.odm.operators.update import BaseUpdateOperator
 
 
-class BaseBitwiseUpdateOperator(BaseUpdateOperator):
-    @property
-    @abstractmethod
-    def query(self):
-        ...
+class BaseBitwiseUpdateOperator(BaseUpdateOperator, ABC):
+    ...
 
 
 class Bit(BaseBitwiseUpdateOperator):

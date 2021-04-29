@@ -1,3 +1,5 @@
+from pydantic import BaseModel
+
 from beanie.odm.models import SortDirection
 from tests.odm.query_builder.models import Sample
 
@@ -193,3 +195,32 @@ async def test_sort(preset_documents):
             i_buf = a.integer
         assert i_buf >= a.integer
         i_buf = a.integer
+
+
+async def test_find_many_with_projection(preset_documents):
+    class SampleProjection(BaseModel):
+        string: str
+        integer: int
+
+    result = (
+        await Sample.find_many(Sample.integer > 1)
+        .find_many(Sample.nested.optional == None)
+        .project(projection_model=SampleProjection)
+        .to_list()
+    )
+    assert result == [
+        SampleProjection(string="test_2", integer=2),
+        SampleProjection(string="test_2", integer=2),
+    ]
+
+    result = (
+        await Sample.find_many(Sample.integer > 1)
+        .find_many(
+            Sample.nested.optional == None, projection_model=SampleProjection
+        )
+        .to_list()
+    )
+    assert result == [
+        SampleProjection(string="test_2", integer=2),
+        SampleProjection(string="test_2", integer=2),
+    ]

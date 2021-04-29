@@ -5,9 +5,13 @@ from tests.odm.query_builder.models import Sample
 
 
 async def test_aggregate(preset_documents):
-    result = await Sample.aggregate(
+    q = Sample.aggregate(
         [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}]
-    ).to_list()
+    )
+    assert q.get_aggregation_pipeline() == [
+        {"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}
+    ]
+    result = await q.to_list()
     assert len(result) == 4
     assert {"_id": "test_3", "total": 3} in result
     assert {"_id": "test_1", "total": 3} in result
@@ -16,13 +20,14 @@ async def test_aggregate(preset_documents):
 
 
 async def test_aggregate_with_filter(preset_documents):
-    result = (
-        await Sample.find(Sample.increment >= 4)
-        .aggregate(
-            [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}]
-        )
-        .to_list()
+    q = Sample.find(Sample.increment >= 4).aggregate(
+        [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}]
     )
+    assert q.get_aggregation_pipeline() == [
+        {"$match": {"increment": {"$gte": 4}}},
+        {"$group": {"_id": "$string", "total": {"$sum": "$integer"}}},
+    ]
+    result = await q.to_list()
     assert len(result) == 3
     assert {"_id": "test_1", "total": 2} in result
     assert {"_id": "test_2", "total": 6} in result
@@ -35,10 +40,16 @@ async def test_aggregate_with_projection_model(preset_documents):
         total: int
 
     ids = []
-    async for i in Sample.find(Sample.increment >= 4).aggregate(
+    q = Sample.find(Sample.increment >= 4).aggregate(
         [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}],
         projection_model=OutputItem,
-    ):
+    )
+    assert q.get_aggregation_pipeline() == [
+        {"$match": {"increment": {"$gte": 4}}},
+        {"$group": {"_id": "$string", "total": {"$sum": "$integer"}}},
+        {"$project": {"_id": 1, "total": 1}},
+    ]
+    async for i in q:
         if i.id == "test_1":
             assert i.total == 2
         elif i.id == "test_2":

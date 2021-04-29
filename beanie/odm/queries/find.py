@@ -60,7 +60,7 @@ class FindQuery(UpdateMethods):
         ).set_session(session=session)
 
     def project(self, projection_model: Optional[Type[BaseModel]]):
-        if projection_model is None:
+        if projection_model is not None:
             self.projection_model = projection_model
         return self
 
@@ -79,7 +79,6 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         self.sort_expressions: List[Tuple[str, SortDirection]] = []
         self.skip_number: int = 0
         self.limit_number: int = 0
-        self.init_cursor(return_model=document_model)
 
     def find_many(
         self,
@@ -180,15 +179,10 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
 
     @property
     def motor_cursor(self):
-        projection = (
-            get_projection(self.projection_model)
-            if self.projection_model
-            else None
-        )
         return self.document_model.get_motor_collection().find(
             filter=self.get_filter_query(),
             sort=self.sort_expressions,
-            projection=projection,
+            projection=get_projection(self.projection_model),
             skip=self.skip_number,
             limit=self.limit_number,
             session=self.session,
