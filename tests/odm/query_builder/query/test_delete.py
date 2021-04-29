@@ -41,3 +41,32 @@ async def test_delete_one(preset_documents):
     ).delete()  # noqa
     count_after = await Sample.count()
     assert count_before == count_after + 1
+
+
+async def test_delete_many_with_session(preset_documents, session):
+    count_before = await Sample.count()
+    count_find = (
+        await Sample.find_many(Sample.integer > 1)
+        .find_many(Sample.nested.optional == None)
+        .count()
+    )  # noqa
+    q = (
+        Sample.find_many(Sample.integer > 1)
+        .find_many(Sample.nested.optional == None)
+        .delete(session=session)
+    )  # noqa
+    assert q.session == session
+
+    q = (
+        Sample.find_many(Sample.integer > 1)
+        .find_many(Sample.nested.optional == None)
+        .delete()
+        .set_session(session=session)
+    )
+
+    assert q.session == session
+
+    await q
+
+    count_after = await Sample.count()
+    assert count_before - count_find == count_after

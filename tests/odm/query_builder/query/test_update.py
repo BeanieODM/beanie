@@ -82,3 +82,33 @@ async def test_update_self(preset_documents):
     result = await Sample.find_many(Sample.integer == 100).to_list()
     assert len(result) == 1
     assert result[0].integer == 100
+
+
+async def test_update_many_with_session(preset_documents, session):
+    q = (
+        Sample.find_many(Sample.increment > 4)
+        .find_many(Sample.nested.optional == None)
+        .update(Set({Sample.increment: 100}))
+        .set_session(session=session)
+    )
+    assert q.session == session
+
+    q = (
+        Sample.find_many(Sample.increment > 4)
+        .find_many(Sample.nested.optional == None)
+        .update(Set({Sample.increment: 100}), session=session)
+    )
+    assert q.session == session
+
+    q = (
+        Sample.find_many(Sample.increment > 4)
+        .find_many(Sample.nested.optional == None, session=session)
+        .update(Set({Sample.increment: 100}))
+    )
+    assert q.session == session
+
+    await q  # noqa
+    result = await Sample.find_many(Sample.increment == 100).to_list()
+    assert len(result) == 3
+    for sample in result:
+        assert sample.increment == 100

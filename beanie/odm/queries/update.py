@@ -31,7 +31,8 @@ class UpdateQuery(UpdateMethods):
                 raise Exception  # TODO come up with exception
         return query
 
-    def update(self, *args):
+    def update(self, *args, session: ClientSession = None):
+        self.set_session(session=session)
         self.update_expressions += args
         return self
 

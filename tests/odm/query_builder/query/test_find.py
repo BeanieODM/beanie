@@ -224,3 +224,33 @@ async def test_find_many_with_projection(preset_documents):
         SampleProjection(string="test_2", integer=2),
         SampleProjection(string="test_2", integer=2),
     ]
+
+
+async def test_find_many_with_session(preset_documents, session):
+    q_1 = (
+        Sample.find_many(Sample.integer > 1)
+        .find_many(Sample.nested.optional == None)
+        .set_session(session)
+    )
+    assert q_1.session == session
+
+    q_2 = Sample.find_many(Sample.integer > 1).find_many(
+        Sample.nested.optional == None, session=session
+    )
+    assert q_2.session == session
+
+    result = await q_2.to_list()
+
+    assert len(result) == 2
+    for a in result:
+        assert a.integer > 1
+        assert a.nested.optional is None
+
+    len_result = 0
+    async for a in Sample.find_many(Sample.integer > 1).find_many(
+        Sample.nested.optional == None
+    ):  # noqa
+        assert a in result
+        len_result += 1
+
+    assert len_result == len(result)

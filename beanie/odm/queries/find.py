@@ -204,8 +204,8 @@ class FindOne(FindQuery):
         self.set_session(session=session)
         return self
 
-    def update_one(self, *args):
-        return self.update(*args)
+    def update_one(self, *args, session: ClientSession = None):
+        return self.update(*args, session=session)
 
     def delete_one(self, session: ClientSession = None):
         return self.delete(session=session)

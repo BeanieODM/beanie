@@ -3,11 +3,14 @@ from beanie.odm.queries.update import UpdateQuery, UpdateMany
 from tests.odm.query_builder.models import Sample
 
 
-async def test_set():
-    q = Sample.find_many(Sample.integer == 1).set({Sample.integer: 100})
+async def test_set(session):
+    q = Sample.find_many(Sample.integer == 1).set(
+        {Sample.integer: 100}, session=session
+    )
 
     assert isinstance(q, UpdateQuery)
     assert isinstance(q, UpdateMany)
+    assert q.session == session
 
     assert q.update_query == {"$set": {"integer": 100}}
 
@@ -26,13 +29,14 @@ async def test_set():
     }
 
 
-async def test_current_date():
+async def test_current_date(session):
     q = Sample.find_many(Sample.integer == 1).current_date(
-        {Sample.timestamp: "timestamp"}
+        {Sample.timestamp: "timestamp"}, session=session
     )
 
     assert isinstance(q, UpdateQuery)
     assert isinstance(q, UpdateMany)
+    assert q.session == session
 
     assert q.update_query == {"$currentDate": {"timestamp": "timestamp"}}
 
@@ -51,11 +55,14 @@ async def test_current_date():
     }
 
 
-async def test_inc():
-    q = Sample.find_many(Sample.integer == 1).inc({Sample.integer: 100})
+async def test_inc(session):
+    q = Sample.find_many(Sample.integer == 1).inc(
+        {Sample.integer: 100}, session=session
+    )
 
     assert isinstance(q, UpdateQuery)
     assert isinstance(q, UpdateMany)
+    assert q.session == session
 
     assert q.update_query == {"$inc": {"integer": 100}}
 
