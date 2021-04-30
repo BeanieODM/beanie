@@ -1,4 +1,4 @@
-from typing import Type, TYPE_CHECKING
+from typing import Type, TYPE_CHECKING, Optional
 
 from aiohttp import ClientSession
 
@@ -31,14 +31,14 @@ class UpdateQuery(UpdateMethods, SessionMethods):
                 raise TypeError("Wrong expression type")
         return query
 
-    def update(self, *args, session: ClientSession = None):
+    def update(self, *args, session: Optional[ClientSession] = None):
         self.set_session(session=session)
         self.update_expressions += args
         return self
 
 
 class UpdateMany(UpdateQuery):
-    def update_many(self, *args, session: ClientSession = None):
+    def update_many(self, *args, session: Optional[ClientSession] = None):
         return self.update(*args, session=session)
 
     def __await__(self):
@@ -48,7 +48,7 @@ class UpdateMany(UpdateQuery):
 
 
 class UpdateOne(UpdateQuery):
-    def update_one(self, *args, session: ClientSession = None):
+    def update_one(self, *args, session: Optional[ClientSession] = None):
         return self.update(*args, session=session)
 
     def __await__(self):

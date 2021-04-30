@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Type, Any
+from typing import Type, Any, Optional
 
 from pydantic import BaseModel
 from pymongo.client_session import ClientSession
@@ -13,11 +13,13 @@ class AggregateMethods:
         self,
         aggregation_pipeline,
         projection_model: Type[BaseModel] = None,
-        session: ClientSession = None,
+        session: Optional[ClientSession] = None,
     ) -> AggregationPipeline:
         ...
 
-    async def sum(self, field, session: ClientSession = None) -> float:
+    async def sum(
+        self, field, session: Optional[ClientSession] = None
+    ) -> float:
         pipeline = [
             {"$group": {"_id": None, "sum": {"$sum": f"${field}"}}},
             {"$project": {"_id": 0, "sum": 1}},
@@ -28,7 +30,9 @@ class AggregateMethods:
         ).to_list()
         return result[0]["sum"]
 
-    async def avg(self, field, session: ClientSession = None) -> float:
+    async def avg(
+        self, field, session: Optional[ClientSession] = None
+    ) -> float:
         pipeline = [
             {"$group": {"_id": None, "avg": {"$avg": f"${field}"}}},
             {"$project": {"_id": 0, "avg": 1}},
@@ -39,7 +43,7 @@ class AggregateMethods:
         ).to_list()
         return result[0]["avg"]
 
-    async def max(self, field, session: ClientSession = None) -> Any:
+    async def max(self, field, session: Optional[ClientSession] = None) -> Any:
         pipeline = [
             {"$group": {"_id": None, "max": {"$max": f"${field}"}}},
             {"$project": {"_id": 0, "max": 1}},
@@ -50,7 +54,7 @@ class AggregateMethods:
         ).to_list()
         return result[0]["max"]
 
-    async def min(self, field, session: ClientSession = None) -> Any:
+    async def min(self, field, session: Optional[ClientSession] = None) -> Any:
         pipeline = [
             {"$group": {"_id": None, "min": {"$min": f"${field}"}}},
             {"$project": {"_id": 0, "min": 1}},

@@ -13,7 +13,7 @@ from beanie.odm.operators.update.general import (
 
 class UpdateMethods:
     @abstractmethod
-    def update(self, *args, session: ClientSession = None):
+    def update(self, *args, session: Optional[ClientSession] = None):
         ...
 
     def set(
@@ -26,13 +26,13 @@ class UpdateMethods:
     def current_date(
         self,
         expression: Dict[Union[ExpressionField, str], Any],
-        session: ClientSession = None,
+        session: Optional[ClientSession] = None,
     ):
         return self.update(CurrentDate(expression), session=session)
 
     def inc(
         self,
         expression: Dict[Union[ExpressionField, str], Any],
-        session: ClientSession = None,
+        session: Optional[ClientSession] = None,
     ):
         return self.update(Inc(expression), session=session)

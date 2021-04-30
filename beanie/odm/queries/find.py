@@ -42,7 +42,7 @@ class FindQuery(UpdateMethods, SessionMethods):
         else:
             return {}
 
-    def update(self, *args, session: ClientSession = None):
+    def update(self, *args, session: Optional[ClientSession] = None):
         self.set_session(session=session)
         return (
             self.UpdateQueryType(
@@ -53,7 +53,7 @@ class FindQuery(UpdateMethods, SessionMethods):
             .set_session(session=self.session)
         )
 
-    def delete(self, session: ClientSession = None):
+    def delete(self, session: Optional[ClientSession] = None):
         self.set_session(session=session)
         return self.DeleteQueryType(
             document_model=self.document_model,
@@ -83,7 +83,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: Optional[Type[BaseModel]] = None,
-        session: ClientSession = None
+        session: Optional[ClientSession] = None
     ):
         self.find_expressions += args
         self.skip(skip)
@@ -100,7 +100,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: Optional[Type[BaseModel]] = None,
-        session: ClientSession = None
+        session: Optional[ClientSession] = None
     ):
         return self.find_many(
             *args,
@@ -146,10 +146,10 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
             self.limit_number = n
         return self
 
-    def update_many(self, *args, session: ClientSession = None):
+    def update_many(self, *args, session: Optional[ClientSession] = None):
         return self.update(*args, session=session)
 
-    def delete_many(self, session: ClientSession = None):
+    def delete_many(self, session: Optional[ClientSession] = None):
         return self.delete(session=session)
 
     async def count(self):
@@ -163,7 +163,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         self,
         aggregation_pipeline,
         projection_model: Type[BaseModel] = None,
-        session: ClientSession = None,
+        session: Optional[ClientSession] = None,
     ) -> AggregationPipeline:
         self.set_session(session=session)
         return AggregationPipeline(
@@ -193,20 +193,22 @@ class FindOne(FindQuery):
         self,
         *args,
         projection_model: Optional[Type[BaseModel]] = None,
-        session: ClientSession = None
+        session: Optional[ClientSession] = None
     ):
         self.find_expressions += args
         self.project(projection_model)
         self.set_session(session=session)
         return self
 
-    def update_one(self, *args, session: ClientSession = None):
+    def update_one(self, *args, session: Optional[ClientSession] = None):
         return self.update(*args, session=session)
 
-    def delete_one(self, session: ClientSession = None):
+    def delete_one(self, session: Optional[ClientSession] = None):
         return self.delete(session=session)
 
-    async def replace_one(self, document, session: ClientSession = None):
+    async def replace_one(
+        self, document, session: Optional[ClientSession] = None
+    ):
         self.set_session(session=session)
         result = await self.document_model.get_motor_collection().replace_one(
             self.get_filter_query(),
