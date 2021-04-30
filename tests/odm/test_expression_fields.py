@@ -1,5 +1,6 @@
+from beanie.odm.enums import SortDirection
 from beanie.odm.operators.find.comparsion import In, NotIn
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 def test_nesting():
@@ -67,3 +68,13 @@ def test_ne():
 def test_nin():
     q = Sample.find_many(NotIn(Sample.integer, [1, 2, 3, 4]))
     assert dict(q.get_filter_query()) == {"integer": {"$nin": [1, 2, 3, 4]}}
+
+
+def test_pos():
+    q = +Sample.integer
+    assert q == ("integer", SortDirection.ASCENDING)
+
+
+def test_neg():
+    q = -Sample.integer
+    assert q == ("integer", SortDirection.DESCENDING)

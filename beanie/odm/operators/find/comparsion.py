@@ -1,7 +1,11 @@
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseComparisonOperator(BaseFindOperator):
+class BaseFindComparisonOperator(BaseFindOperator):
+    """
+    Base class for find query comparison operators
+    """
+
     operator = ""
 
     def __init__(
@@ -9,6 +13,11 @@ class BaseComparisonOperator(BaseFindOperator):
         field,
         other,
     ):
+        """
+
+        :param field: Union[str, ExpressionField]
+        :param other:
+        """
         self.field = field
         self.other = other
 
@@ -17,35 +26,75 @@ class BaseComparisonOperator(BaseFindOperator):
         return {self.field: {self.operator: self.other}}
 
 
-class Eq(BaseComparisonOperator):
+class Eq(BaseFindComparisonOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/eq/
+    """
+
     @property
     def query(self):
         return {self.field: self.other}
 
 
-class GT(BaseComparisonOperator):
+class GT(BaseFindComparisonOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/gt/
+    """
+
     operator = "$gt"
 
 
-class GTE(BaseComparisonOperator):
+class GTE(BaseFindComparisonOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/gte/
+    """
+
     operator = "$gte"
 
 
-class In(BaseComparisonOperator):
+class In(BaseFindComparisonOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/in/
+    """
+
     operator = "$in"
 
 
-class NotIn(BaseComparisonOperator):
+class NotIn(BaseFindComparisonOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/nin/
+    """
+
     operator = "$nin"
 
 
-class LT(BaseComparisonOperator):
+class LT(BaseFindComparisonOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/lt/
+    """
+
     operator = "$lt"
 
 
-class LTE(BaseComparisonOperator):
+class LTE(BaseFindComparisonOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/lte/
+    """
+
     operator = "$lte"
 
 
-class NE(BaseComparisonOperator):
+class NE(BaseFindComparisonOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/ne/
+    """
+
     operator = "$ne"

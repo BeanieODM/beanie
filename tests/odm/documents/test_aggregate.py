@@ -46,7 +46,6 @@ async def test_aggregate_with_item_model(documents):
         [{"$group": {"_id": "$test_str", "total": {"$sum": "$test_int"}}}],
         aggregation_model=OutputItem,
     ):
-        print(i)
         if i.id == "cuatro":
             assert i.total == 0
         elif i.id == "dos":

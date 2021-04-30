@@ -3,6 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 
 from beanie import Document, init_beanie
 from beanie.exceptions import CollectionWasNotInitialized
+from beanie.odm.utils.projection import get_projection
 from tests.odm.models import (
     DocumentTestModel,
     DocumentTestModelWithCustomCollectionName,
@@ -111,9 +112,25 @@ async def test_document_string_import(db):
     await document.insert()
     assert document.id is not None
 
+    with pytest.raises(ValueError):
+        await init_beanie(
+            database=db,
+            document_models=[
+                "tests",
+            ],
+        )
+
+    with pytest.raises(AttributeError):
+        await init_beanie(
+            database=db,
+            document_models=[
+                "tests.wrong",
+            ],
+        )
+
 
 async def test_projection():
-    projection = DocumentTestModel._get_projection()
+    projection = get_projection(DocumentTestModel)
     assert projection == {
         "_id": 1,
         "test_int": 1,

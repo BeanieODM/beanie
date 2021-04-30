@@ -1,30 +1,29 @@
-from typing import Type, List, Union, Mapping, Optional
+from typing import Type, List, Union, Mapping, Optional, TYPE_CHECKING
 
-from aiohttp import ClientSession
 from pydantic import BaseModel
 
+
+from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.queries.cursor import BaseCursorQuery
 from beanie.odm.utils.projection import get_projection
 
+if TYPE_CHECKING:
+    from beanie.odm.documents import Document
 
-class AggregationPipeline(BaseCursorQuery):
+
+class AggregationPipeline(BaseCursorQuery, SessionMethods):
     def __init__(
         self,
         document_model: Type["Document"],
         aggregation_pipeline: List[Union[dict, Mapping]],
         find_query: dict,
-        projection_model: Optional[Type[BaseModel]] = None,  # TODO naming
+        projection_model: Optional[Type[BaseModel]] = None,
     ):
         self.aggregation_pipeline = aggregation_pipeline
         self.document_model = document_model
         self.projection_model = projection_model
         self.find_query = find_query
         self.session = None
-
-    def set_session(self, session: ClientSession = None):
-        if session is not None:
-            self.session = session
-        return self
 
     def get_aggregation_pipeline(self):
         match_pipeline = (

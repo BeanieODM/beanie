@@ -4,6 +4,10 @@ from copy import copy, deepcopy
 
 
 class BaseOperator(Mapping):
+    """
+    Base operator.
+    """
+
     @property
     @abstractmethod
     def query(self) -> dict:

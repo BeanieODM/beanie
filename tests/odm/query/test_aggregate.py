@@ -1,7 +1,7 @@
 from pydantic import Field
 from pydantic.main import BaseModel
 
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 async def test_aggregate(preset_documents):

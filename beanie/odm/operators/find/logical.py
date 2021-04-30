@@ -4,11 +4,15 @@ from typing import Union
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseLogicalOperator(BaseFindOperator, ABC):
+class BaseFindLogicalOperator(BaseFindOperator, ABC):
+    """
+    Base class for logical find query operators
+    """
+
     ...
 
 
-class LogicalOperatorForList(BaseLogicalOperator):  # TODO rename
+class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
     operator = ""
 
     def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
@@ -17,21 +21,36 @@ class LogicalOperatorForList(BaseLogicalOperator):  # TODO rename
     @property
     def query(self):
         if not self.expressions:
-            raise Exception  # TODO come up with exception
+            raise AttributeError("At least one expression must be provided")
         if len(self.expressions) == 1:
             return self.expressions[0]
         return {self.operator: self.expressions}
 
 
-class Or(LogicalOperatorForList):
+class Or(LogicalOperatorForListOfExpressions):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/or/
+    """
+
     operator = "$or"
 
 
-class And(LogicalOperatorForList):
+class And(LogicalOperatorForListOfExpressions):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/and/
+    """
+
     operator = "$and"
 
 
-class Nor(BaseLogicalOperator):
+class Nor(BaseFindLogicalOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/nor/
+    """
+
     def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
         self.expressions = list(expressions)
 
@@ -40,7 +59,12 @@ class Nor(BaseLogicalOperator):
         return {"$nor": self.expressions}
 
 
-class Not(BaseLogicalOperator):
+class Not(BaseFindLogicalOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/not/
+    """
+
     def __init__(self, expression):
         self.expression = expression
 

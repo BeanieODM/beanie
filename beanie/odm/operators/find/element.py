@@ -5,10 +5,19 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindElementOperator(BaseFindOperator, ABC):
+    """
+    Base class for element find query operator
+    """
+
     ...
 
 
 class Exists(BaseFindElementOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/exists/
+    """
+
     def __init__(
         self,
         field,
@@ -23,6 +32,11 @@ class Exists(BaseFindElementOperator):
 
 
 class Type(BaseFindElementOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/type/
+    """
+
     def __init__(self, field, types: Union[List[str], str]):
         self.field = field
         self.types = types

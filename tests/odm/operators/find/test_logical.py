@@ -1,5 +1,5 @@
 from beanie.odm.operators.find.logical import And, Not, Nor, Or
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 async def test_and():

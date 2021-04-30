@@ -1,23 +1,23 @@
-from typing import Type
+from typing import Type, TYPE_CHECKING, Optional
 
 from aiohttp import ClientSession
 
+from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
 from beanie.odm.operators.update import BaseUpdateOperator
 
+if TYPE_CHECKING:
+    from beanie.odm.documents import Document
 
-class UpdateQuery(UpdateMethods):
+
+class UpdateQuery(UpdateMethods, SessionMethods):
     def __init__(self, document_model: Type["Document"], find_query: dict):
         self.document_model = document_model
         self.find_query = find_query
         self.update_expressions = []
         self.session = None
-
-    def _pass_update_expression(self, expression):
-        self.update_expressions.append(expression)
-        return self
 
     @property
     def update_query(self):
@@ -28,23 +28,18 @@ class UpdateQuery(UpdateMethods):
             elif isinstance(expression, dict):
                 query.update(expression)
             else:
-                raise Exception  # TODO come up with exception
+                raise TypeError("Wrong expression type")
         return query
 
-    def update(self, *args):
+    def update(self, *args, session: Optional[ClientSession] = None):
+        self.set_session(session=session)
         self.update_expressions += args
-        return self
-
-    def set_session(self, session: ClientSession = None):
-        if session is not None:
-            self.session = session
         return self
 
 
 class UpdateMany(UpdateQuery):
-    def update_many(self, *args, session: ClientSession = None):
-        self.set_session(session=session)
-        return self.update(*args)
+    def update_many(self, *args, session: Optional[ClientSession] = None):
+        return self.update(*args, session=session)
 
     def __await__(self):
         yield from self.document_model.get_motor_collection().update_many(
@@ -53,9 +48,8 @@ class UpdateMany(UpdateQuery):
 
 
 class UpdateOne(UpdateQuery):
-    def update_one(self, *args, session: ClientSession = None):
-        self.set_session(session=session)
-        return self.update(*args)
+    def update_one(self, *args, session: Optional[ClientSession] = None):
+        return self.update(*args, session=session)
 
     def __await__(self):
         yield from self.document_model.get_motor_collection().update_one(

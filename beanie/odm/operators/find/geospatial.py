@@ -6,10 +6,19 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindGeospatialOperator(BaseFindOperator, ABC):
+    """
+    Base class for geospatial find query operators
+    """
+
     ...
 
 
 class GeoIntersects(BaseFindGeospatialOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/geoIntersects/
+    """
+
     def __init__(self, field, geo_type: str, coordinates: List[List[float]]):
         self.field = field
         self.geo_type = geo_type
@@ -35,6 +44,11 @@ class GeoWithinTypes(str, Enum):
 
 
 class GeoWithin(BaseFindGeospatialOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/geoWithin/
+    """
+
     def __init__(
         self, field, geo_type: GeoWithinTypes, coordinates: List[List[float]]
     ):
@@ -57,6 +71,11 @@ class GeoWithin(BaseFindGeospatialOperator):
 
 
 class Near(BaseFindGeospatialOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/near/
+    """
+
     operator = "$near"
 
     def __init__(
@@ -97,4 +116,9 @@ class Near(BaseFindGeospatialOperator):
 
 
 class NearSphere(Near):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/nearSphere/
+    """
+
     operator = "$nearSphere"

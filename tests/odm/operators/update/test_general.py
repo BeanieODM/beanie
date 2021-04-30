@@ -9,7 +9,7 @@ from beanie.odm.operators.update.general import (
     Max,
     Min,
 )
-from tests.odm.query_builder.models import Sample
+from tests.odm.models import Sample
 
 
 def test_set():

@@ -61,9 +61,15 @@ ENCODERS_BY_TYPE[
 ] = str  # it is a workaround to force pydantic make json schema for this field
 
 
-class CollectionField(str):
+class ExpressionField(str):
     def __getattr__(self, item):
-        return CollectionField(f"{self}.{item}")
+        """
+        Get sub field
+
+        :param item: name of the subfield
+        :return: ExpressionField
+        """
+        return ExpressionField(f"{self}.{item}")
 
     def __hash__(self):
         return hash(str(self))
