@@ -5,6 +5,10 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindLogicalOperator(BaseFindOperator, ABC):
+    """
+    Base class for logical find query operators
+    """
+
     ...
 
 
@@ -24,14 +28,29 @@ class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
 
 
 class Or(LogicalOperatorForListOfExpressions):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/or/
+    """
+
     operator = "$or"
 
 
 class And(LogicalOperatorForListOfExpressions):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/and/
+    """
+
     operator = "$and"
 
 
 class Nor(BaseFindLogicalOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/nor/
+    """
+
     def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
         self.expressions = list(expressions)
 
@@ -41,6 +60,11 @@ class Nor(BaseFindLogicalOperator):
 
 
 class Not(BaseFindLogicalOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/not/
+    """
+
     def __init__(self, expression):
         self.expression = expression
 

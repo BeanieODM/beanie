@@ -5,10 +5,19 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindEvaluationOperator(BaseFindOperator, ABC):
+    """
+    Base class for evaluation find query operator
+    """
+
     ...
 
 
 class Expr(BaseFindEvaluationOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/expr/
+    """
+
     def __init__(self, expression: dict):
         self.expression = expression
 
@@ -18,6 +27,11 @@ class Expr(BaseFindEvaluationOperator):
 
 
 class JsonSchema(BaseFindEvaluationOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/
+    """
+
     def __init__(self, expression: dict):
         self.expression = expression
 
@@ -27,6 +41,11 @@ class JsonSchema(BaseFindEvaluationOperator):
 
 
 class Mod(BaseFindEvaluationOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/mod/
+    """
+
     def __init__(self, field, divisor, remainder):
         self.field = field
         self.divisor = divisor
@@ -38,6 +57,11 @@ class Mod(BaseFindEvaluationOperator):
 
 
 class RegEx(BaseFindEvaluationOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/regex/
+    """
+
     def __init__(self, field, pattern, options: Optional[str] = None):
         self.field = field
         self.pattern = pattern
@@ -52,6 +76,11 @@ class RegEx(BaseFindEvaluationOperator):
 
 
 class Text(BaseFindEvaluationOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/text/
+    """
+
     def __init__(
         self,
         search: str,
@@ -59,6 +88,13 @@ class Text(BaseFindEvaluationOperator):
         case_sensitive: bool = False,
         diacritic_sensitive: bool = False,
     ):
+        """
+
+        :param search: str
+        :param language: Optional[str] = None
+        :param case_sensitive: bool = False
+        :param diacritic_sensitive: bool = False
+        """
         self.search = search
         self.language = language
         self.case_sensitive = case_sensitive
@@ -79,6 +115,11 @@ class Text(BaseFindEvaluationOperator):
 
 
 class Where(BaseFindEvaluationOperator):
+    """
+    MongoDB doc:
+    https://docs.mongodb.com/manual/reference/operator/query/where/
+    """
+
     def __init__(self, expression: str):
         self.expression = expression
 
