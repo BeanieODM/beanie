@@ -16,10 +16,6 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         self.update_expressions = []
         self.session = None
 
-    def _pass_update_expression(self, expression):
-        self.update_expressions.append(expression)
-        return self
-
     @property
     def update_query(self):
         query = {}
@@ -40,8 +36,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
 
 class UpdateMany(UpdateQuery):
     def update_many(self, *args, session: ClientSession = None):
-        self.set_session(session=session)
-        return self.update(*args)
+        return self.update(*args, session=session)
 
     def __await__(self):
         yield from self.document_model.get_motor_collection().update_many(
@@ -51,8 +46,7 @@ class UpdateMany(UpdateQuery):
 
 class UpdateOne(UpdateQuery):
     def update_one(self, *args, session: ClientSession = None):
-        self.set_session(session=session)
-        return self.update(*args)
+        return self.update(*args, session=session)
 
     def __await__(self):
         yield from self.document_model.get_motor_collection().update_one(

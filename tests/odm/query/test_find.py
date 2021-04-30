@@ -1,3 +1,4 @@
+import pytest
 from pydantic import BaseModel
 
 from beanie.odm.models import SortDirection
@@ -19,6 +20,9 @@ async def test_find_query():
         .get_filter_query()
     )
     assert q == {"$and": [{"integer": 1}, {"nested.integer": {"$gte": 2}}]}
+
+    q = Sample.find().get_filter_query()
+    assert q == {}
 
 
 async def test_find_many(preset_documents):
@@ -92,7 +96,7 @@ async def test_find_many_limit(preset_documents):
         assert a.nested.optional is None
 
     len_result = 0
-    async for a in Sample.find_many(Sample.increment > 2).find_many(
+    async for a in Sample.find_many(Sample.increment > 2).find(
         Sample.nested.optional == None
     ).sort(Sample.increment).limit(
         2
@@ -195,6 +199,9 @@ async def test_sort(preset_documents):
             i_buf = a.integer
         assert i_buf >= a.integer
         i_buf = a.integer
+
+    with pytest.raises(TypeError):
+        Sample.find_many(Sample.integer > 1, sort=1)
 
 
 async def test_find_many_with_projection(preset_documents):

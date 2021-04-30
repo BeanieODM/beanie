@@ -17,7 +17,7 @@ class FindOperationKWARGS(BaseModel):
     sort: Union[None, str, List[Tuple[str, SortDirection]]] = None
 
     @validator("sort")
-    def name_must_contain_space(cls, v):
+    def str_to_sorting_tuple(cls, v):
         if isinstance(v, str):
             return [(v, pymongo.ASCENDING)]
         return v

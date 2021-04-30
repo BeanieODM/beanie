@@ -1,3 +1,5 @@
+import pytest
+
 from beanie.odm.operators.update.general import Set, Max
 from tests.odm.models import Sample
 
@@ -40,11 +42,26 @@ async def test_update_query():
     )
     assert q == {"$set": {"optional": None}}
 
+    with pytest.raises(TypeError):
+        Sample.find_many(Sample.integer == 1).update(40).update_query
+
 
 async def test_update_many(preset_documents):
     await Sample.find_many(Sample.increment > 4).find_many(
         Sample.nested.optional == None
     ).update(
+        Set({Sample.increment: 100})
+    )  # noqa
+    result = await Sample.find_many(Sample.increment == 100).to_list()
+    assert len(result) == 3
+    for sample in result:
+        assert sample.increment == 100
+
+
+async def test_update_many_linked_method(preset_documents):
+    await Sample.find_many(Sample.increment > 4).find_many(
+        Sample.nested.optional == None
+    ).update_many(
         Set({Sample.increment: 100})
     )  # noqa
     result = await Sample.find_many(Sample.increment == 100).to_list()
@@ -72,6 +89,13 @@ async def test_update_one(preset_documents):
     result = await Sample.find_many(Sample.integer == 100).to_list()
     assert len(result) == 1
     assert result[0].integer == 100
+
+    await Sample.find_one(Sample.integer == 1).update_one(
+        Set({Sample.integer: 101})
+    )
+    result = await Sample.find_many(Sample.integer == 101).to_list()
+    assert len(result) == 1
+    assert result[0].integer == 101
 
 
 async def test_update_self(preset_documents):

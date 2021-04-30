@@ -1,4 +1,5 @@
 from tests.odm.models import Sample
+from beanie.odm.queries.delete import DeleteMany
 
 
 async def test_delete_many(preset_documents):
@@ -13,6 +14,13 @@ async def test_delete_many(preset_documents):
     ).delete()  # noqa
     count_after = await Sample.count()
     assert count_before - count_find == count_after
+
+    assert isinstance(
+        Sample.find_many(Sample.integer > 1)
+        .find_many(Sample.nested.optional == None)
+        .delete_many(),
+        DeleteMany,
+    )
 
 
 async def test_delete_all(preset_documents):
@@ -39,6 +47,13 @@ async def test_delete_one(preset_documents):
     await Sample.find_one(Sample.integer > 1).find_one(
         Sample.nested.optional == None
     ).delete()  # noqa
+    count_after = await Sample.count()
+    assert count_before == count_after + 1
+
+    count_before = await Sample.count()
+    await Sample.find_one(Sample.integer > 1).find_one(
+        Sample.nested.optional == None
+    ).delete_one()  # noqa
     count_after = await Sample.count()
     assert count_before == count_after + 1
 

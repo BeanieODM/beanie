@@ -30,7 +30,6 @@ class Forward:
         self, input_document: OldNote, output_document: Note
     ):
         output_document.title = input_document.name
-        print("HERE")
         if output_document.title == "5":
             raise Exception
 
