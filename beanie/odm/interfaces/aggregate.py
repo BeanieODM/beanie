@@ -1,13 +1,18 @@
 from abc import abstractmethod
-from typing import Type, Any, Optional
+from typing import Type, Any, Optional, Union
 
 from pydantic import BaseModel
 from pymongo.client_session import ClientSession
 
+from beanie.odm.fields import ExpressionField
 from beanie.odm.queries.aggregation import AggregationPipeline
 
 
 class AggregateMethods:
+    """
+    Aggregate methods
+    """
+
     @abstractmethod
     def aggregate(
         self,
@@ -18,8 +23,16 @@ class AggregateMethods:
         ...
 
     async def sum(
-        self, field, session: Optional[ClientSession] = None
+        self,
+        field: Union[str, ExpressionField],
+        session: Optional[ClientSession] = None,
     ) -> float:
+        """
+        Sum of values of the given field
+        :param field: Union[str, ExpressionField]
+        :param session: Optional[ClientSession] - pymongo session
+        :return: float - sum
+        """
         pipeline = [
             {"$group": {"_id": None, "sum": {"$sum": f"${field}"}}},
             {"$project": {"_id": 0, "sum": 1}},
@@ -33,6 +46,12 @@ class AggregateMethods:
     async def avg(
         self, field, session: Optional[ClientSession] = None
     ) -> float:
+        """
+        Average of values of the given field
+        :param field: Union[str, ExpressionField]
+        :param session: Optional[ClientSession] - pymongo session
+        :return: float - avg
+        """
         pipeline = [
             {"$group": {"_id": None, "avg": {"$avg": f"${field}"}}},
             {"$project": {"_id": 0, "avg": 1}},
@@ -43,7 +62,17 @@ class AggregateMethods:
         ).to_list()
         return result[0]["avg"]
 
-    async def max(self, field, session: Optional[ClientSession] = None) -> Any:
+    async def max(
+        self,
+        field: Union[str, ExpressionField],
+        session: Optional[ClientSession] = None,
+    ) -> Any:
+        """
+        Max of the values of the given field
+        :param field: Union[str, ExpressionField]
+        :param session: Optional[ClientSession] - pymongo session
+        :return: float - max
+        """
         pipeline = [
             {"$group": {"_id": None, "max": {"$max": f"${field}"}}},
             {"$project": {"_id": 0, "max": 1}},
@@ -54,7 +83,17 @@ class AggregateMethods:
         ).to_list()
         return result[0]["max"]
 
-    async def min(self, field, session: Optional[ClientSession] = None) -> Any:
+    async def min(
+        self,
+        field: Union[str, ExpressionField],
+        session: Optional[ClientSession] = None,
+    ) -> Any:
+        """
+        Min of the values of the given field
+        :param field: Union[str, ExpressionField]
+        :param session: Optional[ClientSession] - pymongo session
+        :return: float - max
+        """
         pipeline = [
             {"$group": {"_id": None, "min": {"$min": f"${field}"}}},
             {"$project": {"_id": 0, "min": 1}},

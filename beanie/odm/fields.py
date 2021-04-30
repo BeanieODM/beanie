@@ -63,6 +63,12 @@ ENCODERS_BY_TYPE[
 
 class ExpressionField(str):
     def __getattr__(self, item):
+        """
+        Get sub field
+
+        :param item: name of the subfield
+        :return: ExpressionField
+        """
         return ExpressionField(f"{self}.{item}")
 
     def __hash__(self):
