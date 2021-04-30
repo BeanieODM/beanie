@@ -1,6 +1,3 @@
-from typing import Union
-
-from beanie.odm.fields import ExpressionField
 from beanie.odm.operators.find import BaseFindOperator
 
 
@@ -13,7 +10,7 @@ class BaseFindComparisonOperator(BaseFindOperator):
 
     def __init__(
         self,
-        field: Union[str, ExpressionField],
+        field,
         other,
     ):
         """
