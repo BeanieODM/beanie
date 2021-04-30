@@ -13,7 +13,7 @@ class AggregationPipeline(BaseCursorQuery, SessionMethods):
         document_model: Type["Document"],
         aggregation_pipeline: List[Union[dict, Mapping]],
         find_query: dict,
-        projection_model: Optional[Type[BaseModel]] = None,  # TODO naming
+        projection_model: Optional[Type[BaseModel]] = None,
     ):
         self.aggregation_pipeline = aggregation_pipeline
         self.document_model = document_model

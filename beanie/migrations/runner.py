@@ -42,9 +42,9 @@ class MigrationNode:
 
     @staticmethod
     async def clean_current_migration():
-        await MigrationLog.update_many(
-            {"is_current": True}, {"$set": {"is_current": False}}
-        )
+        await MigrationLog.find(
+            {"is_current": True},
+        ).update({"$set": {"is_current": False}})
 
     async def update_current_migration(self):
         """

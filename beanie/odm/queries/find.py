@@ -133,7 +133,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
                         (arg, SortDirection.ASCENDING)
                     )
             else:
-                raise Exception  # TODO come up with exception
+                raise TypeError("Wrong argument type")
         return self
 
     def skip(self, n: Optional[int]):

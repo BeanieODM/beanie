@@ -8,7 +8,7 @@ class BaseLogicalOperator(BaseFindOperator, ABC):
     ...
 
 
-class LogicalOperatorForList(BaseLogicalOperator):  # TODO rename
+class LogicalOperatorForListOfExpressions(BaseLogicalOperator):  # TODO rename
     operator = ""
 
     def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
@@ -17,17 +17,17 @@ class LogicalOperatorForList(BaseLogicalOperator):  # TODO rename
     @property
     def query(self):
         if not self.expressions:
-            raise Exception  # TODO come up with exception
+            raise AttributeError("At least one expression must be provided")
         if len(self.expressions) == 1:
             return self.expressions[0]
         return {self.operator: self.expressions}
 
 
-class Or(LogicalOperatorForList):
+class Or(LogicalOperatorForListOfExpressions):
     operator = "$or"
 
 
-class And(LogicalOperatorForList):
+class And(LogicalOperatorForListOfExpressions):
     operator = "$and"
 
 

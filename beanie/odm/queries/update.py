@@ -29,7 +29,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
             elif isinstance(expression, dict):
                 query.update(expression)
             else:
-                raise Exception  # TODO come up with exception
+                raise TypeError("Wrong expression type")
         return query
 
     def update(self, *args, session: ClientSession = None):
