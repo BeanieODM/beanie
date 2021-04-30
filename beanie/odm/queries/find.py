@@ -5,12 +5,12 @@ from pydantic import BaseModel
 
 from beanie.exceptions import DocumentNotFound
 from beanie.odm.interfaces.aggregate import AggregateMethods
+from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
 from beanie.odm.models import SortDirection
 from beanie.odm.operators.find.logical import And
-from beanie.odm.utils.projection import get_projection
 from beanie.odm.queries.aggregation import AggregationPipeline
 from beanie.odm.queries.cursor import BaseCursorQuery
 from beanie.odm.queries.delete import (
@@ -23,9 +23,10 @@ from beanie.odm.queries.update import (
     UpdateMany,
     UpdateOne,
 )
+from beanie.odm.utils.projection import get_projection
 
 
-class FindQuery(UpdateMethods):
+class FindQuery(UpdateMethods, SessionMethods):
     UpdateQueryType = UpdateQuery
     DeleteQueryType = DeleteQuery
 
@@ -62,11 +63,6 @@ class FindQuery(UpdateMethods):
     def project(self, projection_model: Optional[Type[BaseModel]]):
         if projection_model is not None:
             self.projection_model = projection_model
-        return self
-
-    def set_session(self, session: ClientSession = None):
-        if session is not None:
-            self.session = session
         return self
 
 

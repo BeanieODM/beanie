@@ -2,13 +2,14 @@ from typing import Type
 
 from aiohttp import ClientSession
 
+from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
 from beanie.odm.operators.update import BaseUpdateOperator
 
 
-class UpdateQuery(UpdateMethods):
+class UpdateQuery(UpdateMethods, SessionMethods):
     def __init__(self, document_model: Type["Document"], find_query: dict):
         self.document_model = document_model
         self.find_query = find_query
@@ -34,11 +35,6 @@ class UpdateQuery(UpdateMethods):
     def update(self, *args, session: ClientSession = None):
         self.set_session(session=session)
         self.update_expressions += args
-        return self
-
-    def set_session(self, session: ClientSession = None):
-        if session is not None:
-            self.session = session
         return self
 
 
