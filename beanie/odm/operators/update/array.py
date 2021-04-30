@@ -1,7 +1,7 @@
 from beanie.odm.operators.update import BaseUpdateOperator
 
 
-class BaseArrayUpdateOperator(BaseUpdateOperator):
+class BaseUpdateArrayOperator(BaseUpdateOperator):
     operator = None
 
     def __init__(self, expression):
@@ -12,21 +12,21 @@ class BaseArrayUpdateOperator(BaseUpdateOperator):
         return {self.operator: self.expression}
 
 
-class AddToSet(BaseArrayUpdateOperator):
+class AddToSet(BaseUpdateArrayOperator):
     operator = "$addToSet"
 
 
-class Pop(BaseArrayUpdateOperator):
+class Pop(BaseUpdateArrayOperator):
     operator = "$pop"
 
 
-class Pull(BaseArrayUpdateOperator):
+class Pull(BaseUpdateArrayOperator):
     operator = "$pull"
 
 
-class Push(BaseArrayUpdateOperator):
+class Push(BaseUpdateArrayOperator):
     operator = "$push"
 
 
-class PullAll(BaseArrayUpdateOperator):
+class PullAll(BaseUpdateArrayOperator):
     operator = "$pullAll"

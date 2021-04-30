@@ -1,7 +1,7 @@
 from beanie.odm.operators.update import BaseUpdateOperator
 
 
-class BaseGeneralUpdateOperator(BaseUpdateOperator):
+class BaseUpdateGeneralOperator(BaseUpdateOperator):
     operator = None
 
     def __init__(self, expression):
@@ -12,37 +12,37 @@ class BaseGeneralUpdateOperator(BaseUpdateOperator):
         return {self.operator: self.expression}
 
 
-class Set(BaseGeneralUpdateOperator):
+class Set(BaseUpdateGeneralOperator):
     operator = "$set"
 
 
-class CurrentDate(BaseGeneralUpdateOperator):
+class CurrentDate(BaseUpdateGeneralOperator):
     operator = "$currentDate"
 
 
-class Inc(BaseGeneralUpdateOperator):
+class Inc(BaseUpdateGeneralOperator):
     operator = "$inc"
 
 
-class Min(BaseGeneralUpdateOperator):
+class Min(BaseUpdateGeneralOperator):
     operator = "$min"
 
 
-class Max(BaseGeneralUpdateOperator):
+class Max(BaseUpdateGeneralOperator):
     operator = "$max"
 
 
-class Mul(BaseGeneralUpdateOperator):
+class Mul(BaseUpdateGeneralOperator):
     operator = "$mul"
 
 
-class Rename(BaseGeneralUpdateOperator):
+class Rename(BaseUpdateGeneralOperator):
     operator = "$rename"
 
 
-class SetOnInsert(BaseGeneralUpdateOperator):
+class SetOnInsert(BaseUpdateGeneralOperator):
     operator = "$setOnInsert"
 
 
-class Unset(BaseGeneralUpdateOperator):
+class Unset(BaseUpdateGeneralOperator):
     operator = "$unset"

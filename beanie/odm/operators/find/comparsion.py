@@ -1,7 +1,7 @@
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseComparisonOperator(BaseFindOperator):
+class BaseFindComparisonOperator(BaseFindOperator):
     operator = ""
 
     def __init__(
@@ -17,35 +17,35 @@ class BaseComparisonOperator(BaseFindOperator):
         return {self.field: {self.operator: self.other}}
 
 
-class Eq(BaseComparisonOperator):
+class Eq(BaseFindComparisonOperator):
     @property
     def query(self):
         return {self.field: self.other}
 
 
-class GT(BaseComparisonOperator):
+class GT(BaseFindComparisonOperator):
     operator = "$gt"
 
 
-class GTE(BaseComparisonOperator):
+class GTE(BaseFindComparisonOperator):
     operator = "$gte"
 
 
-class In(BaseComparisonOperator):
+class In(BaseFindComparisonOperator):
     operator = "$in"
 
 
-class NotIn(BaseComparisonOperator):
+class NotIn(BaseFindComparisonOperator):
     operator = "$nin"
 
 
-class LT(BaseComparisonOperator):
+class LT(BaseFindComparisonOperator):
     operator = "$lt"
 
 
-class LTE(BaseComparisonOperator):
+class LTE(BaseFindComparisonOperator):
     operator = "$lte"
 
 
-class NE(BaseComparisonOperator):
+class NE(BaseFindComparisonOperator):
     operator = "$ne"

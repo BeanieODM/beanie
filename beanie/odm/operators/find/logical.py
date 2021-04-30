@@ -4,11 +4,11 @@ from typing import Union
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseLogicalOperator(BaseFindOperator, ABC):
+class BaseFindLogicalOperator(BaseFindOperator, ABC):
     ...
 
 
-class LogicalOperatorForListOfExpressions(BaseLogicalOperator):  # TODO rename
+class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
     operator = ""
 
     def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
@@ -31,7 +31,7 @@ class And(LogicalOperatorForListOfExpressions):
     operator = "$and"
 
 
-class Nor(BaseLogicalOperator):
+class Nor(BaseFindLogicalOperator):
     def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
         self.expressions = list(expressions)
 
@@ -40,7 +40,7 @@ class Nor(BaseLogicalOperator):
         return {"$nor": self.expressions}
 
 
-class Not(BaseLogicalOperator):
+class Not(BaseFindLogicalOperator):
     def __init__(self, expression):
         self.expression = expression
 

@@ -3,11 +3,11 @@ from abc import ABC
 from beanie.odm.operators.update import BaseUpdateOperator
 
 
-class BaseBitwiseUpdateOperator(BaseUpdateOperator, ABC):
+class BaseUpdateBitwiseOperator(BaseUpdateOperator, ABC):
     ...
 
 
-class Bit(BaseBitwiseUpdateOperator):
+class Bit(BaseUpdateBitwiseOperator):
     def __init__(self, expression: dict):
         self.expression = expression
 
