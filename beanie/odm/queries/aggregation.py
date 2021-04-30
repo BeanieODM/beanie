@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class AggregationPipeline(BaseCursorQuery, SessionMethods):
     def __init__(
         self,
-        document_model: Type[Document],
+        document_model: Type["Document"],
         aggregation_pipeline: List[Union[dict, Mapping]],
         find_query: dict,
         projection_model: Optional[Type[BaseModel]] = None,

@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 
 class DeleteQuery(SessionMethods):
-    def __init__(self, document_model: Type[Document], find_query: dict):
+    def __init__(self, document_model: Type["Document"], find_query: dict):
         self.document_model = document_model
         self.find_query = find_query
         self.session = None
