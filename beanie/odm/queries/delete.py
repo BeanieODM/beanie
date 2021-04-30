@@ -1,10 +1,13 @@
-from typing import Type
+from typing import Type, TYPE_CHECKING
 
 from beanie.odm.interfaces.session import SessionMethods
 
+if TYPE_CHECKING:
+    from beanie.odm.documents import Document
+
 
 class DeleteQuery(SessionMethods):
-    def __init__(self, document_model: Type["Document"], find_query: dict):
+    def __init__(self, document_model: Type[Document], find_query: dict):
         self.document_model = document_model
         self.find_query = find_query
         self.session = None

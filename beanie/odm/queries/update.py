@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, TYPE_CHECKING
 
 from aiohttp import ClientSession
 
@@ -8,9 +8,12 @@ from beanie.odm.interfaces.update import (
 )
 from beanie.odm.operators.update import BaseUpdateOperator
 
+if TYPE_CHECKING:
+    from beanie.odm.documents import Document
+
 
 class UpdateQuery(UpdateMethods, SessionMethods):
-    def __init__(self, document_model: Type["Document"], find_query: dict):
+    def __init__(self, document_model: Type[Document], find_query: dict):
         self.document_model = document_model
         self.find_query = find_query
         self.update_expressions = []

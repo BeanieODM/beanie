@@ -1,16 +1,20 @@
-from typing import Type, List, Union, Mapping, Optional
+from typing import Type, List, Union, Mapping, Optional, TYPE_CHECKING
 
 from pydantic import BaseModel
+
 
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.queries.cursor import BaseCursorQuery
 from beanie.odm.utils.projection import get_projection
 
+if TYPE_CHECKING:
+    from beanie.odm.documents import Document
+
 
 class AggregationPipeline(BaseCursorQuery, SessionMethods):
     def __init__(
         self,
-        document_model: Type["Document"],
+        document_model: Type[Document],
         aggregation_pipeline: List[Union[dict, Mapping]],
         find_query: dict,
         projection_model: Optional[Type[BaseModel]] = None,
