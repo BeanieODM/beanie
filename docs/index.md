@@ -1,89 +1,150 @@
 [![Beanie](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/with_text.svg)](https://github.com/roman-right/beanie)
 
-[Beanie](https://github.com/roman-right/beanie) - is an Asynchronous Python object-document mapper (ODM) for MongoDB, based on [Motor](https://motor.readthedocs.io/en/stable/) and [Pydantic](https://pydantic-docs.helpmanual.io/).
+# Getting Started with Beanie
 
-When using Beanie each database collection has a corresponding `Document` that is used to interact with that collection.
-In addition to retrieving data, Beanie allows you to add, update, or delete documents from the collection as well.
+[Beanie](https://github.com/roman-right/beanie) - is an Asynchronous Python
+object-document mapper (ODM) for MongoDB
 
-Beanie saves you time by removing boiler-plate code and it helps you focus on the parts of your app that actually matter.
+When using Beanie each database collection has a corresponding `Document` that
+is used to interact with that collection. In addition to retrieving data,
+Beanie allows you to add, update, or delete documents from the collection as
+well.
+
+Beanie saves you time by removing boiler-plate code and it helps you focus on
+the parts of your app that actually matter.
 
 Data and schema migrations are supported by Beanie out of the box.
 
-### Installation
+## Installation
 
-#### PIP
+### PIP
 
 ```shell
 pip install beanie
 ```
 
-#### Poetry
+### Poetry
 
 ```shell
 poetry add beanie
 ```
 
-### Quick Start
+## Basic Example
+
+### Document models
 
 ```python
-from typing import Optional, List
-
-import motor
-from beanie import Document, init_beanie
+from typing import Optional
 from pydantic import BaseModel
+from beanie import Document
 
 
-class Tag(BaseModel):
+class Category(BaseModel):
     name: str
-    color: str
+    description: str
 
 
-class Note(Document):
-    title: str
-    text: Optional[str]
-    tag_list: List[Tag] = []
+class Product(Document):
+    name: str
+    description: Optional[str] = None
+    price: float
+    category: Category
+```
+
+### Initialization
+
+```python
+import motor
+from beanie import init_beanie
 
 
-async def main():
+async def init():
     # Crete Motor client
     client = motor.motor_asyncio.AsyncIOMotorClient(
         "mongodb://user:pass@host:27017"
     )
-    
-    # Init beanie with the Note document class
-    await init_beanie(database=client.db_name, document_models=[Note])
 
-    # Get all the notes
-    all_notes = await Note.find_all().to_list()
+    # Init beanie with the Note document class
+    await init_beanie(database=client.db_name, document_models=[Product])
+
 ```
 
-### Documentation
+### Create
 
-#### ODM
-- **[Tutorial](https://roman-right.github.io/beanie/tutorial/odm/)** - ODM usage examples
-- **[API](https://roman-right.github.io/beanie/documentation/odm/)** - Full list of the ODM classes and
-  methods with descriptions
+```python
+async def create():
+    chocolate = Category(name="Chocolate")
 
-#### Migrations
-- **[Tutorial](https://roman-right.github.io/beanie/tutorial/odm/)** - Migrations usage examples
+    # Single:
 
-### Example Projects
+    bar = Product(name="Tony's", price=5.95, category=chocolate)
+    await bar.insert()
 
-- **[FastAPI Demo](https://github.com/roman-right/beanie-fastapi-demo)** - Beanie and FastAPI collaboration demonstration. CRUD and Aggregation.
-- **[Indexes Demo](https://github.com/roman-right/beanie-index-demo)** - Regular and Geo Indexes usage example wrapped to a microservice. 
+    # Multi
 
-### Articles
+    milka = Product(name="Milka", price=3.05, category=chocolate)
+    peanut_bar = Product(name="Peanut Bar", price=4.44, category=chocolate)
+    await Product.insert_many([milka, peanut_bar])
+```
 
-- **[Announcing Beanie - MongoDB ODM](https://dev.to/romanright/announcing-beanie-mongodb-odm-56e)**
-- **[Build a Cocktail API with Beanie and MongoDB](https://developer.mongodb.com/article/beanie-odm-fastapi-cocktails/)**
-- **[MongoDB indexes with Beanie](https://dev.to/romanright/mongodb-indexes-with-beanie-43e8)**
-- **[Beanie Projections. Reducing network and database load.](https://dev.to/romanright/beanie-projections-reducing-network-and-database-load-3bih)**
+### Find
 
-### Resources
+```python
+async def find():
+    # All
 
-- **[GitHub](https://github.com/roman-right/beanie)** - GitHub page of the project
-- **[Changelog](https://roman-right.github.io/beanie/changelog)** - list of all the valuable changes
-- **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share ideas or just say `Hello!!`
+    all_products = await Product.all().to_list()
+
+    # Single
+
+    # By id
+    bar = await Product.get("608da169eb9e17281f0ab2ff")
+
+    # By name
+    bar = await Product.find_one(Product.name == "Peanut Bar")
+    
+    # Multi
+
+    # By category
+
+    chocolates = await Product.find(
+        Product.category.name == "Chocolate"
+    ).to_list()
+
+    # And by price
+
+    chocolates = await Product.find(
+        Product.category.name == "Chocolate",
+        Product.price < 5
+    ).to_list()
+
+    # OR
+
+    chocolates = await Product.find(
+        Product.category.name == "Chocolate").find(
+        Product.price < 5).to_list()
+```
+
+### Update
+
+```python
+async def update():
+    # Single 
+    await Product.find_one(Product.name == "Milka").set({Product.price: 3.33})
+
+    # Or
+    bar = await Product.find_one(Product.name == "Milka")
+    await bar.update(Set({Product.price: 3.33}))
+
+    # Or
+    bar.price = 3.33
+    await bar.replace()
+
+    # Multi
+    await Product.find(
+        Product.category.name == "Chocolate"
+    ).inc({Product.price: 1})
+```
 
 ----
 Supported by [JetBrains](https://jb.gg/OpenSource)
