@@ -15,6 +15,42 @@ class BaseFindGeospatialOperator(BaseFindOperator, ABC):
 
 class GeoIntersects(BaseFindGeospatialOperator):
     """
+    `$geoIntersects` query operator
+
+    Example:
+
+    ```python
+    class GeoObject(BaseModel):
+        type: str = "Point"
+        coordinates: Tuple[float, float]
+
+    class Place(Document):
+        geo: GeoObject
+
+        class Collection:
+            name = "places"
+            indexes = [
+                [("geo", pymongo.GEOSPHERE)],  # GEO index
+            ]
+
+    GeoIntersects(Place.geo, "Polygon", [[0,0], [1,1], [3,3]])
+    ```
+
+    Will return query object like
+
+    ```python
+    {
+        "geo": {
+            "$geoIntersects": {
+                "$geometry": {
+                    "type": "Polygon",
+                    "coordinates": [[0,0], [1,1], [3,3]],
+                }
+            }
+        }
+    }
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/geoIntersects/
     """
@@ -45,6 +81,42 @@ class GeoWithinTypes(str, Enum):
 
 class GeoWithin(BaseFindGeospatialOperator):
     """
+    `$geoWithin` query operator
+
+    Example:
+
+    ```python
+    class GeoObject(BaseModel):
+        type: str = "Point"
+        coordinates: Tuple[float, float]
+
+    class Place(Document):
+        geo: GeoObject
+
+        class Collection:
+            name = "places"
+            indexes = [
+                [("geo", pymongo.GEOSPHERE)],  # GEO index
+            ]
+
+    GeoWithin(Place.geo, "Polygon", [[0,0], [1,1], [3,3]])
+    ```
+
+    Will return query object like
+
+    ```python
+    {
+        "geo": {
+            "$geoWithin": {
+                "$geometry": {
+                    "type": "Polygon",
+                    "coordinates": [[0,0], [1,1], [3,3]],
+                }
+            }
+        }
+    }
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/geoWithin/
     """
@@ -72,6 +144,43 @@ class GeoWithin(BaseFindGeospatialOperator):
 
 class Near(BaseFindGeospatialOperator):
     """
+    `$near` query operator
+
+    Example:
+
+    ```python
+    class GeoObject(BaseModel):
+        type: str = "Point"
+        coordinates: Tuple[float, float]
+
+    class Place(Document):
+        geo: GeoObject
+
+        class Collection:
+            name = "places"
+            indexes = [
+                [("geo", pymongo.GEOSPHERE)],  # GEO index
+            ]
+
+    Near(Place.geo, 1.2345, 2.3456, min_distance=500)
+    ```
+
+    Will return query object like
+
+    ```python
+    {
+        "geo": {
+            "$near": {
+                "$geometry": {
+                    "type": "Point",
+                    "coordinates": [1.2345, 2.3456],
+                },
+                "$maxDistance": 500,
+            }
+        }
+    }
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/near/
     """
@@ -117,6 +226,42 @@ class Near(BaseFindGeospatialOperator):
 
 class NearSphere(Near):
     """
+    `$nearSphere` query operator
+
+    Example:
+
+    ```python
+    class GeoObject(BaseModel):
+        type: str = "Point"
+        coordinates: Tuple[float, float]
+
+    class Place(Document):
+        geo: GeoObject
+
+        class Collection:
+            name = "places"
+            indexes = [
+                [("geo", pymongo.GEOSPHERE)],  # GEO index
+            ]
+
+    NearSphere(Place.geo, 1.2345, 2.3456, min_distance=500)
+    ```
+
+    Will return query object like
+
+    ```python
+    {
+        "geo": {
+            "$nearSphere": {
+                "$geometry": {
+                    "type": "Point",
+                    "coordinates": [1.2345, 2.3456],
+                },
+                "$maxDistance": 500,
+            }
+        }
+    }
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/nearSphere/
     """
