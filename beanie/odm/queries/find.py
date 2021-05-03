@@ -1,7 +1,7 @@
 from typing import Union, Optional, List, Tuple, Type, Mapping
 
-from aiohttp import ClientSession
 from pydantic import BaseModel
+from pymongo.client_session import ClientSession
 
 from beanie.exceptions import DocumentNotFound
 from beanie.odm.interfaces.aggregate import AggregateMethods
@@ -11,7 +11,7 @@ from beanie.odm.interfaces.update import (
 )
 from beanie.odm.models import SortDirection
 from beanie.odm.operators.find.logical import And
-from beanie.odm.queries.aggregation import AggregationPipeline
+from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.cursor import BaseCursorQuery
 from beanie.odm.queries.delete import (
     DeleteQuery,
@@ -164,9 +164,9 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         aggregation_pipeline,
         projection_model: Type[BaseModel] = None,
         session: Optional[ClientSession] = None,
-    ) -> AggregationPipeline:
+    ) -> AggregationQuery:
         self.set_session(session=session)
-        return AggregationPipeline(
+        return AggregationQuery(
             aggregation_pipeline=aggregation_pipeline,
             document_model=self.document_model,
             projection_model=projection_model,

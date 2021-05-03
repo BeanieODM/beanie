@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from beanie.odm.documents import Document
 
 
-class AggregationPipeline(BaseCursorQuery, SessionMethods):
+class AggregationQuery(BaseCursorQuery, SessionMethods):
     def __init__(
         self,
         document_model: Type["Document"],

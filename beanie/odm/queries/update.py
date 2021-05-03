@@ -1,6 +1,6 @@
 from typing import Type, TYPE_CHECKING, Optional
 
-from aiohttp import ClientSession
+from pymongo.client_session import ClientSession
 
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (

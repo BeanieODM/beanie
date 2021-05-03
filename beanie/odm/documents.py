@@ -25,7 +25,7 @@ from beanie.odm.models import (
     InspectionError,
     SortDirection,
 )
-from beanie.odm.queries.aggregation import AggregationPipeline
+from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindOne, FindMany
 
 
@@ -361,7 +361,7 @@ class Document(BaseModel, UpdateMethods):
         aggregation_pipeline,
         aggregation_model: Type[BaseModel] = None,
         session: Optional[ClientSession] = None,
-    ) -> AggregationPipeline:
+    ) -> AggregationQuery:
         return cls.find_all().aggregate(
             aggregation_pipeline=aggregation_pipeline,
             projection_model=aggregation_model,

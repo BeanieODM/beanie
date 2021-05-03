@@ -44,7 +44,7 @@ class Category(BaseModel):
     description: str
 
 
-class Product(Document):
+class Product(Document):  # This is the model
     name: str
     description: Optional[str] = None
     price: float
@@ -80,7 +80,7 @@ async def create():
     bar = Product(name="Tony's", price=5.95, category=chocolate)
     await bar.insert()
 
-    # Multi
+    # Many
 
     milka = Product(name="Milka", price=3.05, category=chocolate)
     peanut_bar = Product(name="Peanut Bar", price=4.44, category=chocolate)
@@ -91,10 +91,6 @@ async def create():
 
 ```python
 async def find():
-    # All
-
-    all_products = await Product.all().to_list()
-
     # Single
 
     # By id
@@ -102,8 +98,8 @@ async def find():
 
     # By name
     bar = await Product.find_one(Product.name == "Peanut Bar")
-    
-    # Multi
+
+    # Many
 
     # By category
 
@@ -123,6 +119,10 @@ async def find():
     chocolates = await Product.find(
         Product.category.name == "Chocolate").find(
         Product.price < 5).to_list()
+
+    # All
+
+    all_products = await Product.all().to_list()
 ```
 
 ### Update
@@ -140,7 +140,7 @@ async def update():
     bar.price = 3.33
     await bar.replace()
 
-    # Multi
+    # Many
     await Product.find(
         Product.category.name == "Chocolate"
     ).inc({Product.price: 1})

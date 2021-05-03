@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from pymongo.client_session import ClientSession
 
 from beanie.odm.fields import ExpressionField
-from beanie.odm.queries.aggregation import AggregationPipeline
+from beanie.odm.queries.aggregation import AggregationQuery
 
 
 class AggregateMethods:
@@ -19,7 +19,7 @@ class AggregateMethods:
         aggregation_pipeline,
         projection_model: Type[BaseModel] = None,
         session: Optional[ClientSession] = None,
-    ) -> AggregationPipeline:
+    ) -> AggregationQuery:
         ...
 
     async def sum(
