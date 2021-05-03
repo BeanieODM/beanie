@@ -14,6 +14,23 @@ class BaseFindElementOperator(BaseFindOperator, ABC):
 
 class Exists(BaseFindElementOperator):
     """
+    `$exists` query operator
+
+    Example:
+
+    ```python
+    Class Product(Document):
+        price: float
+
+    Exists(Product.price, True)
+    ```
+
+    Will return query object like
+
+    ```python
+    {"price": {"$exists": True}}
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/exists/
     """
@@ -33,6 +50,23 @@ class Exists(BaseFindElementOperator):
 
 class Type(BaseFindElementOperator):
     """
+    `$type` query operator
+
+    Example:
+
+    ```python
+    Class Product(Document):
+        price: float
+
+    Type(Product.price, "decimal")
+    ```
+
+    Will return query object like
+
+    ```python
+    {"price": {"$type": "decimal"}}
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/type/
     """

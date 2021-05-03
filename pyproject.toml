@@ -6,7 +6,7 @@ authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
 homepage = "https://github.com/roman-right/beanie"
 repository = "https://github.com/roman-right/beanie"
-keywords = ["mongo", "mongodb", "pydantic", "odm"]
+keywords = ["mongodb", "odm", "pydantic", ]
 include = [
     "LICENSE",
 ]
