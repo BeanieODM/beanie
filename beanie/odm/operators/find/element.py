@@ -28,7 +28,7 @@ class Exists(BaseFindElementOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/exists/
+    <https://docs.mongodb.com/manual/reference/operator/query/exists/>
     """
 
     def __init__(
@@ -64,7 +64,7 @@ class Type(BaseFindElementOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/type/
+    <https://docs.mongodb.com/manual/reference/operator/query/type/>
     """
 
     def __init__(self, field, types: Union[List[str], str]):

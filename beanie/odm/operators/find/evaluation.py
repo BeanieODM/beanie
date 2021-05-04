@@ -29,7 +29,7 @@ class Expr(BaseFindEvaluationOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/expr/
+    <https://docs.mongodb.com/manual/reference/operator/query/expr/>
     """
 
     def __init__(self, expression: dict):
@@ -45,7 +45,7 @@ class JsonSchema(BaseFindEvaluationOperator):
     `$jsonSchema` query operator
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/
+    <https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/>
     """
 
     def __init__(self, expression: dict):
@@ -76,7 +76,7 @@ class Mod(BaseFindEvaluationOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/mod/
+    <https://docs.mongodb.com/manual/reference/operator/query/mod/>
     """
 
     def __init__(self, field, divisor, remainder):
@@ -94,7 +94,7 @@ class RegEx(BaseFindEvaluationOperator):
     `$regex` query operator
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/regex/
+    <https://docs.mongodb.com/manual/reference/operator/query/regex/>
     """
 
     def __init__(self, field, pattern, options: Optional[str] = None):
@@ -136,7 +136,7 @@ class Text(BaseFindEvaluationOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/text/
+    <https://docs.mongodb.com/manual/reference/operator/query/text/>
     """
 
     def __init__(
@@ -177,7 +177,7 @@ class Where(BaseFindEvaluationOperator):
     `$where` query operator
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/where/
+    <https://docs.mongodb.com/manual/reference/operator/query/where/>
     """
 
     def __init__(self, expression: str):

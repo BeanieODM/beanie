@@ -48,7 +48,7 @@ class GeoIntersects(BaseFindGeospatialOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/geoIntersects/
+    <https://docs.mongodb.com/manual/reference/operator/query/geoIntersects/>
     """
 
     def __init__(self, field, geo_type: str, coordinates: List[List[float]]):
@@ -114,7 +114,7 @@ class GeoWithin(BaseFindGeospatialOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/geoWithin/
+    <https://docs.mongodb.com/manual/reference/operator/query/geoWithin/>
     """
 
     def __init__(
@@ -178,7 +178,7 @@ class Near(BaseFindGeospatialOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/near/
+    <https://docs.mongodb.com/manual/reference/operator/query/near/>
     """
 
     operator = "$near"
@@ -257,9 +257,10 @@ class NearSphere(Near):
             }
         }
     }
+    ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/nearSphere/
+    <https://docs.mongodb.com/manual/reference/operator/query/nearSphere/>
     """
 
     operator = "$nearSphere"

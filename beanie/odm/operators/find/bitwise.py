@@ -21,7 +21,7 @@ class BitsAllClear(BaseFindBitwiseOperator):
     `$bitsAllClear` query operator
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/bitsAllClear/
+    <https://docs.mongodb.com/manual/reference/operator/query/bitsAllClear/>
     """
 
     operator = "$bitsAllClear"

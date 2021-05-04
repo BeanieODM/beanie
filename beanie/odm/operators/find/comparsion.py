@@ -37,7 +37,7 @@ class Eq(BaseFindComparisonOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/eq/
+    <https://docs.mongodb.com/manual/reference/operator/query/eq/>
     """
 
     @property
@@ -65,7 +65,7 @@ class GT(BaseFindComparisonOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/gt/
+    <https://docs.mongodb.com/manual/reference/operator/query/gt/>
     """
 
     operator = "$gt"
@@ -91,7 +91,7 @@ class GTE(BaseFindComparisonOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/gte/
+    <https://docs.mongodb.com/manual/reference/operator/query/gte/>
     """
 
     operator = "$gte"
@@ -117,7 +117,7 @@ class In(BaseFindComparisonOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/in/
+    <https://docs.mongodb.com/manual/reference/operator/query/in/>
     """
 
     operator = "$in"
@@ -143,7 +143,7 @@ class NotIn(BaseFindComparisonOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/nin/
+    <https://docs.mongodb.com/manual/reference/operator/query/nin/>
     """
 
     operator = "$nin"
@@ -169,7 +169,7 @@ class LT(BaseFindComparisonOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/lt/
+    <https://docs.mongodb.com/manual/reference/operator/query/lt/>
     """
 
     operator = "$lt"
@@ -195,7 +195,7 @@ class LTE(BaseFindComparisonOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/lte/
+    <https://docs.mongodb.com/manual/reference/operator/query/lte/>
     """
 
     operator = "$lte"
@@ -221,7 +221,7 @@ class NE(BaseFindComparisonOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/ne/
+    <https://docs.mongodb.com/manual/reference/operator/query/ne/>
     """
 
     operator = "$ne"

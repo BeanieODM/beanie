@@ -27,7 +27,7 @@ class All(BaseFindArrayOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/all
+    <https://docs.mongodb.com/manual/reference/operator/query/all>
     """
 
     def __init__(
@@ -63,7 +63,7 @@ class ElemMatch(BaseFindArrayOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/elemMatch/
+    <https://docs.mongodb.com/manual/reference/operator/query/elemMatch/>
     """
 
     def __init__(
@@ -99,7 +99,7 @@ class Size(BaseFindArrayOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/size/
+    <https://docs.mongodb.com/manual/reference/operator/query/size/>
     """
 
     def __init__(

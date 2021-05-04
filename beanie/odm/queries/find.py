@@ -4,12 +4,12 @@ from pydantic import BaseModel
 from pymongo.client_session import ClientSession
 
 from beanie.exceptions import DocumentNotFound
+from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.aggregate import AggregateMethods
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
-from beanie.odm.models import SortDirection
 from beanie.odm.operators.find.logical import And
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.cursor import BaseCursorQuery

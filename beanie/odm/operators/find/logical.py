@@ -44,7 +44,7 @@ class Or(LogicalOperatorForListOfExpressions):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/or/
+    <https://docs.mongodb.com/manual/reference/operator/query/or/>
     """
 
     operator = "$or"
@@ -71,7 +71,7 @@ class And(LogicalOperatorForListOfExpressions):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/and/
+    <https://docs.mongodb.com/manual/reference/operator/query/and/>
     """
 
     operator = "$and"
@@ -98,7 +98,7 @@ class Nor(BaseFindLogicalOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/nor/
+    <https://docs.mongodb.com/manual/reference/operator/query/nor/>
     """
 
     def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
@@ -130,7 +130,7 @@ class Not(BaseFindLogicalOperator):
     ```
 
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/not/
+    <https://docs.mongodb.com/manual/reference/operator/query/not/>
     """
 
     def __init__(self, expression):
