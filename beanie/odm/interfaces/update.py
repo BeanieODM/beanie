@@ -28,8 +28,19 @@ class UpdateMethods:
         """
         Set values
 
-        MongoDB doc:
-        https://docs.mongodb.com/manual/reference/operator/update/set/
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            one: int
+
+        await Document.find(Sample.one == 1).set({Sample.one: 100})
+
+        ```
+
+        Uses [Set operator](/api/operators/update/#set)
+
         :param expression: Dict[Union[ExpressionField, str], Any] - keys and
         values to set
         :param session: Optional[ClientSession] - pymongo session
@@ -45,8 +56,8 @@ class UpdateMethods:
         """
         Set current date
 
-        MongoDB doc:
-        https://docs.mongodb.com/manual/reference/operator/update/currentDate/
+        Uses [CurrentDate operator](/api/operators/update/#currentdate)
+
         :param expression: Dict[Union[ExpressionField, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :return: self
@@ -61,8 +72,19 @@ class UpdateMethods:
         """
         Increment
 
-        MongoDB doc:
-        https://docs.mongodb.com/manual/reference/operator/update/inc/
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            one: int
+
+        await Document.find(Sample.one == 1).inc({Sample.one: 100})
+
+        ```
+
+        Uses [Inc operator](/api/operators/update/#inc)
+
         :param expression: Dict[Union[ExpressionField, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :return: self

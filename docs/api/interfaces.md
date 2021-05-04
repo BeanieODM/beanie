@@ -19,8 +19,18 @@ def set(
 
 Set values
 
-MongoDB doc:
-https://docs.mongodb.com/manual/reference/operator/update/set/
+Example:
+
+```python
+
+class Sample(Document):
+    one: int
+
+await Document.find(Sample.one == 1).set({Sample.one: 100})
+
+```
+
+Uses [Set operator](/api/operators/update/#set)
 
 **Arguments**:
 
@@ -43,8 +53,7 @@ def current_date(
 
 Set current date
 
-MongoDB doc:
-https://docs.mongodb.com/manual/reference/operator/update/currentDate/
+Uses [CurrentDate operator](/api/operators/update/#currentdate)
 
 **Arguments**:
 
@@ -66,8 +75,18 @@ def inc(
 
 Increment
 
-MongoDB doc:
-https://docs.mongodb.com/manual/reference/operator/update/inc/
+Example:
+
+```python
+
+class Sample(Document):
+    one: int
+
+await Document.find(Sample.one == 1).inc({Sample.one: 100})
+
+```
+
+Uses [Inc operator](/api/operators/update/#inc)
 
 **Arguments**:
 
@@ -99,6 +118,18 @@ async def sum(
 
 Sum of values of the given field
 
+Example:
+
+```python
+
+class Sample(Document):
+    price: int
+    count: int
+
+sum_count = await Document.find(Sample.price <= 100).sum(Sample.count)
+
+```
+
 **Arguments**:
 
 - `field`: Union[str, ExpressionField]
@@ -118,6 +149,17 @@ async def avg(
 ```
 
 Average of values of the given field
+
+Example:
+
+```python
+
+class Sample(Document):
+    price: int
+    count: int
+
+avg_count = await Document.find(Sample.price <= 100).avg(Sample.count)
+```
 
 **Arguments**:
 
@@ -139,6 +181,17 @@ async def max(
 
 Max of the values of the given field
 
+Example:
+
+```python
+
+class Sample(Document):
+    price: int
+    count: int
+
+max_count = await Document.find(Sample.price <= 100).max(Sample.count)
+```
+
 **Arguments**:
 
 - `field`: Union[str, ExpressionField]
@@ -158,6 +211,17 @@ async def min(
 ```
 
 Min of the values of the given field
+
+Example:
+
+```python
+
+class Sample(Document):
+    price: int
+    count: int
+
+min_count = await Document.find(Sample.price <= 100).min(Sample.count)
+```
 
 **Arguments**:
 
