@@ -13,6 +13,8 @@ class BaseUpdateBitwiseOperator(BaseUpdateOperator, ABC):
 
 class Bit(BaseUpdateBitwiseOperator):
     """
+    `$bit` update query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/update/bit/
     """

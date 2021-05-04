@@ -18,6 +18,23 @@ class BaseUpdateGeneralOperator(BaseUpdateOperator):
 
 class Set(BaseUpdateGeneralOperator):
     """
+    `$set` update query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        one: int
+
+    Set({Sample.one, 2})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$set": {"one": 2}}
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/update/set/
     """
@@ -27,6 +44,23 @@ class Set(BaseUpdateGeneralOperator):
 
 class CurrentDate(BaseUpdateGeneralOperator):
     """
+    `$currentDate` update query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        ts: datetime
+
+    CurrentDate({Sample.ts, True})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$currentDate": {"ts": True}}
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/update/currentDate/
     """
@@ -36,6 +70,23 @@ class CurrentDate(BaseUpdateGeneralOperator):
 
 class Inc(BaseUpdateGeneralOperator):
     """
+    `$inc` update query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        one: int
+
+    Inc({Sample.one, 2})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$inc": {"one": 2}}
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/update/inc/
     """
@@ -45,6 +96,23 @@ class Inc(BaseUpdateGeneralOperator):
 
 class Min(BaseUpdateGeneralOperator):
     """
+    `$min` update query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        one: int
+
+    Min({Sample.one, 2})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$min": {"one": 2}}
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/update/min/
     """
@@ -54,6 +122,23 @@ class Min(BaseUpdateGeneralOperator):
 
 class Max(BaseUpdateGeneralOperator):
     """
+    `$max` update query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        one: int
+
+    Max({Sample.one, 2})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$max": {"one": 2}}
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/update/max/
     """
@@ -63,6 +148,23 @@ class Max(BaseUpdateGeneralOperator):
 
 class Mul(BaseUpdateGeneralOperator):
     """
+    `$mul` update query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        one: int
+
+    Mul({Sample.one, 2})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$mul": {"one": 2}}
+    ```
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/update/mul/
     """
@@ -72,6 +174,8 @@ class Mul(BaseUpdateGeneralOperator):
 
 class Rename(BaseUpdateGeneralOperator):
     """
+    `$rename` update query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/update/rename/
     """
@@ -81,6 +185,8 @@ class Rename(BaseUpdateGeneralOperator):
 
 class SetOnInsert(BaseUpdateGeneralOperator):
     """
+    `$setOnInsert` update query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/update/setOnInsert/
     """
@@ -90,6 +196,8 @@ class SetOnInsert(BaseUpdateGeneralOperator):
 
 class Unset(BaseUpdateGeneralOperator):
     """
+    `$unset` update query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/update/unset/
     """
