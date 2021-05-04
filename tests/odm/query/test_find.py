@@ -1,7 +1,7 @@
 import pytest
 from pydantic import BaseModel
 
-from beanie.odm.models import SortDirection
+from beanie.odm.enums import SortDirection
 from tests.odm.models import Sample
 
 
