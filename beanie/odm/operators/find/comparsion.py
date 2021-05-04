@@ -2,10 +2,6 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindComparisonOperator(BaseFindOperator):
-    """
-    Base class for find query comparison operators
-    """
-
     operator = ""
 
     def __init__(
@@ -13,11 +9,6 @@ class BaseFindComparisonOperator(BaseFindOperator):
         field,
         other,
     ):
-        """
-
-        :param field: Union[str, ExpressionField]
-        :param other:
-        """
         self.field = field
         self.other = other
 

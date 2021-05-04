@@ -6,10 +6,6 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindGeospatialOperator(BaseFindOperator, ABC):
-    """
-    Base class for geospatial find query operators
-    """
-
     ...
 
 

@@ -5,10 +5,6 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindElementOperator(BaseFindOperator, ABC):
-    """
-    Base class for element find query operator
-    """
-
     ...
 
 

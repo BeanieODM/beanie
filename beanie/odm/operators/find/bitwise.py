@@ -5,18 +5,9 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindBitwiseOperator(BaseFindOperator):
-    """
-    Base class for Bitwise find query operators
-    """
-
     operator = ""
 
     def __init__(self, field: Union[str, ExpressionField], bitmask):
-        """
-
-        :param field: Union[str, ExpressionField]
-        :param bitmask:
-        """
         self.field = field
         self.bitmask = bitmask
 
