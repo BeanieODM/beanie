@@ -19,7 +19,7 @@ class Expr(BaseFindEvaluationOperator):
     Example:
 
     ```python
-    Class Sample(Document):
+    class Sample(Document):
         one: int
         two: int
 
@@ -67,7 +67,7 @@ class Mod(BaseFindEvaluationOperator):
     Example:
 
     ```python
-    Class Sample(Document):
+    class Sample(Document):
         one: int
 
     Mod(Sample.one, 4, 0)
@@ -121,7 +121,7 @@ class Text(BaseFindEvaluationOperator):
     Example:
 
     ```python
-    Class Sample(Document):
+    class Sample(Document):
         description: Indexed(str, pymongo.TEXT)
 
     Text("coffee")

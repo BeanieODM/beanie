@@ -33,7 +33,7 @@ class Eq(BaseFindComparisonOperator):
     Example:
 
     ```python
-    Class Product(Document):
+    class Product(Document):
         price: float
 
     Eq(Product.price, 2)
@@ -61,7 +61,7 @@ class GT(BaseFindComparisonOperator):
     Example:
 
     ```python
-    Class Product(Document):
+    class Product(Document):
         price: float
 
     GT(Product.price, 2)
@@ -87,7 +87,7 @@ class GTE(BaseFindComparisonOperator):
     Example:
 
     ```python
-    Class Product(Document):
+    class Product(Document):
         price: float
 
     GTE(Product.price, 2)
@@ -113,7 +113,7 @@ class In(BaseFindComparisonOperator):
     Example:
 
     ```python
-    Class Product(Document):
+    class Product(Document):
         price: float
 
     In(Product.price, [2, 3, 4])
@@ -139,7 +139,7 @@ class NotIn(BaseFindComparisonOperator):
     Example:
 
     ```python
-    Class Product(Document):
+    class Product(Document):
         price: float
 
     NotIn(Product.price, [2, 3, 4])
@@ -165,7 +165,7 @@ class LT(BaseFindComparisonOperator):
     Example:
 
     ```python
-    Class Product(Document):
+    class Product(Document):
         price: float
 
     LT(Product.price, 2)
@@ -191,7 +191,7 @@ class LTE(BaseFindComparisonOperator):
     Example:
 
     ```python
-    Class Product(Document):
+    class Product(Document):
         price: float
 
     LTE(Product.price, 2)
@@ -217,7 +217,7 @@ class NE(BaseFindComparisonOperator):
     Example:
 
     ```python
-    Class Product(Document):
+    class Product(Document):
         price: float
 
     NE(Product.price, 2)

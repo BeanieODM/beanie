@@ -27,6 +27,8 @@ class BaseFindBitwiseOperator(BaseFindOperator):
 
 class BitsAllClear(BaseFindBitwiseOperator):
     """
+    `$bitsAllClear` query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/bitsAllClear/
     """
@@ -36,6 +38,8 @@ class BitsAllClear(BaseFindBitwiseOperator):
 
 class BitsAllSet(BaseFindBitwiseOperator):
     """
+    `$bitsAllSet` query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/bitsAllSet/
     """
@@ -45,6 +49,8 @@ class BitsAllSet(BaseFindBitwiseOperator):
 
 class BitsAnyClear(BaseFindBitwiseOperator):
     """
+    `$bitsAnyClear` query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/bitsAnyClear/
     """
@@ -54,6 +60,8 @@ class BitsAnyClear(BaseFindBitwiseOperator):
 
 class BitsAnySet(BaseFindBitwiseOperator):
     """
+    `$bitsAnySet` query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/bitsAnySet/
     """

@@ -14,7 +14,7 @@ class All(BaseFindArrayOperator):
     Example:
 
     ```python
-    Class Sample(Document):
+    class Sample(Document):
         results: List[int]
 
     All(Sample.results, [80, 85])
@@ -50,7 +50,7 @@ class ElemMatch(BaseFindArrayOperator):
     Example:
 
     ```python
-    Class Sample(Document):
+    class Sample(Document):
         results: List[int]
 
     ElemMatch(Sample.results, [80, 85])
@@ -86,7 +86,7 @@ class Size(BaseFindArrayOperator):
     Example:
 
     ```python
-    Class Sample(Document):
+    class Sample(Document):
         results: List[int]
 
     Size(Sample.results, 2)

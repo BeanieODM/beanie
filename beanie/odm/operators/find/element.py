@@ -19,7 +19,7 @@ class Exists(BaseFindElementOperator):
     Example:
 
     ```python
-    Class Product(Document):
+    class Product(Document):
         price: float
 
     Exists(Product.price, True)
@@ -55,7 +55,7 @@ class Type(BaseFindElementOperator):
     Example:
 
     ```python
-    Class Product(Document):
+    class Product(Document):
         price: float
 
     Type(Product.price, "decimal")
