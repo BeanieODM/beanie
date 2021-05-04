@@ -12,6 +12,14 @@ if TYPE_CHECKING:
 
 
 class AggregationQuery(BaseCursorQuery, SessionMethods):
+    """
+    Aggregation Query
+
+    It is async generator. Use `async for` or
+    `to_list` method to work with this
+
+    """
+
     def __init__(
         self,
         document_model: Type["Document"],

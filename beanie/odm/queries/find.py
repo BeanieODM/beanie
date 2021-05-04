@@ -27,6 +27,10 @@ from beanie.odm.utils.projection import get_projection
 
 
 class FindQuery(UpdateMethods, SessionMethods):
+    """
+    Find Query base class
+    """
+
     UpdateQueryType = UpdateQuery
     DeleteQueryType = DeleteQuery
 
@@ -67,6 +71,13 @@ class FindQuery(UpdateMethods, SessionMethods):
 
 
 class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
+    """
+    Find Many query class
+
+    It is async generator. Use `async for` or
+    `to_list` method to work with this
+    """
+
     UpdateQueryType = UpdateMany
     DeleteQueryType = DeleteMany
 
@@ -186,6 +197,10 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
 
 
 class FindOne(FindQuery):
+    """
+    Find One query class
+    """
+
     UpdateQueryType = UpdateOne
     DeleteQueryType = DeleteOne
 

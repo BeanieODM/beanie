@@ -13,6 +13,10 @@ if TYPE_CHECKING:
 
 
 class UpdateQuery(UpdateMethods, SessionMethods):
+    """
+    Update Query base class
+    """
+
     def __init__(self, document_model: Type["Document"], find_query: dict):
         self.document_model = document_model
         self.find_query = find_query
@@ -38,6 +42,10 @@ class UpdateQuery(UpdateMethods, SessionMethods):
 
 
 class UpdateMany(UpdateQuery):
+    """
+    Update Many query class
+    """
+
     def update_many(self, *args, session: Optional[ClientSession] = None):
         return self.update(*args, session=session)
 
@@ -48,6 +56,10 @@ class UpdateMany(UpdateQuery):
 
 
 class UpdateOne(UpdateQuery):
+    """
+    Update One query class
+    """
+
     def update_one(self, *args, session: Optional[ClientSession] = None):
         return self.update(*args, session=session)
 

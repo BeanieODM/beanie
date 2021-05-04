@@ -13,7 +13,7 @@ from beanie.odm.operators.update.general import (
 
 class UpdateMethods:
     """
-    Update helpers
+    Update methods
     """
 
     @abstractmethod
@@ -27,6 +27,7 @@ class UpdateMethods:
     ):
         """
         Set values
+
         MongoDB doc:
         https://docs.mongodb.com/manual/reference/operator/update/set/
         :param expression: Dict[Union[ExpressionField, str], Any] - keys and
@@ -43,6 +44,7 @@ class UpdateMethods:
     ):
         """
         Set current date
+
         MongoDB doc:
         https://docs.mongodb.com/manual/reference/operator/update/currentDate/
         :param expression: Dict[Union[ExpressionField, str], Any]
@@ -58,6 +60,7 @@ class UpdateMethods:
     ):
         """
         Increment
+
         MongoDB doc:
         https://docs.mongodb.com/manual/reference/operator/update/inc/
         :param expression: Dict[Union[ExpressionField, str], Any]
