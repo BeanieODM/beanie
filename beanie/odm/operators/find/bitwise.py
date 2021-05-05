@@ -5,18 +5,9 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindBitwiseOperator(BaseFindOperator):
-    """
-    Base class for Bitwise find query operators
-    """
-
     operator = ""
 
     def __init__(self, field: Union[str, ExpressionField], bitmask):
-        """
-
-        :param field: Union[str, ExpressionField]
-        :param bitmask:
-        """
         self.field = field
         self.bitmask = bitmask
 
@@ -27,8 +18,10 @@ class BaseFindBitwiseOperator(BaseFindOperator):
 
 class BitsAllClear(BaseFindBitwiseOperator):
     """
+    `$bitsAllClear` query operator
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/bitsAllClear/
+    <https://docs.mongodb.com/manual/reference/operator/query/bitsAllClear/>
     """
 
     operator = "$bitsAllClear"
@@ -36,6 +29,8 @@ class BitsAllClear(BaseFindBitwiseOperator):
 
 class BitsAllSet(BaseFindBitwiseOperator):
     """
+    `$bitsAllSet` query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/bitsAllSet/
     """
@@ -45,6 +40,8 @@ class BitsAllSet(BaseFindBitwiseOperator):
 
 class BitsAnyClear(BaseFindBitwiseOperator):
     """
+    `$bitsAnyClear` query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/bitsAnyClear/
     """
@@ -54,6 +51,8 @@ class BitsAnyClear(BaseFindBitwiseOperator):
 
 class BitsAnySet(BaseFindBitwiseOperator):
     """
+    `$bitsAnySet` query operator
+
     MongoDB doc:
     https://docs.mongodb.com/manual/reference/operator/query/bitsAnySet/
     """

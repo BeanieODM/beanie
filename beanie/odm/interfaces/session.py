@@ -4,6 +4,10 @@ from pymongo.client_session import ClientSession
 
 
 class SessionMethods:
+    """
+    Session methods
+    """
+
     def set_session(self, session: Optional[ClientSession] = None):
         """
         Set pymongo session

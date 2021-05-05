@@ -13,6 +13,7 @@ from beanie.exceptions import (
     CollectionWasNotInitialized,
     ReplaceError,
 )
+from beanie.odm.enums import SortDirection
 from beanie.odm.operators.find.comparsion import In
 from beanie.odm.utils.collection import collection_factory
 from beanie.odm.fields import PydanticObjectId, ExpressionField
@@ -23,9 +24,8 @@ from beanie.odm.models import (
     InspectionResult,
     InspectionStatuses,
     InspectionError,
-    SortDirection,
 )
-from beanie.odm.queries.aggregation import AggregationPipeline
+from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindOne, FindMany
 
 
@@ -33,19 +33,20 @@ class Document(BaseModel, UpdateMethods):
     """
     Document Mapping class.
 
-    Inherited from Pydantic BaseModel ß includes all the respective methods.
-    Contains id filed - MongoDB document ObjectID "_id" field
+    Fields:
+
+    - `id` - MongoDB document ObjectID "_id" field.
+    Mapped to the PydanticObjectId class
+
+    Inherited from:
+
+    - Pydantic BaseModel
+    - [UpdateMethods](/api/interfaces/#aggregatemethods)
     """
 
     id: Optional[PydanticObjectId] = Field(None, alias="_id")
 
     def __init__(self, *args, **kwargs):
-        """
-        Initialization
-
-        :param args:
-        :param kwargs:
-        """
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
 
@@ -57,6 +58,30 @@ class Document(BaseModel, UpdateMethods):
         new_instance = await self.get(self.id)
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
+
+    async def insert(
+        self, session: Optional[ClientSession] = None
+    ) -> "Document":
+        """
+        Insert the document (self) to the collection
+        :return: Document
+        """
+        if self.id is not None:
+            raise DocumentAlreadyCreated
+        result = await self.get_motor_collection().insert_one(
+            self.dict(by_alias=True, exclude={"id"}), session=session
+        )
+        self.id = PydanticObjectId(result.inserted_id)
+        return self
+
+    async def create(
+        self, session: Optional[ClientSession] = None
+    ) -> "Document":
+        """
+        The same as self.insert()
+        :return: Document
+        """
+        return await self.insert(session=session)
 
     @classmethod
     async def insert_one(
@@ -103,29 +128,20 @@ class Document(BaseModel, UpdateMethods):
             session=session,
         )
 
-    async def insert(
-        self, session: Optional[ClientSession] = None
-    ) -> "Document":
+    @classmethod
+    async def get(
+        cls,
+        document_id: PydanticObjectId,
+        session: Optional[ClientSession] = None,
+    ) -> Union["Document", None]:
         """
-        Insert the document to the database
-        :return: Document
-        """
-        if self.id is not None:
-            raise DocumentAlreadyCreated
-        result = await self.get_motor_collection().insert_one(
-            self.dict(by_alias=True, exclude={"id"}), session=session
-        )
-        self.id = PydanticObjectId(result.inserted_id)
-        return self
+        Get document by id
 
-    async def create(
-        self, session: Optional[ClientSession] = None
-    ) -> "Document":
+        :param document_id: PydanticObjectId - document id
+        :param session: Optional[ClientSession] - pymongo session
+        :return: Union["Document", None]
         """
-        Insert the document to the database. The same as self.insert()
-        :return: Document
-        """
-        return await self.insert(session=session)
+        return await cls.find_one({"_id": document_id}, session=session)
 
     @classmethod
     def find_one(
@@ -135,12 +151,13 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
     ) -> FindOne:
         """
-        Find one document by criteria
+        Find one document by criteria.
+        Returns [FindOne](/api/queries/#findone) query object
 
-        :param args: Union[dict, Mapping] - search criteria
+        :param args: *Union[dict, Mapping] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session instance
-        :return: FindOne - find query instance
+        :return: [FindOne](/api/queries/#findone) - find query instance
         """
         return FindOne(document_model=cls).find_one(
             *args,
@@ -159,8 +176,10 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
     ) -> FindMany:
         """
-        Find many documents by criteria
+        Find many documents by criteria.
+        Returns [FindMany](/api/queries/#findmany) query object
 
+        :param args: *Union[dict, Mapping] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
@@ -168,13 +187,35 @@ class Document(BaseModel, UpdateMethods):
         for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
-        :return: FindMany - query instance
+        :return: [FindMany](/api/queries/#findmany) - query instance
         """
         return FindMany(document_model=cls).find_many(
             *args,
             sort=sort,
             skip=skip,
             limit=limit,
+            projection_model=projection_model,
+            session=session,
+        )
+
+    @classmethod
+    def find(
+        cls,
+        *args,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: Optional[Type[BaseModel]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany:
+        """
+        The same as find_many
+        """
+        return cls.find_many(
+            *args,
+            skip=skip,
+            limit=limit,
+            sort=sort,
             projection_model=projection_model,
             session=session,
         )
@@ -198,7 +239,7 @@ class Document(BaseModel, UpdateMethods):
         for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
-        :return: FindMany - query instance
+        :return: [FindMany](/api/queries/#findmany) - query instance
         """
         return cls.find_many(
             {},
@@ -228,43 +269,6 @@ class Document(BaseModel, UpdateMethods):
             projection_model=projection_model,
             session=session,
         )
-
-    @classmethod
-    def find(
-        cls,
-        *args,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[BaseModel]] = None,
-        session: Optional[ClientSession] = None,
-    ) -> FindMany:
-        """
-        The same as find_many
-        """
-        return cls.find_many(
-            *args,
-            skip=skip,
-            limit=limit,
-            sort=sort,
-            projection_model=projection_model,
-            session=session,
-        )
-
-    @classmethod
-    async def get(
-        cls,
-        document_id: PydanticObjectId,
-        session: Optional[ClientSession] = None,
-    ) -> Union["Document", None]:
-        """
-        Get document by id
-
-        :param document_id: PydanticObjectId - document id
-        :param session: Optional[ClientSession] - pymongo session
-        :return: Union["Document", None]
-        """
-        return await cls.find_one({"_id": document_id}, session=session)
 
     @classmethod
     async def replace_many(
@@ -313,7 +317,7 @@ class Document(BaseModel, UpdateMethods):
         """
         Partially update all the documents
 
-        :param args: Union[dict, Mapping] - the modifications to apply.
+        :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
         :return: UpdateResult - pymongo UpdateResult instance
         """
@@ -325,7 +329,7 @@ class Document(BaseModel, UpdateMethods):
         """
         Partially update the document in the database
 
-        :param args: Union[dict, Mapping] - the modifications to apply.
+        :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
         :return: None
         """
@@ -358,10 +362,18 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def aggregate(
         cls,
-        aggregation_pipeline,
+        aggregation_pipeline: list,
         aggregation_model: Type[BaseModel] = None,
         session: Optional[ClientSession] = None,
-    ) -> AggregationPipeline:
+    ) -> AggregationQuery:
+        """
+        Aggregate over collection.
+        Returns [AggregationQuery](/api/queries/#aggregationquery) query object
+        :param aggregation_pipeline: list - aggregation pipeline
+        :param aggregation_model: Type[BaseModel]
+        :param session: Optional[ClientSession]
+        :return: [AggregationQuery](/api/queries/#aggregationquery)
+        """
         return cls.find_all().aggregate(
             aggregation_pipeline=aggregation_pipeline,
             projection_model=aggregation_model,

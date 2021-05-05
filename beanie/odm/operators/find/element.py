@@ -5,17 +5,30 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindElementOperator(BaseFindOperator, ABC):
-    """
-    Base class for element find query operator
-    """
-
     ...
 
 
 class Exists(BaseFindElementOperator):
     """
+    `$exists` query operator
+
+    Example:
+
+    ```python
+    class Product(Document):
+        price: float
+
+    Exists(Product.price, True)
+    ```
+
+    Will return query object like
+
+    ```python
+    {"price": {"$exists": True}}
+    ```
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/exists/
+    <https://docs.mongodb.com/manual/reference/operator/query/exists/>
     """
 
     def __init__(
@@ -33,8 +46,25 @@ class Exists(BaseFindElementOperator):
 
 class Type(BaseFindElementOperator):
     """
+    `$type` query operator
+
+    Example:
+
+    ```python
+    class Product(Document):
+        price: float
+
+    Type(Product.price, "decimal")
+    ```
+
+    Will return query object like
+
+    ```python
+    {"price": {"$type": "decimal"}}
+    ```
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/type/
+    <https://docs.mongodb.com/manual/reference/operator/query/type/>
     """
 
     def __init__(self, field, types: Union[List[str], str]):

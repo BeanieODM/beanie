@@ -5,17 +5,31 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindEvaluationOperator(BaseFindOperator, ABC):
-    """
-    Base class for evaluation find query operator
-    """
-
     ...
 
 
 class Expr(BaseFindEvaluationOperator):
     """
+    `$type` query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        one: int
+        two: int
+
+    Expr({"$gt": [ "$one" , "$two" ]})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$expr": {"$gt": [ "$one" , "$two" ]}}
+    ```
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/expr/
+    <https://docs.mongodb.com/manual/reference/operator/query/expr/>
     """
 
     def __init__(self, expression: dict):
@@ -28,8 +42,10 @@ class Expr(BaseFindEvaluationOperator):
 
 class JsonSchema(BaseFindEvaluationOperator):
     """
+    `$jsonSchema` query operator
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/
+    <https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/>
     """
 
     def __init__(self, expression: dict):
@@ -42,8 +58,25 @@ class JsonSchema(BaseFindEvaluationOperator):
 
 class Mod(BaseFindEvaluationOperator):
     """
+    `$mod` query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        one: int
+
+    Mod(Sample.one, 4, 0)
+    ```
+
+    Will return query object like
+
+    ```python
+    { "one": { "$mod": [ 4, 0 ] } }
+    ```
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/mod/
+    <https://docs.mongodb.com/manual/reference/operator/query/mod/>
     """
 
     def __init__(self, field, divisor, remainder):
@@ -58,8 +91,10 @@ class Mod(BaseFindEvaluationOperator):
 
 class RegEx(BaseFindEvaluationOperator):
     """
+    `$regex` query operator
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/regex/
+    <https://docs.mongodb.com/manual/reference/operator/query/regex/>
     """
 
     def __init__(self, field, pattern, options: Optional[str] = None):
@@ -77,8 +112,31 @@ class RegEx(BaseFindEvaluationOperator):
 
 class Text(BaseFindEvaluationOperator):
     """
+    `$text` query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        description: Indexed(str, pymongo.TEXT)
+
+    Text("coffee")
+    ```
+
+    Will return query object like
+
+    ```python
+    {
+        "$text": {
+            "$search": "coffee" ,
+            "$caseSensitive": False,
+            "$diacriticSensitive": False
+        }
+    }
+    ```
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/text/
+    <https://docs.mongodb.com/manual/reference/operator/query/text/>
     """
 
     def __init__(
@@ -116,8 +174,10 @@ class Text(BaseFindEvaluationOperator):
 
 class Where(BaseFindEvaluationOperator):
     """
+    `$where` query operator
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/where/
+    <https://docs.mongodb.com/manual/reference/operator/query/where/>
     """
 
     def __init__(self, expression: str):

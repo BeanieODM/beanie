@@ -5,10 +5,6 @@ from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindLogicalOperator(BaseFindOperator, ABC):
-    """
-    Base class for logical find query operators
-    """
-
     ...
 
 
@@ -29,8 +25,26 @@ class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
 
 class Or(LogicalOperatorForListOfExpressions):
     """
+    `$or` query operator
+
+    Example:
+
+    ```python
+    class Product(Document):
+        price: float
+        category: str
+
+    Or({Product.price<10}, {Product.category=="Sweets"})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$or": [{"price": {"$lt": 10}}, {"category": "Sweets"}]}
+    ```
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/or/
+    <https://docs.mongodb.com/manual/reference/operator/query/or/>
     """
 
     operator = "$or"
@@ -38,8 +52,26 @@ class Or(LogicalOperatorForListOfExpressions):
 
 class And(LogicalOperatorForListOfExpressions):
     """
+    `$and` query operator
+
+    Example:
+
+    ```python
+    class Product(Document):
+        price: float
+        category: str
+
+    And({Product.price<10}, {Product.category=="Sweets"})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$and": [{"price": {"$lt": 10}}, {"category": "Sweets"}]}
+    ```
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/and/
+    <https://docs.mongodb.com/manual/reference/operator/query/and/>
     """
 
     operator = "$and"
@@ -47,8 +79,26 @@ class And(LogicalOperatorForListOfExpressions):
 
 class Nor(BaseFindLogicalOperator):
     """
+    `$nor` query operator
+
+    Example:
+
+    ```python
+    class Product(Document):
+        price: float
+        category: str
+
+    Nor({Product.price<10}, {Product.category=="Sweets"})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$nor": [{"price": {"$lt": 10}}, {"category": "Sweets"}]}
+    ```
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/nor/
+    <https://docs.mongodb.com/manual/reference/operator/query/nor/>
     """
 
     def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
@@ -61,8 +111,26 @@ class Nor(BaseFindLogicalOperator):
 
 class Not(BaseFindLogicalOperator):
     """
+    `$not` query operator
+
+    Example:
+
+    ```python
+    class Product(Document):
+        price: float
+        category: str
+
+    Not({Product.price<10})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$not": {"price": {"$lt": 10}}}
+    ```
+
     MongoDB doc:
-    https://docs.mongodb.com/manual/reference/operator/query/not/
+    <https://docs.mongodb.com/manual/reference/operator/query/not/>
     """
 
     def __init__(self, expression):

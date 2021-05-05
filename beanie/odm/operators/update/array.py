@@ -2,10 +2,6 @@ from beanie.odm.operators.update import BaseUpdateOperator
 
 
 class BaseUpdateArrayOperator(BaseUpdateOperator):
-    """
-    Base class for update array operators
-    """
-
     operator = None
 
     def __init__(self, expression):
@@ -18,8 +14,25 @@ class BaseUpdateArrayOperator(BaseUpdateOperator):
 
 class AddToSet(BaseUpdateArrayOperator):
     """
+    `$addToSet` update array query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        results: List[int]
+
+    AddToSet({Sample.results, 2})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$addToSet": {"results": 2}}
+    ```
+
     MongoDB docs:
-    https://docs.mongodb.com/manual/reference/operator/update/addToSet/
+    <https://docs.mongodb.com/manual/reference/operator/update/addToSet/>
     """
 
     operator = "$addToSet"
@@ -27,8 +40,25 @@ class AddToSet(BaseUpdateArrayOperator):
 
 class Pop(BaseUpdateArrayOperator):
     """
+    `$pop` update array query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        results: List[int]
+
+    Pop({Sample.results, 2})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$pop": {"results": -1}}
+    ```
+
     MongoDB docs:
-    https://docs.mongodb.com/manual/reference/operator/update/pop/
+    <https://docs.mongodb.com/manual/reference/operator/update/pop/>
     """
 
     operator = "$pop"
@@ -36,8 +66,25 @@ class Pop(BaseUpdateArrayOperator):
 
 class Pull(BaseUpdateArrayOperator):
     """
+    `$pull` update array query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        results: List[int]
+
+    Pull(In(Sample.result, [1,2,3,4,5])
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$pull": { "results": { $in: [1,2,3,4,5] }}}
+    ```
+
     MongoDB docs:
-    https://docs.mongodb.com/manual/reference/operator/update/pull/
+    <https://docs.mongodb.com/manual/reference/operator/update/pull/>
     """
 
     operator = "$pull"
@@ -45,8 +92,25 @@ class Pull(BaseUpdateArrayOperator):
 
 class Push(BaseUpdateArrayOperator):
     """
+    `$push` update array query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        results: List[int]
+
+    Push({Sample.results: 1})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$push": { "results": 1}}
+    ```
+
     MongoDB docs:
-    https://docs.mongodb.com/manual/reference/operator/update/push/
+    <https://docs.mongodb.com/manual/reference/operator/update/push/>
     """
 
     operator = "$push"
@@ -54,8 +118,25 @@ class Push(BaseUpdateArrayOperator):
 
 class PullAll(BaseUpdateArrayOperator):
     """
+    `$pullAll` update array query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        results: List[int]
+
+    PullAll({ Sample.results: [ 0, 5 ] })
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$pullAll": { "results": [ 0, 5 ] }}
+    ```
+
     MongoDB docs:
-    https://docs.mongodb.com/manual/reference/operator/update/pullAll/
+    <https://docs.mongodb.com/manual/reference/operator/update/pullAll/>
     """
 
     operator = "$pullAll"

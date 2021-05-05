@@ -4,7 +4,7 @@ from typing import Optional, List, Union
 
 class BaseCursorQuery:
     """
-    Cursor class. Wrapper over AsyncIOMotorCursor,
+    BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
     which parse result with model
     """
 

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from pymongo.client_session import ClientSession
 
 from beanie.odm.fields import ExpressionField
-from beanie.odm.queries.aggregation import AggregationPipeline
+from beanie.odm.queries.aggregation import AggregationQuery
 
 
 class AggregateMethods:
@@ -19,7 +19,7 @@ class AggregateMethods:
         aggregation_pipeline,
         projection_model: Type[BaseModel] = None,
         session: Optional[ClientSession] = None,
-    ) -> AggregationPipeline:
+    ) -> AggregationQuery:
         ...
 
     async def sum(
@@ -29,6 +29,19 @@ class AggregateMethods:
     ) -> float:
         """
         Sum of values of the given field
+
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            price: int
+            count: int
+
+        sum_count = await Document.find(Sample.price <= 100).sum(Sample.count)
+
+        ```
+
         :param field: Union[str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
         :return: float - sum
@@ -48,6 +61,18 @@ class AggregateMethods:
     ) -> float:
         """
         Average of values of the given field
+
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            price: int
+            count: int
+
+        avg_count = await Document.find(Sample.price <= 100).avg(Sample.count)
+        ```
+
         :param field: Union[str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
         :return: float - avg
@@ -69,6 +94,18 @@ class AggregateMethods:
     ) -> Any:
         """
         Max of the values of the given field
+
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            price: int
+            count: int
+
+        max_count = await Document.find(Sample.price <= 100).max(Sample.count)
+        ```
+
         :param field: Union[str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
         :return: float - max
@@ -90,6 +127,18 @@ class AggregateMethods:
     ) -> Any:
         """
         Min of the values of the given field
+
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            price: int
+            count: int
+
+        min_count = await Document.find(Sample.price <= 100).min(Sample.count)
+        ```
+
         :param field: Union[str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
         :return: float - max
