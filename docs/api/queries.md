@@ -41,8 +41,7 @@ UpdateMany query
 def delete(
 	self, 
 	session: Optional[ClientSession] = None
-) -> Union[
-        DeleteOne, DeleteMany]
+) -> Union[DeleteOne, DeleteMany]
 ```
 
 Provide search criteria to the Delete query

@@ -1,7 +1,13 @@
 site_name: Documentation
 nav:
     - Introdution: index.md
-    - Tutorial: tutorial.md
+    - Tutorial:
+          - Install and set up: tutorial/install.md
+          - Insert: tutorial/insert.md
+          - Find: tutorial/find.md
+          - Update: tutorial/update.md
+          - Delete: tutorial/delete.md
+          - Aggregate: tutorial/aggregate.md
     - Api:
         Document:  api/document.md
         Query: api/queries.md
@@ -9,6 +15,7 @@ nav:
         Operators:
             Find: api/operators/find.md
             Update: api/operators/update.md
+        Fields: api/fields.md
     - Migrations: migrations.md
     - Changelog: changelog.md
 theme:

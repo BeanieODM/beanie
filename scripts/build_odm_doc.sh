@@ -31,3 +31,7 @@ pydoc-markdown \
 pydoc-markdown \
 -m beanie.odm.documents \
  > docs/api/document.md
+
+ pydoc-markdown \
+-m beanie.odm.fields \
+ > docs/api/fields.md
