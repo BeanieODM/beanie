@@ -46,15 +46,15 @@ class Product(Document):  # This is the model
 
 ```
 
-To set up collection name it uses inner class Collection.
+To set up the collection name it uses inner class Collection.
 
-To set up simple index [Indexed](/api/fields/#indexed) function over the data type can be used
+To set up a simple index [Indexed](/api/fields/#indexed) function over the data type can be used
 
 For the complex cases indexes should be set up in the Collection inner class also.
 
 ## Init
 
-Beanie uses motor as a driver. 
+Beanie uses Motor as a driver. 
 
 ```python
 # Crete Motor client

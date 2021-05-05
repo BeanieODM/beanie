@@ -39,8 +39,8 @@ class ProductShortView(BaseModel):
 
 ## Search Criteria
 
-As a search criteria Beanie supports python comparison methods, wrappers over
-find query operators and native syntax.
+As search criteria, Beanie supports python comparison methods, wrappers over
+find query operators, and native syntax.
 
 Python comparison operators must be used with the class fields (and nested
 fields)
@@ -98,8 +98,9 @@ or [find](/api/document/#find), which is the same ) method
 
 ### Cursor
 
-It will return [FindMany](/api/queries/#findmany) query object. It implements
-async generator pattern. Found documents are available via `async for` loop:
+It will return the [FindMany](/api/queries/#findmany) query object. It
+implements an async generator pattern. Found documents are available
+via `async for` loop:
 
 ```python
 async for product in Product.find_many(
@@ -141,7 +142,7 @@ chocolates = (await Product
 
 ### Sorting
 
-Sorting could be set up with [sort](/api/queries/#sort) method.
+Sorting could be set up with the [sort](/api/queries/#sort) method.
 
 It supports arguments like `+` or `-` class fields
 

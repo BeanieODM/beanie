@@ -20,13 +20,13 @@ Data and schema migrations are supported by Beanie out of the box.
 ### PIP
 
 ```shell
-pip install beanie
+pip install beanie==1.0.0b1
 ```
 
 ### Poetry
 
 ```shell
-poetry add beanie
+poetry add beanie==1.0.0b1
 ```
 
 ## Basic Example
@@ -36,7 +36,7 @@ poetry add beanie
 ```python
 from typing import Optional
 from pydantic import BaseModel
-from beanie import Document
+from beanie import Document, Indexed
 
 
 class Category(BaseModel):
@@ -47,9 +47,14 @@ class Category(BaseModel):
 class Product(Document):  # This is the model
     name: str
     description: Optional[str] = None
-    price: float
+    price: Indexed(float)
     category: Category
+
+    class Collection:
+        name = "products"
 ```
+
+More details about Documents, collections, and indexes configuration could be found in the [tutorial](/tutorial/install/).
 
 ### Initialization
 
@@ -86,6 +91,8 @@ async def create():
     peanut_bar = Product(name="Peanut Bar", price=4.44, category=chocolate)
     await Product.insert_many([milka, peanut_bar])
 ```
+
+Other details and examples could be found in the [tutorial](/tutorial/insert/)
 
 ### Find
 
@@ -125,6 +132,8 @@ async def find():
     all_products = await Product.all().to_list()
 ```
 
+Information about sorting, skips, limits, and projections could be found in the [tutorial](/tutorial/find/)
+
 ### Update
 
 ```python
@@ -145,6 +154,42 @@ async def update():
         Product.category.name == "Chocolate"
     ).inc({Product.price: 1})
 ```
+
+More details and examples about update queries could be found in the [tutorial](/tutorial/update/)
+
+### Delete
+
+```python
+async def delete():
+    # Single 
+    await Product.find_one(Product.name == "Milka").delete()
+
+    # Or
+    bar = await Product.find_one(Product.name == "Milka")
+    await bar.delete()
+
+    # Many
+    await Product.find(
+        Product.category.name == "Chocolate"
+    ).delete()
+```
+
+More information could be found in the [tutorial](/tutorial/delete/)
+
+### Aggregate
+
+```python
+async def aggregate():
+    avg_price = await Product.find(
+        Product.category.name == "Chocolate").avg(Product.price)
+    
+    result = await Sample.aggregate(
+    [{"$group": {"_id": "$category.name", "total": {"$avg": "$price"}}}]
+)
+
+```
+
+Information about aggregation preset aggregation methods and native syntax aggregations could be found in the [tutorial](/tutorial/aggregate/)
 
 ----
 Supported by [JetBrains](https://jb.gg/OpenSource)

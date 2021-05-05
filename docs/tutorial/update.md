@@ -2,7 +2,7 @@
 
 [UpdateOne](/api/queries/#updateone) and [UpdateMany](/api/queries/#updatemany) queries are used to update single and many documents respectively.
 
-[Document](/api/document/), [FindOne](/api/queries/#findone), [FindMany](/api/queries/#findmany) and both update query instances implements [UpdateMethods](/api/interfaces/#updatemethods) interface including `update` method.  
+[Document](/api/document/), [FindOne](/api/queries/#findone), [FindMany](/api/queries/#findmany), and both update query instances implement [UpdateMethods](/api/interfaces/#updatemethods) interface including `update` method.  
 
 ## By method from UpdateMethods interface
 

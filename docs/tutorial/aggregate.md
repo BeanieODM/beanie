@@ -2,7 +2,7 @@
 
 [AggregationQuery](/api/queries/#aggregationquery) is used to aggregate data
 over the whole collection or the subset selected
-with [FindMany](/api/queries/#findmany) query.
+with the [FindMany](/api/queries/#findmany) query.
 
 ## Preset aggregations
 
@@ -50,11 +50,11 @@ result = await Sample.aggregate(
 )
 ```
 
-If `aggregation_model` parameter is not set, it will return dicts.
+If the `aggregation_model` parameter is not set, it will return dicts.
 
 ## Over subsets
 
-To aggregate over specific subset FindQuery could be used.
+To aggregate over a specific subset, FindQuery could be used.
 
 ```python
 result = await Sample.fin(Sample.price< 10).aggregate(
