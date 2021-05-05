@@ -30,6 +30,11 @@ from beanie.odm.utils.projection import get_projection
 class FindQuery(UpdateMethods, SessionMethods):
     """
     Find Query base class
+
+    Inherited from:
+
+    - [SessionMethods](/api/interfaces/#sessionmethods)
+    - [UpdateMethods](/api/interfaces/#aggregatemethods)
     """
 
     UpdateQueryType = UpdateQuery
@@ -70,12 +75,14 @@ class FindQuery(UpdateMethods, SessionMethods):
             .set_session(session=self.session)
         )
 
-    def delete(self, session: Optional[ClientSession] = None):
+    def delete(
+        self, session: Optional[ClientSession] = None
+    ) -> Union[DeleteOne, DeleteMany]:
         """
         Provide search criteria to the Delete query
 
         :param session: Optional[ClientSession]
-        :return: UpdateMany query
+        :return: Union[DeleteOne, DeleteMany]
         """
         self.set_session(session=session)
         return self.DeleteQueryType(
@@ -102,7 +109,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
     Inherited from:
 
     - [FindQuery](/api/queries/#findquery)
-    - [BaseCursorQuery](/api/queries/#basecursorquery)
+    - [BaseCursorQuery](/api/queries/#basecursorquery) - async generator
     - [AggregateMethods](/api/interfaces/#aggregatemethods)
 
     """
@@ -224,11 +231,12 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         session: Optional[ClientSession] = None
     ) -> UpdateMany:
         """
-        Provide search criteria to the update query
+        Provide search criteria to the
+        [UpdateMany](/api/queries/#updatemany) query
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: Optional[ClientSession]
-        :return: UpdateMany query
+        :return: [UpdateMany](/api/queries/#updatemany) query
         """
         return self.update(*args, session=session)
 
@@ -236,10 +244,10 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         self, session: Optional[ClientSession] = None
     ) -> DeleteMany:
         """
-        Provide search criteria to the DeleteMany query
+        Provide search criteria to the [DeleteMany](/api/queries/#deletemany) query
 
         :param session:
-        :return: DeleteMany query
+        :return: [DeleteMany](/api/queries/#deletemany) query
         """
         return self.delete(session=session)
 
@@ -261,12 +269,13 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         session: Optional[ClientSession] = None,
     ) -> AggregationQuery:
         """
-        Provide search criteria to the AggregateQuery
+        Provide search criteria to the [AggregationQuery](/api/queries/#aggregationquery)
+
         :param aggregation_pipeline: list - aggregation pipeline. MongoDB doc:
         <https://docs.mongodb.com/manual/core/aggregation-pipeline/>
         :param projection_model: Type[BaseModel] - Projection Model
         :param session: Optional[ClientSession] - PyMongo session
-        :return:AggregationQuery
+        :return:[AggregationQuery](/api/queries/#aggregationquery)
         """
         self.set_session(session=session)
         return AggregationQuery(
@@ -323,19 +332,19 @@ class FindOne(FindQuery):
         self, *args, session: Optional[ClientSession] = None
     ) -> UpdateOne:
         """
-        Create UpdateOne query using modifications and
+        Create [UpdateOne](/api/queries/#updateone) query using modifications and
         provide search criteria there
         :param args: *Union[dict, Mapping] - the modifications to apply
         :param session: Optional[ClientSession] - PyMongo sessions
-        :return: UpdateOne query
+        :return: [UpdateOne](/api/queries/#updateone) query
         """
         return self.update(*args, session=session)
 
     def delete_one(self, session: Optional[ClientSession] = None) -> DeleteOne:
         """
-        Provide search criteria to the DeleteOne query
+        Provide search criteria to the [DeleteOne](/api/queries/#deleteone) query
         :param session: Optional[ClientSession] - PyMongo sessions
-        :return: DeleteOne query
+        :return: [DeleteOne](/api/queries/#deleteone) query
         """
         return self.delete(session=session)
 

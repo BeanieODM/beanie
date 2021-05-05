@@ -33,9 +33,15 @@ class Document(BaseModel, UpdateMethods):
     """
     Document Mapping class.
 
-    Inherited from Pydantic BaseModel - includes all the respective methods.
+    Fields:
 
-    Contains id filed - MongoDB document ObjectID "_id" field
+    - `id` - MongoDB document ObjectID "_id" field.
+    Mapped to the PydanticObjectId class
+
+    Inherited from:
+
+    - Pydantic BaseModel
+    - [UpdateMethods](/api/interfaces/#aggregatemethods)
     """
 
     id: Optional[PydanticObjectId] = Field(None, alias="_id")
@@ -145,12 +151,13 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
     ) -> FindOne:
         """
-        Find one document by criteria
+        Find one document by criteria.
+        Returns [FindOne](/api/queries/#findone) query object
 
         :param args: *Union[dict, Mapping] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session instance
-        :return: FindOne - find query instance
+        :return: [FindOne](/api/queries/#findone) - find query instance
         """
         return FindOne(document_model=cls).find_one(
             *args,
@@ -169,7 +176,8 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
     ) -> FindMany:
         """
-        Find many documents by criteria
+        Find many documents by criteria.
+        Returns [FindMany](/api/queries/#findmany) query object
 
         :param args: *Union[dict, Mapping] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
@@ -179,7 +187,7 @@ class Document(BaseModel, UpdateMethods):
         for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
-        :return: FindMany - query instance
+        :return: [FindMany](/api/queries/#findmany) - query instance
         """
         return FindMany(document_model=cls).find_many(
             *args,
@@ -231,7 +239,7 @@ class Document(BaseModel, UpdateMethods):
         for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
-        :return: FindMany - query instance
+        :return: [FindMany](/api/queries/#findmany) - query instance
         """
         return cls.find_many(
             {},
@@ -354,10 +362,18 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def aggregate(
         cls,
-        aggregation_pipeline,
+        aggregation_pipeline: list,
         aggregation_model: Type[BaseModel] = None,
         session: Optional[ClientSession] = None,
     ) -> AggregationQuery:
+        """
+        Aggregate over collection.
+        Returns [AggregationQuery](/api/queries/#aggregationquery) query object
+        :param aggregation_pipeline: list - aggregation pipeline
+        :param aggregation_model: Type[BaseModel]
+        :param session: Optional[ClientSession]
+        :return: [AggregationQuery](/api/queries/#aggregationquery)
+        """
         return cls.find_all().aggregate(
             aggregation_pipeline=aggregation_pipeline,
             projection_model=aggregation_model,

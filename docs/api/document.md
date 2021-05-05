@@ -8,14 +8,21 @@ class Document(BaseModel,  UpdateMethods)
 
 Document Mapping class.
 
-Inherited from Pydantic BaseModel - includes all the respective methods.
+Fields:
 
-Contains id filed - MongoDB document ObjectID "_id" field
+- `id` - MongoDB document ObjectID "_id" field.
+Mapped to the PydanticObjectId class
+
+Inherited from:
+
+- Pydantic BaseModel
+- [UpdateMethods](/api/interfaces/#aggregatemethods)
 
 ### insert
 
 ```python
 async def insert(
+	self, 
 	session: Optional[ClientSession] = None
 ) -> "Document"
 ```
@@ -30,6 +37,7 @@ Document
 
 ```python
 async def create(
+	self, 
 	session: Optional[ClientSession] = None
 ) -> "Document"
 ```
@@ -121,7 +129,8 @@ def find_one(
 ) -> FindOne
 ```
 
-Find one document by criteria
+Find one document by criteria.
+Returns [FindOne](/api/queries/#findone) query object
 
 **Arguments**:
 
@@ -131,7 +140,7 @@ Find one document by criteria
 
 **Returns**:
 
-FindOne - find query instance
+[FindOne](/api/queries/#findone) - find query instance
 
 ### find\_many
 
@@ -148,7 +157,8 @@ def find_many(
 ) -> FindMany
 ```
 
-Find many documents by criteria
+Find many documents by criteria.
+Returns [FindMany](/api/queries/#findmany) query object
 
 **Arguments**:
 
@@ -163,7 +173,7 @@ for this query.
 
 **Returns**:
 
-FindMany - query instance
+[FindMany](/api/queries/#findmany) - query instance
 
 ### find
 
@@ -210,7 +220,7 @@ for this query.
 
 **Returns**:
 
-FindMany - query instance
+[FindMany](/api/queries/#findmany) - query instance
 
 ### all
 
@@ -254,6 +264,7 @@ None
 
 ```python
 async def replace(
+	self, 
 	session: Optional[ClientSession] = None
 ) -> "Document"
 ```
@@ -294,6 +305,7 @@ UpdateResult - pymongo UpdateResult instance
 
 ```python
 async def update(
+	self, 
 	*args, 
 	session: Optional[ClientSession] = None
 ) -> None
@@ -334,6 +346,7 @@ DeleteResult - pymongo DeleteResult instance.
 
 ```python
 async def delete(
+	self, 
 	session: Optional[ClientSession] = None
 ) -> DeleteResult
 ```
@@ -347,6 +360,31 @@ Delete the document
 **Returns**:
 
 DeleteResult - pymongo DeleteResult instance.
+
+### aggregate
+
+```python
+@classmethod
+def aggregate(
+	cls, 
+	aggregation_pipeline: list, 
+	aggregation_model: Type[BaseModel] = None, 
+	session: Optional[ClientSession] = None
+) -> AggregationQuery
+```
+
+Aggregate over collection.
+Returns [AggregationQuery](/api/queries/#aggregationquery) query object
+
+**Arguments**:
+
+- `aggregation_pipeline`: list - aggregation pipeline
+- `aggregation_model`: Type[BaseModel]
+- `session`: Optional[ClientSession]
+
+**Returns**:
+
+[AggregationQuery](/api/queries/#aggregationquery)
 
 ### count
 

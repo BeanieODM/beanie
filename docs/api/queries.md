@@ -8,10 +8,16 @@ class FindQuery(UpdateMethods,  SessionMethods)
 
 Find Query base class
 
+Inherited from:
+
+- [SessionMethods](/api/interfaces/#sessionmethods)
+- [UpdateMethods](/api/interfaces/#aggregatemethods)
+
 ### update
 
 ```python
 def update(
+	self, 
 	*args: Union[dict, Mapping], 
 	session: Optional[ClientSession] = None
 )
@@ -33,8 +39,10 @@ UpdateMany query
 
 ```python
 def delete(
+	self, 
 	session: Optional[ClientSession] = None
-)
+) -> Union[
+        DeleteOne, DeleteMany]
 ```
 
 Provide search criteria to the Delete query
@@ -45,12 +53,13 @@ Provide search criteria to the Delete query
 
 **Returns**:
 
-UpdateMany query
+Union[DeleteOne, DeleteMany]
 
 ### project
 
 ```python
 def project(
+	self, 
 	projection_model: Optional[Type[BaseModel]]
 )
 ```
@@ -76,13 +85,14 @@ Find Many query class
 Inherited from:
 
 - [FindQuery](/api/queries/#findquery)
-- [BaseCursorQuery](/api/queries/#basecursorquery)
+- [BaseCursorQuery](/api/queries/#basecursorquery) - async generator
 - [AggregateMethods](/api/interfaces/#aggregatemethods)
 
 ### find\_many
 
 ```python
 def find_many(
+	self, 
 	*args, 
 	skip: Optional[int] = None, 
 	limit: Optional[int] = None, 
@@ -113,6 +123,7 @@ FindMany - query instance
 
 ```python
 def find(
+	self, 
 	*args, 
 	skip: Optional[int] = None, 
 	limit: Optional[int] = None, 
@@ -128,6 +139,7 @@ The same as `find_many(...)`
 
 ```python
 def sort(
+	self, 
 	*args
 )
 ```
@@ -147,6 +159,7 @@ self
 
 ```python
 def skip(
+	self, 
 	n: Optional[int]
 )
 ```
@@ -165,6 +178,7 @@ self
 
 ```python
 def limit(
+	self, 
 	n: Optional[int]
 )
 ```
@@ -183,12 +197,14 @@ Set limit parameter
 
 ```python
 def update_many(
+	self, 
 	*args: Union[dict, Mapping], 
 	session: Optional[ClientSession] = None
 ) -> UpdateMany
 ```
 
-Provide search criteria to the update query
+Provide search criteria to the
+[UpdateMany](/api/queries/#updatemany) query
 
 **Arguments**:
 
@@ -197,17 +213,18 @@ Provide search criteria to the update query
 
 **Returns**:
 
-UpdateMany query
+[UpdateMany](/api/queries/#updatemany) query
 
 ### delete\_many
 
 ```python
 def delete_many(
+	self, 
 	session: Optional[ClientSession] = None
 ) -> DeleteMany
 ```
 
-Provide search criteria to the DeleteMany query
+Provide search criteria to the [DeleteMany](/api/queries/#deletemany) query
 
 **Arguments**:
 
@@ -215,12 +232,13 @@ Provide search criteria to the DeleteMany query
 
 **Returns**:
 
-DeleteMany query
+[DeleteMany](/api/queries/#deletemany) query
 
 ### count
 
 ```python
 async def count(
+	self
 ) -> int
 ```
 
@@ -234,13 +252,14 @@ int
 
 ```python
 def aggregate(
+	self, 
 	aggregation_pipeline: list, 
 	projection_model: Type[BaseModel] = None, 
 	session: Optional[ClientSession] = None
 ) -> AggregationQuery
 ```
 
-Provide search criteria to the AggregateQuery
+Provide search criteria to the [AggregationQuery](/api/queries/#aggregationquery)
 
 **Arguments**:
 
@@ -251,7 +270,7 @@ Provide search criteria to the AggregateQuery
 
 **Returns**:
 
-AggregationQuery
+[AggregationQuery](/api/queries/#aggregationquery)
 
 ## FindOne
 
@@ -261,10 +280,15 @@ class FindOne(FindQuery)
 
 Find One query class
 
+Inherited from:
+
+- [FindQuery](/api/queries/#findquery)
+
 ### find\_one
 
 ```python
 def find_one(
+	self, 
 	*args, 
 	projection_model: Optional[Type[BaseModel]] = None, 
 	session: Optional[ClientSession] = None
@@ -287,12 +311,13 @@ FindOne - query instance
 
 ```python
 def update_one(
+	self, 
 	*args, 
 	session: Optional[ClientSession] = None
 ) -> UpdateOne
 ```
 
-Create UpdateOne query using modifications and
+Create [UpdateOne](/api/queries/#updateone) query using modifications and
 provide search criteria there
 
 **Arguments**:
@@ -302,17 +327,18 @@ provide search criteria there
 
 **Returns**:
 
-UpdateOne query
+[UpdateOne](/api/queries/#updateone) query
 
 ### delete\_one
 
 ```python
 def delete_one(
+	self, 
 	session: Optional[ClientSession] = None
 ) -> DeleteOne
 ```
 
-Provide search criteria to the DeleteOne query
+Provide search criteria to the [DeleteOne](/api/queries/#deleteone) query
 
 **Arguments**:
 
@@ -320,12 +346,13 @@ Provide search criteria to the DeleteOne query
 
 **Returns**:
 
-DeleteOne query
+[DeleteOne](/api/queries/#deleteone) query
 
 ### replace\_one
 
 ```python
 async def replace_one(
+	self, 
 	document, 
 	session: Optional[ClientSession] = None
 ) -> UpdateResult
@@ -346,6 +373,7 @@ UpdateResult
 
 ```python
 def __await__(
+	self
 )
 ```
 
@@ -365,6 +393,32 @@ class UpdateQuery(UpdateMethods,  SessionMethods)
 
 Update Query base class
 
+Inherited from:
+
+- [SessionMethods](/api/interfaces/#sessionmethods)
+- [UpdateMethods](/api/interfaces/#aggregatemethods)
+
+### update
+
+```python
+def update(
+	self, 
+	*args: Union[dict, Mapping], 
+	session: Optional[ClientSession] = None
+)
+```
+
+Provide modifications to the update query
+
+**Arguments**:
+
+- `args`: *Union[dict, Mapping] - the modifications to apply.
+- `session`: Optional[ClientSession]
+
+**Returns**:
+
+UpdateMany query
+
 ## UpdateMany
 
 ```python
@@ -373,6 +427,36 @@ class UpdateMany(UpdateQuery)
 
 Update Many query class
 
+Inherited from:
+
+- [UpdateQuery](/api/queries/#updatequery)
+
+### update\_many
+
+```python
+def update_many(
+	self, 
+	*args, 
+	session: Optional[ClientSession] = None
+)
+```
+
+The same as update()
+
+### \_\_await\_\_
+
+```python
+def __await__(
+	self
+)
+```
+
+Run the query
+
+**Returns**:
+
+
+
 ## UpdateOne
 
 ```python
@@ -380,6 +464,36 @@ class UpdateOne(UpdateQuery)
 ```
 
 Update One query class
+
+Inherited from:
+
+- [UpdateQuery](/api/queries/#updatequery)
+
+### update\_one
+
+```python
+def update_one(
+	self, 
+	*args, 
+	session: Optional[ClientSession] = None
+)
+```
+
+The same as update()
+
+### \_\_await\_\_
+
+```python
+def __await__(
+	self
+)
+```
+
+Run the query
+
+**Returns**:
+
+
 
 ## beanie.odm.queries.delete
 
@@ -391,6 +505,46 @@ class DeleteQuery(SessionMethods)
 
 Deletion Query
 
+## DeleteMany
+
+```python
+class DeleteMany(DeleteQuery)
+```
+
+### \_\_await\_\_
+
+```python
+def __await__(
+	self
+)
+```
+
+Run the query
+
+**Returns**:
+
+
+
+## DeleteOne
+
+```python
+class DeleteOne(DeleteQuery)
+```
+
+### \_\_await\_\_
+
+```python
+def __await__(
+	self
+)
+```
+
+Run the query
+
+**Returns**:
+
+
+
 ## beanie.odm.queries.aggregation
 
 ## AggregationQuery
@@ -401,8 +555,10 @@ class AggregationQuery(BaseCursorQuery,  SessionMethods)
 
 Aggregation Query
 
-It is async generator. Use `async for` or
-`to_list` method to work with this
+Inherited from:
+
+- [SessionMethods](/api/interfaces/#sessionmethods) - session methods
+- [BaseCursorQuery](/api/queries/#basecursorquery) - async generator
 
 ## beanie.odm.queries.cursor
 
@@ -419,6 +575,7 @@ which parse result with model
 
 ```python
 async def to_list(
+	self, 
 	length: Optional[int] = None
 ) -> Union[List["Document"], List[dict]]
 ```

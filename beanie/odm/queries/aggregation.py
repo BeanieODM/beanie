@@ -15,9 +15,10 @@ class AggregationQuery(BaseCursorQuery, SessionMethods):
     """
     Aggregation Query
 
-    It is async generator. Use `async for` or
-    `to_list` method to work with this
+    Inherited from:
 
+    - [SessionMethods](/api/interfaces/#sessionmethods) - session methods
+    - [BaseCursorQuery](/api/queries/#basecursorquery) - async generator
     """
 
     def __init__(

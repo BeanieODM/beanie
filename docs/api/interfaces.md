@@ -12,6 +12,7 @@ Update methods
 
 ```python
 def set(
+	self, 
 	expression: Dict[Union[ExpressionField, str], Any], 
 	session: Optional[ClientSession] = None
 )
@@ -46,6 +47,7 @@ self
 
 ```python
 def current_date(
+	self, 
 	expression: Dict[Union[ExpressionField, str], Any], 
 	session: Optional[ClientSession] = None
 )
@@ -68,6 +70,7 @@ self
 
 ```python
 def inc(
+	self, 
 	expression: Dict[Union[ExpressionField, str], Any], 
 	session: Optional[ClientSession] = None
 )
@@ -111,6 +114,7 @@ Aggregate methods
 
 ```python
 async def sum(
+	self, 
 	field: Union[str, ExpressionField], 
 	session: Optional[ClientSession] = None
 ) -> float
@@ -143,6 +147,7 @@ float - sum
 
 ```python
 async def avg(
+	self, 
 	field, 
 	session: Optional[ClientSession] = None
 ) -> float
@@ -174,6 +179,7 @@ float - avg
 
 ```python
 async def max(
+	self, 
 	field: Union[str, ExpressionField], 
 	session: Optional[ClientSession] = None
 ) -> Any
@@ -205,6 +211,7 @@ float - max
 
 ```python
 async def min(
+	self, 
 	field: Union[str, ExpressionField], 
 	session: Optional[ClientSession] = None
 ) -> Any
@@ -246,6 +253,7 @@ Session methods
 
 ```python
 def set_session(
+	self, 
 	session: Optional[ClientSession] = None
 )
 ```

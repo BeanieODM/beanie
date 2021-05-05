@@ -502,6 +502,7 @@ Text("coffee")
 
 ```python
 def __init__(
+	self, 
 	search: str, 
 	language: Optional[str] = None, 
 	case_sensitive: bool = False, 
