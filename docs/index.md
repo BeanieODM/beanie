@@ -183,7 +183,7 @@ async def aggregate():
     avg_price = await Product.find(
         Product.category.name == "Chocolate").avg(Product.price)
     
-    result = await Sample.aggregate(
+    result = await Product.aggregate(
     [{"$group": {"_id": "$category.name", "total": {"$avg": "$price"}}}]
 )
 
