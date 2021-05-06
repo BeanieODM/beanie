@@ -238,6 +238,25 @@ def all(
 
 the same as find_all
 
+### replace
+
+```python
+async def replace(
+	self, 
+	session: Optional[ClientSession] = None
+) -> "Document"
+```
+
+Fully update the document in the database
+
+**Arguments**:
+
+- `session`: Optional[ClientSession] - pymongo session.
+
+**Returns**:
+
+None
+
 ### replace\_many
 
 ```python
@@ -260,20 +279,22 @@ Replace list of documents
 
 None
 
-### replace
+### update
 
 ```python
-async def replace(
+async def update(
 	self, 
+	*args, 
 	session: Optional[ClientSession] = None
-) -> "Document"
+) -> None
 ```
 
-Fully update the document in the database
+Partially update the document in the database
 
 **Arguments**:
 
-- `session`: Optional[ClientSession] - pymongo session.
+- `args`: *Union[dict, Mapping] - the modifications to apply.
+- `session`: ClientSession - pymongo session.
 
 **Returns**:
 
@@ -301,26 +322,24 @@ Partially update all the documents
 
 UpdateResult - pymongo UpdateResult instance
 
-### update
+### delete
 
 ```python
-async def update(
+async def delete(
 	self, 
-	*args, 
 	session: Optional[ClientSession] = None
-) -> None
+) -> DeleteResult
 ```
 
-Partially update the document in the database
+Delete the document
 
 **Arguments**:
 
-- `args`: *Union[dict, Mapping] - the modifications to apply.
-- `session`: ClientSession - pymongo session.
+- `session`: Optional[ClientSession] - pymongo session.
 
 **Returns**:
 
-None
+DeleteResult - pymongo DeleteResult instance.
 
 ### delete\_all
 
@@ -333,25 +352,6 @@ async def delete_all(
 ```
 
 Delete all the documents
-
-**Arguments**:
-
-- `session`: Optional[ClientSession] - pymongo session.
-
-**Returns**:
-
-DeleteResult - pymongo DeleteResult instance.
-
-### delete
-
-```python
-async def delete(
-	self, 
-	session: Optional[ClientSession] = None
-) -> DeleteResult
-```
-
-Delete the document
 
 **Arguments**:
 

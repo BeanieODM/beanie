@@ -14,8 +14,6 @@ from beanie.exceptions import (
     ReplaceError,
 )
 from beanie.odm.enums import SortDirection
-from beanie.odm.operators.find.comparsion import In
-from beanie.odm.utils.collection import collection_factory
 from beanie.odm.fields import PydanticObjectId, ExpressionField
 from beanie.odm.interfaces.update import (
     UpdateMethods,
@@ -25,8 +23,10 @@ from beanie.odm.models import (
     InspectionStatuses,
     InspectionError,
 )
+from beanie.odm.operators.find.comparsion import In
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindOne, FindMany
+from beanie.odm.utils.collection import collection_factory
 
 
 class Document(BaseModel, UpdateMethods):
@@ -270,6 +270,23 @@ class Document(BaseModel, UpdateMethods):
             session=session,
         )
 
+    async def replace(
+        self, session: Optional[ClientSession] = None
+    ) -> "Document":
+        """
+        Fully update the document in the database
+
+        :param session: Optional[ClientSession] - pymongo session.
+        :return: None
+        """
+        if self.id is None:
+            raise DocumentWasNotSaved
+
+        await self.find_one({"_id": self.id}).replace_one(
+            self, session=session
+        )
+        return self
+
     @classmethod
     async def replace_many(
         cls,
@@ -291,22 +308,18 @@ class Document(BaseModel, UpdateMethods):
         await cls.find(In(cls.id, ids_list), session=session).delete()
         await cls.insert_many(documents, keep_ids=True, session=session)
 
-    async def replace(
-        self, session: Optional[ClientSession] = None
-    ) -> "Document":
+    async def update(
+        self, *args, session: Optional[ClientSession] = None
+    ) -> None:
         """
-        Fully update the document in the database
+        Partially update the document in the database
 
-        :param session: Optional[ClientSession] - pymongo session.
+        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param session: ClientSession - pymongo session.
         :return: None
         """
-        if self.id is None:
-            raise DocumentWasNotSaved
-
-        await self.find_one({"_id": self.id}).replace_one(
-            self, session=session
-        )
-        return self
+        await self.find_one({"_id": self.id}).update(*args, session=session)
+        await self._sync()
 
     @classmethod
     def update_all(
@@ -323,18 +336,16 @@ class Document(BaseModel, UpdateMethods):
         """
         return cls.find_all().update_many(*args, session=session)
 
-    async def update(
-        self, *args, session: Optional[ClientSession] = None
-    ) -> None:
+    async def delete(
+        self, session: Optional[ClientSession] = None
+    ) -> DeleteResult:
         """
-        Partially update the document in the database
+        Delete the document
 
-        :param args: *Union[dict, Mapping] - the modifications to apply.
-        :param session: ClientSession - pymongo session.
-        :return: None
+        :param session: Optional[ClientSession] - pymongo session.
+        :return: DeleteResult - pymongo DeleteResult instance.
         """
-        await self.find_one({"_id": self.id}).update(*args, session=session)
-        await self._sync()
+        return await self.find_one({"_id": self.id}).delete(session=session)
 
     @classmethod
     async def delete_all(
@@ -347,17 +358,6 @@ class Document(BaseModel, UpdateMethods):
         :return: DeleteResult - pymongo DeleteResult instance.
         """
         return await cls.find_all().delete(session=session)
-
-    async def delete(
-        self, session: Optional[ClientSession] = None
-    ) -> DeleteResult:
-        """
-        Delete the document
-
-        :param session: Optional[ClientSession] - pymongo session.
-        :return: DeleteResult - pymongo DeleteResult instance.
-        """
-        return await self.find_one({"_id": self.id}).delete(session=session)
 
     @classmethod
     def aggregate(
