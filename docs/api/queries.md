@@ -407,7 +407,7 @@ def update(
 )
 ```
 
-Provide modifications to the update query
+Provide modifications to the update query. The same as `update()`
 
 **Arguments**:
 
@@ -440,7 +440,16 @@ def update_many(
 )
 ```
 
-The same as update()
+Provide modifications to the update query
+
+**Arguments**:
+
+- `args`: *Union[dict, Mapping] - the modifications to apply.
+- `session`: Optional[ClientSession]
+
+**Returns**:
+
+UpdateMany query
 
 ### \_\_await\_\_
 
@@ -478,7 +487,16 @@ def update_one(
 )
 ```
 
-The same as update()
+Provide modifications to the update query. The same as `update()`
+
+**Arguments**:
+
+- `args`: *Union[dict, Mapping] - the modifications to apply.
+- `session`: Optional[ClientSession]
+
+**Returns**:
+
+UpdateMany query
 
 ### \_\_await\_\_
 

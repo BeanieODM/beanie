@@ -46,7 +46,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         session: Optional[ClientSession] = None
     ):
         """
-        Provide modifications to the update query
+        Provide modifications to the update query. The same as `update()`
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: Optional[ClientSession]
@@ -68,7 +68,11 @@ class UpdateMany(UpdateQuery):
 
     def update_many(self, *args, session: Optional[ClientSession] = None):
         """
-        The same as update()
+        Provide modifications to the update query
+
+        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param session: Optional[ClientSession]
+        :return: UpdateMany query
         """
         return self.update(*args, session=session)
 
@@ -93,7 +97,11 @@ class UpdateOne(UpdateQuery):
 
     def update_one(self, *args, session: Optional[ClientSession] = None):
         """
-        The same as update()
+        Provide modifications to the update query. The same as `update()`
+
+        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param session: Optional[ClientSession]
+        :return: UpdateMany query
         """
         return self.update(*args, session=session)
 
