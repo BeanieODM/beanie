@@ -9,6 +9,29 @@ Beanie saves you time by removing boiler-plate code and it helps you focus on th
 
 Data and schema migrations are supported by Beanie out of the box.
 
+### 1.0.0 beta 1 is out!
+
+Documentation for the beta release is available here - https://roman-right.github.io/beanie_docs_beta/
+
+It supports:
+
+- find-, update, delete- and aggregation query builders
+- projections
+- preset update and aggregation methods
+
+And many other things.
+
+To install beta:
+```shell
+pip install beanie==1.0.0b1
+```
+OR
+```shell
+poetry add beanie==1.0.0b1
+```
+
+
+
 ### Installation
 
 #### PIP
