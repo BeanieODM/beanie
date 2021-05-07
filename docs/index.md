@@ -11,7 +11,7 @@ Data and schema migrations are supported by Beanie out of the box.
 
 ### 1.0.0 beta 1 is out!
 
-Documentation for the beta release is available here - https://roman-right.github.io/beanie_docs_beta/
+Documentation for the beta release is available here - <https://roman-right.github.io/beanie_docs_beta/>
 
 It supports:
 
