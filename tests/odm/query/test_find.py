@@ -233,6 +233,27 @@ async def test_find_many_with_projection(preset_documents):
     ]
 
 
+async def test_find_many_with_custom_projection(preset_documents):
+    class SampleProjection(BaseModel):
+        string: str
+        i: int
+
+        class Settings:
+            projection = {"string": 1, "i": "$nested.integer"}
+
+    result = (
+        await Sample.find_many(Sample.integer > 1)
+        .find_many(Sample.nested.optional == None)
+        .project(projection_model=SampleProjection)
+        .sort(Sample.nested.integer)
+        .to_list()
+    )
+    assert result == [
+        SampleProjection(string="test_2", i=3),
+        SampleProjection(string="test_2", i=4),
+    ]
+
+
 async def test_find_many_with_session(preset_documents, session):
     q_1 = (
         Sample.find_many(Sample.integer > 1)

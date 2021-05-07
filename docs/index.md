@@ -20,13 +20,13 @@ Data and schema migrations are supported by Beanie out of the box.
 ### PIP
 
 ```shell
-pip install beanie==1.0.0b1
+pip install beanie==1.0.0b2
 ```
 
 ### Poetry
 
 ```shell
-poetry add beanie==1.0.0b1
+poetry add beanie==1.0.0b2
 ```
 
 ## Basic Example
