@@ -1,6 +1,6 @@
 site_name: Documentation
 nav:
-    - Introdution: index.md
+    - Introduction: index.md
     - Tutorial:
           - Install and set up: tutorial/install.md
           - Insert: tutorial/insert.md

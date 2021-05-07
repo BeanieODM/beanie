@@ -191,6 +191,31 @@ async def aggregate():
 
 Information about aggregation preset aggregation methods and native syntax aggregations could be found in the [tutorial](/tutorial/aggregate/)
 
+### Documentation
+
+- **[Tutorial](https://roman-right.github.io/beanie_docs_beta/tutorial/install/)** - Usage examples with descriptions
+- **[API](https://roman-right.github.io/beanie_docs_beta/api/document/)** - Full list of the classes and
+  methods
+
+### Example Projects
+
+- **[FastAPI Demo](https://github.com/roman-right/beanie-fastapi-demo)** - Beanie and FastAPI collaboration demonstration. CRUD and Aggregation.
+- **[Indexes Demo](https://github.com/roman-right/beanie-index-demo)** - Regular and Geo Indexes usage example wrapped to a microservice. 
+
+### Articles
+
+- **[Announcing Beanie - MongoDB ODM](https://dev.to/romanright/announcing-beanie-mongodb-odm-56e)**
+- **[Build a Cocktail API with Beanie and MongoDB](https://developer.mongodb.com/article/beanie-odm-fastapi-cocktails/)**
+- **[MongoDB indexes with Beanie](https://dev.to/romanright/mongodb-indexes-with-beanie-43e8)**
+- **[Beanie Projections. Reducing network and database load.](https://dev.to/romanright/beanie-projections-reducing-network-and-database-load-3bih)**
+
+### Resources
+
+- **[GitHub](https://github.com/roman-right/beanie)** - GitHub page of the project
+- **[Changelog](https://roman-right.github.io/beanie/changelog)** - list of all the valuable changes
+- **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share ideas or just say `Hello!!`
+
+
 ----
 Supported by [JetBrains](https://jb.gg/OpenSource)
 
