@@ -189,3 +189,18 @@ Projection could be used to return the documents in another model format
 chocolates = await Product.find(
     Product.category.name == "Chocolate").project(ProductShortView).to_list()
 ```
+
+Inner Settings class can be used to make a custom projection
+
+```python
+class ProductView(BaseModel):
+    name: str
+    category: str
+
+    class Settings:
+        projection = {"name": 1, "category": "$category.name"}
+
+
+chocolates = await Product.find(
+    Product.category.name == "Chocolate").project(ProductView).to_list()
+```
