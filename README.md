@@ -216,8 +216,8 @@ Information about aggregation preset aggregation methods and native syntax aggre
 
 ### Documentation
 
-- **[Tutorial](/tutorial/install/)** - Usage examples with descriptions
-- **[API](/api/document/)** - Full list of the classes and
+- **[Tutorial](https://roman-right.github.io/beanie/tutorial/install/)** - Usage examples with descriptions
+- **[API](https://roman-right.github.io/beanie/api/document/)** - Full list of the classes and
   methods
 
 ### Example Projects

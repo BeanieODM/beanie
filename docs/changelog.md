@@ -1,6 +1,12 @@
 # Changelog
 Beanie project changes
 
+## [1.0.0] - 2021-05-10
+### Added
+- QueryBuilder
+### Changed
+- Document class was reworked. [Documentation](https://roman-right.github.io/beanie/api/document/)
+
 ## [0.4.3] - 2021-04-25
 ### Fixed
 - PydanticObjectId openapi generation
@@ -72,3 +78,4 @@ Beanie project changes
 [0.4.1]: https://pypi.org/project/beanie/0.4.1
 [0.4.2]: https://pypi.org/project/beanie/0.4.2
 [0.4.3]: https://pypi.org/project/beanie/0.4.3
+[1.0.0]: https://pypi.org/project/beanie/1.0.0
