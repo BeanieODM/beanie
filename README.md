@@ -78,19 +78,18 @@ async def init():
 ### Create
 
 ```python
-async def create():
-    chocolate = Category(name="Chocolate")
+chocolate = Category(name="Chocolate")
 
-    # Single:
+# Single:
 
-    bar = Product(name="Tony's", price=5.95, category=chocolate)
-    await bar.insert()
+bar = Product(name="Tony's", price=5.95, category=chocolate)
+await bar.insert()
 
-    # Many
+# Many
 
-    milka = Product(name="Milka", price=3.05, category=chocolate)
-    peanut_bar = Product(name="Peanut Bar", price=4.44, category=chocolate)
-    await Product.insert_many([milka, peanut_bar])
+milka = Product(name="Milka", price=3.05, category=chocolate)
+peanut_bar = Product(name="Peanut Bar", price=4.44, category=chocolate)
+await Product.insert_many([milka, peanut_bar])
 ```
 
 Other details and examples could be found in the [tutorial](/tutorial/insert/)
@@ -98,39 +97,50 @@ Other details and examples could be found in the [tutorial](/tutorial/insert/)
 ### Find
 
 ```python
-async def find():
-    # Single
+# Single
 
-    # By id
-    bar = await Product.get("608da169eb9e17281f0ab2ff")
+# By id
+bar = await Product.get("608da169eb9e17281f0ab2ff")
 
-    # By name
-    bar = await Product.find_one(Product.name == "Peanut Bar")
+# By name
+bar = await Product.find_one(Product.name == "Peanut Bar")
 
-    # Many
+# Many
 
-    # By category
+# By category
 
-    chocolates = await Product.find(
-        Product.category.name == "Chocolate"
-    ).to_list()
+chocolates = await Product.find(
+    Product.category.name == "Chocolate"
+).to_list()
 
-    # And by price
+# And by price
 
-    chocolates = await Product.find(
-        Product.category.name == "Chocolate",
-        Product.price < 5
-    ).to_list()
+chocolates = await Product.find(
+    Product.category.name == "Chocolate",
+    Product.price < 5
+).to_list()
 
-    # OR
+# OR
 
-    chocolates = await Product.find(
-        Product.category.name == "Chocolate").find(
-        Product.price < 5).to_list()
+chocolates = await Product.find(
+    Product.category.name == "Chocolate").find(
+    Product.price < 5).to_list()
 
-    # All
+# Complex example:
 
-    all_products = await Product.all().to_list()
+class ProductShortView(BaseModel):
+    name: str
+    price: float
+
+
+products = await Product.find(
+    Product.category.name == "Chocolate",
+    Product.price < 3.5
+).sort(-Product.price).limit(10).project(ProductShortView)
+
+# All
+
+all_products = await Product.all().to_list()
 ```
 
 Information about sorting, skips, limits, and projections could be found in the [tutorial](/tutorial/find/)
@@ -138,22 +148,21 @@ Information about sorting, skips, limits, and projections could be found in the 
 ### Update
 
 ```python
-async def update():
-    # Single 
-    await Product.find_one(Product.name == "Milka").set({Product.price: 3.33})
+# Single 
+await Product.find_one(Product.name == "Milka").set({Product.price: 3.33})
 
-    # Or
-    bar = await Product.find_one(Product.name == "Milka")
-    await bar.update(Set({Product.price: 3.33}))
+# Or
+bar = await Product.find_one(Product.name == "Milka")
+await bar.update(Set({Product.price: 3.33}))
 
-    # Or
-    bar.price = 3.33
-    await bar.replace()
+# Or
+bar.price = 3.33
+await bar.replace()
 
-    # Many
-    await Product.find(
-        Product.category.name == "Chocolate"
-    ).inc({Product.price: 1})
+# Many
+await Product.find(
+    Product.category.name == "Chocolate"
+).inc({Product.price: 1})
 ```
 
 More details and examples about update queries could be found in the [tutorial](/tutorial/update/)
@@ -161,18 +170,17 @@ More details and examples about update queries could be found in the [tutorial](
 ### Delete
 
 ```python
-async def delete():
-    # Single 
-    await Product.find_one(Product.name == "Milka").delete()
+# Single 
+await Product.find_one(Product.name == "Milka").delete()
 
-    # Or
-    bar = await Product.find_one(Product.name == "Milka")
-    await bar.delete()
+# Or
+bar = await Product.find_one(Product.name == "Milka")
+await bar.delete()
 
-    # Many
-    await Product.find(
-        Product.category.name == "Chocolate"
-    ).delete()
+# Many
+await Product.find(
+    Product.category.name == "Chocolate"
+).delete()
 ```
 
 More information could be found in the [tutorial](/tutorial/delete/)
@@ -180,13 +188,27 @@ More information could be found in the [tutorial](/tutorial/delete/)
 ### Aggregate
 
 ```python
-async def aggregate():
-    avg_price = await Product.find(
-        Product.category.name == "Chocolate").avg(Product.price)
+# With preset methods
+
+avg_price = await Product.find(
+    Product.category.name == "Chocolate"
+).avg(Product.price)
+
+# Or without find query
+
+avg_price = await Product.avg(Product.price)
+
+# Native syntax 
+
+class OutputItem(BaseModel):
+    id: str = Field(None, alias="_id")
+    total: int
     
-    result = await Product.aggregate(
-    [{"$group": {"_id": "$category.name", "total": {"$avg": "$price"}}}]
-)
+result = await Product.find(
+    Product.category.name == "Chocolate").aggregate(
+    [{"$group": {"_id": "$category.name", "total": {"$avg": "$price"}}}],
+    projection_model=OutputItem
+).to_list()
 
 ```
 
