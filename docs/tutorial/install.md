@@ -45,6 +45,7 @@ class Product(Document):  # This is the model
         ]
 
 ```
+Each document by default has `id` ObjectId field, which reflects `_id` MongoDB document field.
 
 To set up the collection name it uses inner class Collection.
 

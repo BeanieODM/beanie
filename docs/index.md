@@ -53,6 +53,7 @@ class Product(Document):  # This is the model
     class Collection:
         name = "products"
 ```
+Each document by default has `id` ObjectId field, which reflects `_id` MongoDB document field.
 
 More details about Documents, collections, and indexes configuration could be found in the [tutorial](/tutorial/install/).
 
