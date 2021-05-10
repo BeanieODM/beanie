@@ -24,7 +24,7 @@ More complex indexes can be set up by the `indexes` field in a Collection class.
 - list of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
   example: `pymongo.ASCENDING`)
 - `pymongo.IndexModel` instance - the most flexible
-  option. [Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)
+  option. [Documentation](https://pymongo.readthedocs.io/en/stable/beanie/api/pymongo/operations.html#pymongo.operations.IndexModel)
 
 ```python
 class DocumentTestModelWithIndex(Document):

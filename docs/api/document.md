@@ -16,7 +16,7 @@ Mapped to the PydanticObjectId class
 Inherited from:
 
 - Pydantic BaseModel
-- [UpdateMethods](/api/interfaces/#aggregatemethods)
+- [UpdateMethods](/beanie/api/interfaces/#aggregatemethods)
 
 ### insert
 
@@ -130,7 +130,7 @@ def find_one(
 ```
 
 Find one document by criteria.
-Returns [FindOne](/api/queries/#findone) query object
+Returns [FindOne](/beanie/api/queries/#findone) query object
 
 **Arguments**:
 
@@ -140,7 +140,7 @@ Returns [FindOne](/api/queries/#findone) query object
 
 **Returns**:
 
-[FindOne](/api/queries/#findone) - find query instance
+[FindOne](/beanie/api/queries/#findone) - find query instance
 
 ### find\_many
 
@@ -158,7 +158,7 @@ def find_many(
 ```
 
 Find many documents by criteria.
-Returns [FindMany](/api/queries/#findmany) query object
+Returns [FindMany](/beanie/api/queries/#findmany) query object
 
 **Arguments**:
 
@@ -173,7 +173,7 @@ for this query.
 
 **Returns**:
 
-[FindMany](/api/queries/#findmany) - query instance
+[FindMany](/beanie/api/queries/#findmany) - query instance
 
 ### find
 
@@ -220,7 +220,7 @@ for this query.
 
 **Returns**:
 
-[FindMany](/api/queries/#findmany) - query instance
+[FindMany](/beanie/api/queries/#findmany) - query instance
 
 ### all
 
@@ -374,7 +374,7 @@ def aggregate(
 ```
 
 Aggregate over collection.
-Returns [AggregationQuery](/api/queries/#aggregationquery) query object
+Returns [AggregationQuery](/beanie/api/queries/#aggregationquery) query object
 
 **Arguments**:
 
@@ -384,7 +384,7 @@ Returns [AggregationQuery](/api/queries/#aggregationquery) query object
 
 **Returns**:
 
-[AggregationQuery](/api/queries/#aggregationquery)
+[AggregationQuery](/beanie/api/queries/#aggregationquery)
 
 ### count
 

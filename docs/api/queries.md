@@ -10,8 +10,8 @@ Find Query base class
 
 Inherited from:
 
-- [SessionMethods](/api/interfaces/#sessionmethods)
-- [UpdateMethods](/api/interfaces/#aggregatemethods)
+- [SessionMethods](/beanie/api/interfaces/#sessionmethods)
+- [UpdateMethods](/beanie/api/interfaces/#aggregatemethods)
 
 ### update
 
@@ -83,9 +83,9 @@ Find Many query class
 
 Inherited from:
 
-- [FindQuery](/api/queries/#findquery)
-- [BaseCursorQuery](/api/queries/#basecursorquery) - async generator
-- [AggregateMethods](/api/interfaces/#aggregatemethods)
+- [FindQuery](/beanie/api/queries/#findquery)
+- [BaseCursorQuery](/beanie/api/queries/#basecursorquery) - async generator
+- [AggregateMethods](/beanie/api/interfaces/#aggregatemethods)
 
 ### find\_many
 
@@ -203,7 +203,7 @@ def update_many(
 ```
 
 Provide search criteria to the
-[UpdateMany](/api/queries/#updatemany) query
+[UpdateMany](/beanie/api/queries/#updatemany) query
 
 **Arguments**:
 
@@ -212,7 +212,7 @@ Provide search criteria to the
 
 **Returns**:
 
-[UpdateMany](/api/queries/#updatemany) query
+[UpdateMany](/beanie/api/queries/#updatemany) query
 
 ### delete\_many
 
@@ -223,7 +223,7 @@ def delete_many(
 ) -> DeleteMany
 ```
 
-Provide search criteria to the [DeleteMany](/api/queries/#deletemany) query
+Provide search criteria to the [DeleteMany](/beanie/api/queries/#deletemany) query
 
 **Arguments**:
 
@@ -231,7 +231,7 @@ Provide search criteria to the [DeleteMany](/api/queries/#deletemany) query
 
 **Returns**:
 
-[DeleteMany](/api/queries/#deletemany) query
+[DeleteMany](/beanie/api/queries/#deletemany) query
 
 ### count
 
@@ -258,7 +258,7 @@ def aggregate(
 ) -> AggregationQuery
 ```
 
-Provide search criteria to the [AggregationQuery](/api/queries/#aggregationquery)
+Provide search criteria to the [AggregationQuery](/beanie/api/queries/#aggregationquery)
 
 **Arguments**:
 
@@ -269,7 +269,7 @@ Provide search criteria to the [AggregationQuery](/api/queries/#aggregationquery
 
 **Returns**:
 
-[AggregationQuery](/api/queries/#aggregationquery)
+[AggregationQuery](/beanie/api/queries/#aggregationquery)
 
 ## FindOne
 
@@ -281,7 +281,7 @@ Find One query class
 
 Inherited from:
 
-- [FindQuery](/api/queries/#findquery)
+- [FindQuery](/beanie/api/queries/#findquery)
 
 ### find\_one
 
@@ -316,7 +316,7 @@ def update_one(
 ) -> UpdateOne
 ```
 
-Create [UpdateOne](/api/queries/#updateone) query using modifications and
+Create [UpdateOne](/beanie/api/queries/#updateone) query using modifications and
 provide search criteria there
 
 **Arguments**:
@@ -326,7 +326,7 @@ provide search criteria there
 
 **Returns**:
 
-[UpdateOne](/api/queries/#updateone) query
+[UpdateOne](/beanie/api/queries/#updateone) query
 
 ### delete\_one
 
@@ -337,7 +337,7 @@ def delete_one(
 ) -> DeleteOne
 ```
 
-Provide search criteria to the [DeleteOne](/api/queries/#deleteone) query
+Provide search criteria to the [DeleteOne](/beanie/api/queries/#deleteone) query
 
 **Arguments**:
 
@@ -345,7 +345,7 @@ Provide search criteria to the [DeleteOne](/api/queries/#deleteone) query
 
 **Returns**:
 
-[DeleteOne](/api/queries/#deleteone) query
+[DeleteOne](/beanie/api/queries/#deleteone) query
 
 ### replace\_one
 
@@ -394,8 +394,8 @@ Update Query base class
 
 Inherited from:
 
-- [SessionMethods](/api/interfaces/#sessionmethods)
-- [UpdateMethods](/api/interfaces/#aggregatemethods)
+- [SessionMethods](/beanie/api/interfaces/#sessionmethods)
+- [UpdateMethods](/beanie/api/interfaces/#aggregatemethods)
 
 ### update
 
@@ -428,7 +428,7 @@ Update Many query class
 
 Inherited from:
 
-- [UpdateQuery](/api/queries/#updatequery)
+- [UpdateQuery](/beanie/api/queries/#updatequery)
 
 ### update\_many
 
@@ -475,7 +475,7 @@ Update One query class
 
 Inherited from:
 
-- [UpdateQuery](/api/queries/#updatequery)
+- [UpdateQuery](/beanie/api/queries/#updatequery)
 
 ### update\_one
 
@@ -574,8 +574,8 @@ Aggregation Query
 
 Inherited from:
 
-- [SessionMethods](/api/interfaces/#sessionmethods) - session methods
-- [BaseCursorQuery](/api/queries/#basecursorquery) - async generator
+- [SessionMethods](/beanie/api/interfaces/#sessionmethods) - session methods
+- [BaseCursorQuery](/beanie/api/queries/#basecursorquery) - async generator
 
 ## beanie.odm.queries.cursor
 

@@ -5,8 +5,8 @@ Beanie provides two ways to find documents:
 - Find One document
 - Find Many documents
 
-On searching for a single document it uses [FindOne](/api/queries/#findone)
-query, many documents - [FindMany](/api/queries/#findmany) query.
+On searching for a single document it uses [FindOne](/beanie/api/queries/#findone)
+query, many documents - [FindMany](/beanie/api/queries/#findmany) query.
 
 Next document models will be used for this tutorial:
 
@@ -61,7 +61,7 @@ products = await Product.find(
 ```
 
 The whole list of the find query operators could be
-found [here](/api/operators/find/)
+found [here](/beanie/api/operators/find/)
 
 For the complex cases native PyMongo syntax is also supported:
 
@@ -71,14 +71,14 @@ products = await Product.find({"price": 1000})
 
 ## Find One
 
-To get the document by id it uses [get](/api/document/#get) method.
+To get the document by id it uses [get](/beanie/api/document/#get) method.
 
 ```python
 bar = await Product.get("608da169eb9e17281f0ab2ff")
 ```
 
 To find document by searching criteria it
-uses [find_one](/api/document/#find_one) method
+uses [find_one](/beanie/api/document/#find_one) method
 
 ```python
 bar = await Product.find_one(Product.name == "Peanut Bar")
@@ -93,12 +93,12 @@ bar = await Product.find_one(Product.name == "Peanut Bar",
 
 ## Find Many
 
-To find many documents it uses [find_many](/api/document/#find_many) (
-or [find](/api/document/#find), which is the same ) method
+To find many documents it uses [find_many](/beanie/api/document/#find_many) (
+or [find](/beanie/api/document/#find), which is the same ) method
 
 ### Cursor
 
-It will return the [FindMany](/api/queries/#findmany) query object. It
+It will return the [FindMany](/beanie/api/queries/#findmany) query object. It
 implements an async generator pattern. Found documents are available
 via `async for` loop:
 
@@ -109,7 +109,7 @@ async for product in Product.find_many(
     print(product)
 ```
 
-[to_list](/api/queries/#to_list) method could be used to return the list of the
+[to_list](/beanie/api/queries/#to_list) method could be used to return the list of the
 found documents
 
 ```python
@@ -142,7 +142,7 @@ chocolates = (await Product
 
 ### Sorting
 
-Sorting could be set up with the [sort](/api/queries/#sort) method.
+Sorting could be set up with the [sort](/beanie/api/queries/#sort) method.
 
 It supports arguments like `+` or `-` class fields
 

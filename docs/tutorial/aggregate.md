@@ -1,12 +1,12 @@
 # Aggregations
 
-[AggregationQuery](/api/queries/#aggregationquery) is used to aggregate data
+[AggregationQuery](/beanie/api/queries/#aggregationquery) is used to aggregate data
 over the whole collection or the subset selected with
-the [FindMany](/api/queries/#findmany) query.
+the [FindMany](/beanie/api/queries/#findmany) query.
 
 ## Preset aggregations
 
-[AggregateMethods](/api/interfaces/#aggregatemethods) is a list of preset
+[AggregateMethods](/beanie/api/interfaces/#aggregatemethods) is a list of preset
 aggregations, which simplifies some use cases.
 
 ```python

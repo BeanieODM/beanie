@@ -55,7 +55,7 @@ class Product(Document):  # This is the model
 ```
 Each document by default has `id` ObjectId field, which reflects `_id` MongoDB document field. It can be used later as an argument for the `get()` method.
 
-More details about Documents, collections, and indexes configuration could be found in the [tutorial](/tutorial/install/).
+More details about Documents, collections, and indexes configuration could be found in the [tutorial](/beanie/tutorial/install/).
 
 ### Initialization
 
@@ -93,7 +93,7 @@ async def create():
     await Product.insert_many([milka, peanut_bar])
 ```
 
-Other details and examples could be found in the [tutorial](/tutorial/insert/)
+Other details and examples could be found in the [tutorial](/beanie/tutorial/insert/)
 
 ### Find
 
@@ -133,7 +133,7 @@ async def find():
     all_products = await Product.all().to_list()
 ```
 
-Information about sorting, skips, limits, and projections could be found in the [tutorial](/tutorial/find/)
+Information about sorting, skips, limits, and projections could be found in the [tutorial](/beanie/tutorial/find/)
 
 ### Update
 
@@ -156,7 +156,7 @@ async def update():
     ).inc({Product.price: 1})
 ```
 
-More details and examples about update queries could be found in the [tutorial](/tutorial/update/)
+More details and examples about update queries could be found in the [tutorial](/beanie/tutorial/update/)
 
 ### Delete
 
@@ -175,7 +175,7 @@ async def delete():
     ).delete()
 ```
 
-More information could be found in the [tutorial](/tutorial/delete/)
+More information could be found in the [tutorial](/beanie/tutorial/delete/)
 
 ### Aggregate
 
@@ -190,12 +190,12 @@ async def aggregate():
 
 ```
 
-Information about aggregation preset aggregation methods and native syntax aggregations could be found in the [tutorial](/tutorial/aggregate/)
+Information about aggregation preset aggregation methods and native syntax aggregations could be found in the [tutorial](/beanie/tutorial/aggregate/)
 
 ### Documentation
 
-- **[Tutorial](/tutorial/install/)** - Usage examples with descriptions
-- **[API](/api/document/)** - Full list of the classes and
+- **[Tutorial](/beanie/tutorial/install/)** - Usage examples with descriptions
+- **[API](/beanie/api/document/)** - Full list of the classes and
   methods
 
 ### Example Projects
