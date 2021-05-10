@@ -3,6 +3,7 @@ nav:
     - Introduction: index.md
     - Tutorial:
           - Install and set up: tutorial/install.md
+          - Indexes: tutorial/indexes.md
           - Insert: tutorial/insert.md
           - Find: tutorial/find.md
           - Update: tutorial/update.md

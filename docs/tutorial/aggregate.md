@@ -1,8 +1,8 @@
 # Aggregations
 
 [AggregationQuery](/api/queries/#aggregationquery) is used to aggregate data
-over the whole collection or the subset selected
-with the [FindMany](/api/queries/#findmany) query.
+over the whole collection or the subset selected with
+the [FindMany](/api/queries/#findmany) query.
 
 ## Preset aggregations
 
@@ -16,28 +16,28 @@ class Sample(Document):
     count: int
 
 
-sum_count = await Document.find(Sample.price <= 100).sum(Sample.count)
+sum_count = await Sample.find(Sample.price <= 100).sum(Sample.count)
 
 # Or for the whole collection:
 
-sum_count = await Document.sum(Sample.count)
+avg_price = await Sample.avg(Sample.count)
 
 ```
 
 ## Aggregate over collection
 
-As FindMany query it implements async generator pattern - aggregation result
-are available via async loop
+`AggregationQuery` implements async generator pattern - results
+are available via `async for` loop
 
 ```python
-    class OutputItem(BaseModel):
+class OutputItem(BaseModel):
     id: str = Field(None, alias="_id")
     total: int
 
 
-async for i in Sample.aggregate(
-        [{"$group": {"_id": "$category", "total": {"$sum": "$count"}}}],
-        aggregation_model=OutputItem,
+async for item in Sample.aggregate(
+    [{"$group": {"_id": "$category", "total": {"$sum": "$count"}}}],
+    aggregation_model=OutputItem,
 ):
     ...
 ```
@@ -47,7 +47,7 @@ or with `to_list` method:
 ```python
 result = await Sample.aggregate(
     [{"$group": {"_id": "$category", "total": {"$sum": "$count"}}}]
-)
+).to_list()
 ```
 
 If the `aggregation_model` parameter is not set, it will return dicts.
@@ -57,8 +57,8 @@ If the `aggregation_model` parameter is not set, it will return dicts.
 To aggregate over a specific subset, FindQuery could be used.
 
 ```python
-result = await Sample.fin(Sample.price< 10).aggregate(
+result = await Sample.find(Sample.price < 10).aggregate(
     [{"$group": {"_id": "$category", "total": {"$sum": "$count"}}}]
-)
+).to_list()
 ```
 

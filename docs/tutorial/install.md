@@ -45,7 +45,7 @@ class Product(Document):  # This is the model
         ]
 
 ```
-Each document by default has `id` ObjectId field, which reflects `_id` MongoDB document field.
+Each document by default has `id` ObjectId field, which reflects `_id` MongoDB document field. It can be used later as an argument for the `get()` method.
 
 To set up the collection name it uses inner class Collection.
 
@@ -53,11 +53,15 @@ To set up a simple index [Indexed](/api/fields/#indexed) function over the data 
 
 For the complex cases indexes should be set up in the Collection inner class also.
 
+More information about indexes could be found [here](/tutorial/indexes)
+
 ## Init
 
-Beanie uses Motor as a driver. 
+Beanie uses Motor as a driver.
 
 ```python
+from beanie import init_beanie
+
 # Crete Motor client
 client = motor.motor_asyncio.AsyncIOMotorClient(
     "mongodb://user:pass@host:27017"

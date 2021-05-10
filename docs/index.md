@@ -3,7 +3,7 @@
 # Getting Started with Beanie
 
 [Beanie](https://github.com/roman-right/beanie) - is an Asynchronous Python
-object-document mapper (ODM) for MongoDB
+object-document mapper (ODM) for MongoDB, based on [Motor](https://motor.readthedocs.io/en/stable/) and [Pydantic](https://pydantic-docs.helpmanual.io/).
 
 When using Beanie each database collection has a corresponding `Document` that
 is used to interact with that collection. In addition to retrieving data,
@@ -20,13 +20,13 @@ Data and schema migrations are supported by Beanie out of the box.
 ### PIP
 
 ```shell
-pip install beanie==1.0.0b2
+pip install beanie
 ```
 
 ### Poetry
 
 ```shell
-poetry add beanie==1.0.0b2
+poetry add beanie
 ```
 
 ## Basic Example
@@ -53,7 +53,7 @@ class Product(Document):  # This is the model
     class Collection:
         name = "products"
 ```
-Each document by default has `id` ObjectId field, which reflects `_id` MongoDB document field.
+Each document by default has `id` ObjectId field, which reflects `_id` MongoDB document field. It can be used later as an argument for the `get()` method.
 
 More details about Documents, collections, and indexes configuration could be found in the [tutorial](/tutorial/install/).
 
@@ -194,8 +194,8 @@ Information about aggregation preset aggregation methods and native syntax aggre
 
 ### Documentation
 
-- **[Tutorial](https://roman-right.github.io/beanie_docs_beta/tutorial/install/)** - Usage examples with descriptions
-- **[API](https://roman-right.github.io/beanie_docs_beta/api/document/)** - Full list of the classes and
+- **[Tutorial](/tutorial/install/)** - Usage examples with descriptions
+- **[API](/api/document/)** - Full list of the classes and
   methods
 
 ### Example Projects
