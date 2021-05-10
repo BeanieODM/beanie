@@ -17,9 +17,7 @@ async def test_get_not_found(document):
 async def test_find_one(documents):
     inserted_one = await documents(1, "kipasa")
     await documents(10, "smthe else")
-
     expected_doc_id = PydanticObjectId(inserted_one[0])
-
     new_document = await DocumentTestModel.find_one({"test_str": "kipasa"})
     assert new_document.id == expected_doc_id
 
@@ -95,7 +93,9 @@ async def test_find_many(documents):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    result = await DocumentTestModel.find_many({"test_str": "uno"}).to_list()
+    result = await DocumentTestModel.find_many(
+        DocumentTestModel.test_str == "uno"
+    ).to_list()
     assert len(result) == 4
 
 

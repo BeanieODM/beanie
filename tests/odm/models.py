@@ -1,10 +1,44 @@
+import datetime
 from typing import List
+from typing import Union, Optional, Tuple
 
 import pymongo
 from pydantic import BaseModel
 from pymongo import IndexModel
 
 from beanie import Document, Indexed
+
+
+class Option2(BaseModel):
+    f: float
+
+
+class Option1(BaseModel):
+    s: str
+
+
+class Nested(BaseModel):
+    integer: int
+    option_1: Option1
+    union: Union[Option1, Option2]
+    optional: Optional[Option2]
+
+
+class GeoObject(BaseModel):
+    type: str = "Point"
+    coordinates: Tuple[float, float]
+
+
+class Sample(Document):
+    timestamp: datetime.datetime
+    increment: int
+    integer: int
+    float_num: float
+    string: str
+    nested: Nested
+    optional: Optional[Option2]
+    union: Union[Option1, Option2]
+    geo: GeoObject
 
 
 class SubDocument(BaseModel):
@@ -15,6 +49,7 @@ class DocumentTestModel(Document):
     test_int: int
     test_list: List[SubDocument]
     test_str: str
+    # test_sub_doc: SubDocument
 
 
 class DocumentTestModelWithCustomCollectionName(Document):

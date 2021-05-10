@@ -1,11 +1,23 @@
 site_name: Documentation
 nav:
-    - Home: index.md
+    - Introduction: index.md
     - Tutorial:
-        - ODM: tutorial/odm.md
-        - Migrations: tutorial/migrations.md
-    - Documentation:
-        - ODM:  documentation/odm.md
+          - Install and set up: tutorial/install.md
+          - Indexes: tutorial/indexes.md
+          - Insert: tutorial/insert.md
+          - Find: tutorial/find.md
+          - Update: tutorial/update.md
+          - Delete: tutorial/delete.md
+          - Aggregate: tutorial/aggregate.md
+    - Api:
+        Document:  api/document.md
+        Query: api/queries.md
+        Interfaces: api/interfaces.md
+        Operators:
+            Find: api/operators/find.md
+            Update: api/operators/update.md
+        Fields: api/fields.md
+    - Migrations: migrations.md
     - Changelog: changelog.md
 theme:
     name: material

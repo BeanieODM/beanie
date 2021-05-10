@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Type, Optional
 
 from beanie.odm.documents import Document
-from beanie.odm.general import init_beanie
+from beanie.odm.utils.general import init_beanie
 from beanie.migrations.controllers.iterative import BaseMigrationController
 from beanie.migrations.database import DBHandler
 from beanie.migrations.models import (
@@ -42,9 +42,9 @@ class MigrationNode:
 
     @staticmethod
     async def clean_current_migration():
-        await MigrationLog.update_many(
-            {"is_current": True}, {"$set": {"is_current": False}}
-        )
+        await MigrationLog.find(
+            {"is_current": True},
+        ).update({"$set": {"is_current": False}})
 
     async def update_current_migration(self):
         """
@@ -53,7 +53,7 @@ class MigrationNode:
         :return:
         """
         await self.clean_current_migration()
-        await MigrationLog(is_current=True, name=self.name).create()
+        await MigrationLog(is_current=True, name=self.name).insert()
 
     async def run(self, mode: RunningMode, allow_index_dropping: bool):
         """

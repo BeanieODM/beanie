@@ -1,4 +1,4 @@
-from typing import Dict, Optional, List, Type, Union, Tuple
+from typing import Optional, List, Type, Union, Tuple, Mapping
 
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
@@ -7,42 +7,46 @@ from pydantic.main import BaseModel
 from pymongo.client_session import ClientSession
 from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
 
-from beanie.odm.collection import collection_factory
-from beanie.odm.cursor import Cursor
 from beanie.exceptions import (
     DocumentWasNotSaved,
-    DocumentNotFound,
     DocumentAlreadyCreated,
     CollectionWasNotInitialized,
     ReplaceError,
 )
-from beanie.odm.fields import PydanticObjectId
+from beanie.odm.enums import SortDirection
+from beanie.odm.fields import PydanticObjectId, ExpressionField
+from beanie.odm.interfaces.update import (
+    UpdateMethods,
+)
 from beanie.odm.models import (
     InspectionResult,
     InspectionStatuses,
     InspectionError,
-    SortDirection,
-    FindOperationKWARGS,
 )
+from beanie.odm.operators.find.comparsion import In
+from beanie.odm.queries.aggregation import AggregationQuery
+from beanie.odm.queries.find import FindOne, FindMany
+from beanie.odm.utils.collection import collection_factory
 
 
-class Document(BaseModel):
+class Document(BaseModel, UpdateMethods):
     """
     Document Mapping class.
 
-    Inherited from Pydantic BaseModel ß includes all the respective methods.
-    Contains id filed - MongoDB document ObjectID "_id" field
+    Fields:
+
+    - `id` - MongoDB document ObjectID "_id" field.
+    Mapped to the PydanticObjectId class
+
+    Inherited from:
+
+    - Pydantic BaseModel
+    - [UpdateMethods](/api/interfaces/#aggregatemethods)
     """
 
     id: Optional[PydanticObjectId] = Field(None, alias="_id")
 
     def __init__(self, *args, **kwargs):
-        """
-        Initialization
-
-        :param args:
-        :param kwargs:
-        """
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
 
@@ -55,9 +59,33 @@ class Document(BaseModel):
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
 
+    async def insert(
+        self, session: Optional[ClientSession] = None
+    ) -> "Document":
+        """
+        Insert the document (self) to the collection
+        :return: Document
+        """
+        if self.id is not None:
+            raise DocumentAlreadyCreated
+        result = await self.get_motor_collection().insert_one(
+            self.dict(by_alias=True, exclude={"id"}), session=session
+        )
+        self.id = PydanticObjectId(result.inserted_id)
+        return self
+
+    async def create(
+        self, session: Optional[ClientSession] = None
+    ) -> "Document":
+        """
+        The same as self.insert()
+        :return: Document
+        """
+        return await self.insert(session=session)
+
     @classmethod
     async def insert_one(
-        cls, document: "Document", session: ClientSession = None
+        cls, document: "Document", session: Optional[ClientSession] = None
     ) -> InsertOneResult:
         """
         Insert one document to the collection
@@ -74,7 +102,7 @@ class Document(BaseModel):
         cls,
         documents: List["Document"],
         keep_ids: bool = False,
-        session: ClientSession = None,
+        session: Optional[ClientSession] = None,
     ):
 
         """
@@ -100,69 +128,97 @@ class Document(BaseModel):
             session=session,
         )
 
-    async def create(self, session: ClientSession = None) -> "Document":
-        """
-        Create the document in the database
-        :return: Document
-        """
-        if self.id is not None:
-            raise DocumentAlreadyCreated
-        result = await self.get_motor_collection().insert_one(
-            self.dict(by_alias=True, exclude={"id"}), session=session
-        )
-        self.id = PydanticObjectId(result.inserted_id)
-        return self
-
     @classmethod
-    async def find_one(
-        cls, filter_query: dict, session: ClientSession = None
+    async def get(
+        cls,
+        document_id: PydanticObjectId,
+        session: Optional[ClientSession] = None,
     ) -> Union["Document", None]:
         """
-        Find one document by criteria
+        Get document by id
 
-        :param filter_query: dict - The selection criteria
+        :param document_id: PydanticObjectId - document id
+        :param session: Optional[ClientSession] - pymongo session
         :return: Union["Document", None]
         """
-        document = await cls.get_motor_collection().find_one(
-            filter=filter_query,
-            projection=cls._get_projection(),
+        return await cls.find_one({"_id": document_id}, session=session)
+
+    @classmethod
+    def find_one(
+        cls,
+        *args: Union[dict, Mapping],
+        projection_model: Optional[Type[BaseModel]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindOne:
+        """
+        Find one document by criteria.
+        Returns [FindOne](/api/queries/#findone) query object
+
+        :param args: *Union[dict, Mapping] - search criteria
+        :param projection_model: Optional[Type[BaseModel]] - projection model
+        :param session: Optional[ClientSession] - pymongo session instance
+        :return: [FindOne](/api/queries/#findone) - find query instance
+        """
+        return FindOne(document_model=cls).find_one(
+            *args,
+            projection_model=projection_model,
             session=session,
         )
-        if document is None:
-            return None
-        return cls.parse_obj(document)
 
     @classmethod
     def find_many(
         cls,
-        filter_query: dict,
+        *args,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: ClientSession = None,
-    ) -> Cursor:
+        projection_model: Optional[Type[BaseModel]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany:
         """
-        Find many documents by criteria
+        Find many documents by criteria.
+        Returns [FindMany](/api/queries/#findmany) query object
 
-        :param filter_query: dict - The selection criteria.
+        :param args: *Union[dict, Mapping] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
         or a list of (key, direction) pairs specifying the sort order
         for this query.
-        :param session: ClientSession - pymongo session
-        :return: Cursor - AsyncGenerator of the documents
+        :param projection_model: Optional[Type[BaseModel]] - projection model
+        :param session: Optional[ClientSession] - pymongo session
+        :return: [FindMany](/api/queries/#findmany) - query instance
         """
-        kwargs = FindOperationKWARGS(skip=skip, limit=limit, sort=sort).dict(
-            exclude_none=True
-        )
-        cursor = cls.get_motor_collection().find(
-            filter=filter_query,
-            projection=cls._get_projection(),
+        return FindMany(document_model=cls).find_many(
+            *args,
+            sort=sort,
+            skip=skip,
+            limit=limit,
+            projection_model=projection_model,
             session=session,
-            **kwargs
         )
-        return Cursor(motor_cursor=cursor, model=cls)
+
+    @classmethod
+    def find(
+        cls,
+        *args,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: Optional[Type[BaseModel]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany:
+        """
+        The same as find_many
+        """
+        return cls.find_many(
+            *args,
+            skip=skip,
+            limit=limit,
+            sort=sort,
+            projection_model=projection_model,
+            session=session,
+        )
 
     @classmethod
     def find_all(
@@ -170,8 +226,9 @@ class Document(BaseModel):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: ClientSession = None,
-    ) -> Cursor:
+        projection_model: Optional[Type[BaseModel]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany:
         """
         Get all the documents
 
@@ -180,262 +237,158 @@ class Document(BaseModel):
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
         or a list of (key, direction) pairs specifying the sort order
         for this query.
-        :param session: ClientSession - pymongo session
-        :return: Cursor - AsyncGenerator of the documents
+        :param projection_model: Optional[Type[BaseModel]] - projection model
+        :param session: Optional[ClientSession] - pymongo session
+        :return: [FindMany](/api/queries/#findmany) - query instance
         """
         return cls.find_many(
-            filter_query={}, skip=skip, limit=limit, sort=sort, session=session
-        )
-
-    @classmethod
-    async def get(
-        cls, document_id: PydanticObjectId, session: ClientSession = None
-    ) -> Union["Document", None]:
-        """
-        Get document by id
-
-        :return: Union["Document", None]
-        """
-        return await cls.find_one({"_id": document_id}, session=session)
-
-    @classmethod
-    async def replace_one(
-        cls,
-        filter_query: dict,
-        document: "Document",
-        session: ClientSession = None,
-    ):
-        """
-        Fully update one document in the database
-
-        :param filter_query: dict - the selection criteria.
-        :param document: Document - the document which will replace the found
-        one.
-        :param session: ClientSession - pymongo session.
-        :return: None
-        """
-        result = await cls.get_motor_collection().replace_one(
-            filter_query,
-            document.dict(by_alias=True, exclude={"id"}),
+            {},
+            skip=skip,
+            limit=limit,
+            sort=sort,
+            projection_model=projection_model,
             session=session,
         )
-        if not result.raw_result["updatedExisting"]:
-            raise DocumentNotFound
-        return result
 
     @classmethod
-    async def replace_many(
-        cls, documents: List["Document"], session: ClientSession = None
-    ) -> None:
+    def all(
+        cls,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: Optional[Type[BaseModel]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany:
         """
-
-        :param documents: List["Document"]
-        :param session: ClientSession - pymongo session.
-        :return: None
+        the same as find_all
         """
-        ids_list = [document.id for document in documents]
-        if await cls.count_documents({"_id": {"$in": ids_list}}) != len(
-            ids_list
-        ):
-            raise ReplaceError(
-                "Some of the documents are not exist in the collection"
-            )
-        await cls.delete_many({"_id": {"$in": ids_list}}, session=session)
-        await cls.insert_many(documents, keep_ids=True, session=session)
+        return cls.find_all(
+            skip=skip,
+            limit=limit,
+            sort=sort,
+            projection_model=projection_model,
+            session=session,
+        )
 
-    async def replace(self, session: ClientSession = None) -> "Document":
+    async def replace(
+        self, session: Optional[ClientSession] = None
+    ) -> "Document":
         """
         Fully update the document in the database
 
-        :param session: ClientSession - pymongo session.
+        :param session: Optional[ClientSession] - pymongo session.
         :return: None
         """
         if self.id is None:
             raise DocumentWasNotSaved
 
-        await self.replace_one({"_id": self.id}, self, session=session)
+        await self.find_one({"_id": self.id}).replace_one(
+            self, session=session
+        )
         return self
 
     @classmethod
-    async def update_one(
+    async def replace_many(
         cls,
-        filter_query: dict,
-        update_query: dict,
-        session: ClientSession = None,
-    ) -> UpdateResult:
+        documents: List["Document"],
+        session: Optional[ClientSession] = None,
+    ) -> None:
         """
-        Partially update already created document
+        Replace list of documents
 
-        :param filter_query: dict - the modifications to apply.
-        :param update_query: dict - the selection criteria for the update.
-        :param session: ClientSession - pymongo session.
-        :return: UpdateResult - pymongo UpdateResult instance
+        :param documents: List["Document"]
+        :param session: Optional[ClientSession] - pymongo session.
+        :return: None
         """
-        return await cls.get_motor_collection().update_one(
-            filter_query, update_query, session=session
-        )
-
-    @classmethod
-    async def update_many(
-        cls,
-        filter_query: dict,
-        update_query: dict,
-        session: ClientSession = None,
-    ) -> UpdateResult:
-        """
-        Partially update many documents
-
-        :param filter_query: dict - the selection criteria for the update.
-        :param update_query: dict - the modifications to apply.
-        :param session: ClientSession - pymongo session.
-        :return: UpdateResult - pymongo UpdateResult instance
-        """
-        return await cls.get_motor_collection().update_many(
-            filter_query, update_query, session=session
-        )
-
-    @classmethod
-    async def update_all(
-        cls, update_query: dict, session: ClientSession = None
-    ) -> UpdateResult:
-        """
-        Partially update all the documents
-
-        :param update_query: dict - the modifications to apply.
-        :param session: ClientSession - pymongo session.
-        :return: UpdateResult - pymongo UpdateResult instance
-        """
-        return await cls.update_many({}, update_query, session=session)
+        ids_list = [document.id for document in documents]
+        if await cls.find(In(cls.id, ids_list)).count() != len(ids_list):
+            raise ReplaceError(
+                "Some of the documents are not exist in the collection"
+            )
+        await cls.find(In(cls.id, ids_list), session=session).delete()
+        await cls.insert_many(documents, keep_ids=True, session=session)
 
     async def update(
-        self, update_query: dict, session: ClientSession = None
+        self, *args, session: Optional[ClientSession] = None
     ) -> None:
         """
         Partially update the document in the database
 
-        :param update_query: dict - the modifications to apply.
+        :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
         :return: None
         """
-        await self.update_one(
-            {"_id": self.id}, update_query=update_query, session=session
-        )
+        await self.find_one({"_id": self.id}).update(*args, session=session)
         await self._sync()
 
     @classmethod
-    async def delete_one(
-        cls, filter_query: dict, session: ClientSession = None
+    def update_all(
+        cls,
+        *args: Union[dict, Mapping],
+        session: Optional[ClientSession] = None,
+    ) -> UpdateResult:
+        """
+        Partially update all the documents
+
+        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param session: ClientSession - pymongo session.
+        :return: UpdateResult - pymongo UpdateResult instance
+        """
+        return cls.find_all().update_many(*args, session=session)
+
+    async def delete(
+        self, session: Optional[ClientSession] = None
     ) -> DeleteResult:
-        """
-        Delete one document
-
-        :param filter_query: dict - the selection criteria
-        :param session: ClientSession - pymongo session.
-        :return: DeleteResult - pymongo DeleteResult instance
-        """
-        return await cls.get_motor_collection().delete_one(
-            filter_query, session=session
-        )
-
-    @classmethod
-    async def delete_many(
-        cls, filter_query: dict, session: ClientSession = None
-    ) -> DeleteResult:
-        """
-        Delete many documents
-
-        :param filter_query: dict - the selection criteria.
-        :param session: ClientSession - pymongo session.
-        :return: DeleteResult - pymongo DeleteResult instance.
-        """
-        return await cls.get_motor_collection().delete_many(
-            filter_query, session=session
-        )
-
-    @classmethod
-    async def delete_all(cls, session: ClientSession = None) -> DeleteResult:
-        """
-        Delete all the documents
-
-        :param session: ClientSession - pymongo session.
-        :return: DeleteResult - pymongo DeleteResult instance.
-        """
-        return await cls.delete_many({}, session=session)
-
-    async def delete(self, session: ClientSession = None) -> DeleteResult:
         """
         Delete the document
 
-        :param session: ClientSession - pymongo session.
+        :param session: Optional[ClientSession] - pymongo session.
         :return: DeleteResult - pymongo DeleteResult instance.
         """
-        return await self.delete_one({"_id": self.id}, session=session)
+        return await self.find_one({"_id": self.id}).delete(session=session)
+
+    @classmethod
+    async def delete_all(
+        cls, session: Optional[ClientSession] = None
+    ) -> DeleteResult:
+        """
+        Delete all the documents
+
+        :param session: Optional[ClientSession] - pymongo session.
+        :return: DeleteResult - pymongo DeleteResult instance.
+        """
+        return await cls.find_all().delete(session=session)
 
     @classmethod
     def aggregate(
         cls,
-        aggregation_query: List[dict],
-        item_model: Type[BaseModel] = None,
-        session: ClientSession = None,
-    ) -> Cursor:
+        aggregation_pipeline: list,
+        aggregation_model: Type[BaseModel] = None,
+        session: Optional[ClientSession] = None,
+    ) -> AggregationQuery:
         """
-        Aggregate
-
-        :param aggregation_query: List[dict] - query with aggregation commands
-        :param item_model: Type[BaseModel] - model of item to return in the
-        list of aggregations
-        :param session: ClientSession - pymongo session.
-        :return: Cursor - AsyncGenerator of aggregated items
+        Aggregate over collection.
+        Returns [AggregationQuery](/api/queries/#aggregationquery) query object
+        :param aggregation_pipeline: list - aggregation pipeline
+        :param aggregation_model: Type[BaseModel]
+        :param session: Optional[ClientSession]
+        :return: [AggregationQuery](/api/queries/#aggregationquery)
         """
-        cursor = cls.get_motor_collection().aggregate(
-            aggregation_query, session=session
+        return cls.find_all().aggregate(
+            aggregation_pipeline=aggregation_pipeline,
+            projection_model=aggregation_model,
+            session=session,
         )
-        return Cursor(motor_cursor=cursor, model=item_model)
 
     @classmethod
-    async def count_documents(cls, filter_query: Optional[dict] = None) -> int:
+    async def count(cls) -> int:
         """
         Number of documents in the collections
+        The same as find_all().count()
 
-        :param filter_query: dict - the selection criteria
         :return: int
         """
-        if filter_query is None:
-            filter_query = {}
-        return await cls.get_motor_collection().count_documents(filter_query)
-
-    # Projections
-    @classmethod
-    def _init_projection(cls) -> Dict[str, int]:
-        """
-        Initializes the projection dictionary, this will be done only once
-
-        :return: Dict[str, int] - The projection dict
-        """
-        document_projection: Dict[str, int] = {}
-        for name, field in cls.__fields__.items():
-            if field.alias:
-                document_projection[field.alias] = 1
-            else:
-                document_projection[name] = 1
-        setattr(cls, "_projection", document_projection)
-        return document_projection
-
-    @classmethod
-    def _get_projection(cls) -> Dict[str, int]:
-        """
-        Get the projection dictionary or create it if it has
-        not been built yet.
-
-        :return: Dict[str, int] - The projection dict
-        """
-        document_projection: Dict[str, int] = getattr(cls, "_projection", None)
-        if document_projection is None:
-            document_projection = cls._init_projection()
-
-        return document_projection
-
-    # Collections
+        return await cls.find_all().count()
 
     @classmethod
     async def init_collection(
@@ -451,11 +404,15 @@ class Document(BaseModel):
         collection_class = getattr(cls, "Collection", None)
         collection_meta = await collection_factory(
             database=database,
-            document_class=cls,
+            document_model=cls,
             allow_index_dropping=allow_index_dropping,
             collection_class=collection_class,
         )
         setattr(cls, "CollectionMeta", collection_meta)
+
+        for k, v in cls.__fields__.items():
+            path = v.alias or v.name
+            setattr(cls, k, ExpressionField(path))
 
     @classmethod
     def _get_collection_meta(cls) -> Type:
@@ -482,7 +439,7 @@ class Document(BaseModel):
 
     @classmethod
     async def inspect_collection(
-        cls, session: ClientSession = None
+        cls, session: Optional[ClientSession] = None
     ) -> InspectionResult:
         """
         Check, if documents, stored in the MongoDB collection

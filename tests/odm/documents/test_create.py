@@ -21,14 +21,14 @@ async def test_insert_many(documents_not_inserted):
 
 
 async def test_create(document_not_inserted):
-    await document_not_inserted.create()
+    await document_not_inserted.insert()
     assert isinstance(document_not_inserted.id, PydanticObjectId)
 
 
 async def test_create_twice(document_not_inserted):
-    await document_not_inserted.create()
+    await document_not_inserted.insert()
     with pytest.raises(DocumentAlreadyCreated):
-        await document_not_inserted.create()
+        await document_not_inserted.insert()
 
 
 async def test_insert_one_with_session(document_not_inserted, session):
@@ -51,5 +51,5 @@ async def test_insert_many_with_session(documents_not_inserted, session):
 
 
 async def test_create_with_session(document_not_inserted, session):
-    await document_not_inserted.create(session=session)
+    await document_not_inserted.insert(session=session)
     assert isinstance(document_not_inserted.id, PydanticObjectId)

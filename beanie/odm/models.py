@@ -1,44 +1,9 @@
-from enum import Enum
-from typing import List, Optional, Union, Tuple
+from typing import List
 
-import pymongo
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
+from beanie.odm.enums import InspectionStatuses
 from beanie.odm.fields import PydanticObjectId
-
-
-class SortDirection(int, Enum):
-    """
-    Sorting directions
-    """
-
-    ASCENDING = pymongo.ASCENDING
-    DESCENDING = pymongo.DESCENDING
-
-
-class FindOperationKWARGS(BaseModel):
-    """
-    KWARGS Parser for find operations
-    """
-
-    skip: Optional[int] = None
-    limit: Optional[int] = None
-    sort: Union[None, str, List[Tuple[str, SortDirection]]] = None
-
-    @validator("sort")
-    def name_must_contain_space(cls, v):
-        if isinstance(v, str):
-            return [(v, pymongo.ASCENDING)]
-        return v
-
-
-class InspectionStatuses(str, Enum):
-    """
-    Statuses of the collection inspection
-    """
-
-    FAIL = "FAIL"
-    OK = "OK"
 
 
 class InspectionError(BaseModel):
