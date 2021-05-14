@@ -68,7 +68,7 @@ Each document by default has `id` ObjectId field, which reflects `_id` MongoDB
 document field. It can be used later as an argument for the `get()` method.
 
 More details about Documents, collections, and indexes configuration could be
-found in the [tutorial](/tutorial/install/).
+found in the [tutorial](https://roman-right.github.io/beanie/tutorial/install/).
 
 ### Initialization
 
@@ -112,7 +112,7 @@ peanut_bar = Product(name="Peanut Bar", price=4.44, category=chocolate)
 await Product.insert_many([milka, peanut_bar])
 ```
 
-Other details and examples could be found in the [tutorial](/tutorial/insert/)
+Other details and examples could be found in the [tutorial](https://roman-right.github.io/beanie/tutorial/insert/)
 
 ### Find
 
@@ -241,7 +241,7 @@ all_products = await Product.all().to_list()
 ```
 
 Information about sorting, skips, limits, and projections could be found in
-the [tutorial](/tutorial/find/)
+the [tutorial](https://roman-right.github.io/beanie/tutorial/find/)
 
 ### Update
 
@@ -314,8 +314,11 @@ await Product.find_one(
     Product.name == "Milka"
 ).inc({Product.price: 1})
 ```
+
 #### Update Many
-`FindMany` uses the same patter as `FindOne` but creates `UpdateMany` instance instead of `UpdateOne` respectively. It supports `UpdateMethods` too. 
+
+`FindMany` uses the same patter as `FindOne` but creates `UpdateMany` instance
+instead of `UpdateOne` respectively. It supports `UpdateMethods` too.
 
 ```python
 await Product.find(
@@ -328,38 +331,64 @@ the [tutorial](/tutorial/update/)
 
 ### Delete
 
-```python
-# Single 
-await Product.find_one(Product.name == "Milka").delete()
+`delete()` method is supported and by the `Document` instances, and by the `FindOne`
+and by the `FindMany` instances. It deletes documents using id or search
+criteria respectively.
 
-# Or
+#### Document
+
+```python
 bar = await Product.find_one(Product.name == "Milka")
 await bar.delete()
+```
 
-# Many
+#### One
+
+```python
+await Product.find_one(Product.name == "Milka").delete()
+```
+
+#### Many
+
+```python
 await Product.find(
     Product.category.name == "Chocolate"
 ).delete()
 ```
 
-More information could be found in the [tutorial](/tutorial/delete/)
+#### ALL
+
+```python
+await Product.delete_all()
+```
+
+More information could be found in the [tutorial](https://roman-right.github.io/beanie/tutorial/delete/)
 
 ### Aggregate
 
-```python
-# With preset methods
+You can aggregate and over the whole collection, using `aggregate()` method of the `Document` class, and over search criteria, using `FindMany` instance. 
 
+#### Aggregation Methods
+
+`FindMany` and `Document` classes implements [AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods) interface with preset methods
+
+**With serach criteria**
+```python
 avg_price = await Product.find(
     Product.category.name == "Chocolate"
 ).avg(Product.price)
+```
 
-# Or without find query
-
+**Over the whole collection**
+```python
 avg_price = await Product.avg(Product.price)
+```
 
+#### Native syntax
 
-# Native syntax 
+You can use the native PyMongo syntax of the aggregation pipelines to aggregate over the whole collection or over the subset too
 
+```python
 class OutputItem(BaseModel):
     id: str = Field(None, alias="_id")
     total: int
@@ -374,7 +403,7 @@ result = await Product.find(
 ```
 
 Information about aggregation preset aggregation methods and native syntax
-aggregations could be found in the [tutorial](/tutorial/aggregate/)
+aggregations could be found in the [tutorial](https://roman-right.github.io/beanie/tutorial/aggregate/)
 
 ### Documentation
 
