@@ -386,7 +386,7 @@ avg_price = await Product.avg(Product.price)
 
 #### Native syntax
 
-You can use the native PyMongo syntax of the aggregation pipelines to aggregate over the whole collection or over the subset too
+You can use the native PyMongo syntax of the aggregation pipelines to aggregate over the whole collection or over the subset too. `projection_model` parameter is responsible for the output format. It will return dictionaries, if this parameter is not provided.
 
 ```python
 class OutputItem(BaseModel):
