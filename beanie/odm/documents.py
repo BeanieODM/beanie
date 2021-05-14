@@ -1,11 +1,14 @@
-from typing import Optional, List, Type, Union, Tuple, Mapping
-
-from bson import ObjectId
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pydantic import Field, ValidationError
-from pydantic.main import BaseModel
-from pymongo.client_session import ClientSession
-from pymongo.results import DeleteResult, UpdateResult, InsertOneResult
+from typing import (
+    Optional,
+    List,
+    Type,
+    Union,
+    Tuple,
+    Mapping,
+    TypeVar,
+    Dict,
+    Any,
+)
 
 from beanie.exceptions import (
     DocumentWasNotSaved,
@@ -26,7 +29,20 @@ from beanie.odm.models import (
 from beanie.odm.operators.find.comparsion import In
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindOne, FindMany
+from beanie.odm.queries.update import UpdateMany
 from beanie.odm.utils.collection import collection_factory
+from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
+from pydantic import Field, ValidationError
+from pydantic.main import BaseModel
+from pymongo.client_session import ClientSession
+from pymongo.results import (
+    DeleteResult,
+    InsertOneResult,
+    InsertManyResult,
+)
+
+DocType = TypeVar("DocType", bound="Document")
 
 
 class Document(BaseModel, UpdateMethods):
@@ -59,9 +75,7 @@ class Document(BaseModel, UpdateMethods):
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
 
-    async def insert(
-        self, session: Optional[ClientSession] = None
-    ) -> "Document":
+    async def insert(self, session: Optional[ClientSession] = None) -> DocType:
         """
         Insert the document (self) to the collection
         :return: Document
@@ -74,9 +88,7 @@ class Document(BaseModel, UpdateMethods):
         self.id = PydanticObjectId(result.inserted_id)
         return self
 
-    async def create(
-        self, session: Optional[ClientSession] = None
-    ) -> "Document":
+    async def create(self, session: Optional[ClientSession] = None) -> DocType:
         """
         The same as self.insert()
         :return: Document
@@ -85,13 +97,15 @@ class Document(BaseModel, UpdateMethods):
 
     @classmethod
     async def insert_one(
-        cls, document: "Document", session: Optional[ClientSession] = None
+        cls: Type[DocType],
+        document: DocType,
+        session: Optional[ClientSession] = None,
     ) -> InsertOneResult:
         """
         Insert one document to the collection
         :param document: Document - document to insert
         :param session: ClientSession - pymongo session
-        :return: Document
+        :return: InsertOneResult
         """
         return await cls.get_motor_collection().insert_one(
             document.dict(by_alias=True, exclude={"id"}), session=session
@@ -99,11 +113,11 @@ class Document(BaseModel, UpdateMethods):
 
     @classmethod
     async def insert_many(
-        cls,
-        documents: List["Document"],
+        cls: Type[DocType],
+        documents: List[DocType],
         keep_ids: bool = False,
         session: Optional[ClientSession] = None,
-    ):
+    ) -> InsertManyResult:
 
         """
         Insert many documents to the collection
@@ -112,7 +126,7 @@ class Document(BaseModel, UpdateMethods):
         :param keep_ids: bool - should it insert documents with ids
         or ignore it? Default False - ignore
         :param session: ClientSession - pymongo session
-        :return: Document
+        :return: InsertManyResult
         """
         if keep_ids:
             documents_list = [
@@ -130,10 +144,10 @@ class Document(BaseModel, UpdateMethods):
 
     @classmethod
     async def get(
-        cls,
+        cls: Type[DocType],
         document_id: PydanticObjectId,
         session: Optional[ClientSession] = None,
-    ) -> Union["Document", None]:
+    ) -> Optional[DocType]:
         """
         Get document by id
 
@@ -146,7 +160,7 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find_one(
         cls,
-        *args: Union[dict, Mapping],
+        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
         projection_model: Optional[Type[BaseModel]] = None,
         session: Optional[ClientSession] = None,
     ) -> FindOne:
@@ -154,7 +168,8 @@ class Document(BaseModel, UpdateMethods):
         Find one document by criteria.
         Returns [FindOne](/api/queries/#findone) query object
 
-        :param args: *Union[dict, Mapping] - search criteria
+        :param args: *Union[Dict[str, Any],
+        Mapping[str, Any], bool] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session instance
         :return: [FindOne](/api/queries/#findone) - find query instance
@@ -168,7 +183,7 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find_many(
         cls,
-        *args,
+        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
@@ -179,7 +194,8 @@ class Document(BaseModel, UpdateMethods):
         Find many documents by criteria.
         Returns [FindMany](/api/queries/#findmany) query object
 
-        :param args: *Union[dict, Mapping] - search criteria
+        :param args: *Union[Dict[str, Any],
+        Mapping[str, Any], bool] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
@@ -201,7 +217,7 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find(
         cls,
-        *args,
+        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
@@ -272,7 +288,7 @@ class Document(BaseModel, UpdateMethods):
 
     async def replace(
         self, session: Optional[ClientSession] = None
-    ) -> "Document":
+    ) -> DocType:
         """
         Fully update the document in the database
 
@@ -289,8 +305,8 @@ class Document(BaseModel, UpdateMethods):
 
     @classmethod
     async def replace_many(
-        cls,
-        documents: List["Document"],
+        cls: Type[DocType],
+        documents: List[DocType],
         session: Optional[ClientSession] = None,
     ) -> None:
         """
@@ -326,13 +342,13 @@ class Document(BaseModel, UpdateMethods):
         cls,
         *args: Union[dict, Mapping],
         session: Optional[ClientSession] = None,
-    ) -> UpdateResult:
+    ) -> UpdateMany:
         """
         Partially update all the documents
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
-        :return: UpdateResult - pymongo UpdateResult instance
+        :return: UpdateMany query
         """
         return cls.find_all().update_many(*args, session=session)
 
