@@ -31,7 +31,7 @@ pip install beanie
 poetry add beanie
 ```
 
-## Basic Example
+## Getting Started
 
 ### Document
 
