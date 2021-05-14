@@ -1,8 +1,15 @@
-from typing import Union, Optional, List, Tuple, Type, Mapping
-
-from pydantic import BaseModel
-from pymongo.client_session import ClientSession
-from pymongo.results import UpdateResult
+from typing import (
+    Union,
+    Optional,
+    List,
+    Tuple,
+    Type,
+    Mapping,
+    TYPE_CHECKING,
+    TypeVar,
+    Dict,
+    Any,
+)
 
 from beanie.exceptions import DocumentNotFound
 from beanie.odm.enums import SortDirection
@@ -25,6 +32,14 @@ from beanie.odm.queries.update import (
     UpdateOne,
 )
 from beanie.odm.utils.projection import get_projection
+from pydantic import BaseModel
+from pymongo.client_session import ClientSession
+from pymongo.results import UpdateResult
+
+if TYPE_CHECKING:
+    from beanie.odm.documents import Document
+
+FindQueryType = TypeVar("FindQueryType", bound="FindQuery")
 
 
 class FindQuery(UpdateMethods, SessionMethods):
@@ -40,13 +55,13 @@ class FindQuery(UpdateMethods, SessionMethods):
     UpdateQueryType = UpdateQuery
     DeleteQueryType = DeleteQuery
 
-    def __init__(self, document_model):
+    def __init__(self, document_model: "Document"):
         self.document_model = document_model
         self.find_expressions: List[Union[dict, Mapping]] = []
-        self.projection_model = document_model
+        self.projection_model = self.document_model
         self.session = None
 
-    def get_filter_query(self):
+    def get_filter_query(self) -> Dict[str, Any]:
         if self.find_expressions:
             return And(*self.find_expressions)
         else:
@@ -54,7 +69,7 @@ class FindQuery(UpdateMethods, SessionMethods):
 
     def update(
         self,
-        *args: Union[dict, Mapping],
+        *args: Union[Dict[str, Any], Mapping[str, Any]],
         session: Optional[ClientSession] = None
     ):
         """
@@ -90,7 +105,9 @@ class FindQuery(UpdateMethods, SessionMethods):
             find_query=self.get_filter_query(),
         ).set_session(session=session)
 
-    def project(self, projection_model: Optional[Type[BaseModel]]):
+    def project(
+        self: FindQueryType, projection_model: Optional[Type[BaseModel]]
+    ) -> FindQueryType:
         """
         Apply projection parameter
 
@@ -125,17 +142,18 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
 
     def find_many(
         self,
-        *args,
+        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: Optional[Type[BaseModel]] = None,
         session: Optional[ClientSession] = None
-    ):
+    ) -> "FindMany":
         """
         Find many documents by criteria
 
-        :param args: *Union[dict, Mapping] - search criteria
+        :param args: *Union[Dict[str, Any],
+        Mapping[str, Any], bool] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
@@ -155,13 +173,13 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
 
     def find(
         self,
-        *args,
+        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: Optional[Type[BaseModel]] = None,
         session: Optional[ClientSession] = None
-    ):
+    ) -> "FindMany":
         """
         The same as `find_many(...)`
         """
@@ -174,10 +192,17 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
             session=session
         )
 
-    def sort(self, *args):
+    def sort(
+        self,
+        *args: Union[
+            str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
+        ]
+    ) -> "FindMany":
         """
         Add sort parameters
-        :param args: A key or a list of (key, direction) pairs specifying
+        :param args: Union[str, Tuple[str, SortDirection],
+        List[Tuple[str, SortDirection]]] - A key or a tuple (key, direction)
+        or a list of (key, direction) pairs specifying
         the sort order for this query.
         :return: self
         """
@@ -205,7 +230,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
                 raise TypeError("Wrong argument type")
         return self
 
-    def skip(self, n: Optional[int]):
+    def skip(self, n: Optional[int]) -> "FindMany":
         """
         Set skip parameter
         :param n: int
@@ -215,7 +240,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
             self.skip_number = n
         return self
 
-    def limit(self, n: Optional[int]):
+    def limit(self, n: Optional[int]) -> "FindMany":
         """
         Set limit parameter
         :param n: int
@@ -227,7 +252,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
 
     def update_many(
         self,
-        *args: Union[dict, Mapping],
+        *args: Union[Dict[str, Any], Mapping[str, Any]],
         session: Optional[ClientSession] = None
     ) -> UpdateMany:
         """
@@ -264,7 +289,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
 
     def aggregate(
         self,
-        aggregation_pipeline: list,
+        aggregation_pipeline: List[Any],
         projection_model: Type[BaseModel] = None,
         session: Optional[ClientSession] = None,
     ) -> AggregationQuery:
@@ -311,14 +336,15 @@ class FindOne(FindQuery):
 
     def find_one(
         self,
-        *args,
+        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
         projection_model: Optional[Type[BaseModel]] = None,
         session: Optional[ClientSession] = None
-    ):
+    ) -> "FindOne":
         """
         Find one document by criteria
 
-        :param args: *Union[dict, Mapping] - search criteria
+        :param args: *Union[Dict[str, Any], Mapping[str, Any],
+        bool] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :return: FindOne - query instance
@@ -329,7 +355,9 @@ class FindOne(FindQuery):
         return self
 
     def update_one(
-        self, *args, session: Optional[ClientSession] = None
+        self,
+        *args: Union[Dict[str, Any], Mapping[str, Any]],
+        session: Optional[ClientSession] = None
     ) -> UpdateOne:
         """
         Create [UpdateOne](/api/queries/#updateone) query using modifications and
@@ -368,16 +396,12 @@ class FindOne(FindQuery):
             raise DocumentNotFound
         return result
 
-    def __await__(self):
+    def __await__(self) -> BaseModel:
         """
         Run the query
-        :return: Document
+        :return: BaseModel
         """
-        projection = (
-            get_projection(self.projection_model)
-            if self.projection_model
-            else None
-        )
+        projection = get_projection(self.projection_model)
         document = (
             yield from self.document_model.get_motor_collection().find_one(
                 filter=self.get_filter_query(),
@@ -387,4 +411,4 @@ class FindOne(FindQuery):
         )
         if document is None:
             return None
-        return self.document_model.parse_obj(document)
+        return self.projection_model.parse_obj(document)
