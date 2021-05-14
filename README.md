@@ -64,9 +64,6 @@ class Product(Document):  # This is the model
         name = "products"
 ```
 
-Each document by default has `id` ObjectId field, which reflects `_id` MongoDB
-document field. It can be used later as an argument for the `get()` method.
-
 More details about Documents, collections, and indexes configuration could be
 found in the [tutorial](https://roman-right.github.io/beanie/tutorial/install/).
 
@@ -88,7 +85,7 @@ async def init():
         "mongodb://user:pass@host:27017"
     )
 
-    # Init beanie with the Note document class
+    # Init beanie with the Product document class
     await init_beanie(database=client.db_name, document_models=[Product])
 
 ```
