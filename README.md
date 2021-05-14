@@ -1,9 +1,11 @@
 [![Beanie](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/with_text.svg)](https://github.com/roman-right/beanie)
 
-# Getting Started with Beanie
+## Overview
 
 [Beanie](https://github.com/roman-right/beanie) - is an Asynchronous Python
-object-document mapper (ODM) for MongoDB, based on [Motor](https://motor.readthedocs.io/en/stable/) and [Pydantic](https://pydantic-docs.helpmanual.io/).
+object-document mapper (ODM) for MongoDB, based
+on [Motor](https://motor.readthedocs.io/en/stable/)
+and [Pydantic](https://pydantic-docs.helpmanual.io/).
 
 When using Beanie each database collection has a corresponding `Document` that
 is used to interact with that collection. In addition to retrieving data,
@@ -31,7 +33,15 @@ poetry add beanie
 
 ## Basic Example
 
-### Document models
+### Document
+
+The `Document` class in Beanie is responsible for mapping and handling the data
+from the collection. It is inherited from the `BaseModel` Pydantic class, so it
+follows the same data typing and parsing behavior.
+
+Each document has `id` fields of type `PydanticObjectId` which reflects the
+unique `_id` field in
+MongoDB. [MongoDB doc](https://docs.mongodb.com/manual/reference/glossary/#term-id)
 
 ```python
 from typing import Optional
@@ -53,11 +63,19 @@ class Product(Document):  # This is the model
     class Collection:
         name = "products"
 ```
-Each document by default has `id` ObjectId field, which reflects `_id` MongoDB document field. It can be used later as an argument for the `get()` method.
 
-More details about Documents, collections, and indexes configuration could be found in the [tutorial](/tutorial/install/).
+Each document by default has `id` ObjectId field, which reflects `_id` MongoDB
+document field. It can be used later as an argument for the `get()` method.
+
+More details about Documents, collections, and indexes configuration could be
+found in the [tutorial](/tutorial/install/).
 
 ### Initialization
+
+Beanie uses Motor as an async database engine. To init previously created
+documents, you should provide the Motor database instance and list of your
+document models to the `init_beanie(...)` function, as it is shown in the
+example:
 
 ```python
 import motor
@@ -77,16 +95,18 @@ async def init():
 
 ### Create
 
+Beanie supports and single document creation and batch inserts:
+
+#### Insert one
+
 ```python
-chocolate = Category(name="Chocolate")
-
-# Single:
-
-bar = Product(name="Tony's", price=5.95, category=chocolate)
+bar = Product(name="Tony's", price=5.95, category=Category(name="Chocolate"))
 await bar.insert()
+```
 
-# Many
+#### Insert many
 
+```python
 milka = Product(name="Milka", price=3.05, category=chocolate)
 peanut_bar = Product(name="Peanut Bar", price=4.44, category=chocolate)
 await Product.insert_many([milka, peanut_bar])
@@ -96,38 +116,75 @@ Other details and examples could be found in the [tutorial](/tutorial/insert/)
 
 ### Find
 
+#### Get
+
+The simplest way to get the document is to get it by the `id` field.
+Method `get()` is responsible for this:
+
 ```python
-# Single
+bar = await Product.get(PydanticObjectId("608da169eb9e17281f0ab2ff"))
+```
 
-# By id
-bar = await Product.get("608da169eb9e17281f0ab2ff")
+#### Find One
 
-# By name
-bar = await Product.find_one(Product.name == "Peanut Bar")
+To get a single document by any other search criteria you can use `find_one()`
+method. It responds with awaitable object `FindOne`, which returns Document
+instance or None on `await`
 
-# Many
+```python
+bar = await Product.find_one(
+    Product.name == "Peanut Bar",
+    Product.category.name == "Chocolate"
+)
+```
 
-# By category
+`FindOne` supports projections to grab and return data in needed format only
 
-chocolates = await Product.find(
+```python
+class ProductShortView(BaseModel):
+    name: str
+    price: float
+
+
+bar = await Product.find_one(
+    Product.name == "Peanut Bar"
+).project(ProductShortView)
+```
+
+#### Find Many
+
+To find many documents `find` or `find_many` (which is the same) method could
+be used. These methods return the `FindMany` instance, which implements
+the `async generator` pattern. It means found documents are available in
+the `async for` loop:
+
+```python
+async for product in Product.find(
+        Product.category.name == "Chocolate"
+):
+    print(product)
+```
+
+The `to_list` method will put all the found documents on the list
+
+```python
+products = await Product.find(
     Product.category.name == "Chocolate"
 ).to_list()
+```
 
-# And by price
+`FindMany` supports chain filtering, where you can build your filter query with
+many `find` methods
 
-chocolates = await Product.find(
-    Product.category.name == "Chocolate",
-    Product.price < 5
-).to_list()
-
-# OR
-
+```python
 chocolates = await Product.find(
     Product.category.name == "Chocolate").find(
     Product.price < 5).to_list()
+```
 
-# Complex example:
+You can sort, skip, limit and project with `FindMany` query too
 
+```python
 class ProductShortView(BaseModel):
     name: str
     price: float
@@ -138,34 +195,136 @@ products = await Product.find(
     Product.price < 3.5
 ).sort(-Product.price).limit(10).project(ProductShortView)
 
-# All
+```
 
+#### Query Building
+
+And `FindOne` and `FindMany` support native python comparison operators, Beanie
+find operators and native PyMongo find query syntax.
+
+**Python comparison operators**
+
+```python
+chocolates = await Product.find(
+    Product.category.name == "Chocolate").find(
+    Product.price < 5).to_list()
+```
+
+**Beanie Find Operators** are classes - wrappers over MongoDB find operators.
+
+```python
+from beanie.operators import In
+
+products = await Product.find(
+    In(Product.price, [1, 2, 3, 4, 5])
+).to_list()
+```
+
+Here you can see `In` operator, which reflects `$in`. The whole list of the
+find operators could be
+found [here](https://roman-right.github.io/beanie/api/operators/find/)
+
+**Native PyMongo find query syntax**
+
+```python
+products = await Product.find(
+    {"$in": {"price": [1, 2, 3, 4, 5]}}
+).to_list()
+```
+
+#### All
+
+To get all the documents `find_all` or `all` methods can be used.
+
+```python
 all_products = await Product.all().to_list()
 ```
 
-Information about sorting, skips, limits, and projections could be found in the [tutorial](/tutorial/find/)
+Information about sorting, skips, limits, and projections could be found in
+the [tutorial](/tutorial/find/)
 
 ### Update
 
+#### Update Methods
+
+`Document`, `FindMany` and `FindOne`
+implement [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#updatemethods)
+interface. It supports `update`, `set`, `inc` and `current_date` methods.
+
+#### Document
+
+Implementing `UpdateMethods` interface `Document` instance
+creates [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone)
+object and provides self id as the search criteria there. Then `UpdateOne`
+instance is handling all the update operations.
+
+`update` method is used to update the document data. It supports native Pymongo
+syntax and Beanie Update operators.
+
+Native syntax
+
 ```python
-# Single 
-await Product.find_one(Product.name == "Milka").set({Product.price: 3.33})
-
-# Or
 bar = await Product.find_one(Product.name == "Milka")
-await bar.update(Set({Product.price: 3.33}))
-
-# Or
-bar.price = 3.33
-await bar.replace()
-
-# Many
-await Product.find(
-    Product.category.name == "Chocolate"
-).inc({Product.price: 1})
+await bar.update({"$set": {Product.price: 10}})
 ```
 
-More details and examples about update queries could be found in the [tutorial](/tutorial/update/)
+Update operatos
+
+```python
+await bar.update(Set({Product.price: 10}))
+```
+
+The whole list of the Beanie update operators can be
+found [by link](https://roman-right.github.io/beanie/api/operators/update/)
+
+`inc`, `set` and `current_date` methods are popular update operations preset.
+Next example shows how to add `1` to the document's price:
+
+```python
+await bar.inc({Product.price: 1})
+```
+
+#### Update One
+
+Implementing `UpdateMethods` interface `Document` instance
+creates [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone)
+object and provides search criteria there. All the update methods work the same
+way as for the `Document` instance.
+
+Native syntax
+
+```python
+await Product.find_one(
+    Product.name == "Milka"
+).update({"$set": {Product.price: 10}})
+```
+
+Update Operators
+
+```python
+await Product.find_one(
+    Product.name == "Milka"
+).update(Set({Product.price: 10}))
+```
+
+Preset Methods
+
+```python
+await Product.find_one(
+    Product.name == "Milka"
+).inc({Product.price: 1})
+```
+#### Update Many
+`FindMany` uses the same patter as `FindOne` but creates `UpdateMany` instance instead of `UpdateOne` respectively. It supports `UpdateMethods` too. 
+
+```python
+await Product.find(
+    Product.category.name == "Chocolate"
+).update({"$set": {Product.price: 100}})
+```
+
+More details and examples about update queries could be found in
+the [tutorial](/tutorial/update/)
 
 ### Delete
 
@@ -198,12 +357,14 @@ avg_price = await Product.find(
 
 avg_price = await Product.avg(Product.price)
 
+
 # Native syntax 
 
 class OutputItem(BaseModel):
     id: str = Field(None, alias="_id")
     total: int
-    
+
+
 result = await Product.find(
     Product.category.name == "Chocolate").aggregate(
     [{"$group": {"_id": "$category.name", "total": {"$avg": "$price"}}}],
@@ -212,18 +373,22 @@ result = await Product.find(
 
 ```
 
-Information about aggregation preset aggregation methods and native syntax aggregations could be found in the [tutorial](/tutorial/aggregate/)
+Information about aggregation preset aggregation methods and native syntax
+aggregations could be found in the [tutorial](/tutorial/aggregate/)
 
 ### Documentation
 
-- **[Tutorial](https://roman-right.github.io/beanie/tutorial/install/)** - Usage examples with descriptions
-- **[API](https://roman-right.github.io/beanie/api/document/)** - Full list of the classes and
-  methods
+- **[Tutorial](https://roman-right.github.io/beanie/tutorial/install/)** -
+  Usage examples with descriptions
+- **[API](https://roman-right.github.io/beanie/api/document/)** - Full list of
+  the classes and methods
 
 ### Example Projects
 
-- **[FastAPI Demo](https://github.com/roman-right/beanie-fastapi-demo)** - Beanie and FastAPI collaboration demonstration. CRUD and Aggregation.
-- **[Indexes Demo](https://github.com/roman-right/beanie-index-demo)** - Regular and Geo Indexes usage example wrapped to a microservice. 
+- **[FastAPI Demo](https://github.com/roman-right/beanie-fastapi-demo)** -
+  Beanie and FastAPI collaboration demonstration. CRUD and Aggregation.
+- **[Indexes Demo](https://github.com/roman-right/beanie-index-demo)** -
+  Regular and Geo Indexes usage example wrapped to a microservice.
 
 ### Articles
 
@@ -234,10 +399,12 @@ Information about aggregation preset aggregation methods and native syntax aggre
 
 ### Resources
 
-- **[GitHub](https://github.com/roman-right/beanie)** - GitHub page of the project
-- **[Changelog](https://roman-right.github.io/beanie/changelog)** - list of all the valuable changes
-- **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share ideas or just say `Hello!!`
-
+- **[GitHub](https://github.com/roman-right/beanie)** - GitHub page of the
+  project
+- **[Changelog](https://roman-right.github.io/beanie/changelog)** - list of all
+  the valuable changes
+- **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share
+  ideas or just say `Hello!!`
 
 ----
 Supported by [JetBrains](https://jb.gg/OpenSource)

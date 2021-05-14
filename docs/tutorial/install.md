@@ -57,8 +57,7 @@ More information about indexes could be found [here](/beanie/tutorial/indexes/)
 
 ## Init
 
-Beanie uses Motor as a driver.
-
+Beanie uses Motor as an async database engine. To init previously created documents, you should provide the Motor database instance and list of your document models to the `init_beanie(...)` function, as it is shown in the example:
 ```python
 from beanie import init_beanie
 
