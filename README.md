@@ -128,8 +128,8 @@ bar = await Product.get(PydanticObjectId("608da169eb9e17281f0ab2ff"))
 #### Find One
 
 To get a single document by any other search criteria you can use `find_one()`
-method. It responds with awaitable object `FindOne`, which returns Document
-instance or None on `await`
+method. It responds with awaitable object `FindOne`, which returns `Document`
+instance or `None` on `await`
 
 ```python
 bar = await Product.find_one(
