@@ -1,6 +1,10 @@
 # Changelog
 Beanie project changes
 
+## [1.0.1] - 2021-05-14
+### Fixed
+- `Document` self annotation. [Issue](https://github.com/roman-right/beanie/issues/29)
+
 ## [1.0.0] - 2021-05-10
 ### Added
 - QueryBuilder
@@ -79,3 +83,4 @@ Beanie project changes
 [0.4.2]: https://pypi.org/project/beanie/0.4.2
 [0.4.3]: https://pypi.org/project/beanie/0.4.3
 [1.0.0]: https://pypi.org/project/beanie/1.0.0
+[1.0.1]: https://pypi.org/project/beanie/1.0.1

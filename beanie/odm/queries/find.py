@@ -55,7 +55,7 @@ class FindQuery(UpdateMethods, SessionMethods):
     UpdateQueryType = UpdateQuery
     DeleteQueryType = DeleteQuery
 
-    def __init__(self, document_model: Document):
+    def __init__(self, document_model: "Document"):
         self.document_model = document_model
         self.find_expressions: List[Union[dict, Mapping]] = []
         self.projection_model = self.document_model
@@ -399,7 +399,7 @@ class FindOne(FindQuery):
     def __await__(self) -> BaseModel:
         """
         Run the query
-        :return: Document
+        :return: BaseModel
         """
         projection = get_projection(self.projection_model)
         document = (
