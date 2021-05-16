@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from collections import Mapping
+from collections.abc import Mapping
 from copy import copy, deepcopy
 
 
