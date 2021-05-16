@@ -1,11 +1,15 @@
 # Changelog
 Beanie project changes
 
-## [1.0.2] - 2021-05-14
+## [1.0.3] - 2021-05-16
+### Added
+- Index kwargs in the Indexed field. [PR](https://github.com/roman-right/beanie/pull/32). 
+**Thanks [Michael duPont](https://github.com/flyinactor91)**
+
+## [1.0.2] - 2021-05-16
 ### Fixed
 - Deprecated import. [PR](https://github.com/roman-right/beanie/pull/33). 
 **Thanks [Oliver Andrich](https://github.com/oliverandrich)**
-
 
 ## [1.0.1] - 2021-05-14
 ### Fixed
@@ -91,3 +95,4 @@ Beanie project changes
 [1.0.0]: https://pypi.org/project/beanie/1.0.0
 [1.0.1]: https://pypi.org/project/beanie/1.0.1
 [1.0.2]: https://pypi.org/project/beanie/1.0.2
+[1.0.3]: https://pypi.org/project/beanie/1.0.3

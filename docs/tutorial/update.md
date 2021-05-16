@@ -1,8 +1,8 @@
 # Update documents
 
-[UpdateOne](/beanie/api/queries/#updateone) and [UpdateMany](/beanie/api/queries/#updatemany) queries are used to update single and many documents respectively.
+[UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) and [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) queries are used to update single and many documents respectively.
 
-[Document](/beanie/api/document/), [FindOne](/beanie/api/queries/#findone), [FindMany](/beanie/api/queries/#findmany), and both update query instances implement [UpdateMethods](/beanie/api/interfaces/#updatemethods) interface including `update` method.  
+[Document](https://roman-right.github.io/beanie/api/document/), [FindOne](https://roman-right.github.io/beanie/api/queries/#findone), [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany), and both update query instances implement [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#updatemethods) interface including `update` method.  
 
 ## By method from UpdateMethods interface
 
@@ -23,7 +23,7 @@ await Product.find(Product.category.name == "Chocolate").inc({Product.price: 1})
 
 ## By operator class
 
-Most of the update query operators are wrapped as operator classes. The whole list could be found [by link](/beanie/api/operators/update/)
+Most of the update query operators are wrapped as operator classes. The whole list could be found [by link](https://roman-right.github.io/beanie/api/operators/update/)
 
 ### Entity
 ```python

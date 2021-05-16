@@ -1,12 +1,12 @@
 # Aggregations
 
-[AggregationQuery](/beanie/api/queries/#aggregationquery) is used to aggregate data
+[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) is used to aggregate data
 over the whole collection or the subset selected with
-the [FindMany](/beanie/api/queries/#findmany) query.
+the [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query.
 
 ## Preset aggregations
 
-[AggregateMethods](/beanie/api/interfaces/#aggregatemethods) is a list of preset
+[AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods) is a list of preset
 aggregations, which simplifies some use cases.
 
 ```python
