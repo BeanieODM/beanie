@@ -8,6 +8,7 @@ from tests.odm.models import (
     DocumentTestModel,
     DocumentTestModelWithCustomCollectionName,
     DocumentTestModelWithSimpleIndex,
+    DocumentTestModelWithIndexFlags,
     DocumentTestModelWithComplexIndex,
     DocumentTestModelStringImport,
     DocumentTestModelWithDroppedIndex,
@@ -39,6 +40,15 @@ async def test_simple_index_creation():
         ("_fts", "text"),
         ("_ftsx", 1),
     ]
+
+
+async def test_flagged_index_creation():
+    collection: AsyncIOMotorCollection = (
+        DocumentTestModelWithIndexFlags.get_motor_collection()
+    )
+    index_info = await collection.index_information()
+    assert index_info["test_int_1"] == {"key": [("test_int", 1)], "sparse": True, "v": 2}
+    assert index_info["test_str_-1"] == {"key": [("test_str", -1)], "unique": True, "v": 2}
 
 
 async def test_complex_index_creation():

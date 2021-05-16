@@ -10,6 +10,7 @@ from tests.odm.models import (
     SubDocument,
     DocumentTestModelWithCustomCollectionName,
     DocumentTestModelWithSimpleIndex,
+    DocumentTestModelWithIndexFlags,
     DocumentTestModelWithComplexIndex,
     DocumentTestModelFailInspection,
 )
@@ -87,6 +88,7 @@ async def init(loop, db):
         DocumentTestModel,
         DocumentTestModelWithCustomCollectionName,
         DocumentTestModelWithSimpleIndex,
+        DocumentTestModelWithIndexFlags,
         DocumentTestModelWithComplexIndex,
         DocumentTestModelFailInspection,
         Sample,
