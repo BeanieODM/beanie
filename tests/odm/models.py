@@ -67,6 +67,11 @@ class DocumentTestModelWithSimpleIndex(Document):
     test_str: Indexed(str, index_type=pymongo.TEXT)
 
 
+class DocumentTestModelWithIndexFlags(Document):
+    test_int: Indexed(int, sparse=True)
+    test_str: Indexed(str, index_type=pymongo.DESCENDING, unique=True)
+
+
 class DocumentTestModelWithComplexIndex(Document):
     test_int: int
     test_list: List[SubDocument]

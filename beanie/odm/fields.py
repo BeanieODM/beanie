@@ -14,19 +14,16 @@ from beanie.odm.operators.find.comparsion import (
 )
 
 
-def Indexed(typ, index_type=ASCENDING, unique=False):
+def Indexed(typ, index_type=ASCENDING, **kwargs):
     """
     Returns a subclass of `typ` with an extra attribute `_indexed` as a tuple:
-    - Index 0 index type set to `pymongo.ASCENDING` or `pymongo.DESCENDING`
-    - Index 1 index unique set to False or True
+    - Index 0: `index_type` such as `pymongo.ASCENDING`
+    - Index 1: `kwargs` passed to `IndexModel`
     When instantiated the type of the result will actually be `typ`.
     """
 
-    if index_type not in (1, -1):
-        raise ValueError(f"Index Type ({index_type}) does not resolve to 1 or -1")
-
     class NewType(typ):
-        _indexed = (index_type, unique)
+        _indexed = (index_type, kwargs)
 
         def __new__(cls, *args, **kwargs):
             return typ.__new__(typ, *args, **kwargs)
