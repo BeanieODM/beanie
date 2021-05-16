@@ -16,7 +16,7 @@ Mapped to the PydanticObjectId class
 Inherited from:
 
 - Pydantic BaseModel
-- [UpdateMethods](/beanie/api/interfaces/#aggregatemethods)
+- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
 
 ### insert
 
@@ -24,7 +24,7 @@ Inherited from:
 async def insert(
 	self, 
 	session: Optional[ClientSession] = None
-) -> "Document"
+) -> DocType
 ```
 
 Insert the document (self) to the collection
@@ -39,7 +39,7 @@ Document
 async def create(
 	self, 
 	session: Optional[ClientSession] = None
-) -> "Document"
+) -> DocType
 ```
 
 The same as self.insert()
@@ -53,8 +53,8 @@ Document
 ```python
 @classmethod
 async def insert_one(
-	cls, 
-	document: "Document", 
+	cls: Type[DocType], 
+	document: DocType, 
 	session: Optional[ClientSession] = None
 ) -> InsertOneResult
 ```
@@ -68,18 +68,18 @@ Insert one document to the collection
 
 **Returns**:
 
-Document
+InsertOneResult
 
 ### insert\_many
 
 ```python
 @classmethod
 async def insert_many(
-	cls, 
-	documents: List["Document"], 
+	cls: Type[DocType], 
+	documents: List[DocType], 
 	keep_ids: bool = False, 
 	session: Optional[ClientSession] = None
-)
+) -> InsertManyResult
 ```
 
 Insert many documents to the collection
@@ -93,17 +93,17 @@ or ignore it? Default False - ignore
 
 **Returns**:
 
-Document
+InsertManyResult
 
 ### get
 
 ```python
 @classmethod
 async def get(
-	cls, 
+	cls: Type[DocType], 
 	document_id: PydanticObjectId, 
 	session: Optional[ClientSession] = None
-) -> Union["Document", None]
+) -> Optional[DocType]
 ```
 
 Get document by id
@@ -123,24 +123,25 @@ Union["Document", None]
 @classmethod
 def find_one(
 	cls, 
-	*args: Union[dict, Mapping], 
+	*args: Union[Dict[str, Any], Mapping[str, Any], bool], 
 	projection_model: Optional[Type[BaseModel]] = None, 
 	session: Optional[ClientSession] = None
 ) -> FindOne
 ```
 
 Find one document by criteria.
-Returns [FindOne](/beanie/api/queries/#findone) query object
+Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object
 
 **Arguments**:
 
-- `args`: *Union[dict, Mapping] - search criteria
+- `args`: *Union[Dict[str, Any],
+Mapping[str, Any], bool] - search criteria
 - `projection_model`: Optional[Type[BaseModel]] - projection model
 - `session`: Optional[ClientSession] - pymongo session instance
 
 **Returns**:
 
-[FindOne](/beanie/api/queries/#findone) - find query instance
+[FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
 
 ### find\_many
 
@@ -148,7 +149,7 @@ Returns [FindOne](/beanie/api/queries/#findone) query object
 @classmethod
 def find_many(
 	cls, 
-	*args, 
+	*args: Union[Dict[str, Any], Mapping[str, Any], bool], 
 	skip: Optional[int] = None, 
 	limit: Optional[int] = None, 
 	sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, 
@@ -158,11 +159,12 @@ def find_many(
 ```
 
 Find many documents by criteria.
-Returns [FindMany](/beanie/api/queries/#findmany) query object
+Returns [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query object
 
 **Arguments**:
 
-- `args`: *Union[dict, Mapping] - search criteria
+- `args`: *Union[Dict[str, Any],
+Mapping[str, Any], bool] - search criteria
 - `skip`: Optional[int] - The number of documents to omit.
 - `limit`: Optional[int] - The maximum number of results to return.
 - `sort`: Union[None, str, List[Tuple[str, SortDirection]]] - A key
@@ -173,7 +175,7 @@ for this query.
 
 **Returns**:
 
-[FindMany](/beanie/api/queries/#findmany) - query instance
+[FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
 
 ### find
 
@@ -181,7 +183,7 @@ for this query.
 @classmethod
 def find(
 	cls, 
-	*args, 
+	*args: Union[Dict[str, Any], Mapping[str, Any], bool], 
 	skip: Optional[int] = None, 
 	limit: Optional[int] = None, 
 	sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, 
@@ -220,7 +222,7 @@ for this query.
 
 **Returns**:
 
-[FindMany](/beanie/api/queries/#findmany) - query instance
+[FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
 
 ### all
 
@@ -244,7 +246,7 @@ the same as find_all
 async def replace(
 	self, 
 	session: Optional[ClientSession] = None
-) -> "Document"
+) -> DocType
 ```
 
 Fully update the document in the database
@@ -262,8 +264,8 @@ None
 ```python
 @classmethod
 async def replace_many(
-	cls, 
-	documents: List["Document"], 
+	cls: Type[DocType], 
+	documents: List[DocType], 
 	session: Optional[ClientSession] = None
 ) -> None
 ```
@@ -308,7 +310,7 @@ def update_all(
 	cls, 
 	*args: Union[dict, Mapping], 
 	session: Optional[ClientSession] = None
-) -> UpdateResult
+) -> UpdateMany
 ```
 
 Partially update all the documents
@@ -320,7 +322,7 @@ Partially update all the documents
 
 **Returns**:
 
-UpdateResult - pymongo UpdateResult instance
+UpdateMany query
 
 ### delete
 
@@ -374,7 +376,7 @@ def aggregate(
 ```
 
 Aggregate over collection.
-Returns [AggregationQuery](/beanie/api/queries/#aggregationquery) query object
+Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) query object
 
 **Arguments**:
 
@@ -384,7 +386,7 @@ Returns [AggregationQuery](/beanie/api/queries/#aggregationquery) query object
 
 **Returns**:
 
-[AggregationQuery](/beanie/api/queries/#aggregationquery)
+[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
 
 ### count
 

@@ -31,7 +31,7 @@ await Document.find(Sample.one == 1).set({Sample.one: 100})
 
 ```
 
-Uses [Set operator](/beanie/api/operators/update/#set)
+Uses [Set operator](https://roman-right.github.io/beanie/api/operators/update/#set)
 
 **Arguments**:
 
@@ -55,7 +55,7 @@ def current_date(
 
 Set current date
 
-Uses [CurrentDate operator](/beanie/api/operators/update/#currentdate)
+Uses [CurrentDate operator](https://roman-right.github.io/beanie/api/operators/update/#currentdate)
 
 **Arguments**:
 
@@ -89,7 +89,7 @@ await Document.find(Sample.one == 1).inc({Sample.one: 100})
 
 ```
 
-Uses [Inc operator](/beanie/api/operators/update/#inc)
+Uses [Inc operator](https://roman-right.github.io/beanie/api/operators/update/#inc)
 
 **Arguments**:
 

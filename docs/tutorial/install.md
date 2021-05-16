@@ -49,11 +49,11 @@ Each document by default has `id` ObjectId field, which reflects `_id` MongoDB d
 
 To set up the collection name it uses inner class Collection.
 
-To set up a simple index [Indexed](/beanie/api/fields/#indexed) function over the data type can be used
+To set up a simple index [Indexed](https://roman-right.github.io/beanie/api/fields/#indexed) function over the data type can be used
 
 For the complex cases indexes should be set up in the Collection inner class also.
 
-More information about indexes could be found [here](/beanie/tutorial/indexes/)
+More information about indexes could be found [here](https://roman-right.github.io/beanie/tutorial/indexes/)
 
 ## Init
 
