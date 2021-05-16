@@ -1,6 +1,12 @@
 # Changelog
 Beanie project changes
 
+## [1.0.2] - 2021-05-14
+### Fixed
+- Deprecated import. [PR](https://github.com/roman-right/beanie/pull/33). 
+**Thanks [Oliver Andrich](https://github.com/oliverandrich)**
+
+
 ## [1.0.1] - 2021-05-14
 ### Fixed
 - `Document` self annotation. [Issue](https://github.com/roman-right/beanie/issues/29)
@@ -84,3 +90,4 @@ Beanie project changes
 [0.4.3]: https://pypi.org/project/beanie/0.4.3
 [1.0.0]: https://pypi.org/project/beanie/1.0.0
 [1.0.1]: https://pypi.org/project/beanie/1.0.1
+[1.0.2]: https://pypi.org/project/beanie/1.0.2
