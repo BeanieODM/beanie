@@ -48,8 +48,8 @@ class FindQuery(UpdateMethods, SessionMethods):
 
     Inherited from:
 
-    - [SessionMethods](/api/interfaces/#sessionmethods)
-    - [UpdateMethods](/api/interfaces/#aggregatemethods)
+    - [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods)
+    - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
     UpdateQueryType = UpdateQuery
@@ -125,9 +125,9 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
 
     Inherited from:
 
-    - [FindQuery](/api/queries/#findquery)
-    - [BaseCursorQuery](/api/queries/#basecursorquery) - async generator
-    - [AggregateMethods](/api/interfaces/#aggregatemethods)
+    - [FindQuery](https://roman-right.github.io/beanie/api/queries/#findquery)
+    - [BaseCursorQuery](https://roman-right.github.io/beanie/api/queries/#basecursorquery) - async generator
+    - [AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
 
     """
 
@@ -257,11 +257,11 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
     ) -> UpdateMany:
         """
         Provide search criteria to the
-        [UpdateMany](/api/queries/#updatemany) query
+        [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: Optional[ClientSession]
-        :return: [UpdateMany](/api/queries/#updatemany) query
+        :return: [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
         """
         return self.update(*args, session=session)
 
@@ -269,10 +269,10 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         self, session: Optional[ClientSession] = None
     ) -> DeleteMany:
         """
-        Provide search criteria to the [DeleteMany](/api/queries/#deletemany) query
+        Provide search criteria to the [DeleteMany](https://roman-right.github.io/beanie/api/queries/#deletemany) query
 
         :param session:
-        :return: [DeleteMany](/api/queries/#deletemany) query
+        :return: [DeleteMany](https://roman-right.github.io/beanie/api/queries/#deletemany) query
         """
         return self.delete(session=session)
 
@@ -294,13 +294,13 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         session: Optional[ClientSession] = None,
     ) -> AggregationQuery:
         """
-        Provide search criteria to the [AggregationQuery](/api/queries/#aggregationquery)
+        Provide search criteria to the [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
 
         :param aggregation_pipeline: list - aggregation pipeline. MongoDB doc:
         <https://docs.mongodb.com/manual/core/aggregation-pipeline/>
         :param projection_model: Type[BaseModel] - Projection Model
         :param session: Optional[ClientSession] - PyMongo session
-        :return:[AggregationQuery](/api/queries/#aggregationquery)
+        :return:[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
         self.set_session(session=session)
         return AggregationQuery(
@@ -328,7 +328,7 @@ class FindOne(FindQuery):
 
     Inherited from:
 
-    - [FindQuery](/api/queries/#findquery)
+    - [FindQuery](https://roman-right.github.io/beanie/api/queries/#findquery)
     """
 
     UpdateQueryType = UpdateOne
@@ -360,19 +360,19 @@ class FindOne(FindQuery):
         session: Optional[ClientSession] = None
     ) -> UpdateOne:
         """
-        Create [UpdateOne](/api/queries/#updateone) query using modifications and
+        Create [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query using modifications and
         provide search criteria there
         :param args: *Union[dict, Mapping] - the modifications to apply
         :param session: Optional[ClientSession] - PyMongo sessions
-        :return: [UpdateOne](/api/queries/#updateone) query
+        :return: [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query
         """
         return self.update(*args, session=session)
 
     def delete_one(self, session: Optional[ClientSession] = None) -> DeleteOne:
         """
-        Provide search criteria to the [DeleteOne](/api/queries/#deleteone) query
+        Provide search criteria to the [DeleteOne](https://roman-right.github.io/beanie/api/queries/#deleteone) query
         :param session: Optional[ClientSession] - PyMongo sessions
-        :return: [DeleteOne](/api/queries/#deleteone) query
+        :return: [DeleteOne](https://roman-right.github.io/beanie/api/queries/#deleteone) query
         """
         return self.delete(session=session)
 

@@ -18,8 +18,8 @@ class UpdateQuery(UpdateMethods, SessionMethods):
 
     Inherited from:
 
-    - [SessionMethods](/api/interfaces/#sessionmethods)
-    - [UpdateMethods](/api/interfaces/#aggregatemethods)
+    - [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods)
+    - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
     def __init__(self, document_model: Type["Document"], find_query: dict):
@@ -63,7 +63,7 @@ class UpdateMany(UpdateQuery):
 
     Inherited from:
 
-    - [UpdateQuery](/api/queries/#updatequery)
+    - [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
     """
 
     def update_many(self, *args, session: Optional[ClientSession] = None):
@@ -92,7 +92,7 @@ class UpdateOne(UpdateQuery):
 
     Inherited from:
 
-    - [UpdateQuery](/api/queries/#updatequery)
+    - [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
     """
 
     def update_one(self, *args, session: Optional[ClientSession] = None):
