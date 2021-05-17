@@ -57,7 +57,7 @@ class Document(BaseModel, UpdateMethods):
     Inherited from:
 
     - Pydantic BaseModel
-    - [UpdateMethods](/api/interfaces/#aggregatemethods)
+    - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
     id: Optional[PydanticObjectId] = Field(None, alias="_id")
@@ -166,13 +166,13 @@ class Document(BaseModel, UpdateMethods):
     ) -> FindOne:
         """
         Find one document by criteria.
-        Returns [FindOne](/api/queries/#findone) query object
+        Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object
 
         :param args: *Union[Dict[str, Any],
         Mapping[str, Any], bool] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session instance
-        :return: [FindOne](/api/queries/#findone) - find query instance
+        :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
         """
         return FindOne(document_model=cls).find_one(
             *args,
@@ -192,7 +192,7 @@ class Document(BaseModel, UpdateMethods):
     ) -> FindMany:
         """
         Find many documents by criteria.
-        Returns [FindMany](/api/queries/#findmany) query object
+        Returns [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query object
 
         :param args: *Union[Dict[str, Any],
         Mapping[str, Any], bool] - search criteria
@@ -203,7 +203,7 @@ class Document(BaseModel, UpdateMethods):
         for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
-        :return: [FindMany](/api/queries/#findmany) - query instance
+        :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
         return FindMany(document_model=cls).find_many(
             *args,
@@ -255,7 +255,7 @@ class Document(BaseModel, UpdateMethods):
         for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
-        :return: [FindMany](/api/queries/#findmany) - query instance
+        :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
         return cls.find_many(
             {},
@@ -384,11 +384,11 @@ class Document(BaseModel, UpdateMethods):
     ) -> AggregationQuery:
         """
         Aggregate over collection.
-        Returns [AggregationQuery](/api/queries/#aggregationquery) query object
+        Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) query object
         :param aggregation_pipeline: list - aggregation pipeline
         :param aggregation_model: Type[BaseModel]
         :param session: Optional[ClientSession]
-        :return: [AggregationQuery](/api/queries/#aggregationquery)
+        :return: [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
         return cls.find_all().aggregate(
             aggregation_pipeline=aggregation_pipeline,

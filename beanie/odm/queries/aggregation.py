@@ -17,8 +17,8 @@ class AggregationQuery(BaseCursorQuery, SessionMethods):
 
     Inherited from:
 
-    - [SessionMethods](/api/interfaces/#sessionmethods) - session methods
-    - [BaseCursorQuery](/api/queries/#basecursorquery) - async generator
+    - [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods) - session methods
+    - [BaseCursorQuery](https://roman-right.github.io/beanie/api/queries/#basecursorquery) - async generator
     """
 
     def __init__(

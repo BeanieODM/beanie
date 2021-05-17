@@ -39,7 +39,7 @@ class UpdateMethods:
 
         ```
 
-        Uses [Set operator](/api/operators/update/#set)
+        Uses [Set operator](https://roman-right.github.io/beanie/api/operators/update/#set)
 
         :param expression: Dict[Union[ExpressionField, str], Any] - keys and
         values to set
@@ -56,7 +56,7 @@ class UpdateMethods:
         """
         Set current date
 
-        Uses [CurrentDate operator](/api/operators/update/#currentdate)
+        Uses [CurrentDate operator](https://roman-right.github.io/beanie/api/operators/update/#currentdate)
 
         :param expression: Dict[Union[ExpressionField, str], Any]
         :param session: Optional[ClientSession] - pymongo session
@@ -83,7 +83,7 @@ class UpdateMethods:
 
         ```
 
-        Uses [Inc operator](/api/operators/update/#inc)
+        Uses [Inc operator](https://roman-right.github.io/beanie/api/operators/update/#inc)
 
         :param expression: Dict[Union[ExpressionField, str], Any]
         :param session: Optional[ClientSession] - pymongo session
