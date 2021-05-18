@@ -1,6 +1,10 @@
 # Changelog
 Beanie project changes
 
+## [1.0.4] - 2021-05-18
+### Fixed
+- `aggregation_model` -> `projection_model` parameter. [PR](https://github.com/roman-right/beanie/pull/39)
+
 ## [1.0.3] - 2021-05-16
 ### Added
 - Index kwargs in the Indexed field. [PR](https://github.com/roman-right/beanie/pull/32). 
@@ -96,3 +100,4 @@ Beanie project changes
 [1.0.1]: https://pypi.org/project/beanie/1.0.1
 [1.0.2]: https://pypi.org/project/beanie/1.0.2
 [1.0.3]: https://pypi.org/project/beanie/1.0.3
+[1.0.4]: https://pypi.org/project/beanie/1.0.4

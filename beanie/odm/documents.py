@@ -379,20 +379,20 @@ class Document(BaseModel, UpdateMethods):
     def aggregate(
         cls,
         aggregation_pipeline: list,
-        aggregation_model: Type[BaseModel] = None,
+        projection_model: Type[BaseModel] = None,
         session: Optional[ClientSession] = None,
     ) -> AggregationQuery:
         """
         Aggregate over collection.
         Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) query object
         :param aggregation_pipeline: list - aggregation pipeline
-        :param aggregation_model: Type[BaseModel]
+        :param projection_model: Type[BaseModel]
         :param session: Optional[ClientSession]
         :return: [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
         return cls.find_all().aggregate(
             aggregation_pipeline=aggregation_pipeline,
-            projection_model=aggregation_model,
+            projection_model=projection_model,
             session=session,
         )
 

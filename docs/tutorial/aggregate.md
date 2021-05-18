@@ -1,33 +1,28 @@
 # Aggregations
 
-[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) is used to aggregate data
-over the whole collection or the subset selected with
-the [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query.
+You can aggregate and over the whole collection, using `aggregate()` method of the `Document` class, and over search criteria, using `FindMany` instance. 
 
-## Preset aggregations
+#### Aggregation Methods
 
-[AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods) is a list of preset
-aggregations, which simplifies some use cases.
+`FindMany` and `Document` classes implements [AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods) interface with preset methods
 
+Example of average calculation:
+
+*With search criteria*
 ```python
-class Sample(Document):
-    category: str
-    price: int
-    count: int
-
-
-sum_count = await Sample.find(Sample.price <= 100).sum(Sample.count)
-
-# Or for the whole collection:
-
-avg_price = await Sample.avg(Sample.count)
-
+avg_price = await Product.find(
+    Product.category.name == "Chocolate"
+).avg(Product.price)
 ```
 
-## Aggregate over collection
+*Over the whole collection*
+```python
+avg_price = await Product.avg(Product.price)
+```
 
-`AggregationQuery` implements async generator pattern - results
-are available via `async for` loop
+#### Native syntax
+
+You can use the native PyMongo syntax of the aggregation pipelines to aggregate over the whole collection or over the subset too. `projection_model` parameter is responsible for the output format. It will return dictionaries, if this parameter is not provided.
 
 ```python
 class OutputItem(BaseModel):
@@ -35,30 +30,10 @@ class OutputItem(BaseModel):
     total: int
 
 
-async for item in Sample.aggregate(
-    [{"$group": {"_id": "$category", "total": {"$sum": "$count"}}}],
-    aggregation_model=OutputItem,
-):
-    ...
-```
-
-or with `to_list` method:
-
-```python
-result = await Sample.aggregate(
-    [{"$group": {"_id": "$category", "total": {"$sum": "$count"}}}]
+result = await Product.find(
+    Product.category.name == "Chocolate").aggregate(
+    [{"$group": {"_id": "$category.name", "total": {"$avg": "$price"}}}],
+    projection_model=OutputItem
 ).to_list()
+
 ```
-
-If the `aggregation_model` parameter is not set, it will return dicts.
-
-## Over subsets
-
-To aggregate over a specific subset, FindQuery could be used.
-
-```python
-result = await Sample.find(Sample.price < 10).aggregate(
-    [{"$group": {"_id": "$category", "total": {"$sum": "$count"}}}]
-).to_list()
-```
-

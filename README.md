@@ -65,7 +65,7 @@ class Product(Document):  # This is the model
 ```
 
 More details about Documents, collections, and indexes configuration could be
-found in the [tutorial](https://roman-right.github.io/beanie/tutorial/install/).
+found in the [documentation](https://roman-right.github.io/beanie/document/).
 
 ### Initialization
 
@@ -109,7 +109,7 @@ peanut_bar = Product(name="Peanut Bar", price=4.44, category=chocolate)
 await Product.insert_many([milka, peanut_bar])
 ```
 
-Other details and examples could be found in the [tutorial](https://roman-right.github.io/beanie/tutorial/insert/)
+Other details and examples could be found in the [documentation](https://roman-right.github.io/beanie/insert/)
 
 ### Find
 
@@ -238,7 +238,7 @@ all_products = await Product.all().to_list()
 ```
 
 Information about sorting, skips, limits, and projections could be found in
-the [tutorial](https://roman-right.github.io/beanie/tutorial/find/)
+the [documentation](https://roman-right.github.io/beanie/find/)
 
 ### Update
 
@@ -324,7 +324,7 @@ await Product.find(
 ```
 
 More details and examples about update queries could be found in
-the [tutorial](https://roman-right.github.io/beanie/tutorial/update/)
+the [documentation](https://roman-right.github.io/beanie/update/)
 
 ### Delete
 
@@ -359,7 +359,7 @@ await Product.find(
 await Product.delete_all()
 ```
 
-More information could be found in the [tutorial](https://roman-right.github.io/beanie/tutorial/delete/)
+More information could be found in the [documentation](https://roman-right.github.io/beanie/delete/)
 
 ### Aggregate
 
@@ -369,14 +369,16 @@ You can aggregate and over the whole collection, using `aggregate()` method of t
 
 `FindMany` and `Document` classes implements [AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods) interface with preset methods
 
-**With search criteria**
+Example of average calculation:
+
+*With search criteria*
 ```python
 avg_price = await Product.find(
     Product.category.name == "Chocolate"
 ).avg(Product.price)
 ```
 
-**Over the whole collection**
+*Over the whole collection*
 ```python
 avg_price = await Product.avg(Product.price)
 ```
@@ -399,12 +401,9 @@ result = await Product.find(
 
 ```
 
-Information about aggregation preset aggregation methods and native syntax
-aggregations could be found in the [tutorial](https://roman-right.github.io/beanie/tutorial/aggregate/)
-
 ### Documentation
 
-- **[Tutorial](https://roman-right.github.io/beanie/tutorial/install/)** -
+- **[Doc](https://roman-right.github.io/beanie/)** -
   Usage examples with descriptions
 - **[API](https://roman-right.github.io/beanie/api/document/)** - Full list of
   the classes and methods

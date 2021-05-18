@@ -1,14 +1,13 @@
 site_name: Documentation
 nav:
     - Introduction: index.md
-    - Tutorial:
-          - Install and set up: tutorial/install.md
-          - Indexes: tutorial/indexes.md
-          - Insert: tutorial/insert.md
-          - Find: tutorial/find.md
-          - Update: tutorial/update.md
-          - Delete: tutorial/delete.md
-          - Aggregate: tutorial/aggregate.md
+    - Document: tutorial/document.md
+    - Init: tutorial/init.md
+    - Create: tutorial/insert.md
+    - Find: tutorial/find.md
+    - Update: tutorial/update.md
+    - Delete: tutorial/delete.md
+    - Aggregate: tutorial/aggregate.md
     - Api:
         Document:  api/document.md
         Query: api/queries.md

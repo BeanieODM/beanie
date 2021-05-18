@@ -44,7 +44,7 @@ async def test_aggregate_with_item_model(documents):
     ids = []
     async for i in DocumentTestModel.aggregate(
         [{"$group": {"_id": "$test_str", "total": {"$sum": "$test_int"}}}],
-        aggregation_model=OutputItem,
+        projection_model=OutputItem,
     ):
         if i.id == "cuatro":
             assert i.total == 0
