@@ -324,7 +324,7 @@ await Product.find(
 ```
 
 More details and examples about update queries could be found in
-the [tutorial](/tutorial/update/)
+the [tutorial](https://roman-right.github.io/beanie/tutorial/update/)
 
 ### Delete
 

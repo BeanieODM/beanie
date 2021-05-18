@@ -369,7 +369,7 @@ You can aggregate and over the whole collection, using `aggregate()` method of t
 
 `FindMany` and `Document` classes implements [AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods) interface with preset methods
 
-**With serach criteria**
+**With search criteria**
 ```python
 avg_price = await Product.find(
     Product.category.name == "Chocolate"
