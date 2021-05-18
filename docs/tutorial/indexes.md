@@ -5,17 +5,24 @@ To setup an index over a single field the `Indexed` function can be used to wrap
 ```python
 from beanie import Indexed
 
-class DocumentTestModelWithIndex(Document):
-    test_int: Indexed(int)
-    test_list: List[SubDocument]
-    test_str: str
+class Sample(Document):
+    num: Indexed(int)
+    description: str
 ```
 
 The `Indexed` function takes an optional argument `index_type`, which may be set to a pymongo index type:
 ```python
-test_str: Indexed(str, index_type = pymongo.TEXT)
+class Sample(Document):
+    description: Indexed(str, index_type = pymongo.TEXT)
 ```
+ The `Indexed` function supports pymogo `IndexModel` kwargs arguments ([PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)). 
+ 
+For example to create `unique` index:
 
+```python
+class Sample(Document):
+    name: Indexed(str, unique=True)
+```
 
 ## Complex indexes
 More complex indexes can be set up by the `indexes` field in a Collection class. It is a list where items could be:
@@ -24,7 +31,7 @@ More complex indexes can be set up by the `indexes` field in a Collection class.
 - list of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
   example: `pymongo.ASCENDING`)
 - `pymongo.IndexModel` instance - the most flexible
-  option. [Documentation](https://pymongo.readthedocs.io/en/stable/beanie/api/pymongo/operations.html#pymongo.operations.IndexModel)
+  option. [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/beanie/api/pymongo/operations.html#pymongo.operations.IndexModel)
 
 ```python
 class DocumentTestModelWithIndex(Document):

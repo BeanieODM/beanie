@@ -1,5 +1,7 @@
 # Insert the documents
 
+Beanie supports and single document creation and batch inserts:
+
 ## Insert single
 
 ```python

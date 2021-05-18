@@ -1,5 +1,7 @@
 # Delete documents
 
+Beanie supports, and single, and batch deletions:
+
 ## Single
 
 ```python

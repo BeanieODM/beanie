@@ -8,7 +8,7 @@ Beanie provides two ways to find documents:
 On searching for a single document it uses [FindOne](https://roman-right.github.io/beanie/api/queries/#findone)
 query, many documents - [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query.
 
-Next document models will be used for this tutorial:
+Next document models will be used for this documentation:
 
 ```python
 from typing import Optional
