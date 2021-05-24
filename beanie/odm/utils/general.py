@@ -4,15 +4,15 @@ from typing import List, Type, Union
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from beanie.odm.documents import Document
+from beanie.odm.documents import DocType
 
 
-def get_model(dot_path: str) -> Type[Document]:
+def get_model(dot_path: str) -> Type[DocType]:
     """
     Get the model by the path in format bar.foo.Model
 
     :param dot_path: str - dot seprated path to the model
-    :return: Type[Document] - class of the model
+    :return: Type[DocType] - class of the model
     """
     try:
         module_name, class_name = dot_path.rsplit(".", 1)
@@ -31,14 +31,14 @@ def get_model(dot_path: str) -> Type[Document]:
 
 async def init_beanie(
     database: AsyncIOMotorDatabase,
-    document_models: List[Union[Type[Document], str]],
+    document_models: List[Union[Type[DocType], str]],
     allow_index_dropping: bool = True,
 ):
     """
     Beanie initialization
 
     :param database: AsyncIOMotorDatabase - motor database instance
-    :param document_models: List[Union[Type[Document], str]] - model classes
+    :param document_models: List[Union[Type[DocType], str]] - model classes
     or strings with dot separated paths
     :param allow_index_dropping: bool - if index dropping is allowed.
     Default True

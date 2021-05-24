@@ -1,4 +1,4 @@
-from typing import Type, TYPE_CHECKING, Optional, Union, Mapping
+from typing import Type, TYPE_CHECKING, Optional, Union, Mapping, Any, Dict
 
 from pymongo.client_session import ClientSession
 
@@ -9,7 +9,7 @@ from beanie.odm.interfaces.update import (
 from beanie.odm.operators.update import BaseUpdateOperator
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import Document
+    from beanie.odm.documents import DocType
 
 
 class UpdateQuery(UpdateMethods, SessionMethods):
@@ -22,7 +22,11 @@ class UpdateQuery(UpdateMethods, SessionMethods):
     - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
-    def __init__(self, document_model: Type["Document"], find_query: dict):
+    def __init__(
+        self,
+        document_model: Type["DocType"],
+        find_query: Union[Dict[str, Any], Mapping[str, Any]],
+    ):
         self.document_model = document_model
         self.find_query = find_query
         self.update_expressions = []

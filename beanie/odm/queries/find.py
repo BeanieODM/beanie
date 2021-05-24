@@ -20,7 +20,7 @@ from beanie.odm.interfaces.update import (
 )
 from beanie.odm.operators.find.logical import And
 from beanie.odm.queries.aggregation import AggregationQuery
-from beanie.odm.queries.cursor import BaseCursorQuery
+from beanie.odm.queries.cursor import BaseCursorQuery, ProjectionModelType
 from beanie.odm.queries.delete import (
     DeleteQuery,
     DeleteMany,
@@ -37,7 +37,7 @@ from pymongo.client_session import ClientSession
 from pymongo.results import UpdateResult
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import Document
+    from beanie.odm.documents import DocType
 
 FindQueryType = TypeVar("FindQueryType", bound="FindQuery")
 
@@ -55,13 +55,13 @@ class FindQuery(UpdateMethods, SessionMethods):
     UpdateQueryType = UpdateQuery
     DeleteQueryType = DeleteQuery
 
-    def __init__(self, document_model: "Document"):
-        self.document_model = document_model
+    def __init__(self, document_model: Type["DocType"]):
+        self.document_model: Type["DocType"] = document_model
         self.find_expressions: List[Union[dict, Mapping]] = []
-        self.projection_model = self.document_model
+        self.projection_model: Type[ProjectionModelType] = self.document_model
         self.session = None
 
-    def get_filter_query(self) -> Dict[str, Any]:
+    def get_filter_query(self) -> Mapping[str, Any]:
         if self.find_expressions:
             return And(*self.find_expressions)
         else:
@@ -106,7 +106,8 @@ class FindQuery(UpdateMethods, SessionMethods):
         ).set_session(session=session)
 
     def project(
-        self: FindQueryType, projection_model: Optional[Type[BaseModel]]
+        self: FindQueryType,
+        projection_model: Optional[Type[ProjectionModelType]],
     ) -> FindQueryType:
         """
         Apply projection parameter
@@ -115,11 +116,14 @@ class FindQuery(UpdateMethods, SessionMethods):
         :return: self
         """
         if projection_model is not None:
-            self.projection_model = projection_model
+            self.projection_model: Type[ProjectionModelType] = projection_model
         return self
 
+    def get_projection_model(self) -> Type[ProjectionModelType]:
+        return self.projection_model
 
-class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
+
+class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
     """
     Find Many query class
 
@@ -146,7 +150,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[BaseModel]] = None,
+        projection_model: Optional[Type[ProjectionModelType]] = None,
         session: Optional[ClientSession] = None
     ) -> "FindMany":
         """

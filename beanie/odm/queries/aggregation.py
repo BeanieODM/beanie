@@ -1,14 +1,22 @@
-from typing import Type, List, Union, Mapping, Optional, TYPE_CHECKING
+from typing import (
+    Type,
+    List,
+    Union,
+    Mapping,
+    Optional,
+    TYPE_CHECKING,
+    Dict,
+    Any,
+)
 
 from pydantic import BaseModel
 
-
 from beanie.odm.interfaces.session import SessionMethods
-from beanie.odm.queries.cursor import BaseCursorQuery
+from beanie.odm.queries.cursor import BaseCursorQuery, ProjectionModelType
 from beanie.odm.utils.projection import get_projection
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import Document
+    from beanie.odm.documents import DocType
 
 
 class AggregationQuery(BaseCursorQuery, SessionMethods):
@@ -23,9 +31,9 @@ class AggregationQuery(BaseCursorQuery, SessionMethods):
 
     def __init__(
         self,
-        document_model: Type["Document"],
+        document_model: Type["DocType"],
         aggregation_pipeline: List[Union[dict, Mapping]],
-        find_query: dict,
+        find_query: Union[Dict[str, Any], Mapping[str, Any]],
         projection_model: Optional[Type[BaseModel]] = None,
     ):
         self.aggregation_pipeline = aggregation_pipeline
@@ -51,3 +59,6 @@ class AggregationQuery(BaseCursorQuery, SessionMethods):
         return self.document_model.get_motor_collection().aggregate(
             aggregation_pipeline, session=self.session
         )
+
+    def get_projection_model(self) -> Type[ProjectionModelType]:
+        return self.projection_model
