@@ -1,6 +1,16 @@
-from typing import Type, TYPE_CHECKING, Optional, Union, Mapping
+from typing import (
+    List,
+    Type,
+    TYPE_CHECKING,
+    Optional,
+    Union,
+    Mapping,
+    Any,
+    Dict,
+)
 
 from pymongo.client_session import ClientSession
+from pymongo.results import UpdateResult
 
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (
@@ -9,7 +19,7 @@ from beanie.odm.interfaces.update import (
 from beanie.odm.operators.update import BaseUpdateOperator
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import Document
+    from beanie.odm.documents import DocType
 
 
 class UpdateQuery(UpdateMethods, SessionMethods):
@@ -22,15 +32,21 @@ class UpdateQuery(UpdateMethods, SessionMethods):
     - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
-    def __init__(self, document_model: Type["Document"], find_query: dict):
+    def __init__(
+        self,
+        document_model: Type["DocType"],
+        find_query: Union[Dict[str, Any], Mapping[str, Any]],
+    ):
         self.document_model = document_model
         self.find_query = find_query
-        self.update_expressions = []
+        self.update_expressions: List[
+            Union[Dict[str, Any], Mapping[str, Any]]
+        ] = []
         self.session = None
 
     @property
-    def update_query(self):
-        query = {}
+    def update_query(self) -> Dict[str, Any]:
+        query: Dict[str, Any] = {}
         for expression in self.update_expressions:
             if isinstance(expression, BaseUpdateOperator):
                 query.update(expression.query)
@@ -42,9 +58,9 @@ class UpdateQuery(UpdateMethods, SessionMethods):
 
     def update(
         self,
-        *args: Union[dict, Mapping],
+        *args: Union[Dict[str, Any], Mapping[str, Any]],
         session: Optional[ClientSession] = None
-    ):
+    ) -> "UpdateQuery":
         """
         Provide modifications to the update query. The same as `update()`
 
@@ -66,7 +82,11 @@ class UpdateMany(UpdateQuery):
     - [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
     """
 
-    def update_many(self, *args, session: Optional[ClientSession] = None):
+    def update_many(
+        self,
+        *args: Union[Dict[str, Any], Mapping[str, Any]],
+        session: Optional[ClientSession] = None
+    ):
         """
         Provide modifications to the update query
 
@@ -76,7 +96,7 @@ class UpdateMany(UpdateQuery):
         """
         return self.update(*args, session=session)
 
-    def __await__(self):
+    def __await__(self) -> UpdateResult:
         """
         Run the query
         :return:
@@ -95,7 +115,11 @@ class UpdateOne(UpdateQuery):
     - [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
     """
 
-    def update_one(self, *args, session: Optional[ClientSession] = None):
+    def update_one(
+        self,
+        *args: Union[Dict[str, Any], Mapping[str, Any]],
+        session: Optional[ClientSession] = None
+    ):
         """
         Provide modifications to the update query. The same as `update()`
 
@@ -105,7 +129,7 @@ class UpdateOne(UpdateQuery):
         """
         return self.update(*args, session=session)
 
-    def __await__(self):
+    def __await__(self) -> UpdateResult:
         """
         Run the query
         :return:

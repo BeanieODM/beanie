@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Type, Any, Optional, Union
+from typing import Type, Any, Optional, Union, List, Dict
 
 from pydantic import BaseModel
 from pymongo.client_session import ClientSession
@@ -51,7 +51,7 @@ class AggregateMethods:
             {"$project": {"_id": 0, "sum": 1}},
         ]
 
-        result = await self.aggregate(
+        result: List[Dict[str, Any]] = await self.aggregate(
             aggregation_pipeline=pipeline, session=session
         ).to_list()
         return result[0]["sum"]
@@ -82,7 +82,7 @@ class AggregateMethods:
             {"$project": {"_id": 0, "avg": 1}},
         ]
 
-        result = await self.aggregate(
+        result: List[Dict[str, Any]] = await self.aggregate(
             aggregation_pipeline=pipeline, session=session
         ).to_list()
         return result[0]["avg"]
@@ -115,7 +115,7 @@ class AggregateMethods:
             {"$project": {"_id": 0, "max": 1}},
         ]
 
-        result = await self.aggregate(
+        result: List[Dict[str, Any]] = await self.aggregate(
             aggregation_pipeline=pipeline, session=session
         ).to_list()
         return result[0]["max"]
@@ -148,7 +148,7 @@ class AggregateMethods:
             {"$project": {"_id": 0, "min": 1}},
         ]
 
-        result = await self.aggregate(
+        result: List[Dict[str, Any]] = await self.aggregate(
             aggregation_pipeline=pipeline, session=session
         ).to_list()
         return result[0]["min"]

@@ -71,7 +71,9 @@ class Document(BaseModel, UpdateMethods):
         Update local document from the database
         :return: None
         """
-        new_instance = await self.get(self.id)
+        if self.id is None:
+            raise ValueError("Document was not inserted")
+        new_instance: Document = await self.get(self.id)
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
 

@@ -1,9 +1,11 @@
-from typing import Type, TYPE_CHECKING
+from typing import Type, TYPE_CHECKING, Union, Dict, Any, Mapping
+
+from pymongo.results import DeleteResult
 
 from beanie.odm.interfaces.session import SessionMethods
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import Document
+    from beanie.odm.documents import DocType
 
 
 class DeleteQuery(SessionMethods):
@@ -11,14 +13,18 @@ class DeleteQuery(SessionMethods):
     Deletion Query
     """
 
-    def __init__(self, document_model: Type["Document"], find_query: dict):
+    def __init__(
+        self,
+        document_model: Type["DocType"],
+        find_query: Union[Dict[str, Any], Mapping[str, Any]],
+    ):
         self.document_model = document_model
         self.find_query = find_query
         self.session = None
 
 
 class DeleteMany(DeleteQuery):
-    def __await__(self):
+    def __await__(self) -> DeleteResult:
         """
         Run the query
         :return:
@@ -29,7 +35,7 @@ class DeleteMany(DeleteQuery):
 
 
 class DeleteOne(DeleteQuery):
-    def __await__(self):
+    def __await__(self) -> DeleteResult:
         """
         Run the query
         :return:

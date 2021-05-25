@@ -37,7 +37,7 @@ from pymongo.client_session import ClientSession
 from pymongo.results import UpdateResult
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import Document
+    from beanie.odm.documents import DocType
 
 FindQueryType = TypeVar("FindQueryType", bound="FindQuery")
 
@@ -52,16 +52,22 @@ class FindQuery(UpdateMethods, SessionMethods):
     - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
-    UpdateQueryType = UpdateQuery
-    DeleteQueryType = DeleteQuery
+    UpdateQueryType: Union[
+        Type[UpdateQuery], Type[UpdateMany], Type[UpdateOne]
+    ] = UpdateQuery
+    DeleteQueryType: Union[
+        Type[DeleteOne], Type[DeleteMany], Type[DeleteQuery]
+    ] = DeleteQuery
 
-    def __init__(self, document_model: "Document"):
-        self.document_model = document_model
-        self.find_expressions: List[Union[dict, Mapping]] = []
-        self.projection_model = self.document_model
+    def __init__(self, document_model: Type["DocType"]):
+        self.document_model: Type["DocType"] = document_model
+        self.find_expressions: List[
+            Union[Dict[str, Any], Mapping[str, Any]]
+        ] = []
+        self.projection_model: Type[BaseModel] = self.document_model
         self.session = None
 
-    def get_filter_query(self) -> Dict[str, Any]:
+    def get_filter_query(self) -> Mapping[str, Any]:
         if self.find_expressions:
             return And(*self.find_expressions)
         else:
@@ -106,7 +112,8 @@ class FindQuery(UpdateMethods, SessionMethods):
         ).set_session(session=session)
 
     def project(
-        self: FindQueryType, projection_model: Optional[Type[BaseModel]]
+        self: FindQueryType,
+        projection_model: Optional[Type[BaseModel]],
     ) -> FindQueryType:
         """
         Apply projection parameter
@@ -118,8 +125,11 @@ class FindQuery(UpdateMethods, SessionMethods):
             self.projection_model = projection_model
         return self
 
+    def get_projection_model(self) -> Type[BaseModel]:
+        return self.projection_model
 
-class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
+
+class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
     """
     Find Many query class
 
@@ -134,7 +144,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
     UpdateQueryType = UpdateMany
     DeleteQueryType = DeleteMany
 
-    def __init__(self, document_model):
+    def __init__(self, document_model: Type["DocType"]):
         super(FindMany, self).__init__(document_model=document_model)
         self.sort_expressions: List[Tuple[str, SortDirection]] = []
         self.skip_number: int = 0
@@ -194,8 +204,10 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
 
     def sort(
         self,
-        *args: Union[
-            str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
+        *args: Optional[
+            Union[
+                str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
+            ]
         ]
     ) -> "FindMany":
         """
@@ -290,7 +302,7 @@ class FindMany(BaseCursorQuery, FindQuery, AggregateMethods):
     def aggregate(
         self,
         aggregation_pipeline: List[Any],
-        projection_model: Type[BaseModel] = None,
+        projection_model: Optional[Type[BaseModel]] = None,
         session: Optional[ClientSession] = None,
     ) -> AggregationQuery:
         """
@@ -377,7 +389,9 @@ class FindOne(FindQuery):
         return self.delete(session=session)
 
     async def replace_one(
-        self, document, session: Optional[ClientSession] = None
+        self,
+        document: "DocType",
+        session: Optional[ClientSession] = None,
     ) -> UpdateResult:
         """
         Replace found document by provided
@@ -386,23 +400,25 @@ class FindOne(FindQuery):
         :return: UpdateResult
         """
         self.set_session(session=session)
-        result = await self.document_model.get_motor_collection().replace_one(
-            self.get_filter_query(),
-            document.dict(by_alias=True, exclude={"id"}),
-            session=self.session,
+        result: UpdateResult = (
+            await self.document_model.get_motor_collection().replace_one(
+                self.get_filter_query(),
+                document.dict(by_alias=True, exclude={"id"}),
+                session=self.session,
+            )
         )
 
         if not result.raw_result["updatedExisting"]:
             raise DocumentNotFound
         return result
 
-    def __await__(self) -> BaseModel:
+    def __await__(self):
         """
         Run the query
         :return: BaseModel
         """
         projection = get_projection(self.projection_model)
-        document = (
+        document: Dict[str, Any] = (
             yield from self.document_model.get_motor_collection().find_one(
                 filter=self.get_filter_query(),
                 projection=projection,

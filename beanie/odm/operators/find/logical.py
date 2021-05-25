@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Union
+from typing import Any, Dict, Mapping, Union
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -9,13 +9,18 @@ class BaseFindLogicalOperator(BaseFindOperator, ABC):
 
 
 class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
-    operator = ""
+    operator: str = ""
 
-    def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
+    def __init__(
+        self,
+        *expressions: Union[
+            BaseFindOperator, Dict[str, Any], Mapping[str, Any]
+        ]
+    ):
         self.expressions = list(expressions)
 
     @property
-    def query(self):
+    def query(self) -> Union[Dict[str, Any], Mapping[str, Any]]:
         if not self.expressions:
             raise AttributeError("At least one expression must be provided")
         if len(self.expressions) == 1:
@@ -101,7 +106,12 @@ class Nor(BaseFindLogicalOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/nor/>
     """
 
-    def __init__(self, *expressions: Union[BaseFindOperator, dict, bool]):
+    def __init__(
+        self,
+        *expressions: Union[
+            BaseFindOperator, Dict[str, Any], Mapping[str, Any], bool
+        ]
+    ):
         self.expressions = list(expressions)
 
     @property
@@ -133,7 +143,7 @@ class Not(BaseFindLogicalOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/not/>
     """
 
-    def __init__(self, expression):
+    def __init__(self, expression: Union[Dict[str, Any], Mapping[str, Any]]):
         self.expression = expression
 
     @property

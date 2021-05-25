@@ -19,7 +19,7 @@ class IndexModelField(IndexModel):
 
 
 class CollectionInputParameters(BaseModel):
-    name: str = None
+    name: str = ""
     indexes: List[IndexModelField] = []
 
     class Config:
@@ -64,7 +64,9 @@ async def collection_factory(
 
     # Indexed field wrapped with Indexed()
     found_indexes = [
-        IndexModel([(fname, fvalue.type_._indexed[0])], **fvalue.type_._indexed[1])
+        IndexModel(
+            [(fname, fvalue.type_._indexed[0])], **fvalue.type_._indexed[1]
+        )
         for fname, fvalue in document_model.__fields__.items()
         if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
     ]

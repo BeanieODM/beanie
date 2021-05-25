@@ -2,7 +2,7 @@ from beanie.odm.operators.update import BaseUpdateOperator
 
 
 class BaseUpdateArrayOperator(BaseUpdateOperator):
-    operator = None
+    operator = ""
 
     def __init__(self, expression):
         self.expression = expression
