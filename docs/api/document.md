@@ -370,7 +370,7 @@ DeleteResult - pymongo DeleteResult instance.
 def aggregate(
 	cls, 
 	aggregation_pipeline: list, 
-	aggregation_model: Type[BaseModel] = None, 
+	projection_model: Type[BaseModel] = None, 
 	session: Optional[ClientSession] = None
 ) -> AggregationQuery
 ```
@@ -381,7 +381,7 @@ Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#agg
 **Arguments**:
 
 - `aggregation_pipeline`: list - aggregation pipeline
-- `aggregation_model`: Type[BaseModel]
+- `projection_model`: Type[BaseModel]
 - `session`: Optional[ClientSession]
 
 **Returns**:
