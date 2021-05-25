@@ -12,7 +12,7 @@ from typing import (
 from pydantic import BaseModel
 
 from beanie.odm.interfaces.session import SessionMethods
-from beanie.odm.queries.cursor import BaseCursorQuery, ProjectionModelType
+from beanie.odm.queries.cursor import BaseCursorQuery
 from beanie.odm.utils.projection import get_projection
 
 if TYPE_CHECKING:
@@ -32,21 +32,25 @@ class AggregationQuery(BaseCursorQuery, SessionMethods):
     def __init__(
         self,
         document_model: Type["DocType"],
-        aggregation_pipeline: List[Union[dict, Mapping]],
+        aggregation_pipeline: List[Union[Dict[str, Any], Mapping[str, Any]]],
         find_query: Union[Dict[str, Any], Mapping[str, Any]],
         projection_model: Optional[Type[BaseModel]] = None,
     ):
-        self.aggregation_pipeline = aggregation_pipeline
+        self.aggregation_pipeline: List[
+            Union[Dict[str, Any], Mapping[str, Any]]
+        ] = aggregation_pipeline
         self.document_model = document_model
         self.projection_model = projection_model
         self.find_query = find_query
         self.session = None
 
-    def get_aggregation_pipeline(self):
-        match_pipeline = (
+    def get_aggregation_pipeline(
+        self,
+    ) -> List[Union[Dict[str, Any], Mapping[str, Any]]]:
+        match_pipeline: List[Dict[str, Any]] = (
             [{"$match": self.find_query}] if self.find_query else []
         )
-        projection_pipeline = (
+        projection_pipeline: List[Dict[str, Any]] = (
             [{"$project": get_projection(self.projection_model)}]
             if self.projection_model
             else []
@@ -60,5 +64,5 @@ class AggregationQuery(BaseCursorQuery, SessionMethods):
             aggregation_pipeline, session=self.session
         )
 
-    def get_projection_model(self) -> Type[ProjectionModelType]:
+    def get_projection_model(self) -> Optional[Type[BaseModel]]:
         return self.projection_model

@@ -1,5 +1,7 @@
 from typing import Type, TYPE_CHECKING, Union, Dict, Any, Mapping
 
+from pymongo.results import DeleteResult
+
 from beanie.odm.interfaces.session import SessionMethods
 
 if TYPE_CHECKING:
@@ -22,7 +24,7 @@ class DeleteQuery(SessionMethods):
 
 
 class DeleteMany(DeleteQuery):
-    def __await__(self):
+    def __await__(self) -> DeleteResult:
         """
         Run the query
         :return:
@@ -33,7 +35,7 @@ class DeleteMany(DeleteQuery):
 
 
 class DeleteOne(DeleteQuery):
-    def __await__(self):
+    def __await__(self) -> DeleteResult:
         """
         Run the query
         :return:

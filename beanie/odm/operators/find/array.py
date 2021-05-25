@@ -36,11 +36,11 @@ class All(BaseFindArrayOperator):
         values: list,
     ):
         self.field = field
-        self.values = values
+        self.values_list = values
 
     @property
     def query(self):
-        return {self.field: {"$all": self.values}}
+        return {self.field: {"$all": self.values_list}}
 
 
 class ElemMatch(BaseFindArrayOperator):
