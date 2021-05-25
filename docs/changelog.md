@@ -1,6 +1,10 @@
 # Changelog
 Beanie project changes
 
+## [1.0.5] - 2021-05-25
+### Fixed
+- Typing. [PR](https://github.com/roman-right/beanie/pull/40)
+
 ## [1.0.4] - 2021-05-18
 ### Fixed
 - `aggregation_model` -> `projection_model` parameter. [PR](https://github.com/roman-right/beanie/pull/39)
@@ -101,3 +105,4 @@ Beanie project changes
 [1.0.2]: https://pypi.org/project/beanie/1.0.2
 [1.0.3]: https://pypi.org/project/beanie/1.0.3
 [1.0.4]: https://pypi.org/project/beanie/1.0.4
+[1.0.5]: https://pypi.org/project/beanie/1.0.5

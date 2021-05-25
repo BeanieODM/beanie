@@ -76,7 +76,7 @@ self
 ## FindMany
 
 ```python
-class FindMany(BaseCursorQuery,  FindQuery,  AggregateMethods)
+class FindMany(FindQuery,  BaseCursorQuery,  AggregateMethods)
 ```
 
 Find Many query class
@@ -140,8 +140,10 @@ The same as `find_many(...)`
 ```python
 def sort(
 	self, 
-	*args: Union[
-            str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
+	*args: Optional[
+            Union[
+                str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
+            ]
         ]
 ) -> "FindMany"
 ```
@@ -258,7 +260,7 @@ int
 def aggregate(
 	self, 
 	aggregation_pipeline: List[Any], 
-	projection_model: Type[BaseModel] = None, 
+	projection_model: Optional[Type[BaseModel]] = None, 
 	session: Optional[ClientSession] = None
 ) -> AggregationQuery
 ```
@@ -358,7 +360,7 @@ Provide search criteria to the [DeleteOne](https://roman-right.github.io/beanie/
 ```python
 async def replace_one(
 	self, 
-	document, 
+	document: "DocType", 
 	session: Optional[ClientSession] = None
 ) -> UpdateResult
 ```
@@ -379,7 +381,7 @@ UpdateResult
 ```python
 def __await__(
 	self
-) -> BaseModel
+)
 ```
 
 Run the query
@@ -408,9 +410,9 @@ Inherited from:
 ```python
 def update(
 	self, 
-	*args: Union[dict, Mapping], 
+	*args: Union[Dict[str, Any], Mapping[str, Any]], 
 	session: Optional[ClientSession] = None
-)
+) -> "UpdateQuery"
 ```
 
 Provide modifications to the update query. The same as `update()`
@@ -441,7 +443,7 @@ Inherited from:
 ```python
 def update_many(
 	self, 
-	*args, 
+	*args: Union[Dict[str, Any], Mapping[str, Any]], 
 	session: Optional[ClientSession] = None
 )
 ```
@@ -462,7 +464,7 @@ UpdateMany query
 ```python
 def __await__(
 	self
-)
+) -> UpdateResult
 ```
 
 Run the query
@@ -488,7 +490,7 @@ Inherited from:
 ```python
 def update_one(
 	self, 
-	*args, 
+	*args: Union[Dict[str, Any], Mapping[str, Any]], 
 	session: Optional[ClientSession] = None
 )
 ```
@@ -509,7 +511,7 @@ UpdateMany query
 ```python
 def __await__(
 	self
-)
+) -> UpdateResult
 ```
 
 Run the query
@@ -539,7 +541,7 @@ class DeleteMany(DeleteQuery)
 ```python
 def __await__(
 	self
-)
+) -> DeleteResult
 ```
 
 Run the query
@@ -559,7 +561,7 @@ class DeleteOne(DeleteQuery)
 ```python
 def __await__(
 	self
-)
+) -> DeleteResult
 ```
 
 Run the query
@@ -600,7 +602,7 @@ which parse result with model
 async def to_list(
 	self, 
 	length: Optional[int] = None
-) -> Union[List["Document"], List[dict]]
+) -> Union[List[BaseModel], List[Dict[str, Any]]]
 ```
 
 Get list of documents
@@ -611,5 +613,5 @@ Get list of documents
 
 **Returns**:
 
-Union[List["Document"], List[dict]]
+Union[List[BaseModel], List[Dict[str, Any]]]
 
