@@ -3,6 +3,8 @@ from typing import Optional, List, Union, Type, Dict, Any
 
 from pydantic.main import BaseModel
 
+from beanie.odm.utils.general import parse_model
+
 
 class BaseCursorQuery:
     """
@@ -28,7 +30,7 @@ class BaseCursorQuery:
         next_item = await self.cursor.__anext__()
         projection = self.get_projection_model()
         return (
-            projection.parse_obj(next_item)
+            parse_model(model=projection, value=next_item)
             if projection is not None
             else next_item
         )
@@ -47,5 +49,5 @@ class BaseCursorQuery:
         )
         projection = self.get_projection_model()
         if projection is not None:
-            return [projection.parse_obj(i) for i in motor_list]
+            return [parse_model(model=projection, value=i) for i in motor_list]
         return motor_list

@@ -33,7 +33,7 @@ from beanie.odm.queries.update import UpdateMany
 from beanie.odm.utils.collection import collection_factory
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pydantic import Field, ValidationError
+from pydantic import Field, ValidationError, PrivateAttr
 from pydantic.main import BaseModel
 from pymongo.client_session import ClientSession
 from pymongo.results import (
@@ -61,6 +61,7 @@ class Document(BaseModel, UpdateMethods):
     """
 
     id: Optional[PydanticObjectId] = Field(None, alias="_id")
+    _is_inserted: bool = PrivateAttr(default=False)
 
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
@@ -71,7 +72,7 @@ class Document(BaseModel, UpdateMethods):
         Update local document from the database
         :return: None
         """
-        if self.id is None:
+        if not self._is_inserted:
             raise ValueError("Document was not inserted")
         new_instance: Document = await self.get(self.id)
         for key, value in dict(new_instance).items():
@@ -82,12 +83,13 @@ class Document(BaseModel, UpdateMethods):
         Insert the document (self) to the collection
         :return: Document
         """
-        if self.id is not None:
+        if self._is_inserted:
             raise DocumentAlreadyCreated
         result = await self.get_motor_collection().insert_one(
             self.dict(by_alias=True, exclude={"id"}), session=session
         )
         self.id = PydanticObjectId(result.inserted_id)
+        self._is_inserted = True
         return self
 
     async def create(self, session: Optional[ClientSession] = None) -> DocType:
@@ -297,7 +299,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session.
         :return: None
         """
-        if self.id is None:
+        if not self._is_inserted:
             raise DocumentWasNotSaved
 
         await self.find_one({"_id": self.id}).replace_one(
