@@ -78,7 +78,9 @@ class Document(BaseModel, UpdateMethods):
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
 
-    async def insert(self, session: Optional[ClientSession] = None) -> DocType:
+    async def insert(
+        self: DocType, session: Optional[ClientSession] = None
+    ) -> DocType:
         """
         Insert the document (self) to the collection
         :return: Document
@@ -86,13 +88,15 @@ class Document(BaseModel, UpdateMethods):
         if self._is_inserted:
             raise DocumentAlreadyCreated
         result = await self.get_motor_collection().insert_one(
-            self.dict(by_alias=True, exclude={"id"}), session=session
+            self.dict(by_alias=True), session=session
         )
-        self.id = PydanticObjectId(result.inserted_id)
+        self.id = self.__fields__["id"].type_(str(result.inserted_id))
         self._is_inserted = True
         return self
 
-    async def create(self, session: Optional[ClientSession] = None) -> DocType:
+    async def create(
+        self: DocType, session: Optional[ClientSession] = None
+    ) -> DocType:
         """
         The same as self.insert()
         :return: Document

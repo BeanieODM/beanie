@@ -1,6 +1,11 @@
 # Changelog
 Beanie project changes
 
+## [1.0.6] - 2021-05-31
+### Changed
+- Custom id types. [ISSUE](https://github.com/roman-right/beanie/issues/12)
+
+
 ## [1.0.5] - 2021-05-25
 ### Fixed
 - Typing. [PR](https://github.com/roman-right/beanie/pull/40)

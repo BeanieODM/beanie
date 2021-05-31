@@ -2,7 +2,7 @@ import pytest
 
 from beanie import Document
 from beanie.exceptions import DocumentWasNotSaved, DocumentAlreadyCreated
-from tests.odm.models import DocumentTestModel
+from tests.odm.models import DocumentTestModel, DocumentWithCustomId
 
 
 def test_not_inserted_doc(document_not_inserted):
@@ -60,3 +60,14 @@ async def test_insert_doc(document_not_inserted):
     assert document_not_inserted._is_inserted is True
     with pytest.raises(DocumentAlreadyCreated):
         await document_not_inserted.insert()
+
+
+async def test_custom_id():
+    doc = DocumentWithCustomId(name="TEST")
+    assert doc._is_inserted is False
+
+    await doc.insert()
+    assert doc._is_inserted is True
+
+    new_doc = await DocumentWithCustomId.get(doc.id)
+    assert new_doc._is_inserted is True
