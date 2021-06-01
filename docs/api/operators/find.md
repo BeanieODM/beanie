@@ -1,4 +1,4 @@
-## beanie.odm.operators.find.comparsion
+## beanie.odm.operators.find.comparison
 
 ## Eq
 

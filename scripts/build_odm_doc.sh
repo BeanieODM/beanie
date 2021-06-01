@@ -1,5 +1,5 @@
 pydoc-markdown \
--m beanie.odm.operators.find.comparsion \
+-m beanie.odm.operators.find.comparison \
 -m beanie.odm.operators.find.logical \
 -m beanie.odm.operators.find.element \
 -m beanie.odm.operators.find.evaluation \

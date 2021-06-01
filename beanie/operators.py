@@ -5,7 +5,7 @@ from beanie.odm.operators.find.bitwise import (
     BitsAnyClear,
     BitsAnySet,
 )
-from beanie.odm.operators.find.comparsion import (
+from beanie.odm.operators.find.comparison import (
     Eq,
     GT,
     GTE,
