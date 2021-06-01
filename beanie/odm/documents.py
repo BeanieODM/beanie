@@ -87,8 +87,12 @@ class Document(BaseModel, UpdateMethods):
         """
         if self._is_inserted:
             raise DocumentAlreadyCreated
+        if self.id is not None:
+            dict_value = self.dict(by_alias=True)
+        else:
+            dict_value = self.dict(by_alias=True, exclude={"id"})
         result = await self.get_motor_collection().insert_one(
-            self.dict(by_alias=True), session=session
+            dict_value, session=session
         )
         self.id = self.__fields__["id"].type_(str(result.inserted_id))
         self._is_inserted = True
@@ -303,8 +307,8 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session.
         :return: None
         """
-        if not self._is_inserted:
-            raise DocumentWasNotSaved
+        if self.id is None:
+            raise ValueError("Document must have an id")
 
         await self.find_one({"_id": self.id}).replace_one(
             self, session=session

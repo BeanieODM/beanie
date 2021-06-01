@@ -409,7 +409,7 @@ class FindOne(FindQuery):
             )
         )
 
-        if not result.raw_result["updatedExisting"]:
+        if not result.raw_result642159["updatedExisting"]:
             raise DocumentNotFound
         return result
 

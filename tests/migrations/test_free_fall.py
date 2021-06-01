@@ -37,10 +37,12 @@ async def notes(loop, db):
         note = OldNote(name=str(i), tag=Tag(name="test", color="red"))
         await note.insert()
     yield
-    await OldNote.delete_all()
+    # await OldNote.delete_all()
 
 
 async def test_migration_free_fall(settings, notes, db):
+
+    # assert False
     migration_settings = MigrationSettings(
         connection_uri=settings.mongodb_dsn,
         database_name=settings.mongodb_db_name,
@@ -50,6 +52,7 @@ async def test_migration_free_fall(settings, notes, db):
 
     await init_beanie(database=db, document_models=[Note])
     inspection = await Note.inspect_collection()
+    print(inspection.errors)
     assert inspection.status == InspectionStatuses.OK
     note = await Note.find_one({})
     assert note.title == "0"
