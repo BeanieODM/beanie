@@ -3,7 +3,9 @@
 Beanie project changes
 
 ## [1.1.0] - 2021-06-02
+
 ### Added
+
 - Custom id types.
 
 ### Implementation
@@ -81,7 +83,8 @@ Beanie project changes
 
 ### Changed
 
-- Document class was reworked. [Documentation](https://roman-right.github.io/beanie/api/document/)
+- Document class was
+  reworked. [Documentation](https://roman-right.github.io/beanie/api/document/)
 
 ### Implementation
 
@@ -227,3 +230,5 @@ Beanie project changes
 [1.0.5]: https://pypi.org/project/beanie/1.0.5
 
 [1.0.6]: https://pypi.org/project/beanie/1.0.6
+
+[1.1.0]: https://pypi.org/project/beanie/1.1.0
