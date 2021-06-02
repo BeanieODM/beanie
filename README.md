@@ -39,7 +39,7 @@ The `Document` class in Beanie is responsible for mapping and handling the data
 from the collection. It is inherited from the `BaseModel` Pydantic class, so it
 follows the same data typing and parsing behavior.
 
-Each document has `id` fields of type `PydanticObjectId` which reflects the
+Each document has `id` fields of type `PydanticObjectId` (Can be changed, if you prefer another type) which reflects the
 unique `_id` field in
 MongoDB. [MongoDB doc](https://docs.mongodb.com/manual/reference/glossary/#term-id)
 
