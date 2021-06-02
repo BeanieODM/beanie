@@ -62,7 +62,7 @@ async def test_replace(document):
 
 
 async def test_replace_not_saved(document_not_inserted):
-    with pytest.raises(DocumentWasNotSaved):
+    with pytest.raises(ValueError):
         await document_not_inserted.replace()
 
 

@@ -27,7 +27,7 @@ async def notes(loop, db):
     for i in range(1, 8):
         note = Note(title=str(i), tag=Tag(name="test", color="red"))
         await note.insert()
-    yield
+    yield i
     await Note.delete_all()
 
 

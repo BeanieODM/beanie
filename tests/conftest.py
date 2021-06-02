@@ -1,4 +1,4 @@
-import motor
+import motor.motor_asyncio
 import pytest
 from pydantic import BaseSettings
 

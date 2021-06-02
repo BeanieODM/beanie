@@ -13,6 +13,8 @@ from tests.odm.models import (
     DocumentTestModelWithIndexFlags,
     DocumentTestModelWithComplexIndex,
     DocumentTestModelFailInspection,
+    DocumentWithCustomIdUUID,
+    DocumentWithCustomIdInt,
 )
 from tests.odm.models import (
     Sample,
@@ -91,6 +93,8 @@ async def init(loop, db):
         DocumentTestModelWithIndexFlags,
         DocumentTestModelWithComplexIndex,
         DocumentTestModelFailInspection,
+        DocumentWithCustomIdUUID,
+        DocumentWithCustomIdInt,
         Sample,
     ]
     await init_beanie(

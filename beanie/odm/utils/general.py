@@ -1,13 +1,14 @@
 import asyncio
 import importlib
-from typing import List, Type, Union
+from typing import List, Type, Union, TYPE_CHECKING
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from beanie.odm.documents import DocType
+if TYPE_CHECKING:
+    from beanie.odm.documents import DocType
 
 
-def get_model(dot_path: str) -> Type[DocType]:
+def get_model(dot_path: str) -> Type["DocType"]:
     """
     Get the model by the path in format bar.foo.Model
 
@@ -31,7 +32,7 @@ def get_model(dot_path: str) -> Type[DocType]:
 
 async def init_beanie(
     database: AsyncIOMotorDatabase,
-    document_models: List[Union[Type[DocType], str]],
+    document_models: List[Union[Type["DocType"], str]],
     allow_index_dropping: bool = True,
 ):
     """

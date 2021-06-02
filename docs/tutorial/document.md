@@ -43,7 +43,7 @@ As it is mentioned before, the `Document` class is inherited from the Pydantic `
 
 ### id
 
-`id` field of the `Document` class reflects the unique `_id` field of the MongoDB document. Each object of the `Document` type has this field. The type of this is [PydanticObjectId](https://roman-right.github.io/beanie/api/fields/#pydanticobjectid).
+`id` field of the `Document` class reflects the unique `_id` field of the MongoDB document. Each object of the `Document` type has this field. The default type of this is [PydanticObjectId](https://roman-right.github.io/beanie/api/fields/#pydanticobjectid).
 
 ```python
 class Sample(Document):
@@ -55,6 +55,18 @@ foo = await Sample.find_one(Sample.num > 5)
 print(foo.id)  # This will print id
 
 bar = await Sample.get(foo.id)  # get by id
+```
+
+If you prefer another type, you can set it up too. For example, UUID:
+
+```python
+from pydantic import Field
+from uuid import UUID, uuid4
+
+class Sample(Document):
+    id: UUID = Field(default_factory=uuid4)
+    num: int
+    description: str
 ```
 
 ### Indexed

@@ -1,4 +1,5 @@
 import pytest
+from pymongo.errors import DuplicateKeyError
 
 from beanie.exceptions import DocumentAlreadyCreated
 from beanie.odm.fields import PydanticObjectId
@@ -27,7 +28,7 @@ async def test_create(document_not_inserted):
 
 async def test_create_twice(document_not_inserted):
     await document_not_inserted.insert()
-    with pytest.raises(DocumentAlreadyCreated):
+    with pytest.raises(DuplicateKeyError):
         await document_not_inserted.insert()
 
 

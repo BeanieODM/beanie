@@ -1,9 +1,10 @@
 import datetime
 from typing import List
 from typing import Union, Optional, Tuple
+from uuid import UUID, uuid4
 
 import pymongo
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pymongo import IndexModel
 
 from beanie import Document, Indexed
@@ -113,3 +114,13 @@ class DocumentTestModelFailInspection(Document):
 
     class Collection:
         name = "DocumentTestModel"
+
+
+class DocumentWithCustomIdUUID(Document):
+    id: UUID = Field(default_factory=uuid4)
+    name: str
+
+
+class DocumentWithCustomIdInt(Document):
+    id: int
+    name: str

@@ -41,6 +41,8 @@ async def notes(loop, db):
 
 
 async def test_migration_free_fall(settings, notes, db):
+
+    # assert False
     migration_settings = MigrationSettings(
         connection_uri=settings.mongodb_dsn,
         database_name=settings.mongodb_db_name,
