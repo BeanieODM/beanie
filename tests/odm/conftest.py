@@ -13,7 +13,8 @@ from tests.odm.models import (
     DocumentTestModelWithIndexFlags,
     DocumentTestModelWithComplexIndex,
     DocumentTestModelFailInspection,
-    DocumentWithCustomId,
+    DocumentWithCustomIdUUID,
+    DocumentWithCustomIdInt,
 )
 from tests.odm.models import (
     Sample,
@@ -92,7 +93,8 @@ async def init(loop, db):
         DocumentTestModelWithIndexFlags,
         DocumentTestModelWithComplexIndex,
         DocumentTestModelFailInspection,
-        DocumentWithCustomId,
+        DocumentWithCustomIdUUID,
+        DocumentWithCustomIdInt,
         Sample,
     ]
     await init_beanie(
@@ -101,9 +103,9 @@ async def init(loop, db):
     )
     yield None
 
-    # for model in models:
-    #     await model.get_motor_collection().drop()
-    #     await model.get_motor_collection().drop_indexes()
+    for model in models:
+        await model.get_motor_collection().drop()
+        await model.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture

@@ -126,7 +126,6 @@ async def test_document_string_import(db):
         ],
     )
     document = DocumentTestModelStringImport(test_int=1)
-    print(document._is_inserted)
     assert document.id is None
     await document.insert()
     assert document.id is not None

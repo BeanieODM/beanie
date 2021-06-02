@@ -23,13 +23,12 @@ class Note(Document):
 @pytest.fixture()
 async def notes(loop, db):
     await init_beanie(database=db, document_models=[Note])
-    # await Note.delete_all()
+    await Note.delete_all()
     for i in range(1, 8):
         note = Note(title=str(i), tag=Tag(name="test", color="red"))
         await note.insert()
-        print("HERE")
     yield i
-    # await Note.delete_all()
+    await Note.delete_all()
 
 
 async def test_migration_by_one(settings, notes, db):

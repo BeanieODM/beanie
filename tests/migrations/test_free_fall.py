@@ -37,7 +37,7 @@ async def notes(loop, db):
         note = OldNote(name=str(i), tag=Tag(name="test", color="red"))
         await note.insert()
     yield
-    # await OldNote.delete_all()
+    await OldNote.delete_all()
 
 
 async def test_migration_free_fall(settings, notes, db):
@@ -52,7 +52,6 @@ async def test_migration_free_fall(settings, notes, db):
 
     await init_beanie(database=db, document_models=[Note])
     inspection = await Note.inspect_collection()
-    print(inspection.errors)
     assert inspection.status == InspectionStatuses.OK
     note = await Note.find_one({})
     assert note.title == "0"

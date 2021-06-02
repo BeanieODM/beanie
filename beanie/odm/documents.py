@@ -10,9 +10,18 @@ from typing import (
     Any,
 )
 
+from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
+from pydantic import ValidationError
+from pydantic.main import BaseModel
+from pymongo.client_session import ClientSession
+from pymongo.results import (
+    DeleteResult,
+    InsertOneResult,
+    InsertManyResult,
+)
+
 from beanie.exceptions import (
-    DocumentWasNotSaved,
-    DocumentAlreadyCreated,
     CollectionWasNotInitialized,
     ReplaceError,
 )
@@ -31,16 +40,7 @@ from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.queries.update import UpdateMany
 from beanie.odm.utils.collection import collection_factory
-from bson import ObjectId
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pydantic import Field, ValidationError, PrivateAttr
-from pydantic.main import BaseModel
-from pymongo.client_session import ClientSession
-from pymongo.results import (
-    DeleteResult,
-    InsertOneResult,
-    InsertManyResult,
-)
+from beanie.odm.utils.dump import get_dict
 
 DocType = TypeVar("DocType", bound="Document")
 
@@ -60,8 +60,7 @@ class Document(BaseModel, UpdateMethods):
     - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
-    id: Optional[PydanticObjectId] = Field(None, alias="_id")
-    _is_inserted: bool = PrivateAttr(default=False)
+    id: Optional[PydanticObjectId] = None
 
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
@@ -72,8 +71,8 @@ class Document(BaseModel, UpdateMethods):
         Update local document from the database
         :return: None
         """
-        if not self._is_inserted:
-            raise ValueError("Document was not inserted")
+        if self.id is None:
+            raise ValueError("Document has no id")
         new_instance: Document = await self.get(self.id)
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
@@ -85,17 +84,13 @@ class Document(BaseModel, UpdateMethods):
         Insert the document (self) to the collection
         :return: Document
         """
-        if self._is_inserted:
-            raise DocumentAlreadyCreated
-        if self.id is not None:
-            dict_value = self.dict(by_alias=True)
-        else:
-            dict_value = self.dict(by_alias=True, exclude={"id"})
         result = await self.get_motor_collection().insert_one(
-            dict_value, session=session
+            get_dict(self), session=session
         )
-        self.id = self.__fields__["id"].type_(str(result.inserted_id))
-        self._is_inserted = True
+        new_id = result.inserted_id
+        if not isinstance(new_id, self.__fields__["id"].type_):
+            new_id = self.__fields__["id"].type_(new_id)
+        self.id = new_id
         return self
 
     async def create(
@@ -120,14 +115,13 @@ class Document(BaseModel, UpdateMethods):
         :return: InsertOneResult
         """
         return await cls.get_motor_collection().insert_one(
-            document.dict(by_alias=True, exclude={"id"}), session=session
+            get_dict(document), session=session
         )
 
     @classmethod
     async def insert_many(
         cls: Type[DocType],
         documents: List[DocType],
-        keep_ids: bool = False,
         session: Optional[ClientSession] = None,
     ) -> InsertManyResult:
 
@@ -135,20 +129,10 @@ class Document(BaseModel, UpdateMethods):
         Insert many documents to the collection
 
         :param documents:  List["Document"] - documents to insert
-        :param keep_ids: bool - should it insert documents with ids
-        or ignore it? Default False - ignore
         :param session: ClientSession - pymongo session
         :return: InsertManyResult
         """
-        if keep_ids:
-            documents_list = [
-                document.dict(by_alias=True) for document in documents
-            ]
-        else:
-            documents_list = [
-                document.dict(by_alias=True, exclude={"id"})
-                for document in documents
-            ]
+        documents_list = [get_dict(document) for document in documents]
         return await cls.get_motor_collection().insert_many(
             documents_list,
             session=session,
@@ -334,7 +318,7 @@ class Document(BaseModel, UpdateMethods):
                 "Some of the documents are not exist in the collection"
             )
         await cls.find(In(cls.id, ids_list), session=session).delete()
-        await cls.insert_many(documents, keep_ids=True, session=session)
+        await cls.insert_many(documents, session=session)
 
     async def update(
         self, *args, session: Optional[ClientSession] = None
@@ -496,3 +480,4 @@ class Document(BaseModel, UpdateMethods):
             ObjectId: lambda v: str(v),
         }
         allow_population_by_field_name = True
+        fields = {"id": "_id"}

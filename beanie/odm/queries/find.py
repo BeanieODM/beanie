@@ -31,7 +31,6 @@ from beanie.odm.queries.update import (
     UpdateMany,
     UpdateOne,
 )
-from beanie.odm.utils.general import parse_model
 from beanie.odm.utils.projection import get_projection
 from pydantic import BaseModel
 from pymongo.client_session import ClientSession
@@ -409,7 +408,7 @@ class FindOne(FindQuery):
             )
         )
 
-        if not result.raw_result642159["updatedExisting"]:
+        if not result.raw_result["updatedExisting"]:
             raise DocumentNotFound
         return result
 
@@ -428,4 +427,4 @@ class FindOne(FindQuery):
         )
         if document is None:
             return None
-        return parse_model(model=self.projection_model, value=document)
+        return self.projection_model.parse_obj(document)

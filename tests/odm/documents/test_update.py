@@ -62,13 +62,12 @@ async def test_replace(document):
 
 
 async def test_replace_not_saved(document_not_inserted):
-    with pytest.raises(DocumentWasNotSaved):
+    with pytest.raises(ValueError):
         await document_not_inserted.replace()
 
 
 async def test_replace_not_found(document_not_inserted):
     document_not_inserted.id = PydanticObjectId()
-    document_not_inserted._is_inserted = True
     with pytest.raises(DocumentNotFound):
         await document_not_inserted.replace()
 

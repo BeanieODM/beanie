@@ -1,8 +1,8 @@
 # Changelog
 Beanie project changes
 
-## [1.0.6] - 2021-05-31
-### Changed
+## [1.1.0] - 2021-06-02
+### Added
 - Custom id types. [ISSUE](https://github.com/roman-right/beanie/issues/12)
 
 

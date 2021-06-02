@@ -116,6 +116,11 @@ class DocumentTestModelFailInspection(Document):
         name = "DocumentTestModel"
 
 
-class DocumentWithCustomId(Document):
-    id: UUID = Field(default_factory=uuid4, alias="_id")
+class DocumentWithCustomIdUUID(Document):
+    id: UUID = Field(default_factory=uuid4)
+    name: str
+
+
+class DocumentWithCustomIdInt(Document):
+    id: int
     name: str

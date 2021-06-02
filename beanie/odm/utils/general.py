@@ -1,27 +1,11 @@
 import asyncio
 import importlib
-from typing import List, Type, Union, Dict, Any, TYPE_CHECKING
+from typing import List, Type, Union, TYPE_CHECKING
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
-
-
-def parse_model(model: Type[BaseModel], value: Dict[str, Any]) -> BaseModel:
-    """
-    Create a model object from dictionary. If model is subclass of
-    the Document class, it will set _is_inserted property to True
-
-    :param model: Type[BaseModel] - model to parse
-    :param value: Dict[str, Any] - data
-    :return: BaseModel
-    """
-    result = model.parse_obj(value)
-    if hasattr(result, "_is_inserted"):
-        result._is_inserted = True
-    return result
 
 
 def get_model(dot_path: str) -> Type["DocType"]:
