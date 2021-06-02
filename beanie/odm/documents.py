@@ -35,7 +35,7 @@ from beanie.odm.models import (
     InspectionStatuses,
     InspectionError,
 )
-from beanie.odm.operators.find.comparsion import In
+from beanie.odm.operators.find.comparison import In
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.queries.update import UpdateMany
