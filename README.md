@@ -65,7 +65,7 @@ class Product(Document):  # This is the model
 ```
 
 More details about Documents, collections, and indexes configuration could be
-found in the [documentation](https://roman-right.github.io/beanie/document/).
+found in the [documentation](https://roman-right.github.io/beanie/).
 
 ### Initialization
 
