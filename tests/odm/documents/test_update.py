@@ -72,6 +72,37 @@ async def test_replace_not_found(document_not_inserted):
         await document_not_inserted.replace()
 
 
+# SAVE
+async def test_save(document):
+    update_data = {"test_str": "REPLACED_VALUE"}
+    new_doc = document.copy(update=update_data)
+    # document.test_str = "REPLACED_VALUE"
+    await new_doc.save()
+    new_document = await DocumentTestModel.get(document.id)
+    assert new_document.test_str == "REPLACED_VALUE"
+
+
+async def test_save_not_saved(document_not_inserted):
+    await document_not_inserted.save()
+    assert (
+        hasattr(document_not_inserted, "id")
+        and document_not_inserted.id is not None
+    )
+    from_db = await DocumentTestModel.get(document_not_inserted.id)
+    assert from_db == document_not_inserted
+
+
+async def test_save_not_found(document_not_inserted):
+    document_not_inserted.id = PydanticObjectId()
+    await document_not_inserted.save()
+    assert (
+        hasattr(document_not_inserted, "id")
+        and document_not_inserted.id is not None
+    )
+    from_db = await DocumentTestModel.get(document_not_inserted.id)
+    assert from_db == document_not_inserted
+
+
 # UPDATE
 
 
