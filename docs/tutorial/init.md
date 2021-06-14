@@ -1,4 +1,4 @@
-Beanie uses Motor as an async database engine. To init previously created documents, you should provide the Motor database instance and list of your document models to the `init_beanie(...)` function, as it is shown in the example:
+Beanie uses Motor as an async database engine. To init previously created documents, you should provide a Motor database instance and list of your document models to the `init_beanie(...)` function, as it is shown in the example:
 ```python
 from beanie import init_beanie, Document
 import motor
@@ -12,7 +12,7 @@ async def init():
         "mongodb://user:pass@host:27017"
     )
 
-    # Init beanie with the Product document class
+    # Init beanie with the Product document class and a database
     await init_beanie(database=client.db_name, document_models=[Sample])
 ```
 
