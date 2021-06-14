@@ -1,126 +1,102 @@
-# Find documents
+To populate the database, please run the examples from the [previous section of the tutorial](insert.md) as we will be using the same setup here.
 
-Beanie provides two ways to find documents:
+<!-- Beanie provides two ways to find documents: -->
 
-- Find One document
-- Find Many documents
+<!-- - Find One document -->
+<!-- - Find Many documents -->
 
-On searching for a single document it uses [FindOne](https://roman-right.github.io/beanie/api/queries/#findone)
-query, many documents - [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query.
+<!-- On searching for a single document it uses [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) -->
+<!-- query, many documents - [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query. -->
 
-Next document models will be used for this documentation:
+<!-- Next document models will be used for this documentation: -->
 
+<!-- ```python -->
+<!-- from typing import Optional -->
+<!-- from pydantic import BaseModel -->
+<!-- from beanie import Document -->
+
+
+<!-- class Category(BaseModel): -->
+<!--     name: str -->
+<!--     description: str -->
+
+
+<!-- class Product(Document):  # This is the model -->
+<!--     name: str -->
+<!--     description: Optional[str] = None -->
+<!--     price: float -->
+<!--     category: Category -->
+
+<!--     class Collection: -->
+<!--         name = "products" -->
+
+
+<!-- class ProductShortView(BaseModel): -->
+<!--     name: str -->
+<!--     price: float -->
+
+<!-- ``` -->
+
+## Finding documents
+
+The basic syntax for finding multiple documents in the database is to call the classmethod `find()` or it's synonym `find_many()` with some search criteria (see next section): 
 ```python
-from typing import Optional
-from pydantic import BaseModel
-from beanie import Document
-
-
-class Category(BaseModel):
-    name: str
-    description: str
-
-
-class Product(Document):  # This is the model
-    name: str
-    description: Optional[str] = None
-    price: float
-    category: Category
-
-    class Collection:
-        name = "products"
-
-
-class ProductShortView(BaseModel):
-    name: str
-    price: float
-
+findresult = Product.find(search_criteria)
+```
+This returns a `FindMany` object which can be used to access the results in multiple ways. To loop through the results, use a `async for` loop"
+```python
+async for result in Product.find(search_criteria):
+    print(result)
+```
+If you prefer a list of the results then you can call `to_list()`:
+```python
+result = await Product.find(search_criteria).to_list()
 ```
 
-## Search Criteria
+### Search criteria
 
-As search criteria, Beanie supports python comparison methods, wrappers over
-find query operators, and native syntax.
-
-Python comparison operators must be used with the class fields (and nested
-fields)
-
+As search criteria, Beanie supports python-based syntax.
+For comparisons Python comparison operators can be used on the class fields (and nested
+fields):
 ```python
-products = await Product.find(Product.price < 10)
+products = await Product.find(Product.price < 10).to_list()
 ```
 
-Supported operators: `==`, `>`, `>=`, `<`, `<=`, `!=`
-
-Most of the query operators have wrappers.
-
-For example `$in` operator:
+This is supported for the operators: `==`, `>`, `>=`, `<`, `<=`, `!=`.
+Other MongoDB query operators can be used with the included wrappers. For example the `$in` operator can be used as follows:
 
 ```python
 products = await Product.find(
-    In(Product.category.name, ["Chocolate", "Fruits"]))
+    In(Product.category.name, ["Chocolate", "Fruits"])).to_list()
 ```
 
-The whole list of the find query operators could be
-found [here](https://roman-right.github.io/beanie/api/operators/find/)
+The whole list of the find query operators can be found [here](api-documentation/operators/find.md).
 
-For the complex cases native PyMongo syntax is also supported:
+For more complex cases native PyMongo syntax is also supported:
 
 ```python
-products = await Product.find({"price": 1000})
+products = await Product.find({"price": 1000}).to_list()
 ```
 
-## Find One
+## Finding single documents
 
-To get the document by id it uses [get](https://roman-right.github.io/beanie/api/document/#get) method.
+Sometimes you will only need to find a single document. If you are searching by `id` then you can use the [get](/api-documentation/document#get) method:
 
 ```python
 bar = await Product.get("608da169eb9e17281f0ab2ff")
 ```
 
-To find document by searching criteria it
-uses [find_one](https://roman-right.github.io/beanie/api/document/#find_one) method
+To find a single document via a searching criteria you can use the [find_one](/api-documentation/document#find_one) method:
 
 ```python
 bar = await Product.find_one(Product.name == "Peanut Bar")
 ```
 
-Projection could be used to return the document in another model format
+## More complex queries
 
-```python
-bar = await Product.find_one(Product.name == "Peanut Bar",
-                             projection_model="ProductShortView")
-```
+### Multiple search criteria
 
-## Find Many
-
-To find many documents it uses [find_many](https://roman-right.github.io/beanie/api/document/#find_many) (
-or [find](https://roman-right.github.io/beanie/api/document/#find), which is the same ) method
-
-### Cursor
-
-It will return the [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query object. It
-implements an async generator pattern. Found documents are available
-via `async for` loop:
-
-```python
-async for product in Product.find_many(
-        Product.category.name == "Chocolate"
-):
-    print(product)
-```
-
-[to_list](https://roman-right.github.io/beanie/api/queries/#to_list) method could be used to return the list of the
-found documents
-
-```python
-chocolates = await Product.find(
-    Product.category.name == "Chocolate"
-).to_list()
-```
-
-### List of the search criterias
-
-Search criterias could be listed as *args parameters of the `find*` method:
+If you have multiple search criteria to search for you can list them as separate arguments to any of the `find` functions:
 
 ```python
 chocolates = await Product.find(
@@ -129,38 +105,32 @@ chocolates = await Product.find(
 ).to_list()
 ```
 
-### Chaining
 
-Or a chain of `find` methods could be used instead
+Alternatively, you can chain `find` methods:
 
 ```python
-chocolates = (await Product
+chocolates = await Product
               .find(Product.category.name == "Chocolate")
               .find(Product.price < 5).to_list()
-              )
 ```
 
 ### Sorting
 
-Sorting could be set up with the [sort](https://roman-right.github.io/beanie/api/queries/#sort) method.
+Sorting can be done with the [sort](/api-documentation/query#sort) method.
 
-It supports arguments like `+` or `-` class fields
-
-```python
-chocolates = await Product.find(
-    Product.category.name == "Chocolate").sort(-Product.price).to_list()
-```
-
-strings:
+You can pass it one or multiple fields precised by a `+` or `-` (denoting ascending and descending respectively)
 
 ```python
 chocolates = await Product.find(
-    Product.category.name == "Chocolate").sort("-price").to_list()
+    Product.category.name == "Chocolate").sort(-Product.price,+Product.name).to_list()
 ```
 
-and lists of tuples:
+You can also specify fields as strings or as tuples:
 
 ```python
+chocolates = await Product.find(
+    Product.category.name == "Chocolate").sort("-price","+name").to_list()
+
 chocolates = await Product.find(
     Product.category.name == "Chocolate").sort(
     [
@@ -172,6 +142,7 @@ chocolates = await Product.find(
 
 ### Skip and limit
 
+To skip a certain number of documents, or limit the total number of elements returned, the `skip`and `limit` methods can be used:
 ```python
 chocolates = await Product.find(
     Product.category.name == "Chocolate").skip(2).to_list()
@@ -182,15 +153,20 @@ chocolates = await Product.find(
 
 ### Projections
 
-Projection could be used to return the documents in another model format
+When only part of a document is required projections can save a lot of database bandwidth and processing.
+For simple projections we can just define a pydantic model with the required fields and pass it to `project()`:
+
 
 ```python
+class ProductShortView(BaseModel):
+    name: str
+    price: float
 
 chocolates = await Product.find(
     Product.category.name == "Chocolate").project(ProductShortView).to_list()
 ```
 
-Inner Settings class can be used to make a custom projection
+For more complex projections an inner `Settings` class with a `projection` field can be added:
 
 ```python
 class ProductView(BaseModel):
@@ -199,7 +175,6 @@ class ProductView(BaseModel):
 
     class Settings:
         projection = {"name": 1, "category": "$category.name"}
-
 
 chocolates = await Product.find(
     Product.category.name == "Chocolate").project(ProductView).to_list()

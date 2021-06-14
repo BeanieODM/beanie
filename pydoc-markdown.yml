@@ -15,25 +15,25 @@ renderer:
     - title: Overview
       name: index
       source: docs/index.md
-    - title: Setup
+    - title: Getting started
       source: docs/setup.md
     - title: Tutorial
       children: 
-        - title: Document
+        - title: Defining a document
           source: docs/tutorial/document.md
-        - title: Init
+        - title: Initialization
           source: docs/tutorial/init.md
-        - title: Insert
+        - title: Inserting into the database
           source: docs/tutorial/insert.md
-        - title: Find
+        - title: Finding documents
           source: docs/tutorial/find.md
-        - title: Update
+        - title: Updating & Deleting
           source: docs/tutorial/update.md
         - title: Delete
           source: docs/tutorial/delete.md
-        - title: Aggregate
+        - title: Aggregation
           source: docs/tutorial/aggregate.md
-        - title: Migration
+        - title: Migrations
           source: docs/tutorial/migrations.md
     - title: API Documentation
       children:

@@ -31,33 +31,31 @@ class Product(Document):  # This is the model
                 ("description", pymongo.TEXT),
             ],
         ]
-
 ```
 
-## Fields
+## Special Fields
 
-As it is mentioned before, the `Document` class is inherited from the Pydantic `BaseModel` class. It uses all the same patterns of `BaseModel`. But also it has special fields and fields types:
+As mentioned before, the `Document` class is inherited from the Pydantic `BaseModel` class. It uses all the same patterns of `BaseModel`. There are two places in which it differs however:
 
-- id
-- Indexed
+- There is alwas an `id` field present.
+- Types can be declared to be `Indexed`. 
 
-### id
+### The 'id' field
 
-`id` field of the `Document` class reflects the unique `_id` field of the MongoDB document. Each object of the `Document` type has this field. The default type of this is [PydanticObjectId](https://roman-right.github.io/beanie/api/fields/#pydanticobjectid).
+The `id` field of the `Document` class reflects the unique `_id` field of the MongoDB document. Each object of the `Document` type has this field, and it is always set if a document is present in the database. The default type of this field is `PydanticObjectId`.
 
 ```python
 class Sample(Document):
+    # the id field does not need to be declared explcitly
     num: int
     description: str
 
-foo = await Sample.find_one(Sample.num > 5)
-
-print(foo.id)  # This will print id
-
-bar = await Sample.get(foo.id)  # get by id
+# query a single object from the database 
+foo = await Sample.find_one(Sample.num > 5) 
+print(foo.id)  # This will print the id
 ```
 
-If you prefer another type, you can set it up too. For example, UUID:
+If you prefer another type, then you can overide the default. For example, to set it to UUID:
 
 ```python
 from pydantic import Field
@@ -86,7 +84,8 @@ The `Indexed` function takes an optional argument `index_type`, which may be set
 class Sample(Document):
     description: Indexed(str, index_type = pymongo.TEXT)
 ```
- The `Indexed` function supports pymogo `IndexModel` kwargs arguments ([PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)). 
+
+ The `Indexed` function also supports pymogo's `IndexModel` kwargs arguments (see the [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel) for details). 
  
 For example to create `unique` index:
 
@@ -95,14 +94,16 @@ class Sample(Document):
     name: Indexed(str, unique=True)
 ```
 
-## Collection
+## Configuration of collections
 
-The inner class `Collection` is used to configure:
+Although the basic pydantic syntax allows you to set all aspects of individual fields, there is also some need to configure collections as a whole. In particular you might want to:
 
-- MongoDB collection name
-- Indexes
+- Set the MongoDB collection name
+- Configure multi-field indexes
 
-### Collection name
+This is done by defining a `Collection` class within your `Document` class.
+
+### Declaring the collection name
 
 To set MongoDB collection name you can use the `name` field of the `Collection` inner class.
 
@@ -119,7 +120,7 @@ class Sample(Document):
 
 The `indexes` field of the inner `Collection` class is responsible for the indexes setup. It is a list where items could be:
 
-- single key. Name of the document's field (this is equivalent to using the Indexed function described above)
+- single key. Name of the document's field (this is equivalent to using the Indexed function described above without any additional arguments)
 - list of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
   example: `pymongo.ASCENDING`)
 - `pymongo.IndexModel` instance - the most flexible

@@ -1,4 +1,4 @@
-# Setup
+# Getting started
 
 ## Installing beanie
 
