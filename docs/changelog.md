@@ -2,6 +2,17 @@
 
 Beanie project changes
 
+## [1.1.1] - 2021-06-14
+
+### Added
+
+- Save method
+
+### Implementation
+
+- Author - [Joran van Apeldoorn](https://github.com/jorants)
+- PR - <https://github.com/roman-right/beanie/pull/47>
+
 ## [1.1.0] - 2021-06-02
 
 ### Added
@@ -232,3 +243,5 @@ Beanie project changes
 [1.0.6]: https://pypi.org/project/beanie/1.0.6
 
 [1.1.0]: https://pypi.org/project/beanie/1.1.0
+
+[1.1.1]: https://pypi.org/project/beanie/1.1.1
