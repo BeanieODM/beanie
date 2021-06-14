@@ -43,12 +43,10 @@ class Product(Document):
     price: Indexed(float)              # You can also specify that a field should correspond to an index
     category: Category                 # You can include pydantic models as well
 
-# Beanie is fully asynchronous, so we will access it form an async fucntion
+# Beanie is fully asynchronous, so we will access it from an async fucntion
 async def example():
     # Beanie uses Motor under the hood 
-    client = motor.motor_asyncio.AsyncIOMotorClient(
-        "mongodb://user:pass@host:27017"
-    )
+    client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://user:pass@host:27017")
 
     # Init beanie with the Product document class
     await init_beanie(database=client.db_name, document_models=[Product])
