@@ -4,7 +4,7 @@ from beanie.odm.fields import PydanticObjectId, Indexed
 from beanie.odm.utils.general import init_beanie
 from beanie.odm.documents import Document
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 __all__ = [
     # ODM
     "Document",
