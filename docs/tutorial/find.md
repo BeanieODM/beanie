@@ -1,41 +1,5 @@
 To populate the database, please run the examples from the [previous section of the tutorial](insert.md) as we will be using the same setup here.
 
-<!-- Beanie provides two ways to find documents: -->
-
-<!-- - Find One document -->
-<!-- - Find Many documents -->
-
-<!-- On searching for a single document it uses [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) -->
-<!-- query, many documents - [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query. -->
-
-<!-- Next document models will be used for this documentation: -->
-
-<!-- ```python -->
-<!-- from typing import Optional -->
-<!-- from pydantic import BaseModel -->
-<!-- from beanie import Document -->
-
-
-<!-- class Category(BaseModel): -->
-<!--     name: str -->
-<!--     description: str -->
-
-
-<!-- class Product(Document):  # This is the model -->
-<!--     name: str -->
-<!--     description: Optional[str] = None -->
-<!--     price: float -->
-<!--     category: Category -->
-
-<!--     class Collection: -->
-<!--         name = "products" -->
-
-
-<!-- class ProductShortView(BaseModel): -->
-<!--     name: str -->
-<!--     price: float -->
-
-<!-- ``` -->
 
 ## Finding documents
 
@@ -70,7 +34,7 @@ products = await Product.find(
     In(Product.category.name, ["Chocolate", "Fruits"])).to_list()
 ```
 
-The whole list of the find query operators can be found [here](api-documentation/operators/find.md).
+The whole list of the find query operators can be found [here](/api-documentation/operators/find).
 
 For more complex cases native PyMongo syntax is also supported:
 
@@ -118,7 +82,7 @@ chocolates = await Product
 
 Sorting can be done with the [sort](/api-documentation/query#sort) method.
 
-You can pass it one or multiple fields precised by a `+` or `-` (denoting ascending and descending respectively)
+You can pass it one or multiple fields to sort by. You may optionally specify a `+` or `-` (denoting ascending and descending respectively).
 
 ```python
 chocolates = await Product.find(
@@ -179,3 +143,7 @@ class ProductView(BaseModel):
 chocolates = await Product.find(
     Product.category.name == "Chocolate").project(ProductView).to_list()
 ```
+
+### Finding all documents
+
+If you every want to find all documents you can use the `find_all()` classmethod. This is equivalent to `find({})`.

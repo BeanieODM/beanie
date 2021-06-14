@@ -1,33 +1,27 @@
 # Aggregations
 
-You can aggregate and over the whole collection, using `aggregate()` method of the `Document` class, and over search criteria, using `FindMany` instance. 
+You can perform aggregation queries through beanie as well. For example, to calculate the average: 
 
-#### Aggregation Methods
-
-`FindMany` and `Document` classes implements [AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods) interface with preset methods
-
-Example of average calculation:
-
-*With search criteria*
 ```python
+# With a search:
 avg_price = await Product.find(
     Product.category.name == "Chocolate"
 ).avg(Product.price)
-```
 
-*Over the whole collection*
+# Over the whole collection:
 ```python
 avg_price = await Product.avg(Product.price)
 ```
 
-#### Native syntax
+A full list of avalible methods can be found [here](/api-documentation/interfaces#aggregatemethods-object).
 
-You can use the native PyMongo syntax of the aggregation pipelines to aggregate over the whole collection or over the subset too. `projection_model` parameter is responsible for the output format. It will return dictionaries, if this parameter is not provided.
+
+You can also use the native PyMongo syntax by calling the `aggregate` method. However, as Beanie will not know what output to expect you will have to supply a projection model yourself. If you do not supply a projection model then a dictionarie will be returned.
 
 ```python
 class OutputItem(BaseModel):
     id: str = Field(None, alias="_id")
-    total: int
+    total: float
 
 
 result = await Product.find(

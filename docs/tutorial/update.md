@@ -1,59 +1,60 @@
-# Update documents
+# Updating & Deleting
 
-[UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) and [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) queries are used to update single and many documents respectively.
+Now that we know how to find documents, how do we change them or delete them?
 
-[Document](https://roman-right.github.io/beanie/api/document/), [FindOne](https://roman-right.github.io/beanie/api/queries/#findone), [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany), and both update query instances implement [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#updatemethods) interface including `update` method.  
 
-## By method from UpdateMethods interface
+## Saving changes to existing documents
 
-### Entity
+The easiest way to change a document in the database is using either the `replace` or `save` methods on a altered document. These methods both write the document to the database, but `replace` will raise an exception when the document does not exist yet, while `save` will insert the document. 
+
+Using save:
 ```python
-await product.set({Product.price: 3.33})
+bar = await Product.find_one(Product.name == "Mars")
+bar.price = 10
+await bar.save()
+```
+Or similairly using replace, which trows a `ValueError` if the document does not have an `id` yet, or a `beanie.exceptions.DocumentNotFound` if it does but the id is not present in the collection:
+```python
+bar.price = 10
+try:
+    await bar.update()
+except (ValueError, beanie.exceptions.DocumentNotFound):
+    print("Can't replace a non existing document")
 ```
 
-### Single
+Note however that these methods requires multiple queries to the database and replace the entire document with the new version. A more tailered solution can often be created by applying update queries directly on the database level.
+
+## Update queries
+
+Update queries can be performed on the result of a `find` or `find_one` query, or on a document that was returned from an earlier query. Simpler updates can be performed using the `set`, `inc`, and `current_date` methods:
 ```python
-await Product.find_one(Product.name == "Milka").set({Product.price: 3.33})
+bar = await Product.find_one(Product.name == "Mars")
+await bar.set({Product.name:"Gold bar"})
+bar = await Product.find_all(Product.price > .5).inc({Product.price: 1})
 ```
 
-### Many
+More complex update operations can be performed by calling `update()` with a update operator, similair to find queries:
 ```python
-await Product.find(Product.category.name == "Chocolate").inc({Product.price: 1})
+await Product.find_one(Product.name == "Tony's").update(Set({Product.price: 3.33}))
+```
+The whole list of the update query operators can be found [here](/api-documentation/operators/update).
+
+Native MongoDB syntax is also accepted:
+```python
+await Product.find_one(Product.name == "Tony's").update({"$set": {Product.price: 3.33}})
 ```
 
-## By operator class
 
-Most of the update query operators are wrapped as operator classes. The whole list could be found [by link](https://roman-right.github.io/beanie/api/operators/update/)
+## Deleting documents
 
-### Entity
+Deleting objects works just like updating them, you simply call `delete()`: 
+
+
 ```python
-await product.update(Set({Product.price: 3.33}))
-```
+bar = await Product.find_one(Product.name == "Milka")
+await bar.delete()
 
-### Single
-```python
-await Product.find_one(Product.name == "Milka").update(Set({Product.price: 3.33}))
-```
+await Product.find_one(Product.name == "Milka").delete()
 
-### Many
-```python
-await Product.find(Product.category.name == "Chocolate").update(Inc({Product.price: 1}))
-```
-
-## By native syntax
-
-### Entity
-```python
-await product.update({"$set": {Product.price: 3.33}})
-```
-
-### Single
-```python
-await Product.find_one(Product.name == "Milka").update({"$set": {Product.price: 3.33}})
-```
-
-### Many
-```python
-await Product.find(Product.category.name == "Chocolate"
-                   ).update({"$inc": {Product.price: 1}})
+await Product.find(Product.category.name == "Chocolate").delete()
 ```

@@ -29,8 +29,6 @@ renderer:
           source: docs/tutorial/find.md
         - title: Updating & Deleting
           source: docs/tutorial/update.md
-        - title: Delete
-          source: docs/tutorial/delete.md
         - title: Aggregation
           source: docs/tutorial/aggregate.md
         - title: Migrations
