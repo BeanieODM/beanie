@@ -66,14 +66,10 @@ Please write clear documentation for any new functionallity you add. Docstrings 
 
 ## Working on the documentation
 
-The documentation is generated using `mkdocs`.  To see a live preview of any edits you make you can run
+The documentation is generated using `pydoc-markdown`.  To see a live preview of any edits you make you can run
 ```shell
-poetry run mkdocs serve
+poetry run pydoc-markdown --server
 ```
 and visit the printed adress (usally `localhost:8000`) in your browser.
 
-To generate the API documentation run the script `scripts/build_odm_doc.sh` inside the virtual enviroment. On Unix systems this can be done with
-
-```shell
-poetry run bash scripts/build_odm_doc.sh
-```
+This will automatically generate the API documentation from source. All other documentation should be written by hand. The documentation is compiled using `mkdocs` behind the scenes. To change the table of contents or other options, check out `pydoc-markdown.yml`.

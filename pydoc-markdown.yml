@@ -1,0 +1,78 @@
+loaders:
+  - type: python
+processors:
+  - type: filter
+  - type: smart
+  - type: crossref
+
+hooks:
+  pre-render:
+    - cp -r docs/assets build/docs/content
+    
+renderer:  
+  type: mkdocs
+  pages:
+    - title: Overview
+      name: index
+      source: docs/index.md
+    - title: Setup
+      source: docs/setup.md
+    - title: Tutorial
+      children: 
+        - title: Document
+          source: docs/tutorial/document.md
+        - title: Init
+          source: docs/tutorial/init.md
+        - title: Insert
+          source: docs/tutorial/insert.md
+        - title: Find
+          source: docs/tutorial/find.md
+        - title: Update
+          source: docs/tutorial/update.md
+        - title: Delete
+          source: docs/tutorial/delete.md
+        - title: Aggregate
+          source: docs/tutorial/aggregate.md
+        - title: Migration
+          source: docs/tutorial/migrations.md
+    - title: API Documentation
+      children:
+        - title: Document
+          contents:
+            - beanie.odm.documents.*
+        - title: Query
+          contents:
+            - beanie.odm.queries.*
+        - title: Interfaces
+          contents:
+            - beanie.odm.interfaces.*
+        - title: Operators
+          children:
+            - title: Find
+              contents:
+                - beanie.odm.operators.find.*
+            - title: Update
+              contents:
+                - beanie.odm.operators.update.*
+        - title: Fields
+          contents:
+            - beanie.odm.fields.*            
+    - title: Development
+      source: docs/development.md
+    - title: Changelog
+      source: docs/changelog.md
+      
+  mkdocs_config:
+      site_name: Beanie Documentation
+      theme:
+         name: material
+         palette:
+             primary: white
+         logo: assets/logo.svg
+      favicon: assets/favicon.png
+      markdown_extensions:
+        - pymdownx.highlight
+        - pymdownx.superfences
+      repo_url: https://github.com/roman-right/beanie
+      
+      
