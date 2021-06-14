@@ -1,4 +1,4 @@
-To populate the database, please run the examples from the [previous section of the tutorial](insert.md) as we will be using the same setup here.
+To populate the database, please run the examples from the [previous section of the tutorial](inserting-into-the-database.md) as we will be using the same setup here.
 
 
 ## Finding documents

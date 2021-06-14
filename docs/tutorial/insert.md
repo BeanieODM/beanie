@@ -34,7 +34,7 @@ To insert a document into the database, you can call either `insert()` or `creat
 await tonybar.insert()
 await marsbar.create() # does exactly the same as insert()
 ```
-You can also call `save()`, which behaves the same for new documents, but will also update existing documents. See the [section on updating](update.md) of this tutorial for more details.
+You can also call `save()`, which behaves the same for new documents, but will also update existing documents. See the [section on updating](updating-&-deleting.md) of this tutorial for more details.
 
 If you prefer you can also call the `insert_one` classmethod: 
 ```python
