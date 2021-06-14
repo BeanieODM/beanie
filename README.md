@@ -53,7 +53,6 @@ async def example():
     # Init beanie with the Product document class
     await init_beanie(database=client.db_name, document_models=[Product])
 
-    
     chocolate = Category(name="Chocolate", description="A preparation of roasted and ground cacao seeds.")
     # Beanie documents work just like pydantic models
     tonybar = Product(name="Tony's", price=5.95, category=chocolate)
