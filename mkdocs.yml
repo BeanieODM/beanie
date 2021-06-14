@@ -1,14 +1,17 @@
 site_name: Documentation
 nav:
-    - Introduction: index.md
-    - Document: tutorial/document.md
-    - Init: tutorial/init.md
-    - Create: tutorial/insert.md
-    - Find: tutorial/find.md
-    - Update: tutorial/update.md
-    - Delete: tutorial/delete.md
-    - Aggregate: tutorial/aggregate.md
-    - Api:
+    - Overview: index.md
+    - Setup: setup.md
+    - Tutorial:
+      - Document: tutorial/document.md
+      - Init: tutorial/init.md
+      - Create: tutorial/insert.md
+      - Find: tutorial/find.md
+      - Update: tutorial/update.md
+      - Delete: tutorial/delete.md
+      - Aggregate: tutorial/aggregate.md
+      - Migrations: migrations.md
+    - Api reference:
         Document:  api/document.md
         Query: api/queries.md
         Interfaces: api/interfaces.md
@@ -16,7 +19,7 @@ nav:
             Find: api/operators/find.md
             Update: api/operators/update.md
         Fields: api/fields.md
-    - Migrations: migrations.md
+    - Development: development.md
     - Changelog: changelog.md
 theme:
     name: material
