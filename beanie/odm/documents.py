@@ -24,6 +24,7 @@ from pymongo.results import (
 from beanie.exceptions import (
     CollectionWasNotInitialized,
     ReplaceError,
+    DocumentNotFound,
 )
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import PydanticObjectId, ExpressionField
@@ -298,6 +299,19 @@ class Document(BaseModel, UpdateMethods):
             self, session=session
         )
         return self
+
+    async def save(self, session: Optional[ClientSession] = None) -> DocType:
+        """
+        Update an existing model in the database or insert it if it does not yet exist.
+
+        :param session: Optional[ClientSession] - pymongo session.
+        :return: None
+        """
+
+        try:
+            return await self.replace(session=session)
+        except (ValueError, DocumentNotFound):
+            return await self.insert(session=session)
 
     @classmethod
     async def replace_many(
