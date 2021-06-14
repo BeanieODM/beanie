@@ -3,6 +3,7 @@
 ## Installing beanie
 
 You can simply install Beanie for the PyPi:
+
 ### PIP
 
 ```shell
@@ -22,7 +23,7 @@ Getting Beanie setup in your code is really easy:
  2. Initialize Motor, as Beanie uses this as an async database engine under the hood.
  3. Call `beanie.init_beanie` with the Motor client and list of Beanie models
  
- The code below should get you started and shows of some of the field types that you can use wit beanie.
+ The code below should get you started and shows of some of the field types that you can use with beanie.
  
 ```python
 from typing import Optional
