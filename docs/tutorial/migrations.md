@@ -4,13 +4,21 @@ Migrations use transactions inside. It works only with **MongoDB replica sets**
 
 ## Create
 
+<<<<<<< HEAD
 To create a new migration run:
+=======
+To create new migration run:
+>>>>>>> main
 
 ```shell
 beanie new-migration -n migration_name -p relative/path/to/migrations/directory/
 ```
 
+<<<<<<< HEAD
 It will create a file with the name `*_migration_name.py` in the directory `relative/path/to/migrations/directory/`
+=======
+It will create a file with name `*_migration_name.py` in the directory `relative/path/to/migrations/directory/`
+>>>>>>> main
 
 Migration file contains two classes: `Forward` and `Backward`. Each one contains instructions to roll migration respectively forward and backward.
 
