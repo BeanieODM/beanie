@@ -2,6 +2,17 @@
 
 Beanie project changes
 
+## [1.1.2] - 2021-06-14
+
+### Changed
+
+- Skip migration test when transactions not avalible
+
+### Implementation
+
+- Author - [Joran van Apeldoorn](https://github.com/jorants)
+- PR - <https://github.com/roman-right/beanie/pull/50>
+
 ## [1.1.1] - 2021-06-14
 
 ### Added
@@ -245,3 +256,5 @@ Beanie project changes
 [1.1.0]: https://pypi.org/project/beanie/1.1.0
 
 [1.1.1]: https://pypi.org/project/beanie/1.1.1
+
+[1.1.2]: https://pypi.org/project/beanie/1.1.2
