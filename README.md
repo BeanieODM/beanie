@@ -33,6 +33,11 @@ poetry add beanie
 ## Example
 
 ```python
+from typing import Optional
+from pydantic import BaseModel
+from beanie import Document, Indexed, init_beanie
+import asyncio, motor
+
 class Category(BaseModel):
     name: str
     description: str
@@ -59,9 +64,11 @@ async def example():
     
     # You can find documents with pythonic syntax
     product = await Product.find_one(Product.price < 10)
-
+    
     # And update them
     await product.set({Product.name:"Gold bar"})
+    
+asyncio.run(example())
 ```
 
 ## Links
