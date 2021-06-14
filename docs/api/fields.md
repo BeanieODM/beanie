@@ -1,13 +1,11 @@
-## beanie.odm.fields
+<a name="beanie.odm.fields"></a>
+# beanie.odm.fields
 
-### Indexed
+<a name="beanie.odm.fields.Indexed"></a>
+#### Indexed
 
 ```python
-def Indexed(
-	typ, 
-	index_type=ASCENDING, 
-	**kwargs
-)
+Indexed(typ, index_type=ASCENDING, **kwargs)
 ```
 
 Returns a subclass of `typ` with an extra attribute `_indexed` as a tuple:
@@ -15,7 +13,8 @@ Returns a subclass of `typ` with an extra attribute `_indexed` as a tuple:
 - Index 1: `kwargs` passed to `IndexModel`
 When instantiated the type of the result will actually be `typ`.
 
-## PydanticObjectId
+<a name="beanie.odm.fields.PydanticObjectId"></a>
+## PydanticObjectId Objects
 
 ```python
 class PydanticObjectId(ObjectId)
@@ -23,19 +22,18 @@ class PydanticObjectId(ObjectId)
 
 Object Id field. Compatible with Pydantic.
 
-## ExpressionField
+<a name="beanie.odm.fields.ExpressionField"></a>
+## ExpressionField Objects
 
 ```python
 class ExpressionField(str)
 ```
 
-### \_\_getattr\_\_
+<a name="beanie.odm.fields.ExpressionField.__getattr__"></a>
+#### \_\_getattr\_\_
 
 ```python
-def __getattr__(
-	self, 
-	item
-)
+ | __getattr__(item)
 ```
 
 Get sub field

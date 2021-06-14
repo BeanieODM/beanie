@@ -29,27 +29,51 @@ To run commands like `pytest` or `black` you have to run them using the virtual 
 
 ### Database connection
 
-To run tests, and use Beanie in general, you will need an accessible MongoDB database. 
+To run tests, and use Beanie in general, you will need an accessible MongoDB database. To use migrations you will need a connection to a Replica Set or Mongos instance. All tests assume that the database is hosted localy on port 27017 and does not require authentication.
 
 
 ## Testing
 
-Beanie uses pytest for unit testing. To ensure the stability of Beanie, each added feature must be tested in a separate unit test. Even if it looks like other tests are covering it now. This strategy guarantees that:
+Beanie uses [pytest](https://docs.pytest.org) for unit testing. To ensure the stability of Beanie, each added feature must be tested in a separate unit test. Even if it looks like other tests are covering it now. This strategy guarantees that:
 
 - All the features will be covered and stay covered. 
 - Independence from other features and test cases.
 
+To run the test suit, make sure that you have mongodb running and run `poetry run pytest`.
 
+## Submitting new code
 
-## Use pre-commit
+You can submit your changes through a pull request on github. Please take into account the following secitons.
 
-Please, use pre-commit. To set it up, run:
+### Use pre-commit
+
+To ensure code consistency Beanie uses Black and Flake8 through pre-commit. To set it up, run:
 
 ```shell
 poetry install
-pre-commit install
+poetry run pre-commit install
 ```
 
-## Single commit
+This will add the pre-commit command to your git's pre-commit hooks and makes sure you can never forget to run these. 
 
-Please, squash your commits to a single one. The instructions can be found [here](https://www.internalpointers.com/post/squash-commits-into-one-git) or [here](https://medium.com/@slamflipstrom/a-beginners-guide-to-squashing-commits-with-git-rebase-8185cf6e62ec)
+### Single commit
+
+To make the pull request reviewing easier and keep the version tree clean your pull request should consist of a single commit. It is natural that your branch might contain multiple commits, so you will need to squash these into a single commit. Instructions can be found [here](https://www.internalpointers.com/post/squash-commits-into-one-git) or [here](https://medium.com/@slamflipstrom/a-beginners-guide-to-squashing-commits-with-git-rebase-8185cf6e62ec)
+
+### Add documentation
+
+Please write clear documentation for any new functionallity you add. Docstrings will be converted to the API documentation, but more human friendly documentation might also be needed! See the section below.
+
+## Working on the documentation
+
+The documentation is generated using `mkdocs`.  To see a live preview of any edits you make you can run
+```shell
+poetry run mkdocs serve
+```
+and visit the printed adress (usally `localhost:8000`) in your browser.
+
+To generate the API documentation run the script `scripts/build_odm_doc.sh` inside the virtual enviroment. On Unix systems this can be done with
+
+```shell
+poetry run bash scripts/build_odm_doc.sh
+```

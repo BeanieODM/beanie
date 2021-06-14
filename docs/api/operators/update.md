@@ -1,6 +1,8 @@
-## beanie.odm.operators.update.general
+<a name="beanie.odm.operators.update.general"></a>
+# beanie.odm.operators.update.general
 
-## Set
+<a name="beanie.odm.operators.update.general.Set"></a>
+## Set Objects
 
 ```python
 class Set(BaseUpdateGeneralOperator)
@@ -27,7 +29,8 @@ Set({Sample.one, 2})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/set/>
 
-## CurrentDate
+<a name="beanie.odm.operators.update.general.CurrentDate"></a>
+## CurrentDate Objects
 
 ```python
 class CurrentDate(BaseUpdateGeneralOperator)
@@ -54,7 +57,8 @@ CurrentDate({Sample.ts, True})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/currentDate/>
 
-## Inc
+<a name="beanie.odm.operators.update.general.Inc"></a>
+## Inc Objects
 
 ```python
 class Inc(BaseUpdateGeneralOperator)
@@ -81,7 +85,8 @@ Inc({Sample.one, 2})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/inc/>
 
-## Min
+<a name="beanie.odm.operators.update.general.Min"></a>
+## Min Objects
 
 ```python
 class Min(BaseUpdateGeneralOperator)
@@ -108,7 +113,8 @@ Min({Sample.one, 2})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/min/>
 
-## Max
+<a name="beanie.odm.operators.update.general.Max"></a>
+## Max Objects
 
 ```python
 class Max(BaseUpdateGeneralOperator)
@@ -135,7 +141,8 @@ Max({Sample.one, 2})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/max/>
 
-## Mul
+<a name="beanie.odm.operators.update.general.Mul"></a>
+## Mul Objects
 
 ```python
 class Mul(BaseUpdateGeneralOperator)
@@ -162,7 +169,8 @@ Mul({Sample.one, 2})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/mul/>
 
-## Rename
+<a name="beanie.odm.operators.update.general.Rename"></a>
+## Rename Objects
 
 ```python
 class Rename(BaseUpdateGeneralOperator)
@@ -173,7 +181,8 @@ class Rename(BaseUpdateGeneralOperator)
 MongoDB doc:
 <https://docs.mongodb.com/manual/reference/operator/update/rename/>
 
-## SetOnInsert
+<a name="beanie.odm.operators.update.general.SetOnInsert"></a>
+## SetOnInsert Objects
 
 ```python
 class SetOnInsert(BaseUpdateGeneralOperator)
@@ -184,7 +193,8 @@ class SetOnInsert(BaseUpdateGeneralOperator)
 MongoDB doc:
 <https://docs.mongodb.com/manual/reference/operator/update/setOnInsert/>
 
-## Unset
+<a name="beanie.odm.operators.update.general.Unset"></a>
+## Unset Objects
 
 ```python
 class Unset(BaseUpdateGeneralOperator)
@@ -195,9 +205,11 @@ class Unset(BaseUpdateGeneralOperator)
 MongoDB doc:
 <https://docs.mongodb.com/manual/reference/operator/update/unset/>
 
-## beanie.odm.operators.update.array
+<a name="beanie.odm.operators.update.array"></a>
+# beanie.odm.operators.update.array
 
-## AddToSet
+<a name="beanie.odm.operators.update.array.AddToSet"></a>
+## AddToSet Objects
 
 ```python
 class AddToSet(BaseUpdateArrayOperator)
@@ -224,7 +236,8 @@ AddToSet({Sample.results, 2})
   MongoDB docs:
   <https://docs.mongodb.com/manual/reference/operator/update/addToSet/>
 
-## Pop
+<a name="beanie.odm.operators.update.array.Pop"></a>
+## Pop Objects
 
 ```python
 class Pop(BaseUpdateArrayOperator)
@@ -251,7 +264,8 @@ Pop({Sample.results, 2})
   MongoDB docs:
   <https://docs.mongodb.com/manual/reference/operator/update/pop/>
 
-## Pull
+<a name="beanie.odm.operators.update.array.Pull"></a>
+## Pull Objects
 
 ```python
 class Pull(BaseUpdateArrayOperator)
@@ -278,7 +292,8 @@ Pull(In(Sample.result, [1,2,3,4,5])
   MongoDB docs:
   <https://docs.mongodb.com/manual/reference/operator/update/pull/>
 
-## Push
+<a name="beanie.odm.operators.update.array.Push"></a>
+## Push Objects
 
 ```python
 class Push(BaseUpdateArrayOperator)
@@ -305,7 +320,8 @@ Push({Sample.results: 1})
   MongoDB docs:
   <https://docs.mongodb.com/manual/reference/operator/update/push/>
 
-## PullAll
+<a name="beanie.odm.operators.update.array.PullAll"></a>
+## PullAll Objects
 
 ```python
 class PullAll(BaseUpdateArrayOperator)
@@ -332,9 +348,11 @@ PullAll({ Sample.results: [ 0, 5 ] })
   MongoDB docs:
   <https://docs.mongodb.com/manual/reference/operator/update/pullAll/>
 
-## beanie.odm.operators.update.bitwise
+<a name="beanie.odm.operators.update.bitwise"></a>
+# beanie.odm.operators.update.bitwise
 
-## Bit
+<a name="beanie.odm.operators.update.bitwise.Bit"></a>
+## Bit Objects
 
 ```python
 class Bit(BaseUpdateBitwiseOperator)
