@@ -1,13 +1,13 @@
 site_name: Documentation
 nav:
     - Introduction: index.md
-    - Document: tutorial/document.md
-    - Init: tutorial/init.md
-    - Create: tutorial/insert.md
-    - Find: tutorial/find.md
-    - Update: tutorial/update.md
-    - Delete: tutorial/delete.md
-    - Aggregate: tutorial/aggregate.md
+    - Document: document.md
+    - Init: init.md
+    - Create: insert.md
+    - Find: find.md
+    - Update: update.md
+    - Delete: delete.md
+    - Aggregate: aggregate.md
     - Api:
         Document:  api/document.md
         Query: api/queries.md
