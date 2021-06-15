@@ -30,7 +30,6 @@ dnspython = "^2.1.0"
 mkdocs-material = "^7.1.0"
 pydoc-markdown = "^3.13.0"
 flake8 = "^3.9.1"
-types-toml = "^0.1.2"
 
 
 [build-system]
