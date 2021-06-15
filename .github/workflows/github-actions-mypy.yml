@@ -1,0 +1,20 @@
+name: MyPy
+on: [ pull_request ]
+
+jobs:
+  mypy:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ 3.9 ]
+        os: [ ubuntu-18.04 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: mypy install
+        run: pip3 install mypy==0.812
+      - name: mypy
+        run: mypy beanie/
