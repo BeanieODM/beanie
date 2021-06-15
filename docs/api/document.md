@@ -1,6 +1,8 @@
-## beanie.odm.documents
+<a name="beanie.odm.documents"></a>
+# beanie.odm.documents
 
-## Document
+<a name="beanie.odm.documents.Document"></a>
+## Document Objects
 
 ```python
 class Document(BaseModel,  UpdateMethods)
@@ -16,15 +18,13 @@ Mapped to the PydanticObjectId class
 Inherited from:
 
 - Pydantic BaseModel
-- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
+- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/`aggregatemethods`)
 
-### insert
+<a name="beanie.odm.documents.Document.insert"></a>
+#### insert
 
 ```python
-async def insert(
-	self, 
-	session: Optional[ClientSession] = None
-) -> DocType
+ | async insert(session: Optional[ClientSession] = None) -> DocType
 ```
 
 Insert the document (self) to the collection
@@ -33,13 +33,11 @@ Insert the document (self) to the collection
 
 Document
 
-### create
+<a name="beanie.odm.documents.Document.create"></a>
+#### create
 
 ```python
-async def create(
-	self, 
-	session: Optional[ClientSession] = None
-) -> DocType
+ | async create(session: Optional[ClientSession] = None) -> DocType
 ```
 
 The same as self.insert()
@@ -48,15 +46,12 @@ The same as self.insert()
 
 Document
 
-### insert\_one
+<a name="beanie.odm.documents.Document.insert_one"></a>
+#### insert\_one
 
 ```python
-@classmethod
-async def insert_one(
-	cls: Type[DocType], 
-	document: DocType, 
-	session: Optional[ClientSession] = None
-) -> InsertOneResult
+ | @classmethod
+ | async insert_one(cls: Type[DocType], document: DocType, session: Optional[ClientSession] = None) -> InsertOneResult
 ```
 
 Insert one document to the collection
@@ -70,16 +65,12 @@ Insert one document to the collection
 
 InsertOneResult
 
-### insert\_many
+<a name="beanie.odm.documents.Document.insert_many"></a>
+#### insert\_many
 
 ```python
-@classmethod
-async def insert_many(
-	cls: Type[DocType], 
-	documents: List[DocType], 
-	keep_ids: bool = False, 
-	session: Optional[ClientSession] = None
-) -> InsertManyResult
+ | @classmethod
+ | async insert_many(cls: Type[DocType], documents: List[DocType], session: Optional[ClientSession] = None) -> InsertManyResult
 ```
 
 Insert many documents to the collection
@@ -87,23 +78,18 @@ Insert many documents to the collection
 **Arguments**:
 
 - `documents`: List["Document"] - documents to insert
-- `keep_ids`: bool - should it insert documents with ids
-or ignore it? Default False - ignore
 - `session`: ClientSession - pymongo session
 
 **Returns**:
 
 InsertManyResult
 
-### get
+<a name="beanie.odm.documents.Document.get"></a>
+#### get
 
 ```python
-@classmethod
-async def get(
-	cls: Type[DocType], 
-	document_id: PydanticObjectId, 
-	session: Optional[ClientSession] = None
-) -> Optional[DocType]
+ | @classmethod
+ | async get(cls: Type[DocType], document_id: PydanticObjectId, session: Optional[ClientSession] = None) -> Optional[DocType]
 ```
 
 Get document by id
@@ -117,20 +103,16 @@ Get document by id
 
 Union["Document", None]
 
-### find\_one
+<a name="beanie.odm.documents.Document.find_one"></a>
+#### find\_one
 
 ```python
-@classmethod
-def find_one(
-	cls, 
-	*args: Union[Dict[str, Any], Mapping[str, Any], bool], 
-	projection_model: Optional[Type[BaseModel]] = None, 
-	session: Optional[ClientSession] = None
-) -> FindOne
+ | @classmethod
+ | find_one(cls, *args: Union[Dict[str, Any], Mapping[str, Any], bool], *, projection_model: Optional[Type[BaseModel]] = None, session: Optional[ClientSession] = None) -> FindOne
 ```
 
 Find one document by criteria.
-Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object
+Returns [FindOne](https://roman-right.github.io/beanie/api/queries/`findone`) query object
 
 **Arguments**:
 
@@ -141,25 +123,18 @@ Mapping[str, Any], bool] - search criteria
 
 **Returns**:
 
-[FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
+[FindOne](https://roman-right.github.io/beanie/api/queries/`findone`) - find query instance
 
-### find\_many
+<a name="beanie.odm.documents.Document.find_many"></a>
+#### find\_many
 
 ```python
-@classmethod
-def find_many(
-	cls, 
-	*args: Union[Dict[str, Any], Mapping[str, Any], bool], 
-	skip: Optional[int] = None, 
-	limit: Optional[int] = None, 
-	sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, 
-	projection_model: Optional[Type[BaseModel]] = None, 
-	session: Optional[ClientSession] = None
-) -> FindMany
+ | @classmethod
+ | find_many(cls, *args: Union[Dict[str, Any], Mapping[str, Any], bool], *, skip: Optional[int] = None, limit: Optional[int] = None, sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, projection_model: Optional[Type[BaseModel]] = None, session: Optional[ClientSession] = None) -> FindMany
 ```
 
 Find many documents by criteria.
-Returns [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query object
+Returns [FindMany](https://roman-right.github.io/beanie/api/queries/`findmany`) query object
 
 **Arguments**:
 
@@ -175,37 +150,24 @@ for this query.
 
 **Returns**:
 
-[FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
+[FindMany](https://roman-right.github.io/beanie/api/queries/`findmany`) - query instance
 
-### find
+<a name="beanie.odm.documents.Document.find"></a>
+#### find
 
 ```python
-@classmethod
-def find(
-	cls, 
-	*args: Union[Dict[str, Any], Mapping[str, Any], bool], 
-	skip: Optional[int] = None, 
-	limit: Optional[int] = None, 
-	sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, 
-	projection_model: Optional[Type[BaseModel]] = None, 
-	session: Optional[ClientSession] = None
-) -> FindMany
+ | @classmethod
+ | find(cls, *args: Union[Dict[str, Any], Mapping[str, Any], bool], *, skip: Optional[int] = None, limit: Optional[int] = None, sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, projection_model: Optional[Type[BaseModel]] = None, session: Optional[ClientSession] = None) -> FindMany
 ```
 
 The same as find_many
 
-### find\_all
+<a name="beanie.odm.documents.Document.find_all"></a>
+#### find\_all
 
 ```python
-@classmethod
-def find_all(
-	cls, 
-	skip: Optional[int] = None, 
-	limit: Optional[int] = None, 
-	sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, 
-	projection_model: Optional[Type[BaseModel]] = None, 
-	session: Optional[ClientSession] = None
-) -> FindMany
+ | @classmethod
+ | find_all(cls, skip: Optional[int] = None, limit: Optional[int] = None, sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, projection_model: Optional[Type[BaseModel]] = None, session: Optional[ClientSession] = None) -> FindMany
 ```
 
 Get all the documents
@@ -222,31 +184,23 @@ for this query.
 
 **Returns**:
 
-[FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
+[FindMany](https://roman-right.github.io/beanie/api/queries/`findmany`) - query instance
 
-### all
+<a name="beanie.odm.documents.Document.all"></a>
+#### all
 
 ```python
-@classmethod
-def all(
-	cls, 
-	skip: Optional[int] = None, 
-	limit: Optional[int] = None, 
-	sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, 
-	projection_model: Optional[Type[BaseModel]] = None, 
-	session: Optional[ClientSession] = None
-) -> FindMany
+ | @classmethod
+ | all(cls, skip: Optional[int] = None, limit: Optional[int] = None, sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, projection_model: Optional[Type[BaseModel]] = None, session: Optional[ClientSession] = None) -> FindMany
 ```
 
 the same as find_all
 
-### replace
+<a name="beanie.odm.documents.Document.replace"></a>
+#### replace
 
 ```python
-async def replace(
-	self, 
-	session: Optional[ClientSession] = None
-) -> DocType
+ | async replace(session: Optional[ClientSession] = None) -> DocType
 ```
 
 Fully update the document in the database
@@ -259,15 +213,29 @@ Fully update the document in the database
 
 None
 
-### replace\_many
+<a name="beanie.odm.documents.Document.save"></a>
+#### save
 
 ```python
-@classmethod
-async def replace_many(
-	cls: Type[DocType], 
-	documents: List[DocType], 
-	session: Optional[ClientSession] = None
-) -> None
+ | async save(session: Optional[ClientSession] = None) -> DocType
+```
+
+Update an existing model in the database or insert it if it does not yet exist.
+
+**Arguments**:
+
+- `session`: Optional[ClientSession] - pymongo session.
+
+**Returns**:
+
+None
+
+<a name="beanie.odm.documents.Document.replace_many"></a>
+#### replace\_many
+
+```python
+ | @classmethod
+ | async replace_many(cls: Type[DocType], documents: List[DocType], session: Optional[ClientSession] = None) -> None
 ```
 
 Replace list of documents
@@ -281,14 +249,11 @@ Replace list of documents
 
 None
 
-### update
+<a name="beanie.odm.documents.Document.update"></a>
+#### update
 
 ```python
-async def update(
-	self, 
-	*args, 
-	session: Optional[ClientSession] = None
-) -> None
+ | async update(*args, *, session: Optional[ClientSession] = None) -> None
 ```
 
 Partially update the document in the database
@@ -302,15 +267,12 @@ Partially update the document in the database
 
 None
 
-### update\_all
+<a name="beanie.odm.documents.Document.update_all"></a>
+#### update\_all
 
 ```python
-@classmethod
-def update_all(
-	cls, 
-	*args: Union[dict, Mapping], 
-	session: Optional[ClientSession] = None
-) -> UpdateMany
+ | @classmethod
+ | update_all(cls, *args: Union[dict, Mapping], *, session: Optional[ClientSession] = None) -> UpdateMany
 ```
 
 Partially update all the documents
@@ -324,13 +286,11 @@ Partially update all the documents
 
 UpdateMany query
 
-### delete
+<a name="beanie.odm.documents.Document.delete"></a>
+#### delete
 
 ```python
-async def delete(
-	self, 
-	session: Optional[ClientSession] = None
-) -> DeleteResult
+ | async delete(session: Optional[ClientSession] = None) -> DeleteResult
 ```
 
 Delete the document
@@ -343,14 +303,12 @@ Delete the document
 
 DeleteResult - pymongo DeleteResult instance.
 
-### delete\_all
+<a name="beanie.odm.documents.Document.delete_all"></a>
+#### delete\_all
 
 ```python
-@classmethod
-async def delete_all(
-	cls, 
-	session: Optional[ClientSession] = None
-) -> DeleteResult
+ | @classmethod
+ | async delete_all(cls, session: Optional[ClientSession] = None) -> DeleteResult
 ```
 
 Delete all the documents
@@ -363,20 +321,16 @@ Delete all the documents
 
 DeleteResult - pymongo DeleteResult instance.
 
-### aggregate
+<a name="beanie.odm.documents.Document.aggregate"></a>
+#### aggregate
 
 ```python
-@classmethod
-def aggregate(
-	cls, 
-	aggregation_pipeline: list, 
-	projection_model: Type[BaseModel] = None, 
-	session: Optional[ClientSession] = None
-) -> AggregationQuery
+ | @classmethod
+ | aggregate(cls, aggregation_pipeline: list, projection_model: Type[BaseModel] = None, session: Optional[ClientSession] = None) -> AggregationQuery
 ```
 
 Aggregate over collection.
-Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) query object
+Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/`aggregationquery`) query object
 
 **Arguments**:
 
@@ -386,15 +340,14 @@ Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#agg
 
 **Returns**:
 
-[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
+[AggregationQuery](https://roman-right.github.io/beanie/api/queries/`aggregationquery`)
 
-### count
+<a name="beanie.odm.documents.Document.count"></a>
+#### count
 
 ```python
-@classmethod
-async def count(
-	cls
-) -> int
+ | @classmethod
+ | async count(cls) -> int
 ```
 
 Number of documents in the collections
@@ -404,15 +357,12 @@ The same as find_all().count()
 
 int
 
-### init\_collection
+<a name="beanie.odm.documents.Document.init_collection"></a>
+#### init\_collection
 
 ```python
-@classmethod
-async def init_collection(
-	cls, 
-	database: AsyncIOMotorDatabase, 
-	allow_index_dropping: bool
-) -> None
+ | @classmethod
+ | async init_collection(cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool) -> None
 ```
 
 Internal CollectionMeta class creator
@@ -426,13 +376,12 @@ Internal CollectionMeta class creator
 
 None
 
-### get\_motor\_collection
+<a name="beanie.odm.documents.Document.get_motor_collection"></a>
+#### get\_motor\_collection
 
 ```python
-@classmethod
-def get_motor_collection(
-	cls
-) -> AsyncIOMotorCollection
+ | @classmethod
+ | get_motor_collection(cls) -> AsyncIOMotorCollection
 ```
 
 Get Motor Collection to access low level control
@@ -441,14 +390,12 @@ Get Motor Collection to access low level control
 
 AsyncIOMotorCollection
 
-### inspect\_collection
+<a name="beanie.odm.documents.Document.inspect_collection"></a>
+#### inspect\_collection
 
 ```python
-@classmethod
-async def inspect_collection(
-	cls, 
-	session: Optional[ClientSession] = None
-) -> InspectionResult
+ | @classmethod
+ | async inspect_collection(cls, session: Optional[ClientSession] = None) -> InspectionResult
 ```
 
 Check, if documents, stored in the MongoDB collection

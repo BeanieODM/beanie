@@ -1,6 +1,8 @@
-## beanie.odm.operators.find.comparison
+<a name="beanie.odm.operators.find.comparison"></a>
+# beanie.odm.operators.find.comparison
 
-## Eq
+<a name="beanie.odm.operators.find.comparison.Eq"></a>
+## Eq Objects
 
 ```python
 class Eq(BaseFindComparisonOperator)
@@ -27,7 +29,8 @@ Eq(Product.price, 2)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/eq/>
 
-## GT
+<a name="beanie.odm.operators.find.comparison.GT"></a>
+## GT Objects
 
 ```python
 class GT(BaseFindComparisonOperator)
@@ -54,7 +57,8 @@ GT(Product.price, 2)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/gt/>
 
-## GTE
+<a name="beanie.odm.operators.find.comparison.GTE"></a>
+## GTE Objects
 
 ```python
 class GTE(BaseFindComparisonOperator)
@@ -81,7 +85,8 @@ GTE(Product.price, 2)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/gte/>
 
-## In
+<a name="beanie.odm.operators.find.comparison.In"></a>
+## In Objects
 
 ```python
 class In(BaseFindComparisonOperator)
@@ -108,7 +113,8 @@ In(Product.price, [2, 3, 4])
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/in/>
 
-## NotIn
+<a name="beanie.odm.operators.find.comparison.NotIn"></a>
+## NotIn Objects
 
 ```python
 class NotIn(BaseFindComparisonOperator)
@@ -135,7 +141,8 @@ NotIn(Product.price, [2, 3, 4])
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/nin/>
 
-## LT
+<a name="beanie.odm.operators.find.comparison.LT"></a>
+## LT Objects
 
 ```python
 class LT(BaseFindComparisonOperator)
@@ -162,7 +169,8 @@ LT(Product.price, 2)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/lt/>
 
-## LTE
+<a name="beanie.odm.operators.find.comparison.LTE"></a>
+## LTE Objects
 
 ```python
 class LTE(BaseFindComparisonOperator)
@@ -189,7 +197,8 @@ LTE(Product.price, 2)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/lte/>
 
-## NE
+<a name="beanie.odm.operators.find.comparison.NE"></a>
+## NE Objects
 
 ```python
 class NE(BaseFindComparisonOperator)
@@ -216,9 +225,11 @@ NE(Product.price, 2)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/ne/>
 
-## beanie.odm.operators.find.logical
+<a name="beanie.odm.operators.find.logical"></a>
+# beanie.odm.operators.find.logical
 
-## Or
+<a name="beanie.odm.operators.find.logical.Or"></a>
+## Or Objects
 
 ```python
 class Or(LogicalOperatorForListOfExpressions)
@@ -246,7 +257,8 @@ Or({Product.price<10}, {Product.category=="Sweets"})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/or/>
 
-## And
+<a name="beanie.odm.operators.find.logical.And"></a>
+## And Objects
 
 ```python
 class And(LogicalOperatorForListOfExpressions)
@@ -274,7 +286,8 @@ And({Product.price<10}, {Product.category=="Sweets"})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/and/>
 
-## Nor
+<a name="beanie.odm.operators.find.logical.Nor"></a>
+## Nor Objects
 
 ```python
 class Nor(BaseFindLogicalOperator)
@@ -302,7 +315,8 @@ Nor({Product.price<10}, {Product.category=="Sweets"})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/nor/>
 
-## Not
+<a name="beanie.odm.operators.find.logical.Not"></a>
+## Not Objects
 
 ```python
 class Not(BaseFindLogicalOperator)
@@ -330,9 +344,11 @@ Not({Product.price<10})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/not/>
 
-## beanie.odm.operators.find.element
+<a name="beanie.odm.operators.find.element"></a>
+# beanie.odm.operators.find.element
 
-## Exists
+<a name="beanie.odm.operators.find.element.Exists"></a>
+## Exists Objects
 
 ```python
 class Exists(BaseFindElementOperator)
@@ -359,7 +375,8 @@ Exists(Product.price, True)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/exists/>
 
-## Type
+<a name="beanie.odm.operators.find.element.Type"></a>
+## Type Objects
 
 ```python
 class Type(BaseFindElementOperator)
@@ -386,9 +403,11 @@ Type(Product.price, "decimal")
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/type/>
 
-## beanie.odm.operators.find.evaluation
+<a name="beanie.odm.operators.find.evaluation"></a>
+# beanie.odm.operators.find.evaluation
 
-## Expr
+<a name="beanie.odm.operators.find.evaluation.Expr"></a>
+## Expr Objects
 
 ```python
 class Expr(BaseFindEvaluationOperator)
@@ -416,7 +435,8 @@ Expr({"$gt": [ "$one" , "$two" ]})
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/expr/>
 
-## JsonSchema
+<a name="beanie.odm.operators.find.evaluation.JsonSchema"></a>
+## JsonSchema Objects
 
 ```python
 class JsonSchema(BaseFindEvaluationOperator)
@@ -427,7 +447,8 @@ class JsonSchema(BaseFindEvaluationOperator)
 MongoDB doc:
 <https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/>
 
-## Mod
+<a name="beanie.odm.operators.find.evaluation.Mod"></a>
+## Mod Objects
 
 ```python
 class Mod(BaseFindEvaluationOperator)
@@ -454,7 +475,8 @@ Mod(Sample.one, 4, 0)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/mod/>
 
-## RegEx
+<a name="beanie.odm.operators.find.evaluation.RegEx"></a>
+## RegEx Objects
 
 ```python
 class RegEx(BaseFindEvaluationOperator)
@@ -465,7 +487,8 @@ class RegEx(BaseFindEvaluationOperator)
 MongoDB doc:
 <https://docs.mongodb.com/manual/reference/operator/query/regex/>
 
-## Text
+<a name="beanie.odm.operators.find.evaluation.Text"></a>
+## Text Objects
 
 ```python
 class Text(BaseFindEvaluationOperator)
@@ -498,16 +521,11 @@ Text("coffee")
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/text/>
 
-### \_\_init\_\_
+<a name="beanie.odm.operators.find.evaluation.Text.__init__"></a>
+#### \_\_init\_\_
 
 ```python
-def __init__(
-	self, 
-	search: str, 
-	language: Optional[str] = None, 
-	case_sensitive: bool = False, 
-	diacritic_sensitive: bool = False
-)
+ | __init__(search: str, language: Optional[str] = None, case_sensitive: bool = False, diacritic_sensitive: bool = False)
 ```
 
 **Arguments**:
@@ -517,7 +535,8 @@ def __init__(
 - `case_sensitive`: bool = False
 - `diacritic_sensitive`: bool = False
 
-## Where
+<a name="beanie.odm.operators.find.evaluation.Where"></a>
+## Where Objects
 
 ```python
 class Where(BaseFindEvaluationOperator)
@@ -528,9 +547,11 @@ class Where(BaseFindEvaluationOperator)
 MongoDB doc:
 <https://docs.mongodb.com/manual/reference/operator/query/where/>
 
-## beanie.odm.operators.find.geospatial
+<a name="beanie.odm.operators.find.geospatial"></a>
+# beanie.odm.operators.find.geospatial
 
-## GeoIntersects
+<a name="beanie.odm.operators.find.geospatial.GeoIntersects"></a>
+## GeoIntersects Objects
 
 ```python
 class GeoIntersects(BaseFindGeospatialOperator)
@@ -576,7 +597,8 @@ GeoIntersects(Place.geo, "Polygon", [[0,0], [1,1], [3,3]])
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/geoIntersects/>
 
-## GeoWithin
+<a name="beanie.odm.operators.find.geospatial.GeoWithin"></a>
+## GeoWithin Objects
 
 ```python
 class GeoWithin(BaseFindGeospatialOperator)
@@ -622,7 +644,8 @@ GeoWithin(Place.geo, "Polygon", [[0,0], [1,1], [3,3]])
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/geoWithin/>
 
-## Near
+<a name="beanie.odm.operators.find.geospatial.Near"></a>
+## Near Objects
 
 ```python
 class Near(BaseFindGeospatialOperator)
@@ -669,7 +692,8 @@ Near(Place.geo, 1.2345, 2.3456, min_distance=500)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/near/>
 
-## NearSphere
+<a name="beanie.odm.operators.find.geospatial.NearSphere"></a>
+## NearSphere Objects
 
 ```python
 class NearSphere(Near)
@@ -716,9 +740,11 @@ NearSphere(Place.geo, 1.2345, 2.3456, min_distance=500)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/nearSphere/>
 
-## beanie.odm.operators.find.array
+<a name="beanie.odm.operators.find.array"></a>
+# beanie.odm.operators.find.array
 
-## All
+<a name="beanie.odm.operators.find.array.All"></a>
+## All Objects
 
 ```python
 class All(BaseFindArrayOperator)
@@ -745,7 +771,8 @@ All(Sample.results, [80, 85])
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/all>
 
-## ElemMatch
+<a name="beanie.odm.operators.find.array.ElemMatch"></a>
+## ElemMatch Objects
 
 ```python
 class ElemMatch(BaseFindArrayOperator)
@@ -772,7 +799,8 @@ ElemMatch(Sample.results, [80, 85])
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/elemMatch/>
 
-## Size
+<a name="beanie.odm.operators.find.array.Size"></a>
+## Size Objects
 
 ```python
 class Size(BaseFindArrayOperator)
@@ -799,9 +827,11 @@ Size(Sample.results, 2)
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/size/>
 
-## beanie.odm.operators.find.bitwise
+<a name="beanie.odm.operators.find.bitwise"></a>
+# beanie.odm.operators.find.bitwise
 
-## BitsAllClear
+<a name="beanie.odm.operators.find.bitwise.BitsAllClear"></a>
+## BitsAllClear Objects
 
 ```python
 class BitsAllClear(BaseFindBitwiseOperator)
@@ -812,7 +842,8 @@ class BitsAllClear(BaseFindBitwiseOperator)
 MongoDB doc:
 <https://docs.mongodb.com/manual/reference/operator/query/bitsAllClear/>
 
-## BitsAllSet
+<a name="beanie.odm.operators.find.bitwise.BitsAllSet"></a>
+## BitsAllSet Objects
 
 ```python
 class BitsAllSet(BaseFindBitwiseOperator)
@@ -823,7 +854,8 @@ class BitsAllSet(BaseFindBitwiseOperator)
 MongoDB doc:
 https://docs.mongodb.com/manual/reference/operator/query/bitsAllSet/
 
-## BitsAnyClear
+<a name="beanie.odm.operators.find.bitwise.BitsAnyClear"></a>
+## BitsAnyClear Objects
 
 ```python
 class BitsAnyClear(BaseFindBitwiseOperator)
@@ -834,7 +866,8 @@ class BitsAnyClear(BaseFindBitwiseOperator)
 MongoDB doc:
 https://docs.mongodb.com/manual/reference/operator/query/bitsAnyClear/
 
-## BitsAnySet
+<a name="beanie.odm.operators.find.bitwise.BitsAnySet"></a>
+## BitsAnySet Objects
 
 ```python
 class BitsAnySet(BaseFindBitwiseOperator)

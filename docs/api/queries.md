@@ -1,6 +1,8 @@
-## beanie.odm.queries.find
+<a name="beanie.odm.queries.find"></a>
+# beanie.odm.queries.find
 
-## FindQuery
+<a name="beanie.odm.queries.find.FindQuery"></a>
+## FindQuery Objects
 
 ```python
 class FindQuery(UpdateMethods,  SessionMethods)
@@ -10,17 +12,14 @@ Find Query base class
 
 Inherited from:
 
-- [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods)
-- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
+- [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/`sessionmethods`)
+- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/`aggregatemethods`)
 
-### update
+<a name="beanie.odm.queries.find.FindQuery.update"></a>
+#### update
 
 ```python
-def update(
-	self, 
-	*args: Union[Dict[str, Any], Mapping[str, Any]], 
-	session: Optional[ClientSession] = None
-)
+ | update(*args: Union[Dict[str, Any], Mapping[str, Any]], *, session: Optional[ClientSession] = None)
 ```
 
 Create Update with modifications query
@@ -35,13 +34,11 @@ and provide search criteria there
 
 UpdateMany query
 
-### delete
+<a name="beanie.odm.queries.find.FindQuery.delete"></a>
+#### delete
 
 ```python
-def delete(
-	self, 
-	session: Optional[ClientSession] = None
-) -> Union[DeleteOne, DeleteMany]
+ | delete(session: Optional[ClientSession] = None) -> Union[DeleteOne, DeleteMany]
 ```
 
 Provide search criteria to the Delete query
@@ -54,13 +51,11 @@ Provide search criteria to the Delete query
 
 Union[DeleteOne, DeleteMany]
 
-### project
+<a name="beanie.odm.queries.find.FindQuery.project"></a>
+#### project
 
 ```python
-def project(
-	self: FindQueryType, 
-	projection_model: Optional[Type[BaseModel]]
-) -> FindQueryType
+ | project(projection_model: Optional[Type[BaseModel]]) -> FindQueryType
 ```
 
 Apply projection parameter
@@ -73,7 +68,8 @@ Apply projection parameter
 
 self
 
-## FindMany
+<a name="beanie.odm.queries.find.FindMany"></a>
+## FindMany Objects
 
 ```python
 class FindMany(FindQuery,  BaseCursorQuery,  AggregateMethods)
@@ -83,22 +79,15 @@ Find Many query class
 
 Inherited from:
 
-- [FindQuery](https://roman-right.github.io/beanie/api/queries/#findquery)
-- [BaseCursorQuery](https://roman-right.github.io/beanie/api/queries/#basecursorquery) - async generator
-- [AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
+- [FindQuery](https://roman-right.github.io/beanie/api/queries/`findquery`)
+- [BaseCursorQuery](https://roman-right.github.io/beanie/api/queries/`basecursorquery`) - async generator
+- [AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/`aggregatemethods`)
 
-### find\_many
+<a name="beanie.odm.queries.find.FindMany.find_many"></a>
+#### find\_many
 
 ```python
-def find_many(
-	self, 
-	*args: Union[Dict[str, Any], Mapping[str, Any], bool], 
-	skip: Optional[int] = None, 
-	limit: Optional[int] = None, 
-	sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, 
-	projection_model: Optional[Type[BaseModel]] = None, 
-	session: Optional[ClientSession] = None
-) -> "FindMany"
+ | find_many(*args: Union[Dict[str, Any], Mapping[str, Any], bool], *, skip: Optional[int] = None, limit: Optional[int] = None, sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, projection_model: Optional[Type[BaseModel]] = None, session: Optional[ClientSession] = None) -> "FindMany"
 ```
 
 Find many documents by criteria
@@ -119,33 +108,24 @@ for this query.
 
 FindMany - query instance
 
-### find
+<a name="beanie.odm.queries.find.FindMany.find"></a>
+#### find
 
 ```python
-def find(
-	self, 
-	*args: Union[Dict[str, Any], Mapping[str, Any], bool], 
-	skip: Optional[int] = None, 
-	limit: Optional[int] = None, 
-	sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, 
-	projection_model: Optional[Type[BaseModel]] = None, 
-	session: Optional[ClientSession] = None
-) -> "FindMany"
+ | find(*args: Union[Dict[str, Any], Mapping[str, Any], bool], *, skip: Optional[int] = None, limit: Optional[int] = None, sort: Union[None, str, List[Tuple[str, SortDirection]]] = None, projection_model: Optional[Type[BaseModel]] = None, session: Optional[ClientSession] = None) -> "FindMany"
 ```
 
 The same as `find_many(...)`
 
-### sort
+<a name="beanie.odm.queries.find.FindMany.sort"></a>
+#### sort
 
 ```python
-def sort(
-	self, 
-	*args: Optional[
-            Union[
-                str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
-            ]
-        ]
-) -> "FindMany"
+ | sort(*args: Optional[
+ |             Union[
+ |                 str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
+ |             ]
+ |         ]) -> "FindMany"
 ```
 
 Add sort parameters
@@ -161,13 +141,11 @@ the sort order for this query.
 
 self
 
-### skip
+<a name="beanie.odm.queries.find.FindMany.skip"></a>
+#### skip
 
 ```python
-def skip(
-	self, 
-	n: Optional[int]
-) -> "FindMany"
+ | skip(n: Optional[int]) -> "FindMany"
 ```
 
 Set skip parameter
@@ -180,13 +158,11 @@ Set skip parameter
 
 self
 
-### limit
+<a name="beanie.odm.queries.find.FindMany.limit"></a>
+#### limit
 
 ```python
-def limit(
-	self, 
-	n: Optional[int]
-) -> "FindMany"
+ | limit(n: Optional[int]) -> "FindMany"
 ```
 
 Set limit parameter
@@ -199,18 +175,15 @@ Set limit parameter
 
 
 
-### update\_many
+<a name="beanie.odm.queries.find.FindMany.update_many"></a>
+#### update\_many
 
 ```python
-def update_many(
-	self, 
-	*args: Union[Dict[str, Any], Mapping[str, Any]], 
-	session: Optional[ClientSession] = None
-) -> UpdateMany
+ | update_many(*args: Union[Dict[str, Any], Mapping[str, Any]], *, session: Optional[ClientSession] = None) -> UpdateMany
 ```
 
 Provide search criteria to the
-[UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
+[UpdateMany](https://roman-right.github.io/beanie/api/queries/`updatemany`) query
 
 **Arguments**:
 
@@ -219,18 +192,16 @@ Provide search criteria to the
 
 **Returns**:
 
-[UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
+[UpdateMany](https://roman-right.github.io/beanie/api/queries/`updatemany`) query
 
-### delete\_many
+<a name="beanie.odm.queries.find.FindMany.delete_many"></a>
+#### delete\_many
 
 ```python
-def delete_many(
-	self, 
-	session: Optional[ClientSession] = None
-) -> DeleteMany
+ | delete_many(session: Optional[ClientSession] = None) -> DeleteMany
 ```
 
-Provide search criteria to the [DeleteMany](https://roman-right.github.io/beanie/api/queries/#deletemany) query
+Provide search criteria to the [DeleteMany](https://roman-right.github.io/beanie/api/queries/`deletemany`) query
 
 **Arguments**:
 
@@ -238,14 +209,13 @@ Provide search criteria to the [DeleteMany](https://roman-right.github.io/beanie
 
 **Returns**:
 
-[DeleteMany](https://roman-right.github.io/beanie/api/queries/#deletemany) query
+[DeleteMany](https://roman-right.github.io/beanie/api/queries/`deletemany`) query
 
-### count
+<a name="beanie.odm.queries.find.FindMany.count"></a>
+#### count
 
 ```python
-async def count(
-	self
-) -> int
+ | async count() -> int
 ```
 
 Number of found documents
@@ -254,18 +224,14 @@ Number of found documents
 
 int
 
-### aggregate
+<a name="beanie.odm.queries.find.FindMany.aggregate"></a>
+#### aggregate
 
 ```python
-def aggregate(
-	self, 
-	aggregation_pipeline: List[Any], 
-	projection_model: Optional[Type[BaseModel]] = None, 
-	session: Optional[ClientSession] = None
-) -> AggregationQuery
+ | aggregate(aggregation_pipeline: List[Any], projection_model: Optional[Type[BaseModel]] = None, session: Optional[ClientSession] = None) -> AggregationQuery
 ```
 
-Provide search criteria to the [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
+Provide search criteria to the [AggregationQuery](https://roman-right.github.io/beanie/api/queries/`aggregationquery`)
 
 **Arguments**:
 
@@ -276,9 +242,10 @@ Provide search criteria to the [AggregationQuery](https://roman-right.github.io/
 
 **Returns**:
 
-[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
+[AggregationQuery](https://roman-right.github.io/beanie/api/queries/`aggregationquery`)
 
-## FindOne
+<a name="beanie.odm.queries.find.FindOne"></a>
+## FindOne Objects
 
 ```python
 class FindOne(FindQuery)
@@ -288,17 +255,13 @@ Find One query class
 
 Inherited from:
 
-- [FindQuery](https://roman-right.github.io/beanie/api/queries/#findquery)
+- [FindQuery](https://roman-right.github.io/beanie/api/queries/`findquery`)
 
-### find\_one
+<a name="beanie.odm.queries.find.FindOne.find_one"></a>
+#### find\_one
 
 ```python
-def find_one(
-	self, 
-	*args: Union[Dict[str, Any], Mapping[str, Any], bool], 
-	projection_model: Optional[Type[BaseModel]] = None, 
-	session: Optional[ClientSession] = None
-) -> "FindOne"
+ | find_one(*args: Union[Dict[str, Any], Mapping[str, Any], bool], *, projection_model: Optional[Type[BaseModel]] = None, session: Optional[ClientSession] = None) -> "FindOne"
 ```
 
 Find one document by criteria
@@ -314,17 +277,14 @@ bool] - search criteria
 
 FindOne - query instance
 
-### update\_one
+<a name="beanie.odm.queries.find.FindOne.update_one"></a>
+#### update\_one
 
 ```python
-def update_one(
-	self, 
-	*args: Union[Dict[str, Any], Mapping[str, Any]], 
-	session: Optional[ClientSession] = None
-) -> UpdateOne
+ | update_one(*args: Union[Dict[str, Any], Mapping[str, Any]], *, session: Optional[ClientSession] = None) -> UpdateOne
 ```
 
-Create [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query using modifications and
+Create [UpdateOne](https://roman-right.github.io/beanie/api/queries/`updateone`) query using modifications and
 provide search criteria there
 
 **Arguments**:
@@ -334,18 +294,16 @@ provide search criteria there
 
 **Returns**:
 
-[UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query
+[UpdateOne](https://roman-right.github.io/beanie/api/queries/`updateone`) query
 
-### delete\_one
+<a name="beanie.odm.queries.find.FindOne.delete_one"></a>
+#### delete\_one
 
 ```python
-def delete_one(
-	self, 
-	session: Optional[ClientSession] = None
-) -> DeleteOne
+ | delete_one(session: Optional[ClientSession] = None) -> DeleteOne
 ```
 
-Provide search criteria to the [DeleteOne](https://roman-right.github.io/beanie/api/queries/#deleteone) query
+Provide search criteria to the [DeleteOne](https://roman-right.github.io/beanie/api/queries/`deleteone`) query
 
 **Arguments**:
 
@@ -353,16 +311,13 @@ Provide search criteria to the [DeleteOne](https://roman-right.github.io/beanie/
 
 **Returns**:
 
-[DeleteOne](https://roman-right.github.io/beanie/api/queries/#deleteone) query
+[DeleteOne](https://roman-right.github.io/beanie/api/queries/`deleteone`) query
 
-### replace\_one
+<a name="beanie.odm.queries.find.FindOne.replace_one"></a>
+#### replace\_one
 
 ```python
-async def replace_one(
-	self, 
-	document: "DocType", 
-	session: Optional[ClientSession] = None
-) -> UpdateResult
+ | async replace_one(document: "DocType", session: Optional[ClientSession] = None) -> UpdateResult
 ```
 
 Replace found document by provided
@@ -376,12 +331,11 @@ Replace found document by provided
 
 UpdateResult
 
-### \_\_await\_\_
+<a name="beanie.odm.queries.find.FindOne.__await__"></a>
+#### \_\_await\_\_
 
 ```python
-def __await__(
-	self
-)
+ | __await__()
 ```
 
 Run the query
@@ -390,9 +344,11 @@ Run the query
 
 BaseModel
 
-## beanie.odm.queries.update
+<a name="beanie.odm.queries.update"></a>
+# beanie.odm.queries.update
 
-## UpdateQuery
+<a name="beanie.odm.queries.update.UpdateQuery"></a>
+## UpdateQuery Objects
 
 ```python
 class UpdateQuery(UpdateMethods,  SessionMethods)
@@ -402,17 +358,14 @@ Update Query base class
 
 Inherited from:
 
-- [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods)
-- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
+- [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/`sessionmethods`)
+- [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/`aggregatemethods`)
 
-### update
+<a name="beanie.odm.queries.update.UpdateQuery.update"></a>
+#### update
 
 ```python
-def update(
-	self, 
-	*args: Union[Dict[str, Any], Mapping[str, Any]], 
-	session: Optional[ClientSession] = None
-) -> "UpdateQuery"
+ | update(*args: Union[Dict[str, Any], Mapping[str, Any]], *, session: Optional[ClientSession] = None) -> "UpdateQuery"
 ```
 
 Provide modifications to the update query. The same as `update()`
@@ -426,7 +379,8 @@ Provide modifications to the update query. The same as `update()`
 
 UpdateMany query
 
-## UpdateMany
+<a name="beanie.odm.queries.update.UpdateMany"></a>
+## UpdateMany Objects
 
 ```python
 class UpdateMany(UpdateQuery)
@@ -436,16 +390,13 @@ Update Many query class
 
 Inherited from:
 
-- [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
+- [UpdateQuery](https://roman-right.github.io/beanie/api/queries/`updatequery`)
 
-### update\_many
+<a name="beanie.odm.queries.update.UpdateMany.update_many"></a>
+#### update\_many
 
 ```python
-def update_many(
-	self, 
-	*args: Union[Dict[str, Any], Mapping[str, Any]], 
-	session: Optional[ClientSession] = None
-)
+ | update_many(*args: Union[Dict[str, Any], Mapping[str, Any]], *, session: Optional[ClientSession] = None)
 ```
 
 Provide modifications to the update query
@@ -459,12 +410,11 @@ Provide modifications to the update query
 
 UpdateMany query
 
-### \_\_await\_\_
+<a name="beanie.odm.queries.update.UpdateMany.__await__"></a>
+#### \_\_await\_\_
 
 ```python
-def __await__(
-	self
-) -> UpdateResult
+ | __await__() -> UpdateResult
 ```
 
 Run the query
@@ -473,7 +423,8 @@ Run the query
 
 
 
-## UpdateOne
+<a name="beanie.odm.queries.update.UpdateOne"></a>
+## UpdateOne Objects
 
 ```python
 class UpdateOne(UpdateQuery)
@@ -483,16 +434,13 @@ Update One query class
 
 Inherited from:
 
-- [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
+- [UpdateQuery](https://roman-right.github.io/beanie/api/queries/`updatequery`)
 
-### update\_one
+<a name="beanie.odm.queries.update.UpdateOne.update_one"></a>
+#### update\_one
 
 ```python
-def update_one(
-	self, 
-	*args: Union[Dict[str, Any], Mapping[str, Any]], 
-	session: Optional[ClientSession] = None
-)
+ | update_one(*args: Union[Dict[str, Any], Mapping[str, Any]], *, session: Optional[ClientSession] = None)
 ```
 
 Provide modifications to the update query. The same as `update()`
@@ -506,12 +454,11 @@ Provide modifications to the update query. The same as `update()`
 
 UpdateMany query
 
-### \_\_await\_\_
+<a name="beanie.odm.queries.update.UpdateOne.__await__"></a>
+#### \_\_await\_\_
 
 ```python
-def __await__(
-	self
-) -> UpdateResult
+ | __await__() -> UpdateResult
 ```
 
 Run the query
@@ -520,9 +467,11 @@ Run the query
 
 
 
-## beanie.odm.queries.delete
+<a name="beanie.odm.queries.delete"></a>
+# beanie.odm.queries.delete
 
-## DeleteQuery
+<a name="beanie.odm.queries.delete.DeleteQuery"></a>
+## DeleteQuery Objects
 
 ```python
 class DeleteQuery(SessionMethods)
@@ -530,18 +479,18 @@ class DeleteQuery(SessionMethods)
 
 Deletion Query
 
-## DeleteMany
+<a name="beanie.odm.queries.delete.DeleteMany"></a>
+## DeleteMany Objects
 
 ```python
 class DeleteMany(DeleteQuery)
 ```
 
-### \_\_await\_\_
+<a name="beanie.odm.queries.delete.DeleteMany.__await__"></a>
+#### \_\_await\_\_
 
 ```python
-def __await__(
-	self
-) -> DeleteResult
+ | __await__() -> DeleteResult
 ```
 
 Run the query
@@ -550,18 +499,18 @@ Run the query
 
 
 
-## DeleteOne
+<a name="beanie.odm.queries.delete.DeleteOne"></a>
+## DeleteOne Objects
 
 ```python
 class DeleteOne(DeleteQuery)
 ```
 
-### \_\_await\_\_
+<a name="beanie.odm.queries.delete.DeleteOne.__await__"></a>
+#### \_\_await\_\_
 
 ```python
-def __await__(
-	self
-) -> DeleteResult
+ | __await__() -> DeleteResult
 ```
 
 Run the query
@@ -570,9 +519,11 @@ Run the query
 
 
 
-## beanie.odm.queries.aggregation
+<a name="beanie.odm.queries.aggregation"></a>
+# beanie.odm.queries.aggregation
 
-## AggregationQuery
+<a name="beanie.odm.queries.aggregation.AggregationQuery"></a>
+## AggregationQuery Objects
 
 ```python
 class AggregationQuery(BaseCursorQuery,  SessionMethods)
@@ -582,12 +533,14 @@ Aggregation Query
 
 Inherited from:
 
-- [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods) - session methods
-- [BaseCursorQuery](https://roman-right.github.io/beanie/api/queries/#basecursorquery) - async generator
+- [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/`sessionmethods`) - session methods
+- [BaseCursorQuery](https://roman-right.github.io/beanie/api/queries/`basecursorquery`) - async generator
 
-## beanie.odm.queries.cursor
+<a name="beanie.odm.queries.cursor"></a>
+# beanie.odm.queries.cursor
 
-## BaseCursorQuery
+<a name="beanie.odm.queries.cursor.BaseCursorQuery"></a>
+## BaseCursorQuery Objects
 
 ```python
 class BaseCursorQuery()
@@ -596,13 +549,11 @@ class BaseCursorQuery()
 BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
 which parse result with model
 
-### to\_list
+<a name="beanie.odm.queries.cursor.BaseCursorQuery.to_list"></a>
+#### to\_list
 
 ```python
-async def to_list(
-	self, 
-	length: Optional[int] = None
-) -> Union[List[BaseModel], List[Dict[str, Any]]]
+ | async to_list(length: Optional[int] = None) -> Union[List[BaseModel], List[Dict[str, Any]]]
 ```
 
 Get list of documents
