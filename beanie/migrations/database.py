@@ -2,14 +2,15 @@ import motor
 
 
 class DBHandler:
-    data = {}
+    @classmethod
+    def set_db(cls, uri, db_name):
+        cls.client = motor.motor_asyncio.AsyncIOMotorClient(uri)
+        cls.database = cls.client[db_name]
 
-    def set_db(self, uri, db_name):
-        self.data["client"] = motor.motor_asyncio.AsyncIOMotorClient(uri)
-        self.data["database"] = self.data["client"][db_name]
+    @classmethod
+    def get_cli(cls):
+        return cls.client if hasattr(cls, "client") else None
 
-    def get_cli(self):
-        return self.data.get("client")
-
-    def get_db(self):
-        return self.data.get("database")
+    @classmethod
+    def get_db(cls):
+        return cls.database if hasattr(cls, "database") else None

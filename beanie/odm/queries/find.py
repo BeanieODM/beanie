@@ -9,6 +9,7 @@ from typing import (
     TypeVar,
     Dict,
     Any,
+    cast,
 )
 
 from beanie.exceptions import DocumentNotFound
@@ -61,9 +62,7 @@ class FindQuery(UpdateMethods, SessionMethods):
 
     def __init__(self, document_model: Type["DocType"]):
         self.document_model: Type["DocType"] = document_model
-        self.find_expressions: List[
-            Union[Dict[str, Any], Mapping[str, Any]]
-        ] = []
+        self.find_expressions: List[Mapping[str, Any]] = []
         self.projection_model: Type[BaseModel] = self.document_model
         self.session = None
 
@@ -74,15 +73,13 @@ class FindQuery(UpdateMethods, SessionMethods):
             return {}
 
     def update(
-        self,
-        *args: Union[Dict[str, Any], Mapping[str, Any]],
-        session: Optional[ClientSession] = None
+        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
     ):
         """
         Create Update with modifications query
         and provide search criteria there
 
-        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param args: *Mapping[str,Any] - the modifications to apply.
         :param session: Optional[ClientSession]
         :return: UpdateMany query
         """
@@ -152,7 +149,7 @@ class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
 
     def find_many(
         self,
-        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
+        *args: Mapping[str, Any],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
@@ -162,8 +159,7 @@ class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
         """
         Find many documents by criteria
 
-        :param args: *Union[Dict[str, Any],
-        Mapping[str, Any], bool] - search criteria
+        :param args: *Mapping[str, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
@@ -183,7 +179,7 @@ class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
 
     def find(
         self,
-        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
+        *args: Mapping[str, Any],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
@@ -263,15 +259,13 @@ class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
         return self
 
     def update_many(
-        self,
-        *args: Union[Dict[str, Any], Mapping[str, Any]],
-        session: Optional[ClientSession] = None
+        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
     ) -> UpdateMany:
         """
         Provide search criteria to the
         [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
 
-        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param args: *Mappingp[str,Any] - the modifications to apply.
         :param session: Optional[ClientSession]
         :return: [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
         """
@@ -286,7 +280,10 @@ class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
         :param session:
         :return: [DeleteMany](https://roman-right.github.io/beanie/api/queries/#deletemany) query
         """
-        return self.delete(session=session)
+        # We need to cast here to tell mypy that we are sure about the type.
+        # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case
+        # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
+        return cast(DeleteMany, self.delete(session=session))
 
     async def count(self) -> int:
         """
@@ -348,15 +345,14 @@ class FindOne(FindQuery):
 
     def find_one(
         self,
-        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
+        *args: Mapping[str, Any],
         projection_model: Optional[Type[BaseModel]] = None,
         session: Optional[ClientSession] = None
     ) -> "FindOne":
         """
         Find one document by criteria
 
-        :param args: *Union[Dict[str, Any], Mapping[str, Any],
-        bool] - search criteria
+        :param args: *Mapping[str, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :return: FindOne - query instance
@@ -367,14 +363,12 @@ class FindOne(FindQuery):
         return self
 
     def update_one(
-        self,
-        *args: Union[Dict[str, Any], Mapping[str, Any]],
-        session: Optional[ClientSession] = None
+        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
     ) -> UpdateOne:
         """
         Create [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query using modifications and
         provide search criteria there
-        :param args: *Union[dict, Mapping] - the modifications to apply
+        :param args: *Mapping[str,Any] - the modifications to apply
         :param session: Optional[ClientSession] - PyMongo sessions
         :return: [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query
         """
@@ -386,7 +380,10 @@ class FindOne(FindQuery):
         :param session: Optional[ClientSession] - PyMongo sessions
         :return: [DeleteOne](https://roman-right.github.io/beanie/api/queries/#deleteone) query
         """
-        return self.delete(session=session)
+        # We need to cast here to tell mypy that we are sure about the type.
+        # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case
+        # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
+        return cast(DeleteOne, self.delete(session=session))
 
     async def replace_one(
         self,

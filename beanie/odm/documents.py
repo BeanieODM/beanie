@@ -74,7 +74,11 @@ class Document(BaseModel, UpdateMethods):
         """
         if self.id is None:
             raise ValueError("Document has no id")
-        new_instance: Document = await self.get(self.id)
+        new_instance: Optional[Document] = await self.get(self.id)
+        if new_instance is None:
+            raise DocumentNotFound(
+                "Can not sync, document not in database anymore."
+            )
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
 
@@ -146,7 +150,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
     ) -> Optional[DocType]:
         """
-        Get document by id
+        Get document by id, returns None if document does not exist
 
         :param document_id: PydanticObjectId - document id
         :param session: Optional[ClientSession] - pymongo session
@@ -157,16 +161,16 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find_one(
         cls,
-        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
+        *args: Mapping[str, Any],
         projection_model: Optional[Type[BaseModel]] = None,
         session: Optional[ClientSession] = None,
     ) -> FindOne:
         """
         Find one document by criteria.
-        Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object
+        Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object.
+        When awaited this will either return a document or None if no document exists for the search criteria.
 
-        :param args: *Union[Dict[str, Any],
-        Mapping[str, Any], bool] - search criteria
+        :param args: *Mapping[str, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session instance
         :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
@@ -180,7 +184,7 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find_many(
         cls,
-        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
+        *args: Mapping[str, Any],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
@@ -191,8 +195,7 @@ class Document(BaseModel, UpdateMethods):
         Find many documents by criteria.
         Returns [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query object
 
-        :param args: *Union[Dict[str, Any],
-        Mapping[str, Any], bool] - search criteria
+        :param args: *Mapping[str, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
@@ -214,7 +217,7 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find(
         cls,
-        *args: Union[Dict[str, Any], Mapping[str, Any], bool],
+        *args: Mapping[str, Any],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
@@ -284,13 +287,13 @@ class Document(BaseModel, UpdateMethods):
         )
 
     async def replace(
-        self, session: Optional[ClientSession] = None
+        self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:
         """
         Fully update the document in the database
 
         :param session: Optional[ClientSession] - pymongo session.
-        :return: None
+        :return: self
         """
         if self.id is None:
             raise ValueError("Document must have an id")
@@ -300,7 +303,9 @@ class Document(BaseModel, UpdateMethods):
         )
         return self
 
-    async def save(self, session: Optional[ClientSession] = None) -> DocType:
+    async def save(
+        self: DocType, session: Optional[ClientSession] = None
+    ) -> DocType:
         """
         Update an existing model in the database or insert it if it does not yet exist.
 

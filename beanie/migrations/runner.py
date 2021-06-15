@@ -1,4 +1,5 @@
 import importlib.util
+import importlib.abc
 import logging
 from pathlib import Path
 from typing import Type, Optional
@@ -137,8 +138,8 @@ class MigrationNode:
             if isinstance(getattr(cls, migration), BaseMigrationController)
         ]
 
-        client = DBHandler().get_cli()
-        db = DBHandler().get_db()
+        client = DBHandler.get_cli()
+        db = DBHandler.get_db()
 
         async with await client.start_session() as s:
             async with s.start_transaction():
@@ -165,11 +166,11 @@ class MigrationNode:
         """
         logger.info("Building migration list")
         names = []
-        for module in path.glob("*.py"):
-            names.append(module.name)
+        for modulepath in path.glob("*.py"):
+            names.append(modulepath.name)
         names.sort()
 
-        db = DBHandler().get_db()
+        db = DBHandler.get_db()
         await init_beanie(database=db, document_models=[MigrationLog])
         current_migration = await MigrationLog.find_one({"is_current": True})
 
@@ -181,6 +182,8 @@ class MigrationNode:
                 (path / name).stem, (path / name).absolute()
             )
             module = importlib.util.module_from_spec(spec)
+            # Comford mypy that the loader has been returned correctly
+            assert isinstance(spec.loader, importlib.abc.Loader)
             spec.loader.exec_module(module)
             forward_class = getattr(module, "Forward", None)
             backward_class = getattr(module, "Backward", None)

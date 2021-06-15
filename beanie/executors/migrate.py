@@ -73,7 +73,7 @@ def migrations():
 
 
 async def run_migrate(settings: MigrationSettings):
-    DBHandler().set_db(settings.connection_uri, settings.database_name)
+    DBHandler.set_db(settings.connection_uri, settings.database_name)
     root = await MigrationNode.build(settings.path)
     mode = RunningMode(
         direction=settings.direction, distance=settings.distance
