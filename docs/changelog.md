@@ -2,11 +2,27 @@
 
 Beanie project changes
 
+
+## [1.1.3] - 2021-06-15
+
+### Added
+
+- MyPy to pre-commit
+
+### Fixed
+
+- Typing errors
+
+### Implementation
+
+- Author - [Joran van Apeldoorn](https://github.com/jorants)
+- PR - <https://github.com/roman-right/beanie/pull/54>
+
 ## [1.1.2] - 2021-06-14
 
 ### Changed
 
-- Skip migration test when transactions not avalible
+- Skip migration test when transactions not available
 
 ### Implementation
 
@@ -258,3 +274,5 @@ Beanie project changes
 [1.1.1]: https://pypi.org/project/beanie/1.1.1
 
 [1.1.2]: https://pypi.org/project/beanie/1.1.2
+
+[1.1.3]: https://pypi.org/project/beanie/1.1.3
