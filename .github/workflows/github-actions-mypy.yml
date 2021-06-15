@@ -15,6 +15,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: mypy install
-        run: pip3 install mypy
+        run: pip3 install mypy==0.812
       - name: mypy
         run: mypy beanie/
