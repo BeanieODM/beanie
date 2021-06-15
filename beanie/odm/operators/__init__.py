@@ -11,7 +11,7 @@ class BaseOperator(Mapping):
 
     @property
     @abstractmethod
-    def query(self) -> Union[Dict[str, Any], MappingType[str, Any]]:
+    def query(self) -> MappingType[str, Any]:
         ...
 
     def __getitem__(self, item: str):

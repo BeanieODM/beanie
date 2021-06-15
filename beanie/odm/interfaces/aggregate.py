@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Type, Any, Optional, Union, List, Dict
+from typing import Type, Any, Optional, Union, List, Dict, cast
 
 from pydantic import BaseModel
 from pymongo.client_session import ClientSession
@@ -51,9 +51,13 @@ class AggregateMethods:
             {"$project": {"_id": 0, "sum": 1}},
         ]
 
-        result: List[Dict[str, Any]] = await self.aggregate(
-            aggregation_pipeline=pipeline, session=session
-        ).to_list()
+        # As we did not supply a projection we can safely cast the type (hinting to mypy that we know the type)
+        result: List[Dict[str, Any]] = cast(
+            List[Dict[str, Any]],
+            await self.aggregate(
+                aggregation_pipeline=pipeline, session=session
+            ).to_list(),
+        )
         return result[0]["sum"]
 
     async def avg(
@@ -82,9 +86,12 @@ class AggregateMethods:
             {"$project": {"_id": 0, "avg": 1}},
         ]
 
-        result: List[Dict[str, Any]] = await self.aggregate(
-            aggregation_pipeline=pipeline, session=session
-        ).to_list()
+        result: List[Dict[str, Any]] = cast(
+            List[Dict[str, Any]],
+            await self.aggregate(
+                aggregation_pipeline=pipeline, session=session
+            ).to_list(),
+        )
         return result[0]["avg"]
 
     async def max(
@@ -115,9 +122,12 @@ class AggregateMethods:
             {"$project": {"_id": 0, "max": 1}},
         ]
 
-        result: List[Dict[str, Any]] = await self.aggregate(
-            aggregation_pipeline=pipeline, session=session
-        ).to_list()
+        result: List[Dict[str, Any]] = cast(
+            List[Dict[str, Any]],
+            await self.aggregate(
+                aggregation_pipeline=pipeline, session=session
+            ).to_list(),
+        )
         return result[0]["max"]
 
     async def min(
@@ -148,7 +158,10 @@ class AggregateMethods:
             {"$project": {"_id": 0, "min": 1}},
         ]
 
-        result: List[Dict[str, Any]] = await self.aggregate(
-            aggregation_pipeline=pipeline, session=session
-        ).to_list()
+        result: List[Dict[str, Any]] = cast(
+            List[Dict[str, Any]],
+            await self.aggregate(
+                aggregation_pipeline=pipeline, session=session
+            ).to_list(),
+        )
         return result[0]["min"]

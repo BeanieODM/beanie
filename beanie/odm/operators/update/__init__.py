@@ -7,5 +7,5 @@ from beanie.odm.operators import BaseOperator
 class BaseUpdateOperator(BaseOperator):
     @property
     @abstractmethod
-    def query(self) -> Union[Dict[str, Any], Mapping[str, Any]]:
+    def query(self) -> Mapping[str, Any]:
         ...

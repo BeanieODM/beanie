@@ -16,7 +16,7 @@ class DeleteQuery(SessionMethods):
     def __init__(
         self,
         document_model: Type["DocType"],
-        find_query: Union[Dict[str, Any], Mapping[str, Any]],
+        find_query: Mapping[str, Any],
     ):
         self.document_model = document_model
         self.find_query = find_query

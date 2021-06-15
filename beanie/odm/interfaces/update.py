@@ -18,9 +18,7 @@ class UpdateMethods:
 
     @abstractmethod
     def update(
-        self,
-        *args: Union[Dict[str, Any], Mapping[str, Any]],
-        session: Optional[ClientSession] = None
+        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
     ):
         return self
 

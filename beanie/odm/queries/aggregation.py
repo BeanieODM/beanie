@@ -32,12 +32,12 @@ class AggregationQuery(BaseCursorQuery, SessionMethods):
     def __init__(
         self,
         document_model: Type["DocType"],
-        aggregation_pipeline: List[Union[Dict[str, Any], Mapping[str, Any]]],
-        find_query: Union[Dict[str, Any], Mapping[str, Any]],
+        aggregation_pipeline: List[Mapping[str, Any]],
+        find_query: Mapping[str, Any],
         projection_model: Optional[Type[BaseModel]] = None,
     ):
         self.aggregation_pipeline: List[
-            Union[Dict[str, Any], Mapping[str, Any]]
+            Mapping[str, Any]
         ] = aggregation_pipeline
         self.document_model = document_model
         self.projection_model = projection_model
@@ -46,11 +46,11 @@ class AggregationQuery(BaseCursorQuery, SessionMethods):
 
     def get_aggregation_pipeline(
         self,
-    ) -> List[Union[Dict[str, Any], Mapping[str, Any]]]:
-        match_pipeline: List[Dict[str, Any]] = (
+    ) -> List[Mapping[str, Any]]:
+        match_pipeline: List[Mapping[str, Any]] = (
             [{"$match": self.find_query}] if self.find_query else []
         )
-        projection_pipeline: List[Dict[str, Any]] = (
+        projection_pipeline: List[Mapping[str, Any]] = (
             [{"$project": get_projection(self.projection_model)}]
             if self.projection_model
             else []

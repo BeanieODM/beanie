@@ -35,13 +35,11 @@ class UpdateQuery(UpdateMethods, SessionMethods):
     def __init__(
         self,
         document_model: Type["DocType"],
-        find_query: Union[Dict[str, Any], Mapping[str, Any]],
+        find_query: Mapping[str, Any],
     ):
         self.document_model = document_model
         self.find_query = find_query
-        self.update_expressions: List[
-            Union[Dict[str, Any], Mapping[str, Any]]
-        ] = []
+        self.update_expressions: List[Mapping[str, Any]] = []
         self.session = None
 
     @property
@@ -57,9 +55,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         return query
 
     def update(
-        self,
-        *args: Union[Dict[str, Any], Mapping[str, Any]],
-        session: Optional[ClientSession] = None
+        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
     ) -> "UpdateQuery":
         """
         Provide modifications to the update query. The same as `update()`
@@ -83,9 +79,7 @@ class UpdateMany(UpdateQuery):
     """
 
     def update_many(
-        self,
-        *args: Union[Dict[str, Any], Mapping[str, Any]],
-        session: Optional[ClientSession] = None
+        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
     ):
         """
         Provide modifications to the update query
@@ -116,9 +110,7 @@ class UpdateOne(UpdateQuery):
     """
 
     def update_one(
-        self,
-        *args: Union[Dict[str, Any], Mapping[str, Any]],
-        session: Optional[ClientSession] = None
+        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
     ):
         """
         Provide modifications to the update query. The same as `update()`
