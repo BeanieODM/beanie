@@ -15,6 +15,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: mypy install
-        run: pip3 install mypy==0.812
+        run: pip3 install mypy
       - name: mypy
-        run: mypy beanie/
+        run: mypy beanie/ --config-file pyproject.toml
