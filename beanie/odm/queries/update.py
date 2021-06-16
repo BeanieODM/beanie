@@ -3,7 +3,6 @@ from typing import (
     Type,
     TYPE_CHECKING,
     Optional,
-    Union,
     Mapping,
     Any,
     Dict,

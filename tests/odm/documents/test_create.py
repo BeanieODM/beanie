@@ -1,7 +1,6 @@
 import pytest
 from pymongo.errors import DuplicateKeyError
 
-from beanie.exceptions import DocumentAlreadyCreated
 from beanie.odm.fields import PydanticObjectId
 from tests.odm.models import DocumentTestModel
 

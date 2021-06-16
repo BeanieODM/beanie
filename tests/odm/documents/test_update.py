@@ -1,7 +1,6 @@
 import pytest
 
 from beanie.exceptions import (
-    DocumentWasNotSaved,
     DocumentNotFound,
     ReplaceError,
 )

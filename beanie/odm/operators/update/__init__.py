@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, Union, Mapping
+from typing import Any, Mapping
 
 from beanie.odm.operators import BaseOperator
 
