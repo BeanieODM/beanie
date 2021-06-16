@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.1.4] - 2021-06-15
+
+### Changed
+
+- Stricter flake8 and fixing resulting errors
+
+### Implementation
+
+- Author - [Joran van Apeldoorn](https://github.com/jorants)
+- PR - <https://github.com/roman-right/beanie/pull/62>
 
 ## [1.1.3] - 2021-06-15
 
@@ -276,3 +286,5 @@ Beanie project changes
 [1.1.2]: https://pypi.org/project/beanie/1.1.2
 
 [1.1.3]: https://pypi.org/project/beanie/1.1.3
+
+[1.1.4]: https://pypi.org/project/beanie/1.1.4
