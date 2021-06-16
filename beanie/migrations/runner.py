@@ -181,6 +181,7 @@ class MigrationNode:
             spec = importlib.util.spec_from_file_location(
                 (path / name).stem, (path / name).absolute()
             )
+            assert spec is not None
             module = importlib.util.module_from_spec(spec)
             # Comford mypy that the loader has been returned correctly
             assert isinstance(spec.loader, importlib.abc.Loader)

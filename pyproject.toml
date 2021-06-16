@@ -27,7 +27,7 @@ pytest-cov = "^2.8.1"
 Pygments = "^2.8.0"
 dnspython = "^2.1.0"
 mkdocs-material = "^7.1.0"
-pydoc-markdown = "^3.10.1"
+pydoc-markdown = "^3.13.0"
 flake8 = "^3.9.1"
 
 
@@ -72,3 +72,10 @@ beanie = "beanie.executors.migrate:migrations"
 [tool.beanie.migrations]
 path = "beanie/example_migration"
 database_name = "beanie_db"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "toml"
+ignore_missing_imports = true
