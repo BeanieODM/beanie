@@ -1,4 +1,4 @@
-from typing import Type, TYPE_CHECKING, Union, Dict, Any, Mapping
+from typing import Type, TYPE_CHECKING, Any, Mapping
 
 from pymongo.results import DeleteResult
 

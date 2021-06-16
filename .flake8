@@ -1,2 +1,5 @@
 [flake8]
-ignore = E501, W503, E711, F401
+; Ignore line length and the non-PEP8 compliant boolean operator before line break
+ignore = E501, W503
+; Beanie uses == None in queries, so this occures in the tests, ignore the error:
+per-file-ignores = tests/*:E711
