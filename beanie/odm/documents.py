@@ -11,7 +11,7 @@ from typing import (
 
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pydantic import ValidationError
+from pydantic import ValidationError, parse_obj_as
 from pydantic.main import BaseModel
 from pymongo.client_session import ClientSession
 from pymongo.results import (
@@ -155,6 +155,8 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session
         :return: Union["Document", None]
         """
+        if not isinstance(document_id, cls.__fields__["id"].type_):
+            document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
         return await cls.find_one({"_id": document_id}, session=session)
 
     @classmethod

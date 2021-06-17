@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.1.5] - 2021-06-17
+
+### Fix
+
+- Convert document id to the right type in the `get()` method
+
+### Implementation
+
+- ISSUE - <https://github.com/roman-right/beanie/issues/65>
+
 ## [1.1.4] - 2021-06-15
 
 ### Changed
@@ -288,3 +298,5 @@ Beanie project changes
 [1.1.3]: https://pypi.org/project/beanie/1.1.3
 
 [1.1.4]: https://pypi.org/project/beanie/1.1.4
+
+[1.1.5]: https://pypi.org/project/beanie/1.1.5
