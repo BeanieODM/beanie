@@ -30,6 +30,8 @@ This is supported for the operators: `==`, `>`, `>=`, `<`, `<=`, `!=`.
 Other MongoDB query operators can be used with the included wrappers. For example the `$in` operator can be used as follows:
 
 ```python
+from beanie.operators import In
+
 products = await Product.find(
     In(Product.category.name, ["Chocolate", "Fruits"])).to_list()
 ```
