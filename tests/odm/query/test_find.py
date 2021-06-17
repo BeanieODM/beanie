@@ -142,6 +142,10 @@ async def test_get(preset_documents):
     new_a = await Sample.get(a.id)
     assert new_a == a
 
+    # check for another type
+    new_a = await Sample.get(str(a.id))
+    assert new_a == a
+
 
 async def test_sort(preset_documents):
     q = Sample.find_many(Sample.integer > 1, sort="-integer")
