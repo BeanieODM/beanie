@@ -9,6 +9,7 @@ jobs:
         python-version: [ 3.6, 3.7, 3.8, 3.9 ]
         poetry-version: [ 1.1.4 ]
         mongodb-version: [ 4.4 ]
+        pydantic-version: [1.5, 1.6, 1.7, 1.8]
         os: [ ubuntu-18.04 ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -27,5 +28,7 @@ jobs:
           poetry-version: ${{ matrix.poetry-version }}
       - name: poetry install
         run: poetry install
+      - name: specify pydantic
+        run: poetry add pydantic==${{ matrix.pydantic-version }}
       - name: run tests
         run: bash scripts/run_tests.sh
