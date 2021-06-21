@@ -1,6 +1,5 @@
-import importlib.util
-import importlib.abc
 import logging
+from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from typing import Type, Optional
 
@@ -178,14 +177,9 @@ class MigrationNode:
         prev_migration_node = root_migration_node
 
         for name in names:
-            spec = importlib.util.spec_from_file_location(
-                (path / name).stem, (path / name).absolute()
-            )
-            assert spec is not None
-            module = importlib.util.module_from_spec(spec)
-            # Comford mypy that the loader has been returned correctly
-            assert isinstance(spec.loader, importlib.abc.Loader)
-            spec.loader.exec_module(module)
+            module = SourceFileLoader(
+                (path / name).stem, str((path / name).absolute())
+            ).load_module()
             forward_class = getattr(module, "Forward", None)
             backward_class = getattr(module, "Backward", None)
             migration_node = MigrationNode(
