@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.1.6] - 2021-06-21
+
+### Fix
+
+- Pydantic dependency version ^1.5
+
+### Implementation
+
+- PR - <https://github.com/roman-right/beanie/pull/71>
+
 ## [1.1.5] - 2021-06-17
 
 ### Fix
@@ -300,3 +310,5 @@ Beanie project changes
 [1.1.4]: https://pypi.org/project/beanie/1.1.4
 
 [1.1.5]: https://pypi.org/project/beanie/1.1.5
+
+[1.1.6]: https://pypi.org/project/beanie/1.1.6
