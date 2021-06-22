@@ -7,6 +7,7 @@ processors:
 
 hooks:
   pre-render:
+    - mkdir -p build/docs
     - cp -r docs/assets build/docs/content
     
 renderer:  
@@ -59,6 +60,8 @@ renderer:
             - beanie.odm.fields.*            
     - title: Development
       source: docs/development.md
+    - title: Code of conduct
+      source: docs/code-of-conduct.md
     - title: Changelog
       source: docs/changelog.md
       

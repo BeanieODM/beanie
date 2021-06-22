@@ -1,1 +1,0 @@
-poetry run python -m pytest --cov-report term-missing --cov=beanie --cov-branch --cov-fail-under=85 tests/
