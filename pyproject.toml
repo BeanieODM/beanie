@@ -57,7 +57,6 @@ minversion = "6.0"
 addopts = "--cov-report term-missing --cov=beanie --cov-branch --cov-fail-under=85"
 testpaths = [
     "tests",
-    "integration",
 ]
 filterwarnings = [
     "error",
