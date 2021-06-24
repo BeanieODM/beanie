@@ -41,7 +41,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         self.update_expressions: List[Mapping[str, Any]] = []
         self.session = None
         self.is_upsert = False
-        self.on_insert_values: Mapping[str, Any] = {}
+        # self.on_insert_values: Mapping[str, Any] = {}
 
     @property
     def update_query(self) -> Dict[str, Any]:
@@ -84,7 +84,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         return self
 
     def on_insert(self, values: Mapping[str, Any]) -> "UpdateQuery":
-        self.on_insert_values = values
+        # self.on_insert_values = values
         return self
 
 
