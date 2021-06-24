@@ -93,6 +93,27 @@ class FindQuery(UpdateMethods, SessionMethods):
             .set_session(session=self.session)
         )
 
+    def upsert(
+        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
+    ):
+        """
+        Create Update with modifications query
+        and provide search criteria there
+
+        :param args: *Mapping[str,Any] - the modifications to apply.
+        :param session: Optional[ClientSession]
+        :return: UpdateMany query
+        """
+        self.set_session(session=session)
+        return (
+            self.UpdateQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+            )
+            .upsert(*args)
+            .set_session(session=self.session)
+        )
+
     def delete(
         self, session: Optional[ClientSession] = None
     ) -> Union[DeleteOne, DeleteMany]:

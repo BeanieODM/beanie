@@ -1,7 +1,7 @@
 import pytest
 
 from beanie.odm.operators.update.general import Set, Max
-from tests.odm.models import Sample
+from tests.odm.models import Sample, DocumentTestModel
 
 
 async def test_update_query():
@@ -136,3 +136,21 @@ async def test_update_many_with_session(preset_documents, session):
     assert len(result) == 3
     for sample in result:
         assert sample.increment == 100
+
+
+async def test_update_many_upsert(preset_documents):
+    await DocumentTestModel.find_many(
+        DocumentTestModel.test_int > 1000
+    ).upsert(Set({DocumentTestModel.test_int: 100})).on_insert(
+        DocumentTestModel(
+            test_int=999, test_list=[], test_str="UPSERT_MANY_TEST"
+        )
+    )
+
+    new_docs = await DocumentTestModel.find_many(
+        DocumentTestModel.test_str == "UPSERT_MANY_TEST"
+    ).to_list()
+    assert len(new_docs) == 1
+    doc = new_docs[0]
+    assert doc.test_int == 999
+    assert doc.test_list == []
