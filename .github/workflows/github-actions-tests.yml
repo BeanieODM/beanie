@@ -31,4 +31,4 @@ jobs:
       - name: specify pydantic
         run: poetry add pydantic==${{ matrix.pydantic-version }}
       - name: run tests
-        run: bash scripts/run_tests.sh
+        run: poetry run pytest
