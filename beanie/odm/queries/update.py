@@ -40,6 +40,8 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         self.find_query = find_query
         self.update_expressions: List[Mapping[str, Any]] = []
         self.session = None
+        self.is_upsert = False
+        self.on_insert_values: Mapping[str, Any] = {}
 
     @property
     def update_query(self) -> Dict[str, Any]:
@@ -57,7 +59,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
     ) -> "UpdateQuery":
         """
-        Provide modifications to the update query. The same as `update()`
+        Provide modifications to the update query.
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: Optional[ClientSession]
@@ -65,6 +67,24 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         """
         self.set_session(session=session)
         self.update_expressions += args
+        return self
+
+    def upsert(
+        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
+    ) -> "UpdateQuery":
+        """
+        Provide modifications to the upsert query.
+
+        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param session: Optional[ClientSession]
+        :return: UpdateMany query
+        """
+        self.update(*args, session=session)
+        self.is_upsert = True
+        return self
+
+    def on_insert(self, values: Mapping[str, Any]) -> "UpdateQuery":
+        self.on_insert_values = values
         return self
 
 
