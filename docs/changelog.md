@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.2.0] - 2021-06-25
+
+### Added
+
+- Upsert
+
+### Implementation
+
+- Issue - <https://github.com/roman-right/beanie/issues/64>
+
 ## [1.1.6] - 2021-06-21
 
 ### Fix
