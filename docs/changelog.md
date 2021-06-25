@@ -322,3 +322,5 @@ Beanie project changes
 [1.1.5]: https://pypi.org/project/beanie/1.1.5
 
 [1.1.6]: https://pypi.org/project/beanie/1.1.6
+
+[1.2.0]: https://pypi.org/project/beanie/1.2.0
