@@ -1,7 +1,9 @@
+import asyncio
+
 import pytest
 
 from beanie.odm.operators.update.general import Set, Max
-from tests.odm.models import Sample, DocumentTestModel
+from tests.odm.models import Sample
 
 
 async def test_update_query():
@@ -138,19 +140,57 @@ async def test_update_many_with_session(preset_documents, session):
         assert sample.increment == 100
 
 
-async def test_update_many_upsert(preset_documents):
-    await DocumentTestModel.find_many(
-        DocumentTestModel.test_int > 1000
-    ).upsert(Set({DocumentTestModel.test_int: 100})).on_insert(
-        DocumentTestModel(
-            test_int=999, test_list=[], test_str="UPSERT_MANY_TEST"
-        )
+async def test_update_many_upsert_with_insert(
+    preset_documents, sample_doc_not_saved
+):
+    await Sample.find_many(Sample.integer > 100000).upsert(
+        Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
-
-    new_docs = await DocumentTestModel.find_many(
-        DocumentTestModel.test_str == "UPSERT_MANY_TEST"
+    await asyncio.sleep(2)
+    new_docs = await Sample.find_many(
+        Sample.string == sample_doc_not_saved.string
     ).to_list()
     assert len(new_docs) == 1
     doc = new_docs[0]
-    assert doc.test_int == 999
-    assert doc.test_list == []
+    assert doc.integer == sample_doc_not_saved.integer
+
+
+async def test_update_many_upsert_without_insert(
+    preset_documents, sample_doc_not_saved
+):
+    await Sample.find_many(Sample.integer > 1).upsert(
+        Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
+    )
+    await asyncio.sleep(2)
+    new_docs = await Sample.find_many(
+        Sample.string == sample_doc_not_saved.string
+    ).to_list()
+    assert len(new_docs) == 0
+
+
+async def test_update_one_upsert_with_insert(
+    preset_documents, sample_doc_not_saved
+):
+    await Sample.find_one(Sample.integer > 100000).upsert(
+        Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
+    )
+    await asyncio.sleep(2)
+    new_docs = await Sample.find_many(
+        Sample.string == sample_doc_not_saved.string
+    ).to_list()
+    assert len(new_docs) == 1
+    doc = new_docs[0]
+    assert doc.integer == sample_doc_not_saved.integer
+
+
+async def test_update_one_upsert_without_insert(
+    preset_documents, sample_doc_not_saved
+):
+    await Sample.find_one(Sample.integer > 1).upsert(
+        Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
+    )
+    await asyncio.sleep(2)
+    new_docs = await Sample.find_many(
+        Sample.string == sample_doc_not_saved.string
+    ).to_list()
+    assert len(new_docs) == 0

@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import (
     List,
     Type,
@@ -42,7 +43,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         self.update_expressions: List[Mapping[str, Any]] = []
         self.session = None
         self.is_upsert = False
-        self.on_insert_doc: Optional["DocType"] = None
+        self.upsert_insert_doc: Optional["DocType"] = None
 
     @property
     def update_query(self) -> Dict[str, Any]:
@@ -71,22 +72,46 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         return self
 
     def upsert(
-        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
+        self,
+        *args: Mapping[str, Any],
+        on_insert: "DocType",
+        session: Optional[ClientSession] = None
     ) -> "UpdateQuery":
         """
         Provide modifications to the upsert query.
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param on_insert: DocType - document to insert if there is no matched
+        document in the collection
         :param session: Optional[ClientSession]
         :return: UpdateMany query
         """
+        self.upsert_insert_doc = on_insert
         self.update(*args, session=session)
-        self.is_upsert = True
         return self
 
-    def on_insert(self, document: "DocType") -> "UpdateQuery":
-        self.on_insert_doc = document
-        return self
+    @abstractmethod
+    async def _update(self):
+        ...
+
+    def __await__(self) -> Union[UpdateResult, InsertOneResult]:
+        """
+        Run the query
+        :return:
+        """
+
+        update_result = yield from self._update().__await__()
+        if self.upsert_insert_doc is None:
+            return update_result
+        else:
+            if update_result.matched_count == 0:
+                return (
+                    yield from self.document_model.insert_one(
+                        document=self.upsert_insert_doc, session=self.session
+                    ).__await__()
+                )
+            else:
+                return update_result
 
 
 class UpdateMany(UpdateQuery):
@@ -110,39 +135,10 @@ class UpdateMany(UpdateQuery):
         """
         return self.update(*args, session=session)
 
-    def __await__(self) -> Union[UpdateResult, InsertOneResult]:
-        """
-        Run the query
-        :return:
-        """
-        if self.is_upsert:
-            if self.on_insert_doc is None:
-                raise ValueError("Set the document to insert")
-            if not isinstance(self.on_insert_doc, self.document_model):
-                raise TypeError(
-                    "Inserting document type must be the same as "
-                    "original document class"
-                )
-
-        update_result = (
-            yield from self.document_model.get_motor_collection().update_many(
-                self.find_query, self.update_query, session=self.session
-            )
+    async def _update(self):
+        return await self.document_model.get_motor_collection().update_many(
+            self.find_query, self.update_query, session=self.session
         )
-        if not self.is_upsert:
-            return update_result
-        else:
-            if self.on_insert_doc is None:
-                raise ValueError("Set the document to insert")
-            if update_result.matched_count != 0:
-                return update_result
-            if update_result.matched_count == 0:
-                print("HERE")
-                return (
-                    yield from self.document_model.insert_one(
-                        document=self.on_insert_doc, session=self.session
-                    ).__await__()
-                )
 
 
 class UpdateOne(UpdateQuery):
@@ -166,11 +162,7 @@ class UpdateOne(UpdateQuery):
         """
         return self.update(*args, session=session)
 
-    def __await__(self) -> UpdateResult:
-        """
-        Run the query
-        :return:
-        """
-        yield from self.document_model.get_motor_collection().update_one(
+    async def _update(self):
+        return await self.document_model.get_motor_collection().update_one(
             self.find_query, self.update_query, session=self.session
         )
