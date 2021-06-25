@@ -44,6 +44,15 @@ Native MongoDB syntax is also accepted:
 await Product.find_one(Product.name == "Tony's").update({"$set": {Product.price: 3.33}})
 ```
 
+## Upsert
+
+To insert a document if no one document was matched the search cruteria during update query, the `upsert` method can be used:
+```python
+await Product.find_one(Product.name == "Tony's").upsert(
+    Set({Product.price: 3.33}), 
+    on_insert=Product(name="Tony's", price=3.33, category=chocolate)
+)
+```
 
 ## Deleting documents
 
