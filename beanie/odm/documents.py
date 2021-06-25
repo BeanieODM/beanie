@@ -118,6 +118,10 @@ class Document(BaseModel, UpdateMethods):
         :param session: ClientSession - pymongo session
         :return: InsertOneResult
         """
+        if not isinstance(document, cls):
+            raise TypeError(
+                "Inserting document must be of the original document class"
+            )
         return await cls.get_motor_collection().insert_one(
             get_dict(document), session=session
         )

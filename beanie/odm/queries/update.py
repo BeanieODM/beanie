@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import (
     List,
     Type,
@@ -6,10 +7,11 @@ from typing import (
     Mapping,
     Any,
     Dict,
+    Union,
 )
 
 from pymongo.client_session import ClientSession
-from pymongo.results import UpdateResult
+from pymongo.results import UpdateResult, InsertOneResult
 
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (
@@ -40,6 +42,8 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         self.find_query = find_query
         self.update_expressions: List[Mapping[str, Any]] = []
         self.session = None
+        self.is_upsert = False
+        self.upsert_insert_doc: Optional["DocType"] = None
 
     @property
     def update_query(self) -> Dict[str, Any]:
@@ -57,7 +61,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
     ) -> "UpdateQuery":
         """
-        Provide modifications to the update query. The same as `update()`
+        Provide modifications to the update query.
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: Optional[ClientSession]
@@ -66,6 +70,48 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         self.set_session(session=session)
         self.update_expressions += args
         return self
+
+    def upsert(
+        self,
+        *args: Mapping[str, Any],
+        on_insert: "DocType",
+        session: Optional[ClientSession] = None
+    ) -> "UpdateQuery":
+        """
+        Provide modifications to the upsert query.
+
+        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param on_insert: DocType - document to insert if there is no matched
+        document in the collection
+        :param session: Optional[ClientSession]
+        :return: UpdateMany query
+        """
+        self.upsert_insert_doc = on_insert
+        self.update(*args, session=session)
+        return self
+
+    @abstractmethod
+    async def _update(self):
+        ...
+
+    def __await__(self) -> Union[UpdateResult, InsertOneResult]:
+        """
+        Run the query
+        :return:
+        """
+
+        update_result = yield from self._update().__await__()
+        if self.upsert_insert_doc is None:
+            return update_result
+        else:
+            if update_result.matched_count == 0:
+                return (
+                    yield from self.document_model.insert_one(
+                        document=self.upsert_insert_doc, session=self.session
+                    ).__await__()
+                )
+            else:
+                return update_result
 
 
 class UpdateMany(UpdateQuery):
@@ -89,12 +135,8 @@ class UpdateMany(UpdateQuery):
         """
         return self.update(*args, session=session)
 
-    def __await__(self) -> UpdateResult:
-        """
-        Run the query
-        :return:
-        """
-        yield from self.document_model.get_motor_collection().update_many(
+    async def _update(self):
+        return await self.document_model.get_motor_collection().update_many(
             self.find_query, self.update_query, session=self.session
         )
 
@@ -120,11 +162,7 @@ class UpdateOne(UpdateQuery):
         """
         return self.update(*args, session=session)
 
-    def __await__(self) -> UpdateResult:
-        """
-        Run the query
-        :return:
-        """
-        yield from self.document_model.get_motor_collection().update_one(
+    async def _update(self):
+        return await self.document_model.get_motor_collection().update_one(
             self.find_query, self.update_query, session=self.session
         )

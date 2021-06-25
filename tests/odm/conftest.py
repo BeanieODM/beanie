@@ -74,7 +74,31 @@ async def preset_documents(point):
     await Sample.insert_many(documents=docs)
 
 
-object_storage = {}
+@pytest.fixture()
+def sample_doc_not_saved(point):
+    nested = Nested(
+        integer=0,
+        option_1=Option1(s="TEST"),
+        union=Option1(s="TEST"),
+        optional=None,
+    )
+    geo = GeoObject(
+        coordinates=[
+            point["longitude"],
+            point["latitude"],
+        ]
+    )
+    return Sample(
+        timestamp=datetime.utcnow(),
+        increment=0,
+        integer=0,
+        float_num=0,
+        string="TEST_NOT_SAVED",
+        nested=nested,
+        optional=None,
+        union=Option1(s="TEST"),
+        geo=geo,
+    )
 
 
 @pytest.fixture()

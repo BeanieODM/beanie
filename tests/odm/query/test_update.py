@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 from beanie.odm.operators.update.general import Set, Max
@@ -136,3 +138,59 @@ async def test_update_many_with_session(preset_documents, session):
     assert len(result) == 3
     for sample in result:
         assert sample.increment == 100
+
+
+async def test_update_many_upsert_with_insert(
+    preset_documents, sample_doc_not_saved
+):
+    await Sample.find_many(Sample.integer > 100000).upsert(
+        Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
+    )
+    await asyncio.sleep(2)
+    new_docs = await Sample.find_many(
+        Sample.string == sample_doc_not_saved.string
+    ).to_list()
+    assert len(new_docs) == 1
+    doc = new_docs[0]
+    assert doc.integer == sample_doc_not_saved.integer
+
+
+async def test_update_many_upsert_without_insert(
+    preset_documents, sample_doc_not_saved
+):
+    await Sample.find_many(Sample.integer > 1).upsert(
+        Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
+    )
+    await asyncio.sleep(2)
+    new_docs = await Sample.find_many(
+        Sample.string == sample_doc_not_saved.string
+    ).to_list()
+    assert len(new_docs) == 0
+
+
+async def test_update_one_upsert_with_insert(
+    preset_documents, sample_doc_not_saved
+):
+    await Sample.find_one(Sample.integer > 100000).upsert(
+        Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
+    )
+    await asyncio.sleep(2)
+    new_docs = await Sample.find_many(
+        Sample.string == sample_doc_not_saved.string
+    ).to_list()
+    assert len(new_docs) == 1
+    doc = new_docs[0]
+    assert doc.integer == sample_doc_not_saved.integer
+
+
+async def test_update_one_upsert_without_insert(
+    preset_documents, sample_doc_not_saved
+):
+    await Sample.find_one(Sample.integer > 1).upsert(
+        Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
+    )
+    await asyncio.sleep(2)
+    new_docs = await Sample.find_many(
+        Sample.string == sample_doc_not_saved.string
+    ).to_list()
+    assert len(new_docs) == 0
