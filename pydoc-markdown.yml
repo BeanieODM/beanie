@@ -7,10 +7,40 @@ processors:
 
 hooks:
   pre-render:
+    - mkdir -p build/docs/content
     - cp -r docs/assets build/docs/content
     
 renderer:  
   type: mkdocs
+  mkdocs_config:
+      site_name: Beanie Documentation
+      site_url: https://roman-right.github.io/beanie/
+      theme:
+         name: material
+         palette:
+             primary: white
+         logo: assets/logo.svg
+         favicon: assets/favicon.png
+      markdown_extensions:
+        - pymdownx.highlight
+        - pymdownx.superfences
+        
+      repo_url: https://github.com/roman-right/beanie
+
+  markdown:
+    use_fixed_header_levels: true
+    header_level_by_type:
+      Module: 1
+      Class: 2
+      Method: 3
+      Function: 3
+      Data: 3
+    descriptive_class_title: false
+    descriptive_module_title: false
+    add_method_class_prefix: true
+    add_member_class_prefix: true
+    docstrings_as_blockquote: true
+
   pages:
     - title: Overview
       name: index
@@ -59,36 +89,10 @@ renderer:
             - beanie.odm.fields.*            
     - title: Development
       source: docs/development.md
+    - title: Code of conduct
+      source: docs/code-of-conduct.md
     - title: Changelog
       source: docs/changelog.md
       
-  mkdocs_config:
-      site_name: Beanie Documentation
-      site_url: https://roman-right.github.io/beanie/
-      theme:
-         name: material
-         palette:
-             primary: white
-         logo: assets/logo.svg
-         favicon: assets/favicon.png
-      markdown_extensions:
-        - pymdownx.highlight
-        - pymdownx.superfences
-        
-      repo_url: https://github.com/roman-right/beanie
-
-  markdown:
-    use_fixed_header_levels: true
-    header_level_by_type:
-      Module: 1
-      Class: 2
-      Method: 3
-      Function: 3
-      Data: 3
-    descriptive_class_title: false
-    descriptive_module_title: false
-    add_method_class_prefix: true
-    add_member_class_prefix: true
-    docstrings_as_blockquote: true
 
       

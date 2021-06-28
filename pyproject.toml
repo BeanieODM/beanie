@@ -21,7 +21,7 @@ toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.3.0"
-pytest = "^5.4.2"
+pytest = "^6.0.0"
 pytest-aiohttp = "^0.3.0"
 pytest-cov = "^2.8.1"
 Pygments = "^2.8.0"
@@ -54,16 +54,14 @@ exclude = '''
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q --cov-report term-missing --cov=beanie"
+addopts = "--cov-report term-missing --cov=beanie --cov-branch --cov-fail-under=85"
 testpaths = [
     "tests",
-    "integration",
 ]
 filterwarnings = [
     "error",
-    "ignore::UserWarning",
     "ignore::DeprecationWarning",
-    'ignore:function ham\(\) is deprecated:DeprecationWarning',
+    "ignore::UserWarning",
 ]
 
 [tool.poetry.scripts]

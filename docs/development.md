@@ -2,6 +2,8 @@
 
 Hopefully you have landed here because you would like to help out with the development of Beanie. Whether through adding new features, fixing bugs, or extending documentation, your help is really appreciated! Please read this page carefully. If you have any questions, drop by on [the discord.](https://discord.com/invite/ZTTnM7rMaz)
 
+Also please read the [Code of conduct](code-of-conduct.md).
+
 ## Setting up the development environment
 
 We assume you are familiar with the general forking and pull request workflow for submitting to open-source projects. If not, don't worry, there are plenty of good guides available, maybe check out [this one.](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow).
