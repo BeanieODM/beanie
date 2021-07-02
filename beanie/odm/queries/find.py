@@ -61,8 +61,8 @@ class FindQuery(UpdateMethods, SessionMethods):
         Type[DeleteOne], Type[DeleteMany], Type[DeleteQuery]
     ] = DeleteQuery
 
-    def __init__(self, document_model: Type[DocType]):
-        self.document_model: Type[DocType] = document_model
+    def __init__(self, document_model: Type["DocType"]):
+        self.document_model: Type["DocType"] = document_model
         self.find_expressions: List[Mapping[str, Any]] = []
         self.projection_model = document_model
         self.session = None
