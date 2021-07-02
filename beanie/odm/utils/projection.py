@@ -1,11 +1,9 @@
-from typing import Dict, Type, TypeVar
+from typing import Dict, Type
 
-from pydantic import BaseModel
-
-ProjectionModelType = TypeVar("ProjectionModelType", bound=BaseModel)
+from beanie.odm.types import ProjectionType
 
 
-def get_projection(model: Type[ProjectionModelType]) -> Dict[str, int]:
+def get_projection(model: Type[ProjectionType]) -> Dict[str, int]:
     if hasattr(model, "Settings"):  # MyPy checks
         settings = getattr(model, "Settings")
         if hasattr(settings, "projection"):

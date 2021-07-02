@@ -1,7 +1,7 @@
 from abc import abstractmethod
-from typing import Optional, List, Union, Type, Dict, Any
+from typing import Optional, List, Union, Dict, Any, Type
 
-from pydantic.main import BaseModel
+from beanie.odm.types import ProjectionType
 
 
 class BaseCursorQuery:
@@ -11,7 +11,7 @@ class BaseCursorQuery:
     """
 
     @abstractmethod
-    def get_projection_model(self) -> Optional[Type[BaseModel]]:
+    def get_projection_model(self) -> Optional[Type[ProjectionType]]:
         ...
 
     @property
@@ -22,11 +22,13 @@ class BaseCursorQuery:
     def __aiter__(self):
         return self
 
-    async def __anext__(self) -> Union[BaseModel, Dict[str, Any]]:
+    async def __anext__(self) -> Union[ProjectionType, Dict[str, Any]]:
         if getattr(self, "cursor", None) is None:
             self.cursor = self.motor_cursor
         next_item = await self.cursor.__anext__()
-        projection = self.get_projection_model()
+        projection: Optional[
+            Type[ProjectionType]
+        ] = self.get_projection_model()
         return (
             projection.parse_obj(next_item)
             if projection is not None
@@ -35,7 +37,7 @@ class BaseCursorQuery:
 
     async def to_list(
         self, length: Optional[int] = None
-    ) -> Union[List[BaseModel], List[Dict[str, Any]]]:  # noqa
+    ) -> Union[List[ProjectionType], List[Dict[str, Any]]]:  # noqa
         """
         Get list of documents
 
@@ -45,7 +47,11 @@ class BaseCursorQuery:
         motor_list: List[Dict[str, Any]] = await self.motor_cursor.to_list(
             length
         )
-        projection = self.get_projection_model()
-        if projection is not None:
-            return [projection.parse_obj(i) for i in motor_list]
-        return motor_list
+        projection: Optional[
+            Type[ProjectionType]
+        ] = self.get_projection_model()
+        return (
+            [projection.parse_obj(i) for i in motor_list]
+            if projection is not None
+            else motor_list
+        )

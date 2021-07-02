@@ -32,6 +32,7 @@ from beanie.odm.queries.update import (
     UpdateMany,
     UpdateOne,
 )
+from beanie.odm.types import ProjectionType
 from beanie.odm.utils.projection import get_projection
 from pydantic import BaseModel
 from pymongo.client_session import ClientSession
@@ -60,10 +61,10 @@ class FindQuery(UpdateMethods, SessionMethods):
         Type[DeleteOne], Type[DeleteMany], Type[DeleteQuery]
     ] = DeleteQuery
 
-    def __init__(self, document_model: Type["DocType"]):
-        self.document_model: Type["DocType"] = document_model
+    def __init__(self, document_model: Type[DocType]):
+        self.document_model: Type[DocType] = document_model
         self.find_expressions: List[Mapping[str, Any]] = []
-        self.projection_model: Type[BaseModel] = self.document_model
+        self.projection_model = document_model
         self.session = None
 
     def get_filter_query(self) -> Mapping[str, Any]:
@@ -110,7 +111,7 @@ class FindQuery(UpdateMethods, SessionMethods):
 
     def project(
         self: FindQueryType,
-        projection_model: Optional[Type[BaseModel]],
+        projection_model: Optional[Type[ProjectionType]],
     ) -> FindQueryType:
         """
         Apply projection parameter
@@ -122,7 +123,7 @@ class FindQuery(UpdateMethods, SessionMethods):
             self.projection_model = projection_model
         return self
 
-    def get_projection_model(self) -> Type[BaseModel]:
+    def get_projection_model(self) -> Type[ProjectionType]:
         return self.projection_model
 
 
@@ -183,7 +184,7 @@ class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[BaseModel]] = None,
+        projection_model: Optional[Type[ProjectionType]] = None,
         session: Optional[ClientSession] = None
     ) -> "FindMany":
         """
@@ -299,7 +300,7 @@ class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
     def aggregate(
         self,
         aggregation_pipeline: List[Any],
-        projection_model: Optional[Type[BaseModel]] = None,
+        projection_model: Optional[Type[ProjectionType]] = None,
         session: Optional[ClientSession] = None,
     ) -> AggregationQuery:
         """
@@ -307,7 +308,7 @@ class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
 
         :param aggregation_pipeline: list - aggregation pipeline. MongoDB doc:
         <https://docs.mongodb.com/manual/core/aggregation-pipeline/>
-        :param projection_model: Type[BaseModel] - Projection Model
+        :param projection_model: Type[ProjectionType] - Projection Model
         :param session: Optional[ClientSession] - PyMongo session
         :return:[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
@@ -346,14 +347,14 @@ class FindOne(FindQuery):
     def find_one(
         self,
         *args: Mapping[str, Any],
-        projection_model: Optional[Type[BaseModel]] = None,
+        projection_model: Optional[Type[ProjectionType]] = None,
         session: Optional[ClientSession] = None
     ) -> "FindOne":
         """
         Find one document by criteria
 
         :param args: *Mapping[str, Any] - search criteria
-        :param projection_model: Optional[Type[BaseModel]] - projection model
+        :param projection_model: Optional[Type[ProjectionType]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :return: FindOne - query instance
         """
@@ -412,10 +413,10 @@ class FindOne(FindQuery):
     def __await__(self):
         """
         Run the query
-        :return: BaseModel
+        :return: ProjectionType
         """
         projection = get_projection(self.projection_model)
-        document: Dict[str, Any] = (
+        document: Optional[Dict[str, Any]] = (
             yield from self.document_model.get_motor_collection().find_one(
                 filter=self.get_filter_query(),
                 projection=projection,
