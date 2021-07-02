@@ -1,4 +1,5 @@
 from typing import (
+    Generator,
     Union,
     Optional,
     List,
@@ -10,6 +11,8 @@ from typing import (
     Dict,
     Any,
     cast,
+    Generic,
+    Coroutine
 )
 
 from pydantic import BaseModel
@@ -42,9 +45,9 @@ if TYPE_CHECKING:
     from beanie.odm.documents import DocType
 
 FindQueryType = TypeVar("FindQueryType", bound="FindQuery")
+DocType = TypeVar("DocType")
 
-
-class FindQuery(UpdateMethods, SessionMethods):
+class FindQuery(Generic[DocType], UpdateMethods, SessionMethods):
     """
     Find Query base class
 
@@ -436,7 +439,7 @@ class FindOne(FindQuery):
             raise DocumentNotFound
         return result
 
-    def __await__(self):
+    def __await__(self) -> Generator[Coroutine, Any, DocType]:
         """
         Run the query
         :return: BaseModel

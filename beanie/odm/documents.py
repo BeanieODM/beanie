@@ -165,11 +165,11 @@ class Document(BaseModel, UpdateMethods):
 
     @classmethod
     def find_one(
-        cls,
+        cls: Type[DocType],
         *args: Mapping[str, Any],
         projection_model: Optional[Type[BaseModel]] = None,
         session: Optional[ClientSession] = None,
-    ) -> FindOne:
+    ) -> FindOne[DocType]:
         """
         Find one document by criteria.
         Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object.
