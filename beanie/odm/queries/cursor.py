@@ -1,10 +1,21 @@
 from abc import abstractmethod
-from typing import Optional, List, Union, Type, Dict, Any
+from typing import (
+    Optional,
+    List,
+    TypeVar,
+    Type,
+    Dict,
+    Any,
+    Generic,
+    cast,
+)
 
 from pydantic.main import BaseModel
 
+CursorResultType = TypeVar("CursorResultType")
 
-class BaseCursorQuery:
+
+class BaseCursorQuery(Generic[CursorResultType]):
     """
     BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
     which parse result with model
@@ -22,7 +33,7 @@ class BaseCursorQuery:
     def __aiter__(self):
         return self
 
-    async def __anext__(self) -> Union[BaseModel, Dict[str, Any]]:
+    async def __anext__(self) -> CursorResultType:
         if getattr(self, "cursor", None) is None:
             self.cursor = self.motor_cursor
         next_item = await self.cursor.__anext__()
@@ -35,7 +46,7 @@ class BaseCursorQuery:
 
     async def to_list(
         self, length: Optional[int] = None
-    ) -> Union[List[BaseModel], List[Dict[str, Any]]]:  # noqa
+    ) -> List[CursorResultType]:  # noqa
         """
         Get list of documents
 
@@ -47,5 +58,8 @@ class BaseCursorQuery:
         )
         projection = self.get_projection_model()
         if projection is not None:
-            return [projection.parse_obj(i) for i in motor_list]
-        return motor_list
+            return cast(
+                List[CursorResultType],
+                [projection.parse_obj(i) for i in motor_list],
+            )
+        return cast(List[CursorResultType], motor_list)

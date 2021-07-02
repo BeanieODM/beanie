@@ -1,11 +1,9 @@
 from abc import abstractmethod
-from typing import Type, Any, Optional, Union, List, Dict, cast
+from typing import Any, Optional, Union, List, Dict, cast
 
-from pydantic import BaseModel
 from pymongo.client_session import ClientSession
 
 from beanie.odm.fields import ExpressionField
-from beanie.odm.queries.aggregation import AggregationQuery
 
 
 class AggregateMethods:
@@ -17,9 +15,9 @@ class AggregateMethods:
     def aggregate(
         self,
         aggregation_pipeline,
-        projection_model: Type[BaseModel] = None,
-        session: Optional[ClientSession] = None,
-    ) -> AggregationQuery:
+        projection_model=None,
+        session=None,
+    ):
         ...
 
     async def sum(

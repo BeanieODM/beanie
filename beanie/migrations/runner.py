@@ -179,7 +179,7 @@ class MigrationNode:
         for name in names:
             module = SourceFileLoader(
                 (path / name).stem, str((path / name).absolute())
-            ).load_module()
+            ).load_module((path / name).stem)
             forward_class = getattr(module, "Forward", None)
             backward_class = getattr(module, "Backward", None)
             migration_node = MigrationNode(

@@ -1,0 +1,30 @@
+name: PyRight
+on: [ pull_request ]
+
+jobs:
+  pyright:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-18.04 ]
+        python-version: [ 3.9 ]
+        poetry-version: [ 1.1.4 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+      - name: Setup node.js (for pyright)
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12"
+      - name: poetry install
+        run: poetry install
+      - name: pyright install
+        run: npm install -g pyright
+      - name: pyright test
+        run: poetry run pyright
