@@ -12,7 +12,8 @@ from typing import (
     Any,
     cast,
     Generic,
-    Coroutine
+    Coroutine,
+    overload
 )
 
 from pydantic import BaseModel
@@ -42,12 +43,12 @@ from beanie.odm.queries.update import (
 from beanie.odm.utils.projection import get_projection
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import DocType
+    from beanie.odm.documents import DocType, ProjectionType
 
 FindQueryType = TypeVar("FindQueryType", bound="FindQuery")
-DocType = TypeVar("DocType")
+ResultQueryType = TypeVar("ResultQueryType")
 
-class FindQuery(Generic[DocType], UpdateMethods, SessionMethods):
+class FindQuery(Generic[ResultQueryType], UpdateMethods, SessionMethods):
     """
     Find Query base class
 
@@ -64,8 +65,8 @@ class FindQuery(Generic[DocType], UpdateMethods, SessionMethods):
         Type[DeleteOne], Type[DeleteMany], Type[DeleteQuery]
     ] = DeleteQuery
 
-    def __init__(self, document_model: Type["DocType"]):
-        self.document_model: Type["DocType"] = document_model
+    def __init__(self, document_model: Type[DocType]):
+        self.document_model: Type[DocType] = document_model
         self.find_expressions: List[Mapping[str, Any]] = []
         self.projection_model: Type[BaseModel] = self.document_model
         self.session = None
@@ -100,7 +101,7 @@ class FindQuery(Generic[DocType], UpdateMethods, SessionMethods):
     def upsert(
         self,
         *args: Mapping[str, Any],
-        on_insert: "DocType",
+        on_insert: DocType,
         session: Optional[ClientSession] = None
     ):
         """
@@ -138,6 +139,18 @@ class FindQuery(Generic[DocType], UpdateMethods, SessionMethods):
             find_query=self.get_filter_query(),
         ).set_session(session=session)
 
+    @overload
+    def project(
+        self: FindQueryType,
+        projection_model: None = None,
+    ) -> FindQueryType: ...
+
+    @overload
+    def project(
+        self: FindQueryType,
+        projection_model: Type[ProjectionType],
+    ) -> "FindQuery[ProjectionType]": ...
+
     def project(
         self: FindQueryType,
         projection_model: Optional[Type[BaseModel]],
@@ -171,7 +184,7 @@ class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
     UpdateQueryType = UpdateMany
     DeleteQueryType = DeleteMany
 
-    def __init__(self, document_model: Type["DocType"]):
+    def __init__(self, document_model: Type[DocType]):
         super(FindMany, self).__init__(document_model=document_model)
         self.sort_expressions: List[Tuple[str, SortDirection]] = []
         self.skip_number: int = 0
@@ -361,7 +374,7 @@ class FindMany(FindQuery, BaseCursorQuery, AggregateMethods):
         )
 
 
-class FindOne(FindQuery):
+class FindOne(FindQuery[ResultQueryType]):
     """
     Find One query class
 
@@ -417,7 +430,7 @@ class FindOne(FindQuery):
 
     async def replace_one(
         self,
-        document: "DocType",
+        document: DocType,
         session: Optional[ClientSession] = None,
     ) -> UpdateResult:
         """
@@ -439,7 +452,7 @@ class FindOne(FindQuery):
             raise DocumentNotFound
         return result
 
-    def __await__(self) -> Generator[Coroutine, Any, DocType]:
+    def __await__(self) -> Generator[Coroutine, Any, ResultQueryType]:
         """
         Run the query
         :return: BaseModel
