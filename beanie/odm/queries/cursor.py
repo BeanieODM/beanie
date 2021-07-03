@@ -13,10 +13,10 @@ from typing import (
 
 from pydantic.main import BaseModel
 
-ResultQueryType = TypeVar("ResultQueryType")
+CursorResultType = TypeVar("CursorResultType")
 
 
-class BaseCursorQuery(Generic[ResultQueryType]):
+class BaseCursorQuery(Generic[CursorResultType]):
     """
     BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
     which parse result with model
@@ -47,7 +47,7 @@ class BaseCursorQuery(Generic[ResultQueryType]):
 
     async def to_list(
         self, length: Optional[int] = None
-    ) -> List[ResultQueryType]:  # noqa
+    ) -> List[CursorResultType]:  # noqa
         """
         Get list of documents
 
@@ -60,7 +60,7 @@ class BaseCursorQuery(Generic[ResultQueryType]):
         projection = self.get_projection_model()
         if projection is not None:
             return cast(
-                List[ResultQueryType],
+                List[CursorResultType],
                 [projection.parse_obj(i) for i in motor_list],
             )
-        return cast(List[ResultQueryType], motor_list)
+        return cast(List[CursorResultType], motor_list)

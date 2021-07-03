@@ -8,6 +8,7 @@ from typing import (
     Generic,
     TypeVar,
 )
+
 from pydantic import BaseModel
 
 from beanie.odm.interfaces.session import SessionMethods
@@ -17,12 +18,12 @@ from beanie.odm.utils.projection import get_projection
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
 
-AggregationModel = TypeVar("AggregationModel")
+AggregationProjectionType = TypeVar("AggregationProjectionType")
 
 
 class AggregationQuery(
-    Generic[AggregationModel],
-    BaseCursorQuery[AggregationModel],
+    Generic[AggregationProjectionType],
+    BaseCursorQuery[AggregationProjectionType],
     SessionMethods,
 ):
     """

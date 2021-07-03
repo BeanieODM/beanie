@@ -44,9 +44,8 @@ from beanie.odm.queries.update import UpdateMany
 from beanie.odm.utils.collection import collection_factory
 from beanie.odm.utils.dump import get_dict
 
-
 DocType = TypeVar("DocType", bound="Document")
-ProjectionType = TypeVar("ProjectionType", bound="BaseModel")
+DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
 class Document(BaseModel, UpdateMethods):
@@ -182,18 +181,18 @@ class Document(BaseModel, UpdateMethods):
     def find_one(
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
-        projection_model: Type[ProjectionType],
+        projection_model: Type[DocumentProjectionType],
         session: Optional[ClientSession] = None,
-    ) -> FindOne[ProjectionType]:
+    ) -> FindOne[DocumentProjectionType]:
         ...
 
     @classmethod
     def find_one(
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
-        projection_model: Optional[Type[ProjectionType]] = None,
+        projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ) -> Union[FindOne[DocType], FindOne[ProjectionType]]:
+    ) -> Union[FindOne[DocType], FindOne[DocumentProjectionType]]:
         """
         Find one document by criteria.
         Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object.
@@ -228,24 +227,24 @@ class Document(BaseModel, UpdateMethods):
     def find_many(
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
-        projection_model: Type[ProjectionType] = None,
+        projection_model: Type[DocumentProjectionType] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
-    ) -> FindMany[ProjectionType]:
+    ) -> FindMany[DocumentProjectionType]:
         ...
 
     @classmethod
     def find_many(
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
-        projection_model: Optional[Type[ProjectionType]] = None,
+        projection_model: Optional[Type[DocumentProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
-    ) -> Union[FindMany[DocType], FindMany[ProjectionType]]:
+    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         Find many documents by criteria.
         Returns [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query object
@@ -287,24 +286,24 @@ class Document(BaseModel, UpdateMethods):
     def find(
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
-        projection_model: Type[ProjectionType],
+        projection_model: Type[DocumentProjectionType],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
-    ) -> FindMany[ProjectionType]:
+    ) -> FindMany[DocumentProjectionType]:
         ...
 
     @classmethod
     def find(
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
-        projection_model: Optional[Type[ProjectionType]] = None,
+        projection_model: Optional[Type[DocumentProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
-    ) -> Union[FindMany[DocType], FindMany[ProjectionType]]:
+    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         The same as find_many
         """
@@ -336,9 +335,9 @@ class Document(BaseModel, UpdateMethods):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[ProjectionType]] = None,
+        projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ) -> FindMany[ProjectionType]:
+    ) -> FindMany[DocumentProjectionType]:
         ...
 
     @classmethod
@@ -347,9 +346,9 @@ class Document(BaseModel, UpdateMethods):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[ProjectionType]] = None,
+        projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ) -> Union[FindMany[DocType], FindMany[ProjectionType]]:
+    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         Get all the documents
 
@@ -387,23 +386,23 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def all(
         cls: Type[DocType],
-        projection_model: Type[ProjectionType],
+        projection_model: Type[DocumentProjectionType],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
-    ) -> FindMany[ProjectionType]:
+    ) -> FindMany[DocumentProjectionType]:
         ...
 
     @classmethod
     def all(
         cls: Type[DocType],
-        projection_model: Optional[Type[ProjectionType]] = None,
+        projection_model: Optional[Type[DocumentProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
-    ) -> Union[FindMany[DocType], FindMany[ProjectionType]]:
+    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         the same as find_all
         """
@@ -534,19 +533,20 @@ class Document(BaseModel, UpdateMethods):
     def aggregate(
         cls: Type[DocType],
         aggregation_pipeline: list,
-        projection_model: Type[ProjectionType],
+        projection_model: Type[DocumentProjectionType],
         session: Optional[ClientSession] = None,
-    ) -> AggregationQuery[ProjectionType]:
+    ) -> AggregationQuery[DocumentProjectionType]:
         ...
 
     @classmethod
     def aggregate(
         cls: Type[DocType],
         aggregation_pipeline: list,
-        projection_model: Optional[Type[ProjectionType]] = None,
+        projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
     ) -> Union[
-        AggregationQuery[Dict[str, Any]], AggregationQuery[ProjectionType]
+        AggregationQuery[Dict[str, Any]],
+        AggregationQuery[DocumentProjectionType],
     ]:
         """
         Aggregate over collection.

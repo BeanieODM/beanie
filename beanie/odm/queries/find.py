@@ -7,13 +7,13 @@ from typing import (
     Type,
     Mapping,
     TYPE_CHECKING,
-    TypeVar,
     Dict,
     Any,
     cast,
     Generic,
     Coroutine,
     overload,
+    TypeVar,
 )
 
 from pydantic import BaseModel
@@ -45,11 +45,11 @@ from beanie.odm.utils.projection import get_projection
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
 
-ProjectionType = TypeVar("ProjectionType", bound="BaseModel")
-ResultQueryType = TypeVar("ResultQueryType", bound="BaseModel")
+FindQueryProjectionType = TypeVar("FindQueryProjectionType", bound=BaseModel)
+FindQueryResultType = TypeVar("FindQueryResultType", bound=BaseModel)
 
 
-class FindQuery(Generic[ResultQueryType], UpdateMethods, SessionMethods):
+class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
     """
     Find Query base class
 
@@ -69,8 +69,8 @@ class FindQuery(Generic[ResultQueryType], UpdateMethods, SessionMethods):
     def __init__(self, document_model: Type["DocType"]):
         self.document_model: Type["DocType"] = document_model
         self.find_expressions: List[Mapping[str, Any]] = []
-        self.projection_model: Type[ResultQueryType] = cast(
-            Type[ResultQueryType], self.document_model
+        self.projection_model: Type[FindQueryResultType] = cast(
+            Type[FindQueryResultType], self.document_model
         )
         self.session = None
 
@@ -144,7 +144,7 @@ class FindQuery(Generic[ResultQueryType], UpdateMethods, SessionMethods):
 
     def project(
         self,
-        projection_model=None,
+        projection_model,
     ):
         """
         Apply projection parameter
@@ -155,13 +155,13 @@ class FindQuery(Generic[ResultQueryType], UpdateMethods, SessionMethods):
             self.projection_model = projection_model
         return self
 
-    def get_projection_model(self) -> Type[ResultQueryType]:
+    def get_projection_model(self) -> Type[FindQueryResultType]:
         return self.projection_model
 
 
 class FindMany(
-    FindQuery[ResultQueryType],
-    BaseCursorQuery[ResultQueryType],
+    FindQuery[FindQueryResultType],
+    BaseCursorQuery[FindQueryResultType],
     AggregateMethods,
 ):
     """
@@ -217,21 +217,23 @@ class FindMany(
     @overload
     def project(
         self: "FindMany",
-        projection_model: None = None,
-    ) -> "FindMany[ResultQueryType]":
+        projection_model: None,
+    ) -> "FindMany[FindQueryResultType]":
         ...
 
     @overload
     def project(
         self: "FindMany",
-        projection_model: Type[ProjectionType],
-    ) -> "FindMany[ProjectionType]":
+        projection_model: Type[FindQueryProjectionType],
+    ) -> "FindMany[FindQueryProjectionType]":
         ...
 
     def project(
         self: "FindMany",
-        projection_model: Optional[Type[ProjectionType]] = None,
-    ) -> Union["FindMany[ResultQueryType]", "FindMany[ProjectionType]"]:
+        projection_model: Optional[Type[FindQueryProjectionType]],
+    ) -> Union[
+        "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
+    ]:
         """
         Apply projection parameter
 
@@ -394,7 +396,7 @@ class FindMany(
         )
 
 
-class FindOne(FindQuery[ResultQueryType]):
+class FindOne(FindQuery[FindQueryResultType]):
     """
     Find One query class
 
@@ -410,20 +412,22 @@ class FindOne(FindQuery[ResultQueryType]):
     def project(
         self: "FindOne",
         projection_model: None = None,
-    ) -> "FindOne[ResultQueryType]":
+    ) -> "FindOne[FindQueryResultType]":
         ...
 
     @overload
     def project(
         self: "FindOne",
-        projection_model: Type[ProjectionType],
-    ) -> "FindOne[ProjectionType]":
+        projection_model: Type[FindQueryProjectionType],
+    ) -> "FindOne[FindQueryProjectionType]":
         ...
 
     def project(
         self: "FindOne",
-        projection_model: Optional[Type[ProjectionType]] = None,
-    ) -> Union["FindOne[ResultQueryType]", "FindOne[ProjectionType]"]:
+        projection_model: Optional[Type[FindQueryProjectionType]] = None,
+    ) -> Union[
+        "FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"
+    ]:
         """
         Apply projection parameter
         :param projection_model: Optional[Type[BaseModel]] - projection model
@@ -497,7 +501,7 @@ class FindOne(FindQuery[ResultQueryType]):
             raise DocumentNotFound
         return result
 
-    def __await__(self) -> Generator[Coroutine, Any, ResultQueryType]:
+    def __await__(self) -> Generator[Coroutine, Any, FindQueryResultType]:
         """
         Run the query
         :return: BaseModel
@@ -512,4 +516,6 @@ class FindOne(FindQuery[ResultQueryType]):
         )
         if document is None:
             return None
-        return cast(ResultQueryType, self.projection_model.parse_obj(document))
+        return cast(
+            FindQueryResultType, self.projection_model.parse_obj(document)
+        )
