@@ -2,19 +2,18 @@ from abc import abstractmethod
 from typing import (
     Optional,
     List,
+    TypeVar,
     Union,
     Type,
     Dict,
     Any,
-    TYPE_CHECKING,
     Generic,
     cast,
 )
 
 from pydantic.main import BaseModel
 
-if TYPE_CHECKING:
-    from beanie.odm.queries.find import ResultQueryType
+ResultQueryType = TypeVar("ResultQueryType", bound="BaseModel")
 
 
 class BaseCursorQuery(Generic[ResultQueryType]):

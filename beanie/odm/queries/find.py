@@ -43,9 +43,9 @@ from beanie.odm.queries.update import (
 from beanie.odm.utils.projection import get_projection
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import DocType, ProjectionType
+    from beanie.odm.documents import DocType
 
-FindQueryType = TypeVar("FindQueryType", bound="FindQuery")
+ProjectionType = TypeVar("ProjectionType", bound="BaseModel")
 ResultQueryType = TypeVar("ResultQueryType", bound="BaseModel")
 
 
@@ -66,10 +66,12 @@ class FindQuery(Generic[ResultQueryType], UpdateMethods, SessionMethods):
         Type[DeleteOne], Type[DeleteMany], Type[DeleteQuery]
     ] = DeleteQuery
 
-    def __init__(self, document_model: Type[DocType]):
-        self.document_model: Type[DocType] = document_model
+    def __init__(self, document_model: Type["DocType"]):
+        self.document_model: Type["DocType"] = document_model
         self.find_expressions: List[Mapping[str, Any]] = []
-        self.projection_model: Type[BaseModel] = self.document_model
+        self.projection_model: Type[ResultQueryType] = cast(
+            Type[ResultQueryType], self.document_model
+        )
         self.session = None
 
     def get_filter_query(self) -> Mapping[str, Any]:
@@ -102,7 +104,7 @@ class FindQuery(Generic[ResultQueryType], UpdateMethods, SessionMethods):
     def upsert(
         self,
         *args: Mapping[str, Any],
-        on_insert: DocType,
+        on_insert: "DocType",
         session: Optional[ClientSession] = None
     ):
         """
@@ -153,7 +155,7 @@ class FindQuery(Generic[ResultQueryType], UpdateMethods, SessionMethods):
             self.projection_model = projection_model
         return self
 
-    def get_projection_model(self) -> Type[BaseModel]:
+    def get_projection_model(self) -> Type[ResultQueryType]:
         return self.projection_model
 
 
@@ -176,7 +178,7 @@ class FindMany(
     UpdateQueryType = UpdateMany
     DeleteQueryType = DeleteMany
 
-    def __init__(self, document_model: Type[DocType]):
+    def __init__(self, document_model: Type["DocType"]):
         super(FindMany, self).__init__(document_model=document_model)
         self.sort_expressions: List[Tuple[str, SortDirection]] = []
         self.skip_number: int = 0
@@ -473,7 +475,7 @@ class FindOne(FindQuery[ResultQueryType]):
 
     async def replace_one(
         self,
-        document: DocType,
+        document: "DocType",
         session: Optional[ClientSession] = None,
     ) -> UpdateResult:
         """

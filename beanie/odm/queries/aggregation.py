@@ -5,8 +5,9 @@ from typing import (
     Optional,
     TYPE_CHECKING,
     Any,
+    Generic,
+    TypeVar,
 )
-
 from pydantic import BaseModel
 
 from beanie.odm.interfaces.session import SessionMethods
@@ -16,8 +17,12 @@ from beanie.odm.utils.projection import get_projection
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
 
+ResultQueryType = TypeVar("ResultQueryType", bound="BaseModel")
 
-class AggregationQuery(BaseCursorQuery, SessionMethods):
+
+class AggregationQuery(
+    Generic[ResultQueryType], BaseCursorQuery[ResultQueryType], SessionMethods
+):
     """
     Aggregation Query
 
@@ -32,7 +37,7 @@ class AggregationQuery(BaseCursorQuery, SessionMethods):
         document_model: Type["DocType"],
         aggregation_pipeline: List[Mapping[str, Any]],
         find_query: Mapping[str, Any],
-        projection_model: Optional[Type[BaseModel]] = None,
+        projection_model: Optional[Type[ResultQueryType]] = None,
     ):
         self.aggregation_pipeline: List[
             Mapping[str, Any]
@@ -62,5 +67,5 @@ class AggregationQuery(BaseCursorQuery, SessionMethods):
             aggregation_pipeline, session=self.session
         )
 
-    def get_projection_model(self) -> Optional[Type[BaseModel]]:
+    def get_projection_model(self) -> Optional[Type[ResultQueryType]]:
         return self.projection_model

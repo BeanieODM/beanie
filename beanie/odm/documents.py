@@ -518,13 +518,33 @@ class Document(BaseModel, UpdateMethods):
         """
         return await cls.find_all().delete(session=session)
 
+    @overload
     @classmethod
     def aggregate(
-        cls,
+        cls: Type[DocType],
         aggregation_pipeline: list,
-        projection_model: Type[BaseModel] = None,
+        projection_model: None = None,
         session: Optional[ClientSession] = None,
-    ) -> AggregationQuery:
+    ) -> AggregationQuery[DocType]:
+        ...
+
+    @overload
+    @classmethod
+    def aggregate(
+        cls: Type[DocType],
+        aggregation_pipeline: list,
+        projection_model: Type[ProjectionType],
+        session: Optional[ClientSession] = None,
+    ) -> AggregationQuery[ProjectionType]:
+        ...
+
+    @classmethod
+    def aggregate(
+        cls: Type[DocType],
+        aggregation_pipeline: list,
+        projection_model: Optional[Type[ProjectionType]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> Union[AggregationQuery[DocType], AggregationQuery[ProjectionType]]:
         """
         Aggregate over collection.
         Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) query object
