@@ -13,7 +13,7 @@ from typing import (
 
 from pydantic.main import BaseModel
 
-ResultQueryType = TypeVar("ResultQueryType", bound="BaseModel")
+ResultQueryType = TypeVar("ResultQueryType")
 
 
 class BaseCursorQuery(Generic[ResultQueryType]):
@@ -23,7 +23,7 @@ class BaseCursorQuery(Generic[ResultQueryType]):
     """
 
     @abstractmethod
-    def get_projection_model(self) -> Optional[Type[ResultQueryType]]:
+    def get_projection_model(self) -> Optional[Type[BaseModel]]:
         ...
 
     @property
@@ -59,5 +59,8 @@ class BaseCursorQuery(Generic[ResultQueryType]):
         )
         projection = self.get_projection_model()
         if projection is not None:
-            return [projection.parse_obj(i) for i in motor_list]
+            return cast(
+                List[ResultQueryType],
+                [projection.parse_obj(i) for i in motor_list],
+            )
         return cast(List[ResultQueryType], motor_list)

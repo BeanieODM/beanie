@@ -1,4 +1,5 @@
 from typing import (
+    Dict,
     Optional,
     List,
     Type,
@@ -525,7 +526,7 @@ class Document(BaseModel, UpdateMethods):
         aggregation_pipeline: list,
         projection_model: None = None,
         session: Optional[ClientSession] = None,
-    ) -> AggregationQuery[DocType]:
+    ) -> AggregationQuery[Dict[str, Any]]:
         ...
 
     @overload
@@ -544,7 +545,9 @@ class Document(BaseModel, UpdateMethods):
         aggregation_pipeline: list,
         projection_model: Optional[Type[ProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ) -> Union[AggregationQuery[DocType], AggregationQuery[ProjectionType]]:
+    ) -> Union[
+        AggregationQuery[Dict[str, Any]], AggregationQuery[ProjectionType]
+    ]:
         """
         Aggregate over collection.
         Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) query object

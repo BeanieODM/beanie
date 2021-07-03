@@ -17,11 +17,13 @@ from beanie.odm.utils.projection import get_projection
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
 
-ResultQueryType = TypeVar("ResultQueryType", bound="BaseModel")
+AggregationModel = TypeVar("AggregationModel")
 
 
 class AggregationQuery(
-    Generic[ResultQueryType], BaseCursorQuery[ResultQueryType], SessionMethods
+    Generic[AggregationModel],
+    BaseCursorQuery[AggregationModel],
+    SessionMethods,
 ):
     """
     Aggregation Query
@@ -37,7 +39,7 @@ class AggregationQuery(
         document_model: Type["DocType"],
         aggregation_pipeline: List[Mapping[str, Any]],
         find_query: Mapping[str, Any],
-        projection_model: Optional[Type[ResultQueryType]] = None,
+        projection_model: Optional[Type[BaseModel]] = None,
     ):
         self.aggregation_pipeline: List[
             Mapping[str, Any]
@@ -67,5 +69,5 @@ class AggregationQuery(
             aggregation_pipeline, session=self.session
         )
 
-    def get_projection_model(self) -> Optional[Type[ResultQueryType]]:
+    def get_projection_model(self) -> Optional[Type[BaseModel]]:
         return self.projection_model
