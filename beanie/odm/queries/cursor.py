@@ -1,10 +1,12 @@
 from abc import abstractmethod
-from typing import Optional, List, Union, Type, Dict, Any
+from typing import Optional, List, Union, Type, Dict, Any, TYPE_CHECKING, Generic
 
 from pydantic.main import BaseModel
 
+if TYPE_CHECKING:
+    from beanie.odm.queries.find import ResultQueryType
 
-class BaseCursorQuery:
+class BaseCursorQuery(Generic[ResultQueryType]):
     """
     BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
     which parse result with model
@@ -35,7 +37,7 @@ class BaseCursorQuery:
 
     async def to_list(
         self, length: Optional[int] = None
-    ) -> Union[List[BaseModel], List[Dict[str, Any]]]:  # noqa
+    ) -> List[ResultQueryType]:  # noqa
         """
         Get list of documents
 
