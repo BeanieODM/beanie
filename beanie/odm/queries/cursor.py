@@ -1,10 +1,21 @@
 from abc import abstractmethod
-from typing import Optional, List, Union, Type, Dict, Any, TYPE_CHECKING, Generic
+from typing import (
+    Optional,
+    List,
+    Union,
+    Type,
+    Dict,
+    Any,
+    TYPE_CHECKING,
+    Generic,
+    cast,
+)
 
 from pydantic.main import BaseModel
 
 if TYPE_CHECKING:
     from beanie.odm.queries.find import ResultQueryType
+
 
 class BaseCursorQuery(Generic[ResultQueryType]):
     """
@@ -13,7 +24,7 @@ class BaseCursorQuery(Generic[ResultQueryType]):
     """
 
     @abstractmethod
-    def get_projection_model(self) -> Optional[Type[BaseModel]]:
+    def get_projection_model(self) -> Optional[Type[ResultQueryType]]:
         ...
 
     @property
@@ -50,4 +61,4 @@ class BaseCursorQuery(Generic[ResultQueryType]):
         projection = self.get_projection_model()
         if projection is not None:
             return [projection.parse_obj(i) for i in motor_list]
-        return motor_list
+        return cast(List[ResultQueryType], motor_list)

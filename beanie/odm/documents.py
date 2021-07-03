@@ -7,7 +7,7 @@ from typing import (
     Mapping,
     TypeVar,
     Any,
-    overload
+    overload,
 )
 
 from bson import ObjectId
@@ -42,7 +42,7 @@ from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.queries.update import UpdateMany
 from beanie.odm.utils.collection import collection_factory
 from beanie.odm.utils.dump import get_dict
-from __future__ import annotations
+
 
 DocType = TypeVar("DocType", bound="Document")
 ProjectionType = TypeVar("ProjectionType", bound="BaseModel")
@@ -170,25 +170,29 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find_one(
         cls: Type[DocType],
-        *args,
+        *args: Union[Mapping[str, Any], Any],
         projection_model: None = None,
-    ) -> FindOne[DocType]: ...
+        session: Optional[ClientSession] = None,
+    ) -> FindOne[DocType]:
+        ...
 
     @overload
     @classmethod
     def find_one(
         cls: Type[DocType],
-        *args,
+        *args: Union[Mapping[str, Any], Any],
         projection_model: Type[ProjectionType],
-    ) -> FindOne[ProjectionType]: ...
+        session: Optional[ClientSession] = None,
+    ) -> FindOne[ProjectionType]:
+        ...
 
     @classmethod
     def find_one(
         cls: Type[DocType],
-        *args: Mapping[str, Any],
-        projection_model: Optional[ProjectionType[ProjectionType]] = None,
+        *args: Union[Mapping[str, Any], Any],
+        projection_model: Optional[Type[ProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ) -> FindOne[Union[DocType, ProjectionType]]:
+    ) -> Union[FindOne[DocType], FindOne[ProjectionType]]:
         """
         Find one document by criteria.
         Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object.
@@ -207,30 +211,40 @@ class Document(BaseModel, UpdateMethods):
 
     @overload
     @classmethod
-    def find(
-        cls: Type[DocType],
-        *,
-        projection_model: None = None
-    ) -> FindMany[DocType]: ...
-
-    @overload
-    @classmethod
-    def find(
-        cls: Type[DocType],
-        *,
-        projection_model: Type[ProjectionType] = None
-    ) -> FindMany[ProjectionType]: ...
-
-    @classmethod
     def find_many(
-        cls,
-        *args: Mapping[str, Any],
+        cls: Type[DocType],
+        *args: Union[Mapping[str, Any], Any],
+        projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[BaseModel]] = None,
         session: Optional[ClientSession] = None,
-    ) -> FindMany[Union[DocType, ProjectionType]]:
+    ) -> FindMany[DocType]:
+        ...
+
+    @overload
+    @classmethod
+    def find_many(
+        cls: Type[DocType],
+        *args: Union[Mapping[str, Any], Any],
+        projection_model: Type[ProjectionType] = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany[ProjectionType]:
+        ...
+
+    @classmethod
+    def find_many(
+        cls: Type[DocType],
+        *args: Union[Mapping[str, Any], Any],
+        projection_model: Optional[Type[ProjectionType]] = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> Union[FindMany[DocType], FindMany[ProjectionType]]:
         """
         Find many documents by criteria.
         Returns [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query object
@@ -258,28 +272,38 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find(
         cls: Type[DocType],
-        *,
-        projection_model: None = None
-    ) -> FindMany[DocType]: ...
+        *args: Union[Mapping[str, Any], Any],
+        projection_model: None = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany[DocType]:
+        ...
 
     @overload
     @classmethod
     def find(
         cls: Type[DocType],
-        *,
-        projection_model: Type[ProjectionType] = None
-    ) -> FindMany[ProjectionType]: ...
+        *args: Union[Mapping[str, Any], Any],
+        projection_model: Type[ProjectionType],
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany[ProjectionType]:
+        ...
 
     @classmethod
     def find(
         cls: Type[DocType],
-        *args: Mapping[str, Any],
+        *args: Union[Mapping[str, Any], Any],
+        projection_model: Optional[Type[ProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[ProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ) -> FindMany[Union[DocType, ProjectionType]]:
+    ) -> Union[FindMany[DocType], FindMany[ProjectionType]]:
         """
         The same as find_many
         """
@@ -296,17 +320,25 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find_all(
         cls: Type[DocType],
-        *,
-        projection_model: None = None
-    ) -> FindMany[DocType]: ...
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: None = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany[DocType]:
+        ...
 
     @overload
     @classmethod
     def find_all(
         cls: Type[DocType],
-        *,
-        projection_model: Type[ProjectionType] = None
-    ) -> FindMany[ProjectionType]: ...
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: Optional[Type[ProjectionType]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany[ProjectionType]:
+        ...
 
     @classmethod
     def find_all(
@@ -316,7 +348,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: Optional[Type[ProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ) -> FindMany[Union[DocType, ProjectionType]]:
+    ) -> Union[FindMany[DocType], FindMany[ProjectionType]]:
         """
         Get all the documents
 
@@ -342,27 +374,35 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def all(
         cls: Type[DocType],
-        *,
-        projection_model: None = None
-    ) -> FindMany[DocType]: ...
+        projection_model: None = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> FindMany[DocType]:
+        ...
 
     @overload
     @classmethod
     def all(
         cls: Type[DocType],
-        *,
-        projection_model: Type[ProjectionType] = None
-    ) -> FindMany[ProjectionType]: ...
-
-    @classmethod
-    def all(
-        cls,
+        projection_model: Type[ProjectionType],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[ProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ) -> FindMany[Union[DocType, ProjectionType]]:
+    ) -> FindMany[ProjectionType]:
+        ...
+
+    @classmethod
+    def all(
+        cls: Type[DocType],
+        projection_model: Optional[Type[ProjectionType]] = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None,
+    ) -> Union[FindMany[DocType], FindMany[ProjectionType]]:
         """
         the same as find_all
         """
