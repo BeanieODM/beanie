@@ -192,7 +192,7 @@ class Document(BaseModel, UpdateMethods):
         *args: Union[Mapping[str, Any], Any],
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ) -> Union[FindOne[DocType], FindOne[DocumentProjectionType]]:
+    ):
         """
         Find one document by criteria.
         Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object.
@@ -203,7 +203,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session instance
         :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
         """
-        return FindOne[DocType](document_model=cls).find_one(  # type: ignore
+        return FindOne(document_model=cls).find_one(
             *args,
             projection_model=projection_model,
             session=session,
@@ -259,7 +259,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
-        return FindMany[DocType](document_model=cls).find_many(  # type: ignore
+        return FindMany(document_model=cls).find_many(
             *args,
             sort=sort,
             skip=skip,
