@@ -203,7 +203,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session instance
         :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
         """
-        return FindOne(document_model=cls).find_one(
+        return FindOne[DocType](document_model=cls).find_one(  # type: ignore
             *args,
             projection_model=projection_model,
             session=session,
@@ -259,7 +259,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
-        return FindMany(document_model=cls).find_many(
+        return FindMany[DocType](document_model=cls).find_many(  # type: ignore
             *args,
             sort=sort,
             skip=skip,

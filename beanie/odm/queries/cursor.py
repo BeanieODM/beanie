@@ -3,7 +3,6 @@ from typing import (
     Optional,
     List,
     TypeVar,
-    Union,
     Type,
     Dict,
     Any,
@@ -34,7 +33,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
     def __aiter__(self):
         return self
 
-    async def __anext__(self) -> Union[BaseModel, Dict[str, Any]]:
+    async def __anext__(self) -> CursorResultType:
         if getattr(self, "cursor", None) is None:
             self.cursor = self.motor_cursor
         next_item = await self.cursor.__anext__()
