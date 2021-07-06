@@ -240,6 +240,9 @@ class FindMany(
         self.set_session(session=session)
         return self
 
+    # TODO probably merge FindOne and FindMany to one class to avoid this
+    #  code duplication
+
     @overload
     def project(
         self: "FindMany",
@@ -266,7 +269,8 @@ class FindMany(
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :return: self
         """
-        return super().project(projection_model)
+        super().project(projection_model)
+        return self
 
     @overload
     def find(
@@ -495,6 +499,9 @@ class FindOne(FindQuery[FindQueryResultType]):
     ) -> "FindOne[FindQueryProjectionType]":
         ...
 
+    # TODO probably merge FindOne and FindMany to one class to avoid this
+    #  code duplication
+
     def project(
         self: "FindOne[FindQueryResultType]",
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
@@ -506,7 +513,8 @@ class FindOne(FindQuery[FindQueryResultType]):
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :return: self
         """
-        return super().project(projection_model)
+        super().project(projection_model)
+        return self
 
     @overload
     def find_one(
