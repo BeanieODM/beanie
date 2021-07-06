@@ -187,7 +187,7 @@ class FindMany(
     @overload
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -199,7 +199,7 @@ class FindMany(
     @overload
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Type[FindQueryProjectionType] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -210,7 +210,7 @@ class FindMany(
 
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -232,7 +232,7 @@ class FindMany(
         :param session: Optional[ClientSession] - pymongo session
         :return: FindMany - query instance
         """
-        self.find_expressions += args
+        self.find_expressions += args  # type: ignore # bool workaround
         self.skip(skip)
         self.limit(limit)
         self.sort(sort)
@@ -275,7 +275,7 @@ class FindMany(
     @overload
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -287,7 +287,7 @@ class FindMany(
     @overload
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Type[FindQueryProjectionType] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -298,7 +298,7 @@ class FindMany(
 
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -519,7 +519,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: None = None,
         session: Optional[ClientSession] = None,
     ) -> "FindOne[FindQueryResultType]":
@@ -528,7 +528,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Type[FindQueryProjectionType],
         session: Optional[ClientSession] = None,
     ) -> "FindOne[FindQueryProjectionType]":
@@ -536,7 +536,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         session: Optional[ClientSession] = None,
     ) -> Union[
@@ -550,7 +550,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         :param session: Optional[ClientSession] - pymongo session
         :return: FindOne - query instance
         """
-        self.find_expressions += args
+        self.find_expressions += args  # type: ignore # bool workaround
         self.project(projection_model)
         self.set_session(session=session)
         return self
