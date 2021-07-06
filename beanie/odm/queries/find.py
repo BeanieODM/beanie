@@ -390,7 +390,7 @@ class FindMany(
         :param session: Optional[ClientSession]
         :return: [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
         """
-        return self.update(*args, session=session)
+        return cast(UpdateMany, self.update(*args, session=session))
 
     def delete_many(
         self, session: Optional[ClientSession] = None
@@ -565,7 +565,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         :param session: Optional[ClientSession] - PyMongo sessions
         :return: [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query
         """
-        return self.update(*args, session=session)
+        return cast(UpdateOne, self.update(*args, session=session))
 
     def delete_one(self, session: Optional[ClientSession] = None) -> DeleteOne:
         """
@@ -602,7 +602,9 @@ class FindOne(FindQuery[FindQueryResultType]):
             raise DocumentNotFound
         return result
 
-    def __await__(self) -> Generator[Coroutine, Any, FindQueryResultType]:
+    def __await__(
+        self,
+    ) -> Generator[Coroutine, Any, Optional[FindQueryResultType]]:
         """
         Run the query
         :return: BaseModel

@@ -80,4 +80,4 @@ module = "toml"
 ignore_missing_imports = true
 
 [tool.pyright]
-include = ["tests/typing"]
+include = ["tests/typing", "beanie"]

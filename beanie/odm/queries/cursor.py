@@ -34,6 +34,8 @@ class BaseCursorQuery(Generic[CursorResultType]):
         return self
 
     async def __anext__(self) -> CursorResultType:
+        if self.motor_cursor is None:
+            raise RuntimeError("self.motor_cursor was not set")
         if getattr(self, "cursor", None) is None:
             self.cursor = self.motor_cursor
         next_item = await self.cursor.__anext__()
@@ -42,7 +44,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
             projection.parse_obj(next_item)
             if projection is not None
             else next_item
-        )
+        )  # type: ignore
 
     async def to_list(
         self, length: Optional[int] = None
@@ -53,6 +55,8 @@ class BaseCursorQuery(Generic[CursorResultType]):
         :param length: Optional[int] - length of the list
         :return: Union[List[BaseModel], List[Dict[str, Any]]]
         """
+        if self.motor_cursor is None:
+            raise RuntimeError("self.motor_cursor was not set")
         motor_list: List[Dict[str, Any]] = await self.motor_cursor.to_list(
             length
         )
