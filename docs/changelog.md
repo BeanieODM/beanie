@@ -2,6 +2,17 @@
 
 Beanie project changes
 
+## [1.2.1] - 2021-07-06
+
+### Fixed
+
+- Document, FindQuery, Aggregation typings
+
+### Implementation
+
+- Author - [Kira](https://github.com/KiraPC)
+- Issue - <https://github.com/roman-right/beanie/issues/69>
+
 ## [1.2.0] - 2021-06-25
 
 ### Added
@@ -324,3 +335,5 @@ Beanie project changes
 [1.1.6]: https://pypi.org/project/beanie/1.1.6
 
 [1.2.0]: https://pypi.org/project/beanie/1.2.0
+
+[1.2.1]: https://pypi.org/project/beanie/1.2.1

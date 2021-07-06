@@ -17,4 +17,4 @@ jobs:
       - name: mypy install
         run: pip3 install mypy types-click types-toml
       - name: mypy
-        run: mypy beanie/ --config-file pyproject.toml
+        run: mypy beanie/ tests/typing --config-file pyproject.toml
