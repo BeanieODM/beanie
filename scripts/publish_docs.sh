@@ -1,3 +1,3 @@
 poetry run pydoc-markdown
-cd build/docs
+cd docs/build
 poetry run mkdocs gh-deploy
