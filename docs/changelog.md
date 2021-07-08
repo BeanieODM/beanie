@@ -2,6 +2,21 @@
 
 Beanie project changes
 
+## [1.2.3] - 2021-07-08
+
+### Fixed
+
+- Pyright issues
+
+### Added
+
+- Doc publishing on merge to the main branch 
+
+### Implementation
+
+- Issue - <https://github.com/roman-right/beanie/issues/87>
+- Issue - <https://github.com/roman-right/beanie/issues/70>
+
 ## [1.2.2] - 2021-07-06
 
 ### Fixed
@@ -347,5 +362,7 @@ Beanie project changes
 [1.2.0]: https://pypi.org/project/beanie/1.2.0
 
 [1.2.1]: https://pypi.org/project/beanie/1.2.1
+
+[1.2.2]: https://pypi.org/project/beanie/1.2.2
 
 [1.2.2]: https://pypi.org/project/beanie/1.2.2
