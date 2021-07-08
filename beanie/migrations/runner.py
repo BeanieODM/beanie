@@ -139,16 +139,17 @@ class MigrationNode:
 
         client = DBHandler.get_cli()
         db = DBHandler.get_db()
-
+        if client is None:
+            raise RuntimeError("client must not be None")
         async with await client.start_session() as s:
             async with s.start_transaction():
                 for migration in migrations:
                     for model in migration.models:
                         await init_beanie(
                             database=db,
-                            document_models=[model],  # TODO this is slow
+                            document_models=[model],  # type: ignore
                             allow_index_dropping=allow_index_dropping,
-                        )
+                        )  # TODO this is slow
                     logger.info(
                         f"Running migration {migration.function.__name__} "
                         f"from module {self.name}"
@@ -170,7 +171,9 @@ class MigrationNode:
         names.sort()
 
         db = DBHandler.get_db()
-        await init_beanie(database=db, document_models=[MigrationLog])
+        await init_beanie(
+            database=db, document_models=[MigrationLog]  # type: ignore
+        )
         current_migration = await MigrationLog.find_one({"is_current": True})
 
         root_migration_node = MigrationNode("root")

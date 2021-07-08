@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beanie"
-version = "1.2.2"
+version = "1.2.3"
 description = "Asynchronous Python ODM for MongoDB"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
@@ -30,6 +30,7 @@ mkdocs-material = "^7.1.0"
 pydoc-markdown = "^3.13.0"
 flake8 = "^3.9.1"
 pyright = "^0.0.2"
+mkdocs = "1.1"
 
 
 [build-system]
@@ -80,4 +81,4 @@ module = "toml"
 ignore_missing_imports = true
 
 [tool.pyright]
-include = ["tests/typing"]
+include = ["tests/typing", "beanie"]

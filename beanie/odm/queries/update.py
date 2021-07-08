@@ -86,7 +86,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         :param session: Optional[ClientSession]
         :return: UpdateMany query
         """
-        self.upsert_insert_doc = on_insert
+        self.upsert_insert_doc = on_insert  # type: ignore
         self.update(*args, session=session)
         return self
 
@@ -104,7 +104,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         if self.upsert_insert_doc is None:
             return update_result
         else:
-            if update_result.matched_count == 0:
+            if update_result is not None and update_result.matched_count == 0:
                 return (
                     yield from self.document_model.insert_one(
                         document=self.upsert_insert_doc, session=self.session
