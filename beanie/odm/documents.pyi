@@ -51,26 +51,32 @@ DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 class Document(BaseModel, UpdateMethods):
     id: Optional[PydanticObjectId]
+
     def __init__(self, *args, **kwargs) -> None: ...
+
     async def insert(
-        self, session: Optional[ClientSession] = ...
+        self, session: Optional[ClientSession] = None
     ) -> DocType: ...
+
     async def create(
-        self, session: Optional[ClientSession] = ...
+        self, session: Optional[ClientSession] = None
     ) -> DocType: ...
+
     @classmethod
     async def insert_one(
-        cls: Type[DocType], document: DocType, session: Optional[ClientSession] = ...
+        cls: Type[DocType], document: DocType, session: Optional[ClientSession] = None
     ) -> InsertOneResult: ...
+
     @classmethod
     async def insert_many(
-        cls: Type[DocType], documents: List[DocType], session: Optional[ClientSession] = ...
+        cls: Type[DocType], documents: List[DocType], session: Optional[ClientSession] = None
     ) -> InsertManyResult: ...
+
     @classmethod
     async def get(
         cls: Type[DocType],
         document_id: PydanticObjectId,
-        session: Optional[ClientSession] = ...,
+        session: Optional[ClientSession] = None,
     ) -> Optional[DocType]: ...
 
     @overload
@@ -78,8 +84,8 @@ class Document(BaseModel, UpdateMethods):
     def find_one(
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
-        projection_model: None = ...,
-        session: Optional[ClientSession] = ...
+        projection_model: None = None,
+        session: Optional[ClientSession] = None
     ) -> FindOne[DocType]: ...
     @overload
     @classmethod
@@ -87,7 +93,7 @@ class Document(BaseModel, UpdateMethods):
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
         projection_model: Type[DocumentProjectionType],
-        session: Optional[ClientSession] = ...
+        session: Optional[ClientSession] = None
     ) -> FindOne[DocumentProjectionType]: ...
 
     @overload
@@ -95,22 +101,22 @@ class Document(BaseModel, UpdateMethods):
     def find_many(
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
-        projection_model: None = ...,
-        skip: Optional[int] = ...,
-        limit: Optional[int] = ...,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = ...,
-        session: Optional[ClientSession] = ...
+        projection_model: None = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None
     ) -> FindMany[DocType]: ...
     @overload
     @classmethod
     def find_many(
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
-        projection_model: Type[DocumentProjectionType] = ...,
-        skip: Optional[int] = ...,
-        limit: Optional[int] = ...,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = ...,
-        session: Optional[ClientSession] = ...
+        projection_model: Type[DocumentProjectionType] = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None
     ) -> FindMany[DocumentProjectionType]: ...
 
     @overload
@@ -118,11 +124,11 @@ class Document(BaseModel, UpdateMethods):
     def find(
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
-        projection_model: None = ...,
-        skip: Optional[int] = ...,
-        limit: Optional[int] = ...,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = ...,
-        session: Optional[ClientSession] = ...
+        projection_model: None = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None
     ) -> FindMany[DocType]: ...
     @overload
     @classmethod
@@ -130,85 +136,85 @@ class Document(BaseModel, UpdateMethods):
         cls: Type[DocType],
         *args: Union[Mapping[str, Any], Any],
         projection_model: Type[DocumentProjectionType],
-        skip: Optional[int] = ...,
-        limit: Optional[int] = ...,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = ...,
-        session: Optional[ClientSession] = ...
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None
     ) -> FindMany[DocumentProjectionType]: ...
 
     @overload
     @classmethod
     def find_all(
         cls: Type[DocType],
-        skip: Optional[int] = ...,
-        limit: Optional[int] = ...,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = ...,
-        projection_model: None = ...,
-        session: Optional[ClientSession] = ...,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: None = None,
+        session: Optional[ClientSession] = None,
     ) -> FindMany[DocType]: ...
     @overload
     @classmethod
     def find_all(
         cls: Type[DocType],
-        skip: Optional[int] = ...,
-        limit: Optional[int] = ...,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = ...,
-        projection_model: Optional[Type[DocumentProjectionType]] = ...,
-        session: Optional[ClientSession] = ...,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        projection_model: Optional[Type[DocumentProjectionType]] = None,
+        session: Optional[ClientSession] = None,
     ) -> FindMany[DocumentProjectionType]: ...
 
     @overload
     @classmethod
     def all(
         cls: Type[DocType],
-        projection_model: None = ...,
-        skip: Optional[int] = ...,
-        limit: Optional[int] = ...,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = ...,
-        session: Optional[ClientSession] = ...,
+        projection_model: None = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None,
     ) -> FindMany[DocType]: ...
     @overload
     @classmethod
     def all(
         cls: Type[DocType],
         projection_model: Type[DocumentProjectionType],
-        skip: Optional[int] = ...,
-        limit: Optional[int] = ...,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = ...,
-        session: Optional[ClientSession] = ...,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None,
     ) -> FindMany[DocumentProjectionType]: ...
 
     async def replace(
-        self, session: Optional[ClientSession] = ...
+        self, session: Optional[ClientSession] = None
     ) -> DocType: ...
 
     async def save(
-        self, session: Optional[ClientSession] = ...
+        self, session: Optional[ClientSession] = None
     ) -> DocType: ...
 
     @classmethod
     async def replace_many(
-        cls: Type[DocType], documents: List[DocType], session: Optional[ClientSession] = ...
+        cls: Type[DocType], documents: List[DocType], session: Optional[ClientSession] = None
     ) -> None: ...
 
     async def update(
-        self, *args, session: Optional[ClientSession] = ...
+        self, *args, session: Optional[ClientSession] = None
     ) -> None: ...
 
     @classmethod
     def update_all(
         cls: Type[DocType],
         *args: Union[dict, Mapping],
-        session: Optional[ClientSession] = ...
+        session: Optional[ClientSession] = None
     ) -> UpdateMany: ...
 
     async def delete(
-        self, session: Optional[ClientSession] = ...
+        self, session: Optional[ClientSession] = None
     ) -> DeleteResult: ...
 
     @classmethod
     async def delete_all(
-        cls: Type[DocType], session: Optional[ClientSession] = ...
+        cls: Type[DocType], session: Optional[ClientSession] = None
     ) -> DeleteResult: ...
 
     @overload
@@ -216,8 +222,8 @@ class Document(BaseModel, UpdateMethods):
     def aggregate(
         cls: Type[DocType],
         aggregation_pipeline: list,
-        projection_model: None = ...,
-        session: Optional[ClientSession] = ...,
+        projection_model: None = None,
+        session: Optional[ClientSession] = None,
     ) -> AggregationQuery[Dict[str, Any]]: ...
 
     @overload
@@ -226,7 +232,7 @@ class Document(BaseModel, UpdateMethods):
         cls: Type[DocType],
         aggregation_pipeline: list,
         projection_model: Type[DocumentProjectionType],
-        session: Optional[ClientSession] = ...,
+        session: Optional[ClientSession] = None,
     ) -> AggregationQuery[DocumentProjectionType]: ...
 
     @classmethod
@@ -242,7 +248,7 @@ class Document(BaseModel, UpdateMethods):
 
     @classmethod
     async def inspect_collection(
-        cls: Type[DocType], session: Optional[ClientSession] = ...
+        cls: Type[DocType], session: Optional[ClientSession] = None
     ) -> InspectionResult: ...
 
     class Config:

@@ -33,7 +33,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
     def __aiter__(self):
         return self
 
-    async def __anext__(self) -> CursorResultType:
+    async def __anext__(self):
         if getattr(self, "cursor", None) is None:
             self.cursor = self.motor_cursor
         next_item = await self.cursor.__anext__()
@@ -44,9 +44,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
             else next_item
         )
 
-    async def to_list(
-        self, length: Optional[int] = None
-    ) -> List[CursorResultType]:  # noqa
+    async def to_list(self, length: Optional[int] = None):
         """
         Get list of documents
 

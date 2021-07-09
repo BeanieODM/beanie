@@ -1,5 +1,5 @@
 from beanie.exceptions import DocumentNotFound as DocumentNotFound
-from beanie.odm.documents import DocType as DocType
+from beanie.odm.documents import DocType as DocType, Document
 from beanie.odm.enums import SortDirection as SortDirection
 from beanie.odm.interfaces.aggregate import (
     AggregateMethods as AggregateMethods,
@@ -49,25 +49,32 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
     DeleteQueryType: Union[
         Type[DeleteOne], Type[DeleteMany], Type[DeleteQuery]
     ]
-    document_model: Any
+    document_model: Document
     find_expressions: Any
     projection_model: Any
     session: Any
     def __init__(self, document_model: Type[DocType]) -> None: ...
     def get_filter_query(self) -> Mapping[str, Any]: ...
     def update(
-        self, *args: Mapping[str, Any], session: Optional[ClientSession] = ...
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None
     ): ...
+
     def upsert(
         self,
         *args: Mapping[str, Any],
         on_insert: DocType,
         session: Optional[ClientSession] = ...
     ): ...
+
     def delete(
-        self, session: Optional[ClientSession] = ...
+        self, 
+        session: Optional[ClientSession] = ...
     ) -> Union[DeleteOne, DeleteMany]: ...
+
     def project(self, projection_model): ...
+
     def get_projection_model(self) -> Type[FindQueryResultType]: ...
 
 class FindMany(
@@ -75,12 +82,14 @@ class FindMany(
     BaseCursorQuery[FindQueryResultType],
     AggregateMethods,
 ):
-    UpdateQueryType: Any
-    DeleteQueryType: Any
-    sort_expressions: Any
+    UpdateQueryType = UpdateMany
+    DeleteQueryType = DeleteMany
+    sort_expressions: List[Tuple[str, SortDirection]]
     skip_number: int
     limit_number: int
+
     def __init__(self, document_model: Type[DocType]) -> None: ...
+
     @overload
     def find_many(
         self,
@@ -101,6 +110,7 @@ class FindMany(
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = ...,
         session: Optional[ClientSession] = ...
     ) -> FindMany[FindQueryProjectionType]: ...
+
     @overload
     def project(
         self, projection_model: None
@@ -109,6 +119,7 @@ class FindMany(
     def project(
         self, projection_model: Type[FindQueryProjectionType]
     ) -> FindMany[FindQueryProjectionType]: ...
+
     @overload
     def find(
         self,
@@ -129,6 +140,7 @@ class FindMany(
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = ...,
         session: Optional[ClientSession] = ...
     ) -> FindMany[FindQueryProjectionType]: ...
+
     def sort(
         self,
         *args: Optional[
@@ -137,15 +149,21 @@ class FindMany(
             ]
         ]
     ) -> FindMany[FindQueryResultType]: ...
+
     def skip(self, n: Optional[int]) -> FindMany[FindQueryResultType]: ...
+
     def limit(self, n: Optional[int]) -> FindMany[FindQueryResultType]: ...
+
     def update_many(
         self, *args: Mapping[str, Any], session: Optional[ClientSession] = ...
+
     ) -> UpdateMany: ...
     def delete_many(
         self, session: Optional[ClientSession] = ...
     ) -> DeleteMany: ...
+
     async def count(self) -> int: ...
+
     @overload
     def aggregate(
         self,
@@ -160,12 +178,14 @@ class FindMany(
         projection_model: Type[FindQueryProjectionType],
         session: Optional[ClientSession] = ...,
     ) -> AggregationQuery[FindQueryProjectionType]: ...
+
     @property
     def motor_cursor(self): ...
 
 class FindOne(FindQuery[FindQueryResultType]):
-    UpdateQueryType: Any
-    DeleteQueryType: Any
+    UpdateQueryType = UpdateOne
+    DeleteQueryType = DeleteOne
+
     @overload
     def project(
         self, projection_model: None = ...
@@ -174,6 +194,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     def project(
         self, projection_model: Type[FindQueryProjectionType]
     ) -> FindOne[FindQueryProjectionType]: ...
+
     @overload
     def find_one(
         self,
@@ -188,13 +209,17 @@ class FindOne(FindQuery[FindQueryResultType]):
         projection_model: Type[FindQueryProjectionType],
         session: Optional[ClientSession] = ...
     ) -> FindOne[FindQueryProjectionType]: ...
+
     def update_one(
         self, *args: Mapping[str, Any], session: Optional[ClientSession] = ...
     ) -> UpdateOne: ...
+
     def delete_one(
         self, session: Optional[ClientSession] = ...
     ) -> DeleteOne: ...
+
     async def replace_one(
         self, document: DocType, session: Optional[ClientSession] = ...
     ) -> UpdateResult: ...
+
     def __await__(self) -> Generator[Coroutine, Any, FindQueryResultType]: ...

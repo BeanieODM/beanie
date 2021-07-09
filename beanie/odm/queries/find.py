@@ -12,7 +12,6 @@ from typing import (
     cast,
     Generic,
     Coroutine,
-    overload,
     TypeVar,
 )
 
@@ -184,30 +183,6 @@ class FindMany(
         self.skip_number: int = 0
         self.limit_number: int = 0
 
-    @overload
-    def find_many(
-        self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-    ) -> "FindMany[FindQueryResultType]":
-        ...
-
-    @overload
-    def find_many(
-        self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
-        projection_model: Type[FindQueryProjectionType] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-    ) -> "FindMany[FindQueryProjectionType]":
-        ...
-
     def find_many(
         self: "FindMany[FindQueryResultType]",
         *args: Union[Mapping[str, Any], Any],
@@ -216,9 +191,7 @@ class FindMany(
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
-    ) -> Union[
-        "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
-    ]:
+    ):
         """
         Find many documents by criteria
 
@@ -242,27 +215,10 @@ class FindMany(
 
     # TODO probably merge FindOne and FindMany to one class to avoid this
     #  code duplication
-
-    @overload
-    def project(
-        self: "FindMany",
-        projection_model: None,
-    ) -> "FindMany[FindQueryResultType]":
-        ...
-
-    @overload
-    def project(
-        self: "FindMany",
-        projection_model: Type[FindQueryProjectionType],
-    ) -> "FindMany[FindQueryProjectionType]":
-        ...
-
     def project(
         self: "FindMany",
         projection_model: Optional[Type[FindQueryProjectionType]],
-    ) -> Union[
-        "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
-    ]:
+    ):
         """
         Apply projection parameter
 
@@ -272,30 +228,6 @@ class FindMany(
         super().project(projection_model)
         return self
 
-    @overload
-    def find(
-        self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-    ) -> "FindMany[FindQueryResultType]":
-        ...
-
-    @overload
-    def find(
-        self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
-        projection_model: Type[FindQueryProjectionType] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-    ) -> "FindMany[FindQueryProjectionType]":
-        ...
-
     def find(
         self: "FindMany[FindQueryResultType]",
         *args: Union[Mapping[str, Any], Any],
@@ -304,9 +236,7 @@ class FindMany(
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
-    ) -> Union[
-        "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
-    ]:
+    ):
         """
         The same as `find_many(...)`
         """
@@ -326,7 +256,7 @@ class FindMany(
                 str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
             ]
         ],
-    ) -> "FindMany[FindQueryResultType]":
+    ):
         """
         Add sort parameters
         :param args: Union[str, Tuple[str, SortDirection],
@@ -359,7 +289,7 @@ class FindMany(
                 raise TypeError("Wrong argument type")
         return self
 
-    def skip(self, n: Optional[int]) -> "FindMany[FindQueryResultType]":
+    def skip(self, n: Optional[int]):
         """
         Set skip parameter
         :param n: int
@@ -369,7 +299,7 @@ class FindMany(
             self.skip_number = n
         return self
 
-    def limit(self, n: Optional[int]) -> "FindMany[FindQueryResultType]":
+    def limit(self, n: Optional[int]):
         """
         Set limit parameter
         :param n: int
@@ -417,33 +347,12 @@ class FindMany(
             )
         )
 
-    @overload
-    def aggregate(
-        self,
-        aggregation_pipeline: List[Any],
-        projection_model: None = None,
-        session: Optional[ClientSession] = None,
-    ) -> AggregationQuery[Dict[str, Any]]:
-        ...
-
-    @overload
-    def aggregate(
-        self,
-        aggregation_pipeline: List[Any],
-        projection_model: Type[FindQueryProjectionType],
-        session: Optional[ClientSession] = None,
-    ) -> AggregationQuery[FindQueryProjectionType]:
-        ...
-
     def aggregate(
         self,
         aggregation_pipeline: List[Any],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ) -> Union[
-        AggregationQuery[Dict[str, Any]],
-        AggregationQuery[FindQueryProjectionType],
-    ]:
+    ):
         """
         Provide search criteria to the [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
 
@@ -485,20 +394,6 @@ class FindOne(FindQuery[FindQueryResultType]):
     UpdateQueryType = UpdateOne
     DeleteQueryType = DeleteOne
 
-    @overload
-    def project(
-        self: "FindOne[FindQueryResultType]",
-        projection_model: None = None,
-    ) -> "FindOne[FindQueryResultType]":
-        ...
-
-    @overload
-    def project(
-        self: "FindOne[FindQueryResultType]",
-        projection_model: Type[FindQueryProjectionType],
-    ) -> "FindOne[FindQueryProjectionType]":
-        ...
-
     # TODO probably merge FindOne and FindMany to one class to avoid this
     #  code duplication
 
@@ -515,24 +410,6 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         super().project(projection_model)
         return self
-
-    @overload
-    def find_one(
-        self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
-        projection_model: None = None,
-        session: Optional[ClientSession] = None,
-    ) -> "FindOne[FindQueryResultType]":
-        ...
-
-    @overload
-    def find_one(
-        self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
-        projection_model: Type[FindQueryProjectionType],
-        session: Optional[ClientSession] = None,
-    ) -> "FindOne[FindQueryProjectionType]":
-        ...
 
     def find_one(
         self: "FindOne[FindQueryResultType]",
