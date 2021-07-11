@@ -1,46 +1,38 @@
 from typing import (
+    TYPE_CHECKING,
+    Any,
+    Coroutine,
+    Dict,
     Generator,
-    Union,
-    Optional,
+    Generic,
     List,
+    Mapping,
+    Optional,
     Tuple,
     Type,
-    Mapping,
-    TYPE_CHECKING,
-    Dict,
-    Any,
-    cast,
-    Generic,
-    Coroutine,
-    overload,
     TypeVar,
+    Union,
+    cast,
+    overload,
 )
-
-from pydantic import BaseModel
-from pymongo.client_session import ClientSession
-from pymongo.results import UpdateResult
 
 from beanie.exceptions import DocumentNotFound
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.aggregate import AggregateMethods
 from beanie.odm.interfaces.session import SessionMethods
-from beanie.odm.interfaces.update import (
-    UpdateMethods,
-)
+from beanie.odm.interfaces.update import UpdateMethods
 from beanie.odm.operators.find.logical import And
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.cursor import BaseCursorQuery
-from beanie.odm.queries.delete import (
-    DeleteQuery,
-    DeleteMany,
-    DeleteOne,
-)
-from beanie.odm.queries.update import (
-    UpdateQuery,
-    UpdateMany,
-    UpdateOne,
-)
+from beanie.odm.queries.delete import DeleteMany, DeleteOne, DeleteQuery
+from beanie.odm.queries.update import UpdateMany, UpdateOne, UpdateQuery
+from beanie.odm.utils.encoder import bsonable_encoder
 from beanie.odm.utils.projection import get_projection
+
+from pydantic import BaseModel
+
+from pymongo.client_session import ClientSession
+from pymongo.results import UpdateResult
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
@@ -593,7 +585,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         result: UpdateResult = (
             await self.document_model.get_motor_collection().replace_one(
                 self.get_filter_query(),
-                document.dict(by_alias=True, exclude={"id"}),
+                bsonable_encoder(document, by_alias=True, exclude={"id"}),
                 session=self.session,
             )
         )

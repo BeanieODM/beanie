@@ -1,4 +1,5 @@
 from beanie.odm.operators.find import BaseFindOperator
+from beanie.odm.utils.encoder import bsonable_encoder
 
 
 class BaseFindComparisonOperator(BaseFindOperator):
@@ -10,7 +11,7 @@ class BaseFindComparisonOperator(BaseFindOperator):
         other,
     ):
         self.field = field
-        self.other = other
+        self.other = bsonable_encoder(other)
 
     @property
     def query(self):
