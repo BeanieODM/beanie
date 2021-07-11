@@ -48,12 +48,16 @@ def iterative_migration(
             input_signature = self.function_signature.parameters.get(
                 "input_document"
             )
+            if input_signature is None:
+                raise RuntimeError("input_signature must not be None")
             self.input_document_model: Type[
                 Document
             ] = input_signature.annotation
             output_signature = self.function_signature.parameters.get(
                 "output_document"
             )
+            if output_signature is None:
+                raise RuntimeError("output_signature must not be None")
             self.output_document_model: Type[
                 Document
             ] = output_signature.annotation

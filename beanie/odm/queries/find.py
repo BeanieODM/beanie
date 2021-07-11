@@ -185,7 +185,7 @@ class FindMany(
 
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -205,7 +205,7 @@ class FindMany(
         :param session: Optional[ClientSession] - pymongo session
         :return: FindMany - query instance
         """
-        self.find_expressions += args
+        self.find_expressions += args  # type: ignore # bool workaround
         self.skip(skip)
         self.limit(limit)
         self.sort(sort)
@@ -230,7 +230,7 @@ class FindMany(
 
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -320,7 +320,7 @@ class FindMany(
         :param session: Optional[ClientSession]
         :return: [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
         """
-        return self.update(*args, session=session)
+        return cast(UpdateMany, self.update(*args, session=session))
 
     def delete_many(
         self, session: Optional[ClientSession] = None
@@ -413,7 +413,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         session: Optional[ClientSession] = None,
     ) -> Union[
@@ -427,7 +427,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         :param session: Optional[ClientSession] - pymongo session
         :return: FindOne - query instance
         """
-        self.find_expressions += args
+        self.find_expressions += args  # type: ignore # bool workaround
         self.project(projection_model)
         self.set_session(session=session)
         return self
@@ -442,7 +442,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         :param session: Optional[ClientSession] - PyMongo sessions
         :return: [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query
         """
-        return self.update(*args, session=session)
+        return cast(UpdateOne, self.update(*args, session=session))
 
     def delete_one(self, session: Optional[ClientSession] = None) -> DeleteOne:
         """
@@ -479,7 +479,9 @@ class FindOne(FindQuery[FindQueryResultType]):
             raise DocumentNotFound
         return result
 
-    def __await__(self) -> Generator[Coroutine, Any, FindQueryResultType]:
+    def __await__(
+        self,
+    ) -> Generator[Coroutine, Any, Optional[FindQueryResultType]]:
         """
         Run the query
         :return: BaseModel

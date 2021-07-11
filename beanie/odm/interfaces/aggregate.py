@@ -54,7 +54,7 @@ class AggregateMethods:
             List[Dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline, session=session
-            ).to_list(),
+            ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
         return result[0]["sum"]
 
@@ -88,7 +88,7 @@ class AggregateMethods:
             List[Dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline, session=session
-            ).to_list(),
+            ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
         return result[0]["avg"]
 
@@ -124,7 +124,7 @@ class AggregateMethods:
             List[Dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline, session=session
-            ).to_list(),
+            ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
         return result[0]["max"]
 
@@ -160,6 +160,6 @@ class AggregateMethods:
             List[Dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline, session=session
-            ).to_list(),
+            ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
         return result[0]["min"]

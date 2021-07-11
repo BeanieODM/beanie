@@ -168,7 +168,7 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find_one(
         cls: Type[DocType],
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
     ):
@@ -191,7 +191,7 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find_many(
         cls: Type[DocType],
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -224,7 +224,7 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def find(
         cls: Type[DocType],
-        *args: Union[Mapping[str, Any], Any],
+        *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,

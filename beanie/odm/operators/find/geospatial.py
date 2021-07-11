@@ -212,11 +212,11 @@ class Near(BaseFindGeospatialOperator):
         if self.max_distance:
             expression[self.field][self.operator][
                 "$maxDistance"
-            ] = self.max_distance
+            ] = self.max_distance  # type: ignore
         if self.min_distance:
             expression[self.field][self.operator][
                 "$minDistance"
-            ] = self.min_distance
+            ] = self.min_distance  # type: ignore
         return expression
 
 

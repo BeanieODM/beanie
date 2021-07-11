@@ -15,6 +15,7 @@ def get_model(dot_path: str) -> Type["DocType"]:
     :param dot_path: str - dot seprated path to the model
     :return: Type[DocType] - class of the model
     """
+    module_name, class_name = None, None
     try:
         module_name, class_name = dot_path.rsplit(".", 1)
         return getattr(importlib.import_module(module_name), class_name)
