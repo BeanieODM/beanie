@@ -24,7 +24,7 @@ class AggregateMethods:
         self,
         field: Union[str, ExpressionField],
         session: Optional[ClientSession] = None,
-    ) -> float:
+    ) -> Optional[float]:
         """
         Sum of values of the given field
 
@@ -42,7 +42,7 @@ class AggregateMethods:
 
         :param field: Union[str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
-        :return: float - sum
+        :return: float - sum. None if there are no items.
         """
         pipeline = [
             {"$group": {"_id": None, "sum": {"$sum": f"${field}"}}},
@@ -56,11 +56,13 @@ class AggregateMethods:
                 aggregation_pipeline=pipeline, session=session
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
+        if not result:
+            return None
         return result[0]["sum"]
 
     async def avg(
         self, field, session: Optional[ClientSession] = None
-    ) -> float:
+    ) -> Optional[float]:
         """
         Average of values of the given field
 
@@ -77,7 +79,7 @@ class AggregateMethods:
 
         :param field: Union[str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
-        :return: float - avg
+        :return: Optional[float] - avg. None if there are no items.
         """
         pipeline = [
             {"$group": {"_id": None, "avg": {"$avg": f"${field}"}}},
@@ -90,13 +92,15 @@ class AggregateMethods:
                 aggregation_pipeline=pipeline, session=session
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
+        if not result:
+            return None
         return result[0]["avg"]
 
     async def max(
         self,
         field: Union[str, ExpressionField],
         session: Optional[ClientSession] = None,
-    ) -> Any:
+    ) -> Optional[float]:
         """
         Max of the values of the given field
 
@@ -113,7 +117,7 @@ class AggregateMethods:
 
         :param field: Union[str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
-        :return: float - max
+        :return: float - max. None if there are no items.
         """
         pipeline = [
             {"$group": {"_id": None, "max": {"$max": f"${field}"}}},
@@ -126,13 +130,15 @@ class AggregateMethods:
                 aggregation_pipeline=pipeline, session=session
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
+        if not result:
+            return None
         return result[0]["max"]
 
     async def min(
         self,
         field: Union[str, ExpressionField],
         session: Optional[ClientSession] = None,
-    ) -> Any:
+    ) -> Optional[float]:
         """
         Min of the values of the given field
 
@@ -149,7 +155,7 @@ class AggregateMethods:
 
         :param field: Union[str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
-        :return: float - max
+        :return: float - min. None if there are no items.
         """
         pipeline = [
             {"$group": {"_id": None, "min": {"$min": f"${field}"}}},
@@ -162,4 +168,6 @@ class AggregateMethods:
                 aggregation_pipeline=pipeline, session=session
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
+        if not result:
+            return None
         return result[0]["min"]
