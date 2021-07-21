@@ -79,10 +79,8 @@ asyncio.run(example())
 
 ### Example Projects
 
-- **[FastAPI Demo](https://github.com/roman-right/beanie-fastapi-demo)** -
-  Beanie and FastAPI collaboration demonstration. CRUD and Aggregation.
-- **[Indexes Demo](https://github.com/roman-right/beanie-index-demo)** -
-  Regular and Geo Indexes usage example wrapped to a microservice.
+- **[fastapi-beanie-jwt](https://github.com/flyinactor91/fastapi-beanie-jwt)** - 
+  Sample FastAPI server with JWT auth and Beanie ODM by [Michael duPont](https://github.com/flyinactor91)
 
 ### Articles
 
