@@ -73,6 +73,13 @@ class DocumentTestModelWithIndexFlags(Document):
     test_str: Indexed(str, index_type=pymongo.DESCENDING, unique=True)
 
 
+class DocumentTestModelWithIndexFlagsAliases(Document):
+    test_int: Indexed(int, sparse=True) = Field(alias="testInt")
+    test_str: Indexed(str, index_type=pymongo.DESCENDING, unique=True) = Field(
+        alias="testStr"
+    )
+
+
 class DocumentTestModelWithComplexIndex(Document):
     test_int: int
     test_list: List[SubDocument]
