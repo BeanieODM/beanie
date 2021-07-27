@@ -65,9 +65,15 @@ async def collection_factory(
     # Indexed field wrapped with Indexed()
     found_indexes = [
         IndexModel(
-            [(fname, fvalue.type_._indexed[0])], **fvalue.type_._indexed[1]
+            [
+                (
+                    fvalue.alias,
+                    fvalue.type_._indexed[0],
+                )
+            ],
+            **fvalue.type_._indexed[1]
         )
-        for fname, fvalue in document_model.__fields__.items()
+        for _, fvalue in document_model.__fields__.items()
         if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
     ]
 

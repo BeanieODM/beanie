@@ -2,6 +2,27 @@
 
 Beanie project changes
 
+## [1.2.5] - 2021-07-21
+
+### Fixed
+
+- Indexed fields work with aliases now
+
+### Implementation
+
+- Author - [Kira](https://github.com/KiraPC)
+- Issue - <https://github.com/roman-right/beanie/issues/96>
+
+## [1.2.4] - 2021-07-13
+
+### Fixed
+
+- Aggregation preset method outputs
+
+### Implementation
+
+- Issue - <https://github.com/roman-right/beanie/issues/91>
+
 ## [1.2.3] - 2021-07-08
 
 ### Fixed
@@ -365,4 +386,8 @@ Beanie project changes
 
 [1.2.2]: https://pypi.org/project/beanie/1.2.2
 
-[1.2.2]: https://pypi.org/project/beanie/1.2.2
+[1.2.3]: https://pypi.org/project/beanie/1.2.3
+
+[1.2.4]: https://pypi.org/project/beanie/1.2.4
+
+[1.2.5]: https://pypi.org/project/beanie/1.2.5

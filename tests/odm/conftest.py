@@ -7,6 +7,7 @@ import pytest
 from beanie.odm.utils.general import init_beanie
 from tests.odm.models import (
     DocumentTestModel,
+    DocumentTestModelWithIndexFlagsAliases,
     SubDocument,
     DocumentTestModelWithCustomCollectionName,
     DocumentTestModelWithSimpleIndex,
@@ -115,6 +116,7 @@ async def init(loop, db):
         DocumentTestModelWithCustomCollectionName,
         DocumentTestModelWithSimpleIndex,
         DocumentTestModelWithIndexFlags,
+        DocumentTestModelWithIndexFlagsAliases,
         DocumentTestModelWithComplexIndex,
         DocumentTestModelFailInspection,
         DocumentWithCustomIdUUID,

@@ -7,6 +7,7 @@ from beanie.odm.utils.projection import get_projection
 from tests.odm.models import (
     DocumentTestModel,
     DocumentTestModelWithCustomCollectionName,
+    DocumentTestModelWithIndexFlagsAliases,
     DocumentTestModelWithSimpleIndex,
     DocumentTestModelWithIndexFlags,
     DocumentTestModelWithComplexIndex,
@@ -54,6 +55,23 @@ async def test_flagged_index_creation():
     }
     assert index_info["test_str_-1"] == {
         "key": [("test_str", -1)],
+        "unique": True,
+        "v": 2,
+    }
+
+
+async def test_flagged_index_creation_with_alias():
+    collection: AsyncIOMotorCollection = (
+        DocumentTestModelWithIndexFlagsAliases.get_motor_collection()
+    )
+    index_info = await collection.index_information()
+    assert index_info["testInt_1"] == {
+        "key": [("testInt", 1)],
+        "sparse": True,
+        "v": 2,
+    }
+    assert index_info["testStr_-1"] == {
+        "key": [("testStr", -1)],
         "unique": True,
         "v": 2,
     }
