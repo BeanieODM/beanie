@@ -45,8 +45,6 @@ def bsonable_encoder(
             exclude=exclude,  # type: ignore # in Pydantic
             by_alias=by_alias,
         )
-        if "__root__" in obj_dict:
-            obj_dict = obj_dict["__root__"]
         return bsonable_encoder(
             obj_dict,
             custom_encoder=encoder,
@@ -60,36 +58,21 @@ def bsonable_encoder(
     if isinstance(obj, dict):
         encoded_dict = {}
         for key, value in obj.items():
-            if (
-                ((not isinstance(key, str)) or (not key.startswith("_sa")))
-                and (value is not None)
-                and (not exclude or key not in exclude)
-            ):
-                encoded_key = bsonable_encoder(
-                    key,
-                    by_alias=by_alias,
-                    custom_encoder=custom_encoder,
-                )
+            if value is not None:
                 encoded_value = bsonable_encoder(
                     value,
                     by_alias=by_alias,
                     custom_encoder=custom_encoder,
                 )
-                encoded_dict[encoded_key] = encoded_value
+                encoded_dict[key] = encoded_value
         return encoded_dict
     if isinstance(obj, (list, set, frozenset, GeneratorType, tuple)):
-        encoded_list = []
-        for item in obj:
-            encoded_list.append(
-                bsonable_encoder(
+        return [bsonable_encoder(
                     item,
                     exclude=exclude,
                     by_alias=by_alias,
                     custom_encoder=custom_encoder,
-                )
-            )
-        return encoded_list
-
+                ) for item in obj]
     if type(obj) in ENCODERS_BY_TYPE:
         return ENCODERS_BY_TYPE[type(obj)](obj)
     for encoder, classes_tuple in encoders_by_class_tuples.items():

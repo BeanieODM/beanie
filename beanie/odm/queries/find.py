@@ -68,7 +68,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
 
     def get_filter_query(self) -> Mapping[str, Any]:
         if self.find_expressions:
-            return And(*self.find_expressions)
+            return bsonable_encoder(And(*self.find_expressions))
         else:
             return {}
 

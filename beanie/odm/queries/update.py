@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from beanie.odm.utils.encoder import bsonable_encoder
 from typing import (
     List,
     Type,
@@ -55,7 +56,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
                 query.update(expression)
             else:
                 raise TypeError("Wrong expression type")
-        return query
+        return bsonable_encoder(query)
 
     def update(
         self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
