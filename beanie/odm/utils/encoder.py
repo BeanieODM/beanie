@@ -4,6 +4,7 @@ from enum import Enum
 from pathlib import PurePath
 from types import GeneratorType
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -53,26 +54,30 @@ def bsonable_encoder(
         return obj.value
     if isinstance(obj, PurePath):
         return str(obj)
-    if isinstance(obj, (str, int, float, ObjectId, datetime, type(None))):
+    if isinstance(
+        obj, (str, int, float, ObjectId, UUID, datetime, type(None))
+    ):
         return obj
     if isinstance(obj, dict):
         encoded_dict = {}
         for key, value in obj.items():
-            if value is not None:
-                encoded_value = bsonable_encoder(
-                    value,
-                    by_alias=by_alias,
-                    custom_encoder=custom_encoder,
-                )
-                encoded_dict[key] = encoded_value
+            encoded_value = bsonable_encoder(
+                value,
+                by_alias=by_alias,
+                custom_encoder=custom_encoder,
+            )
+            encoded_dict[key] = encoded_value
         return encoded_dict
     if isinstance(obj, (list, set, frozenset, GeneratorType, tuple)):
-        return [bsonable_encoder(
-                    item,
-                    exclude=exclude,
-                    by_alias=by_alias,
-                    custom_encoder=custom_encoder,
-                ) for item in obj]
+        return [
+            bsonable_encoder(
+                item,
+                exclude=exclude,
+                by_alias=by_alias,
+                custom_encoder=custom_encoder,
+            )
+            for item in obj
+        ]
     if type(obj) in ENCODERS_BY_TYPE:
         return ENCODERS_BY_TYPE[type(obj)](obj)
     for encoder, classes_tuple in encoders_by_class_tuples.items():

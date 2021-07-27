@@ -12,7 +12,6 @@ from ipaddress import (
     IPv6Network,
 )
 from typing import Any, Callable, Dict, Type
-from uuid import UUID
 
 if sys.version_info >= (3, 7):
     Pattern = re.Pattern
@@ -40,5 +39,4 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     # Pattern: lambda o: o.pattern, # bson.regex.Regex?
     SecretBytes: str,
     SecretStr: str,
-    UUID: str,
 }
