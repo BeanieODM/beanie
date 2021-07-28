@@ -1,13 +1,21 @@
 import datetime
-from typing import List
-from typing import Union, Optional, Tuple
+from decimal import Decimal
+from ipaddress import (
+    IPv4Address,
+    IPv4Interface,
+    IPv4Network,
+    IPv6Address,
+    IPv6Interface,
+    IPv6Network,
+)
+from typing import List, Optional, Tuple, Union
 from uuid import UUID, uuid4
 
 import pymongo
-from pydantic import BaseModel, Field
-from pymongo import IndexModel
-
 from beanie import Document, Indexed
+from pydantic import BaseModel, Field, SecretBytes, SecretStr
+from pydantic.color import Color
+from pymongo import IndexModel
 
 
 class Option2(BaseModel):
@@ -131,3 +139,19 @@ class DocumentWithCustomIdUUID(Document):
 class DocumentWithCustomIdInt(Document):
     id: int
     name: str
+
+
+class DocumentWithCustomFiledsTypes(Document):
+    color: Color
+    decimal: Decimal
+    secret_bytes: SecretBytes
+    secret_string: SecretStr
+    ipv4address: IPv4Address
+    ipv4interface: IPv4Interface
+    ipv4network: IPv4Network
+    ipv6address: IPv6Address
+    ipv6interface: IPv6Interface
+    ipv6network: IPv6Network
+    date: datetime.date
+    time: datetime.time
+    timedelta: datetime.timedelta

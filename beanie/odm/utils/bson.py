@@ -1,6 +1,6 @@
 import datetime
-import re
-import sys
+# import re
+# import sys
 from collections import deque
 from decimal import Decimal
 from ipaddress import (
@@ -13,22 +13,22 @@ from ipaddress import (
 )
 from typing import Any, Callable, Dict, Type
 
-if sys.version_info >= (3, 7):
-    Pattern = re.Pattern
-else:
-    # python 3.6
-    Pattern = re.compile("a").__class__
+# if sys.version_info >= (3, 7):
+#     Pattern = re.Pattern
+# else:
+#     # python 3.6
+#     Pattern = re.compile("a").__class__
 
 from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
-from pydantic.json import decimal_encoder, isoformat
+from pydantic.json import isoformat
 
 ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     Color: str,
     datetime.date: isoformat,
     datetime.time: isoformat,
     datetime.timedelta: lambda td: td.total_seconds(),
-    Decimal: decimal_encoder,
+    Decimal: float,
     deque: list,
     IPv4Address: str,
     IPv4Interface: str,
@@ -37,6 +37,6 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     IPv6Interface: str,
     IPv6Network: str,
     # Pattern: lambda o: o.pattern, # bson.regex.Regex?
-    SecretBytes: str,
-    SecretStr: str,
+    SecretBytes: SecretBytes.get_secret_value,
+    SecretStr: SecretStr.get_secret_value,
 }
