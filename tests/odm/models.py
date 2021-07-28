@@ -8,6 +8,7 @@ from ipaddress import (
     IPv6Interface,
     IPv6Network,
 )
+from pathlib import Path
 from typing import List, Optional, Tuple, Union
 from uuid import UUID, uuid4
 
@@ -155,3 +156,15 @@ class DocumentWithCustomFiledsTypes(Document):
     date: datetime.date
     time: datetime.time
     timedelta: datetime.timedelta
+    set_type: set[str]
+    tuple_type: tuple[int, str]
+    path: Path
+
+
+class DocumentWithBsonEncodersFiledsTypes(Document):
+    color: Color
+
+    class Collection:
+        bson_encoders = {
+            Color: lambda c: c.as_rgb()
+        }

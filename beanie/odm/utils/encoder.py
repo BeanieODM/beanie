@@ -39,7 +39,10 @@ def bsonable_encoder(
     if exclude is not None and not isinstance(exclude, (set, dict)):
         exclude = set(exclude)
     if isinstance(obj, BaseModel):
-        encoder = getattr(obj.__config__, "bson_encoders", {})
+        encoder = {}
+        collection_class = getattr(obj, "Collection", None)
+        if collection_class:
+            encoder = vars(collection_class).get("bson_encoders", {})
         if custom_encoder:
             encoder.update(custom_encoder)
         obj_dict = obj.dict(

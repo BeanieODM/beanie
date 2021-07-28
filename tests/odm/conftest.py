@@ -17,6 +17,7 @@ from tests.odm.models import (
     DocumentWithCustomIdUUID,
     DocumentWithCustomIdInt,
     DocumentWithCustomFiledsTypes,
+    DocumentWithBsonEncodersFiledsTypes,
 )
 from tests.odm.models import (
     Sample,
@@ -120,6 +121,7 @@ async def init(loop, db):
         DocumentTestModelWithIndexFlagsAliases,
         DocumentTestModelWithComplexIndex,
         DocumentTestModelFailInspection,
+        DocumentWithBsonEncodersFiledsTypes,
         DocumentWithCustomFiledsTypes,
         DocumentWithCustomIdUUID,
         DocumentWithCustomIdInt,

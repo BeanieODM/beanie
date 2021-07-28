@@ -1,9 +1,13 @@
+from pathlib import Path
 import pytest
 from pydantic import BaseModel, ValidationError
 
 from beanie.odm.fields import PydanticObjectId
 from beanie.odm.utils.encoder import bsonable_encoder
-from tests.odm.models import DocumentWithCustomFiledsTypes
+from tests.odm.models import (
+    DocumentWithCustomFiledsTypes,
+    DocumentWithBsonEncodersFiledsTypes,
+)
 
 
 class M(BaseModel):
@@ -23,6 +27,15 @@ def test_pydantic_object_id_bytes_input():
         M(p=b"test")
 
 
+async def test_bson_encoders_filed_types():
+    custom = DocumentWithBsonEncodersFiledsTypes(
+        color="7fffd4",
+    )
+    c = await custom.insert()
+    c_fromdb = await DocumentWithBsonEncodersFiledsTypes.get(c.id)
+    assert c_fromdb.color.as_hex() == c.color.as_hex()
+
+
 async def test_custom_filed_types():
     custom1 = DocumentWithCustomFiledsTypes(
         color="#753c38",
@@ -38,6 +51,9 @@ async def test_custom_filed_types():
         date="2000-12-24",
         time="12:24:12.000333",
         timedelta=4782453,
+        set_type={"one", "two", "three"},
+        tuple_type=tuple([3, "string"]),
+        path="/etc/hosts",
     )
     custom2 = DocumentWithCustomFiledsTypes(
         color="magenta",
@@ -53,6 +69,9 @@ async def test_custom_filed_types():
         date=1627498153,
         time="12:35",
         timedelta=4782453,
+        set_type=["one", "two", "three"],
+        tuple_type=[3, "three"],
+        path=Path("C:\\Windows")
     )
     c1 = await custom1.insert()
     c2 = await custom2.insert()
