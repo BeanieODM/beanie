@@ -3,7 +3,17 @@ from datetime import datetime
 from enum import Enum
 from pathlib import PurePath
 from types import GeneratorType
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import (
+    AbstractSet,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Mapping,
+    Set,
+    Tuple,
+    Union,
+)
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -32,7 +42,9 @@ encoders_by_class_tuples = generate_encoders_by_class_tuples(ENCODERS_BY_TYPE)
 
 def bsonable_encoder(
     obj: Any,
-    exclude: Optional[Union[SetIntStr, DictIntStrAny]] = None,
+    exclude: Union[
+        AbstractSet[Union[str, int]], Mapping[Union[str, int], Any], None
+    ] = None,
     by_alias: bool = True,
     custom_encoder: Dict[Any, Callable[[Any], Any]] = {},
 ) -> Any:

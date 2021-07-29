@@ -9,7 +9,7 @@ from ipaddress import (
     IPv6Network,
 )
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Set, Tuple, Union
 from uuid import UUID, uuid4
 
 import pymongo
@@ -156,7 +156,7 @@ class DocumentWithCustomFiledsTypes(Document):
     date: datetime.date
     time: datetime.time
     timedelta: datetime.timedelta
-    set_type: set[str]
+    set_type: Set[str]
     tuple_type: tuple[int, str]
     path: Path
 
