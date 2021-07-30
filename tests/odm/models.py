@@ -157,7 +157,7 @@ class DocumentWithCustomFiledsTypes(Document):
     time: datetime.time
     timedelta: datetime.timedelta
     set_type: Set[str]
-    tuple_type: tuple[int, str]
+    tuple_type: Tuple[int, str]
     path: Path
 
 

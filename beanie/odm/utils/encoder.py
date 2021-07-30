@@ -51,19 +51,19 @@ def bsonable_encoder(
     if exclude is not None and not isinstance(exclude, (set, dict)):
         exclude = set(exclude)
     if isinstance(obj, BaseModel):
-        encoder = {}
+        encoders = {}
         collection_class = getattr(obj, "Collection", None)
         if collection_class:
-            encoder = vars(collection_class).get("bson_encoders", {})
+            encoders = vars(collection_class).get("bson_encoders", {})
         if custom_encoder:
-            encoder.update(custom_encoder)
+            encoders.update(custom_encoder)
         obj_dict = obj.dict(
             exclude=exclude,  # type: ignore # in Pydantic
             by_alias=by_alias,
         )
         return bsonable_encoder(
             obj_dict,
-            custom_encoder=encoder,
+            custom_encoder=encoders,
         )
     if isinstance(obj, Enum):
         return obj.value
