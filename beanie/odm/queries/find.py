@@ -1,4 +1,5 @@
 from typing import (
+    Callable,
     TYPE_CHECKING,
     Any,
     Coroutine,
@@ -65,10 +66,16 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
             Type[FindQueryResultType], self.document_model
         )
         self.session = None
+        self.encoders: Dict[Any, Callable[[Any], Any]] = {}
+        collection_class = getattr(self.document_model, "Collection", None)
+        if collection_class:
+            self.encoders = vars(collection_class).get("bson_encoders", {})
 
     def get_filter_query(self) -> Mapping[str, Any]:
         if self.find_expressions:
-            return And(*bsonable_encoder(self.find_expressions))
+            return bsonable_encoder(
+                And(*self.find_expressions).query, custom_encoder=self.encoders
+            )
         else:
             return {}
 
