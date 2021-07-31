@@ -1,8 +1,9 @@
 import pytest
 from pydantic import BaseModel
+from pydantic.color import Color
 
 from beanie.odm.enums import SortDirection
-from tests.odm.models import Sample
+from tests.odm.models import Sample, DocumentWithBsonEncodersFiledsTypes
 
 
 async def test_find_query():
@@ -286,3 +287,14 @@ async def test_find_many_with_session(preset_documents, session):
         len_result += 1
 
     assert len_result == len(result)
+
+
+async def test_bson_encoders_filed_types():
+    custom = DocumentWithBsonEncodersFiledsTypes(
+        color="7fffd4",
+    )
+    c = await custom.insert()
+    c_fromdb = await DocumentWithBsonEncodersFiledsTypes.find_one(
+        DocumentWithBsonEncodersFiledsTypes.color == Color("7fffd4")
+    )
+    assert c_fromdb.color.as_hex() == c.color.as_hex()
