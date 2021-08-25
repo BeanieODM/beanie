@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.2.6] - 2021-07-21
+
+### Fixed
+
+- MongoDB 5.0 in GH actions
+
+### Implementation
+
+- PR - <https://github.com/roman-right/beanie/pull/100>
+
 ## [1.2.5] - 2021-07-21
 
 ### Fixed
@@ -391,3 +401,5 @@ Beanie project changes
 [1.2.4]: https://pypi.org/project/beanie/1.2.4
 
 [1.2.5]: https://pypi.org/project/beanie/1.2.5
+
+[1.2.6]: https://pypi.org/project/beanie/1.2.6
