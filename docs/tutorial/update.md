@@ -17,7 +17,7 @@ Or similairly using replace, which trows a `ValueError` if the document does not
 ```python
 bar.price = 10
 try:
-    await bar.update()
+    await bar.replace()
 except (ValueError, beanie.exceptions.DocumentNotFound):
     print("Can't replace a non existing document")
 ```
