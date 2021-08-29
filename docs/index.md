@@ -21,7 +21,7 @@ Data and schema migrations are supported by Beanie out of the box.
 
 - [Getting started](getting-started.md) - Walks you through setup and gives a minimal example.
 - [Tutorial](tutorial/defining-a-document.md) - Start learning more about beanie.
-- API Documentation - Auto generated documentation of all functions and classes.
+- [API Documentation](api/document.md) - Auto generated documentation of all functions and classes.
 - [Development](development.md) - Guide for developers that want to add to Beanie.
 
 ## Other Links
