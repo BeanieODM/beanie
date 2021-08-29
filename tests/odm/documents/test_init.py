@@ -1,5 +1,6 @@
 import pytest
 from motor.motor_asyncio import AsyncIOMotorCollection
+from yarl import URL
 
 from beanie import Document, init_beanie
 from beanie.exceptions import CollectionWasNotInitialized
@@ -16,12 +17,43 @@ from tests.odm.models import (
 )
 
 
-async def test_init():
+async def test_init_collection_was_not_initialized():
     class NewDocument(Document):
         test_str: str
 
     with pytest.raises(CollectionWasNotInitialized):
         NewDocument(test_str="test")
+
+
+async def test_init_connection_string(settings):
+    class NewDocumentCS(Document):
+        test_str: str
+
+    await init_beanie(
+        connection_string=settings.mongodb_dsn, document_models=[NewDocumentCS]
+    )
+    assert (
+        NewDocumentCS.get_motor_collection().database.name
+        == URL(settings.mongodb_dsn).path[1:]
+    )
+
+
+async def test_init_wrong_params(settings, db):
+    class NewDocumentCS(Document):
+        test_str: str
+
+    with pytest.raises(ValueError):
+        await init_beanie(
+            database=db,
+            connection_string=settings.mongodb_dsn,
+            document_models=[NewDocumentCS],
+        )
+
+    with pytest.raises(ValueError):
+        await init_beanie(document_models=[NewDocumentCS])
+
+    with pytest.raises(ValueError):
+        await init_beanie(connection_string=settings.mongodb_dsn)
 
 
 async def test_collection_with_custom_name():
