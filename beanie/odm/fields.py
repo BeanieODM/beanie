@@ -1,7 +1,10 @@
+from typing import Generic, TypeVar
+
 from bson import ObjectId
 from bson.errors import InvalidId
 from pydantic.json import ENCODERS_BY_TYPE
-from pymongo import ASCENDING
+from pydantic.generics import GenericModel
+import pymongo
 
 from beanie.odm.enums import SortDirection
 from beanie.odm.operators.find.comparison import (
@@ -13,8 +16,26 @@ from beanie.odm.operators.find.comparison import (
     NE,
 )
 
+_IndexedType = TypeVar("_IndexedType")
 
-def Indexed(typ, index_type=ASCENDING, **kwargs):
+
+class AscendingIndex(GenericModel, Generic[_IndexedType]):
+    _indexed = (pymongo.ASCENDING, {})
+
+
+class DescendingIndex(GenericModel, Generic[_IndexedType]):
+    _indexed = (pymongo.DESCENDING, {})
+
+
+class HashedIndex(GenericModel, Generic[_IndexedType]):
+    _indexed = (pymongo.HASHED, {})
+
+
+class TextIndex(GenericModel):
+    _indexed = (pymongo.TEXT, {})
+
+
+def Indexed(typ, index_type=pymongo.ASCENDING, **kwargs):
     """
     Returns a subclass of `typ` with an extra attribute `_indexed` as a tuple:
     - Index 0: `index_type` such as `pymongo.ASCENDING`
