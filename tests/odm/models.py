@@ -1,3 +1,4 @@
+import beanie.odm.fields as fields
 import datetime
 from typing import List
 from typing import Union, Optional, Tuple
@@ -131,3 +132,16 @@ class DocumentWithCustomIdUUID(Document):
 class DocumentWithCustomIdInt(Document):
     id: int
     name: str
+
+
+class DocumentTestModelWithTypedIndexFields(Document):
+    test_int: fields.AscendingIndex[int] = Field(alias="testInt")
+    test_str: fields.DescendingIndex[str] = Field(alias="testStr")
+
+
+class DocumentTestModelWithHashedIndexes(Document):
+    test_str: fields.HashedIndex[str] = Field(alias="testStr")
+
+
+class DocumentTestModelWithTextIndexes(Document):
+    test_str: fields.TextIndex = Field(alias="testStr")
