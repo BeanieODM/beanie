@@ -2,7 +2,18 @@
 
 Beanie project changes
 
-## [1.2.6] - 2021-07-21
+## [1.2.7] - 2021-09-01
+
+### Update
+
+- Annotations for update and delete
+
+### Implementation
+
+- Author - [Anthony Shaw](https://github.com/tonybaloney)
+- Issue - <https://github.com/roman-right/beanie/pull/106>
+
+## [1.2.6] - 2021-08-25
 
 ### Fixed
 
@@ -403,3 +414,5 @@ Beanie project changes
 [1.2.5]: https://pypi.org/project/beanie/1.2.5
 
 [1.2.6]: https://pypi.org/project/beanie/1.2.6
+
+[1.2.7]: https://pypi.org/project/beanie/1.2.7

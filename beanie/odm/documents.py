@@ -192,7 +192,7 @@ class Document(BaseModel, UpdateMethods):
         *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
-    ):
+    ) -> Union[FindOne[DocType], FindOne[DocumentProjectionType]]:
         """
         Find one document by criteria.
         Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object.
