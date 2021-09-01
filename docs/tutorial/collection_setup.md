@@ -57,7 +57,7 @@ The `indexes` field of the inner `Collection` class is responsible for more comp
 - list of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
   example: `pymongo.ASCENDING`)
 - `pymongo.IndexModel` instance - the most flexible
-  option. [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/beanie/api/pymongo/operations.html#pymongo.operations.IndexModel)
+  option. [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)
 
 ```python
 class DocumentTestModelWithIndex(Document):
