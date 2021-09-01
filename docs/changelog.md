@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.2.8] - 2021-09-01
+
+### Fix
+
+- Delete's return annotation
+
+### Implementation
+
+- Issue - <https://github.com/roman-right/beanie/pull/109>
+
 ## [1.2.7] - 2021-09-01
 
 ### Update
@@ -416,3 +426,5 @@ Beanie project changes
 [1.2.6]: https://pypi.org/project/beanie/1.2.6
 
 [1.2.7]: https://pypi.org/project/beanie/1.2.7
+
+[1.2.8]: https://pypi.org/project/beanie/1.2.8

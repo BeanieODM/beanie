@@ -497,24 +497,24 @@ class Document(BaseModel, UpdateMethods):
 
     async def delete(
         self, session: Optional[ClientSession] = None
-    ) -> DeleteResult:
+    ) -> Optional[DeleteResult]:
         """
         Delete the document
 
         :param session: Optional[ClientSession] - pymongo session.
-        :return: DeleteResult - pymongo DeleteResult instance.
+        :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
         return await self.find_one({"_id": self.id}).delete(session=session)
 
     @classmethod
     async def delete_all(
         cls, session: Optional[ClientSession] = None
-    ) -> DeleteResult:
+    ) -> Optional[DeleteResult]:
         """
         Delete all the documents
 
         :param session: Optional[ClientSession] - pymongo session.
-        :return: DeleteResult - pymongo DeleteResult instance.
+        :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
         return await cls.find_all().delete(session=session)
 
