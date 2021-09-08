@@ -416,7 +416,7 @@ class Document(BaseModel, UpdateMethods):
             session=session,
         )
 
-    @wrap_with_actions(EventTypes.INSERT)
+    @wrap_with_actions(EventTypes.REPLACE)
     async def replace(
         self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:

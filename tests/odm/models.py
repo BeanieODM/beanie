@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from pymongo import IndexModel
 
 from beanie import Document, Indexed
-from beanie.odm.actions import before_event, EventTypes
+from beanie.odm.actions import before_event, EventTypes, after_event
 
 
 class Option2(BaseModel):
@@ -136,7 +136,22 @@ class DocumentWithCustomIdInt(Document):
 
 class DocumentWithActions(Document):
     name: str
+    num_1: int = 0
+    num_2: int = 10
+    num_3: int = 100
 
     @before_event(event_types=EventTypes.INSERT)
     def capitalize_name(self):
         self.name = self.name.capitalize()
+
+    @before_event(event_types=[EventTypes.INSERT, EventTypes.REPLACE])
+    async def add_one(self):
+        self.num_1 += 1
+
+    @after_event(event_types=EventTypes.INSERT)
+    def num_2_change(self):
+        self.num_2 -= 1
+
+    @after_event(event_types=EventTypes.REPLACE)
+    def num_3_change(self):
+        self.num_3 -= 1

@@ -92,6 +92,7 @@ def register_action(
         ActionRegistry.add_action(
             event_types=event_types, action_direction=action_direction, funct=f
         )
+        return f
 
     return decorator
 
@@ -110,7 +111,7 @@ def after_event(event_types: Union[List[EventTypes], EventTypes]):
 
 def wrap_with_actions(event_type: EventTypes):
     def decorator(f: Callable):
-        @wraps
+        @wraps(f)
         async def wrapper(self, *args, **kwargs):
             await ActionRegistry.run_actions(
                 self,
