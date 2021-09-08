@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.3.0] - 2021-09-08
+
+### Added
+
+- Active record pattern
+
+### Implementation
+
+- Issue - <https://github.com/roman-right/beanie/issues/110>
+
 ## [1.2.8] - 2021-09-01
 
 ### Fix
@@ -10,7 +20,7 @@ Beanie project changes
 
 ### Implementation
 
-- Issue - <https://github.com/roman-right/beanie/pull/109>
+- PR - <https://github.com/roman-right/beanie/pull/109>
 
 ## [1.2.7] - 2021-09-01
 
@@ -21,7 +31,7 @@ Beanie project changes
 ### Implementation
 
 - Author - [Anthony Shaw](https://github.com/tonybaloney)
-- Issue - <https://github.com/roman-right/beanie/pull/106>
+- PR - <https://github.com/roman-right/beanie/pull/106>
 
 ## [1.2.6] - 2021-08-25
 
@@ -428,3 +438,5 @@ Beanie project changes
 [1.2.7]: https://pypi.org/project/beanie/1.2.7
 
 [1.2.8]: https://pypi.org/project/beanie/1.2.8
+
+[1.3.0]: https://pypi.org/project/beanie/1.3.0
