@@ -27,6 +27,7 @@ from beanie.exceptions import (
     ReplaceError,
     DocumentNotFound,
 )
+from beanie.odm.actions import EventTypes, wrap_with_actions
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import PydanticObjectId, ExpressionField
 from beanie.odm.interfaces.update import (
@@ -84,6 +85,7 @@ class Document(BaseModel, UpdateMethods):
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
 
+    @wrap_with_actions(EventTypes.INSERT)
     async def insert(
         self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:
@@ -414,6 +416,7 @@ class Document(BaseModel, UpdateMethods):
             session=session,
         )
 
+    @wrap_with_actions(EventTypes.REPLACE)
     async def replace(
         self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:
