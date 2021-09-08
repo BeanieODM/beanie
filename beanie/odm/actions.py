@@ -18,6 +18,10 @@ class EventTypes(str, Enum):
     REPLACE = "REPLACE"
 
 
+Insert = EventTypes.INSERT
+Replace = EventTypes.REPLACE
+
+
 class ActionDirections(str, Enum):  # TODO think about this name
     BEFORE = "BEFORE"
     AFTER = "AFTER"
@@ -25,6 +29,7 @@ class ActionDirections(str, Enum):  # TODO think about this name
 
 class ActionRegistry:
     _actions: Dict[str, Any] = {}
+
     # TODO the real type is
     #  Dict[str, Dict[EventTypes,Dict[ActionDirections: List[Callable]]]]
     #  But mypy says it has syntax error inside. Fix it.
@@ -36,6 +41,12 @@ class ActionRegistry:
         action_direction: ActionDirections,
         funct: Callable,
     ):
+        """
+        Add action to the action registry
+        :param event_types: List[EventTypes]
+        :param action_direction: ActionDirections - before or after
+        :param funct: Callable - function
+        """
         class_path = get_class_path_for_method(funct)
         if cls._actions.get(class_path) is None:
             cls._actions[class_path] = {
@@ -57,6 +68,13 @@ class ActionRegistry:
         event_types: EventTypes,
         action_direction: ActionDirections,
     ) -> List[Callable]:
+        """
+        Get stored action list
+        :param class_path: str - path to the class
+        :param event_types: EventTypes - type of needed event
+        :param action_direction: ActionDirections - before or after
+        :return: List[Callable] - list of stored methods
+        """
         if class_path not in cls._actions:
             return []
         return cls._actions[class_path][event_types][action_direction]
@@ -68,6 +86,12 @@ class ActionRegistry:
         event_type: EventTypes,
         action_direction: ActionDirections,
     ):
+        """
+        Run actions
+        :param instance: Document - object of the Document subclass
+        :param event_type: EventTypes - event types
+        :param action_direction: ActionDirections - before or after
+        """
         class_path = get_class_path_for_object(instance)
         actions_list = cls.get_action_list(
             class_path, event_type, action_direction
@@ -82,9 +106,16 @@ class ActionRegistry:
 
 
 def register_action(
-    action_direction: ActionDirections,
     event_types: Union[List[EventTypes], EventTypes],
+    action_direction: ActionDirections,
 ):
+    """
+    Decorator. Base registration method.
+    Used inside `before_event` and `after_event`
+    :param event_types: Union[List[EventTypes], EventTypes] - event types
+    :param action_direction: ActionDirections - before or after
+    :return:
+    """
     if isinstance(event_types, EventTypes):
         event_types = [event_types]
 
@@ -98,18 +129,39 @@ def register_action(
 
 
 def before_event(event_types: Union[List[EventTypes], EventTypes]):
+    """
+    Decorator. It adds action, which should run before mentioned one
+    or many events happen
+
+    :param event_types: Union[List[EventTypes], EventTypes] - event types
+    :return: None
+    """
     return register_action(
         action_direction=ActionDirections.BEFORE, event_types=event_types
     )
 
 
 def after_event(event_types: Union[List[EventTypes], EventTypes]):
+    """
+    Decorator. It adds action, which should run after mentioned one
+    or many events happen
+
+    :param event_types: Union[List[EventTypes], EventTypes] - event types
+    :return: None
+    """
     return register_action(
         action_direction=ActionDirections.AFTER, event_types=event_types
     )
 
 
 def wrap_with_actions(event_type: EventTypes):
+    """
+    Helper function to wrap Document methods with
+    before and after event listeners
+    :param event_type: EventTypes - event types
+    :return: None
+    """
+
     def decorator(f: Callable):
         @wraps(f)
         async def wrapper(self, *args, **kwargs):
