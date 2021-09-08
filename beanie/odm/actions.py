@@ -121,7 +121,9 @@ def register_action(
 
     def decorator(f):
         ActionRegistry.add_action(
-            event_types=event_types, action_direction=action_direction, funct=f
+            event_types=event_types,  # type: ignore
+            action_direction=action_direction,
+            funct=f,
         )
         return f
 
