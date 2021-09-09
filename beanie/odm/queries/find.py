@@ -40,6 +40,7 @@ from beanie.odm.queries.update import (
     UpdateMany,
     UpdateOne,
 )
+from beanie.odm.utils.parsing import parse_obj
 from beanie.odm.utils.projection import get_projection
 
 if TYPE_CHECKING:
@@ -620,5 +621,5 @@ class FindOne(FindQuery[FindQueryResultType]):
         if document is None:
             return None
         return cast(
-            FindQueryResultType, self.projection_model.parse_obj(document)
+            FindQueryResultType, parse_obj(self.projection_model, document)
         )

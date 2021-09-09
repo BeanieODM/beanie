@@ -20,6 +20,7 @@ class IndexModelField(IndexModel):
 
 class CollectionInputParameters(BaseModel):
     name: str = ""
+    use_state_management: bool = False
     indexes: List[IndexModelField] = []
 
     class Config:
@@ -95,5 +96,6 @@ async def collection_factory(
         name: str = collection_parameters.name
         motor_collection: AsyncIOMotorCollection = collection
         indexes: List = found_indexes
+        use_state_management: bool = collection_parameters.use_state_management
 
     return CollectionMeta
