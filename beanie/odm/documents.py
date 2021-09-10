@@ -701,7 +701,7 @@ class Document(BaseModel, UpdateMethods):
         if not self.is_changed:
             return None
         changes = self.get_changes()
-        await self.set(changes)
+        await self.set(changes)  # type: ignore #TODO fix this
 
     @saved_state_needed
     def rollback(self) -> None:
