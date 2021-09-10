@@ -695,6 +695,7 @@ class Document(BaseModel, UpdateMethods):
         return changes
 
     @saved_state_needed
+    @wrap_with_actions(EventTypes.SAVE_CHANGES)
     @save_state_after
     async def save_changes(self) -> None:
         if not self.is_changed:

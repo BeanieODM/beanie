@@ -16,10 +16,12 @@ if TYPE_CHECKING:
 class EventTypes(str, Enum):
     INSERT = "INSERT"
     REPLACE = "REPLACE"
+    SAVE_CHANGES = "SAVE_CHANGES"
 
 
 Insert = EventTypes.INSERT
 Replace = EventTypes.REPLACE
+SaveChanges = EventTypes.SAVE_CHANGES
 
 
 class ActionDirections(str, Enum):  # TODO think about this name
