@@ -155,3 +155,16 @@ class DocumentWithActions(Document):
     @after_event(Replace)
     def num_3_change(self):
         self.num_3 -= 1
+
+
+class DocumentWithTurnedOnStateManagement(Document):
+    num_1: int
+    num_2: int
+
+    class Collection:
+        use_state_management = True
+
+
+class DocumentWithTurnedOffStateManagement(Document):
+    num_1: int
+    num_2: int

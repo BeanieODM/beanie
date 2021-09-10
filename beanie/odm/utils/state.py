@@ -31,3 +31,14 @@ def saved_state_needed(f: Callable):
     if inspect.iscoroutinefunction(f):
         return async_wrapper
     return sync_wrapper
+
+
+def save_state_after(f: Callable):
+    @wraps(f)
+    async def wrapper(self: "DocType", *args, **kwargs):
+        result = await f(self, *args, **kwargs)
+        if self.use_state_management():
+            self._save_state()
+        return result
+
+    return wrapper

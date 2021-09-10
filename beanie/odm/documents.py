@@ -44,7 +44,7 @@ from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.queries.update import UpdateMany
 from beanie.odm.utils.collection import collection_factory
 from beanie.odm.utils.dump import get_dict
-from beanie.odm.utils.state import saved_state_needed
+from beanie.odm.utils.state import saved_state_needed, save_state_after
 
 DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
@@ -91,6 +91,7 @@ class Document(BaseModel, UpdateMethods):
             self._save_state()
 
     @wrap_with_actions(EventTypes.INSERT)
+    @save_state_after
     async def insert(
         self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:
@@ -105,8 +106,6 @@ class Document(BaseModel, UpdateMethods):
         if not isinstance(new_id, self.__fields__["id"].type_):
             new_id = self.__fields__["id"].type_(new_id)
         self.id = new_id
-        if self.use_state_management():
-            self._save_state()
         return self
 
     async def create(
@@ -424,6 +423,7 @@ class Document(BaseModel, UpdateMethods):
         )
 
     @wrap_with_actions(EventTypes.REPLACE)
+    @save_state_after
     async def replace(
         self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:
@@ -439,8 +439,6 @@ class Document(BaseModel, UpdateMethods):
         await self.find_one({"_id": self.id}).replace_one(
             self, session=session
         )
-        if self.use_state_management():
-            self._save_state()
         return self
 
     async def save(
@@ -479,6 +477,7 @@ class Document(BaseModel, UpdateMethods):
         await cls.find(In(cls.id, ids_list), session=session).delete()
         await cls.insert_many(documents, session=session)
 
+    @save_state_after
     async def update(
         self, *args, session: Optional[ClientSession] = None
     ) -> None:
@@ -668,16 +667,14 @@ class Document(BaseModel, UpdateMethods):
         if self.use_state_management():
             self._saved_state = self.dict()
 
+    def get_saved_state(self):
+        return self._saved_state
+
     @classmethod
     def _parse_obj_saving_state(cls: Type[DocType], obj: Any) -> DocType:
         result: DocType = cls.parse_obj(obj)
         result._save_state()
         return result
-
-    @saved_state_needed
-    def rollback(self) -> None:
-        for key, value in self._saved_state.items():  # type: ignore
-            setattr(self, key, value)
 
     @property  # type: ignore
     @saved_state_needed
@@ -688,20 +685,28 @@ class Document(BaseModel, UpdateMethods):
 
     @saved_state_needed
     def get_changes(self) -> Dict[str, Any]:
+        #  TODO search deeply
         changes = {}
         if self.is_changed:
             current_state = self.dict()
             for k, v in self._saved_state.items():  # type: ignore
                 if v != current_state[k]:
-                    changes[k] = v
+                    changes[k] = current_state[k]
         return changes
 
     @saved_state_needed
+    @save_state_after
     async def save_changes(self) -> None:
         if not self.is_changed:
             return None
         changes = self.get_changes()
         await self.set(changes)
+
+    @saved_state_needed
+    def rollback(self) -> None:
+        if self.is_changed:
+            for key, value in self._saved_state.items():  # type: ignore
+                setattr(self, key, value)
 
     class Config:
         json_encoders = {
