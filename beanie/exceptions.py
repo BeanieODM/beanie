@@ -24,3 +24,11 @@ class MigrationException(Exception):
 
 class ReplaceError(Exception):
     pass
+
+
+class StateManagementIsTurnedOff(Exception):
+    pass
+
+
+class StateNotSaved(Exception):
+    pass

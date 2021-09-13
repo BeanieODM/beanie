@@ -13,7 +13,7 @@ from typing import (
 
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pydantic import ValidationError, parse_obj_as
+from pydantic import ValidationError, parse_obj_as, PrivateAttr
 from pydantic.main import BaseModel
 from pymongo.client_session import ClientSession
 from pymongo.results import (
@@ -44,6 +44,7 @@ from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.queries.update import UpdateMany
 from beanie.odm.utils.collection import collection_factory
 from beanie.odm.utils.dump import get_dict
+from beanie.odm.utils.state import saved_state_needed, save_state_after
 
 DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
@@ -66,6 +67,8 @@ class Document(BaseModel, UpdateMethods):
 
     id: Optional[PydanticObjectId] = None
 
+    _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
+
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
@@ -84,8 +87,11 @@ class Document(BaseModel, UpdateMethods):
             )
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
+        if self.use_state_management():
+            self._save_state()
 
     @wrap_with_actions(EventTypes.INSERT)
+    @save_state_after
     async def insert(
         self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:
@@ -417,6 +423,7 @@ class Document(BaseModel, UpdateMethods):
         )
 
     @wrap_with_actions(EventTypes.REPLACE)
+    @save_state_after
     async def replace(
         self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:
@@ -470,6 +477,7 @@ class Document(BaseModel, UpdateMethods):
         await cls.find(In(cls.id, ids_list), session=session).delete()
         await cls.insert_many(documents, session=session)
 
+    @save_state_after
     async def update(
         self, *args, session: Optional[ClientSession] = None
     ) -> None:
@@ -647,6 +655,59 @@ class Document(BaseModel, UpdateMethods):
                     )
                 )
         return inspection_result
+
+    # State management
+
+    @classmethod
+    def use_state_management(cls) -> bool:
+        collection_meta = cls._get_collection_meta()
+        return collection_meta.use_state_management
+
+    def _save_state(self):
+        if self.use_state_management():
+            self._saved_state = self.dict()
+
+    def get_saved_state(self):
+        return self._saved_state
+
+    @classmethod
+    def _parse_obj_saving_state(cls: Type[DocType], obj: Any) -> DocType:
+        result: DocType = cls.parse_obj(obj)
+        result._save_state()
+        return result
+
+    @property  # type: ignore
+    @saved_state_needed
+    def is_changed(self) -> bool:
+        if self._saved_state == self.dict():
+            return False
+        return True
+
+    @saved_state_needed
+    def get_changes(self) -> Dict[str, Any]:
+        #  TODO search deeply
+        changes = {}
+        if self.is_changed:
+            current_state = self.dict()
+            for k, v in self._saved_state.items():  # type: ignore
+                if v != current_state[k]:
+                    changes[k] = current_state[k]
+        return changes
+
+    @saved_state_needed
+    @wrap_with_actions(EventTypes.SAVE_CHANGES)
+    @save_state_after
+    async def save_changes(self) -> None:
+        if not self.is_changed:
+            return None
+        changes = self.get_changes()
+        await self.set(changes)  # type: ignore #TODO fix this
+
+    @saved_state_needed
+    def rollback(self) -> None:
+        if self.is_changed:
+            for key, value in self._saved_state.items():  # type: ignore
+                setattr(self, key, value)
 
     class Config:
         json_encoders = {

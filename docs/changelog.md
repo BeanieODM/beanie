@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.4.0] - 2021-09-13
+
+### Added
+
+- Document state management
+
+### Implementation
+
+- PR - <https://github.com/roman-right/beanie/pull/114>
+
 ## [1.3.0] - 2021-09-08
 
 ### Added
@@ -440,3 +450,5 @@ Beanie project changes
 [1.2.8]: https://pypi.org/project/beanie/1.2.8
 
 [1.3.0]: https://pypi.org/project/beanie/1.3.0
+
+[1.4.0]: https://pypi.org/project/beanie/1.4.0
