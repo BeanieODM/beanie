@@ -161,7 +161,7 @@ class DocumentWithTurnedOnStateManagement(Document):
     num_1: int
     num_2: int
 
-    class Collection:
+    class Settings:
         use_state_management = True
 
 

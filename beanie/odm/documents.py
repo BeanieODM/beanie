@@ -42,8 +42,10 @@ from beanie.odm.operators.find.comparison import In
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.queries.update import UpdateMany
-from beanie.odm.utils.collection import collection_factory
+from beanie.odm.utils.collection import collection_factory, CollectionSettings
 from beanie.odm.utils.dump import get_dict
+from beanie.odm.utils.self_validation import validate_self_before
+from beanie.odm.utils.settings import ModelSettings
 from beanie.odm.utils.state import saved_state_needed, save_state_after
 
 DocType = TypeVar("DocType", bound="Document")
@@ -67,7 +69,12 @@ class Document(BaseModel, UpdateMethods):
 
     id: Optional[PydanticObjectId] = None
 
+    # State
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
+
+    # Settings
+    _collection_settings: Optional[CollectionSettings] = None
+    _model_settings: Optional[ModelSettings] = None
 
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
@@ -92,6 +99,7 @@ class Document(BaseModel, UpdateMethods):
 
     @wrap_with_actions(EventTypes.INSERT)
     @save_state_after
+    @validate_self_before
     async def insert(
         self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:
@@ -424,6 +432,7 @@ class Document(BaseModel, UpdateMethods):
 
     @wrap_with_actions(EventTypes.REPLACE)
     @save_state_after
+    @validate_self_before
     async def replace(
         self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:
@@ -595,30 +604,75 @@ class Document(BaseModel, UpdateMethods):
         :return: None
         """
         collection_class = getattr(cls, "Collection", None)
-        collection_meta = await collection_factory(
+        collection_settings = await collection_factory(
             database=database,
             document_model=cls,
             allow_index_dropping=allow_index_dropping,
             collection_class=collection_class,
         )
-        setattr(cls, "CollectionMeta", collection_meta)
+        cls._collection_settings = collection_settings
 
+    @classmethod
+    def init_fields(cls):
         for k, v in cls.__fields__.items():
             path = v.alias or v.name
             setattr(cls, k, ExpressionField(path))
 
     @classmethod
-    def _get_collection_meta(cls) -> Type:
+    def init_settings(cls):
+        settings_class = getattr(cls, "Settings", None)
+        cls._model_settings = ModelSettings.parse_settings(settings_class)
+
+    @classmethod
+    def init_pydantic_config(cls):
+        pydantic_config = getattr(cls, "PydanticConfig", None)
+        if pydantic_config is not None:
+            for k, v in vars(pydantic_config).items():
+                if not k.startswith("_"):
+                    if k == "json_encoders":
+                        if ObjectId in v:
+                            raise ValueError(
+                                "Changing ObjectId json encoder "
+                                "will break the system"
+                            )
+                        cls.Config.json_encoders.update(v)
+                    elif k == "fields":
+                        if "id" in v:
+                            raise ValueError(
+                                "Changing id field settings "
+                                "will break the system"
+                            )
+                        cls.Config.fields.update(v)
+                    elif k == "allow_population_by_field_name":
+                        raise ValueError(
+                            "Changing value of "
+                            "allow_population_by_field_name will "
+                            "break the system"
+                        )
+                    else:
+                        setattr(cls.Config, k, v)
+
+    @classmethod
+    async def init_model(
+        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+    ) -> None:
+        await cls.init_collection(database, allow_index_dropping)
+        cls.init_settings()
+        cls.init_fields()
+        cls.init_pydantic_config()
+
+    @classmethod
+    def _get_collection_settings(cls) -> CollectionSettings:
         """
-        Get internal CollectionMeta class, which was created on
+        Get collection settings, which was created on
         the collection initialization step
 
-        :return: CollectionMeta class
+        :return: CollectionSettings class
         """
-        collection_meta = getattr(cls, "CollectionMeta", None)
-        if collection_meta is None:
+        # TODO Refactor this
+        if cls._collection_settings is None:
             raise CollectionWasNotInitialized
-        return collection_meta
+        return cls._collection_settings
 
     @classmethod
     def get_motor_collection(cls) -> AsyncIOMotorCollection:
@@ -627,7 +681,7 @@ class Document(BaseModel, UpdateMethods):
 
         :return: AsyncIOMotorCollection
         """
-        collection_meta = cls._get_collection_meta()
+        collection_meta = cls._get_collection_settings()
         return collection_meta.motor_collection
 
     @classmethod
@@ -656,12 +710,22 @@ class Document(BaseModel, UpdateMethods):
                 )
         return inspection_result
 
+    # Self validation
+
+    @classmethod
+    def model_settings(cls) -> ModelSettings:
+        if cls._model_settings is None:
+            raise CollectionWasNotInitialized
+        return cls._model_settings
+
+    def validate_self(self) -> None:
+        self.parse_obj(self)
+
     # State management
 
     @classmethod
     def use_state_management(cls) -> bool:
-        collection_meta = cls._get_collection_meta()
-        return collection_meta.use_state_management
+        return cls.model_settings().use_state_management
 
     def _save_state(self):
         if self.use_state_management():
@@ -697,6 +761,7 @@ class Document(BaseModel, UpdateMethods):
     @saved_state_needed
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
     @save_state_after
+    @validate_self_before
     async def save_changes(self) -> None:
         if not self.is_changed:
             return None

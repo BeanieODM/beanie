@@ -27,23 +27,33 @@ class CollectionInputParameters(BaseModel):
         arbitrary_types_allowed = True
 
 
+class CollectionSettings(BaseModel):
+    name: str
+    motor_collection: AsyncIOMotorCollection
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
 async def collection_factory(
     database: AsyncIOMotorDatabase,
     document_model: Type,
     allow_index_dropping: bool,
     collection_class: Optional[Type] = None,
-) -> Type:
+) -> CollectionSettings:
     """
     Collection factory.
-    Creates internal CollectionMeta class for the Document on the init step,
+    Creates private property _collection_settings
+    for the Document on the init step,
 
     :param database: AsyncIOMotorDatabase - Motor database instance
     :param document_model: Type - a class, inherited from Document class
     :param allow_index_dropping: bool - if index dropping is allowed
     :param collection_class: Optional[Type] - Collection, which was set up
     by user
-    :return: Type - Collection class
+    :return: CollectionSettings
     """
+    # TODO Refactor this
     # parse collection parameters
     if collection_class:
         collection_parameters = CollectionInputParameters.parse_obj(
@@ -91,11 +101,7 @@ async def collection_factory(
         for index in set(old_indexes) - set(new_indexes):
             await collection.drop_index(index)
 
-    # create internal CollectionMeta class for the Document
-    class CollectionMeta:
-        name: str = collection_parameters.name
-        motor_collection: AsyncIOMotorCollection = collection
-        indexes: List = found_indexes
-        use_state_management: bool = collection_parameters.use_state_management
-
-    return CollectionMeta
+    return CollectionSettings(
+        name=collection_parameters.name,
+        motor_collection=collection,
+    )
