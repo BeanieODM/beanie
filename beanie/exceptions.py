@@ -32,3 +32,7 @@ class StateManagementIsTurnedOff(Exception):
 
 class StateNotSaved(Exception):
     pass
+
+
+class RevisionIdWasChanged(Exception):
+    pass

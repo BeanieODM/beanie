@@ -168,3 +168,21 @@ class DocumentWithTurnedOnStateManagement(Document):
 class DocumentWithTurnedOffStateManagement(Document):
     num_1: int
     num_2: int
+
+
+class DocumentWithValidationOnSave(Document):
+    num_1: int
+    num_2: int
+
+    class Settings:
+        validate_on_save = True
+        use_state_management = True
+
+
+class DocumentWithRevisionTurnedOn(Document):
+    num_1: int
+    num_2: int
+
+    class Settings:
+        use_revision_id = True
+        use_state_management = True

@@ -8,7 +8,7 @@ from typing import (
     Any,
     Dict,
     Union,
-    Generator
+    Generator,
 )
 
 from pymongo.client_session import ClientSession
@@ -59,7 +59,10 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         return query
 
     def update(
-        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None,
+        **kwargs
     ) -> "UpdateQuery":
         """
         Provide modifications to the update query.
@@ -95,7 +98,9 @@ class UpdateQuery(UpdateMethods, SessionMethods):
     async def _update(self) -> UpdateResult:
         ...
 
-    def __await__(self) -> Generator[Any, None, Union[UpdateResult, InsertOneResult]]:
+    def __await__(
+        self,
+    ) -> Generator[Any, None, Union[UpdateResult, InsertOneResult]]:
         """
         Run the query
         :return:

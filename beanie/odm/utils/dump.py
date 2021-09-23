@@ -5,5 +5,9 @@ if TYPE_CHECKING:
 
 
 def get_dict(document: "Document"):
-    exclude = None if document.id is not None else {"id"}
+    exclude = set()
+    if document.id is None:
+        exclude.add("id")
+    if not document.get_settings().model_settings.use_revision_id:
+        exclude.add("revision_id")
     return document.dict(by_alias=True, exclude=exclude)

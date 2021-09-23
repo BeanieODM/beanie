@@ -10,10 +10,16 @@ from typing import (
     Any,
     overload,
 )
+from uuid import UUID, uuid4
 
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pydantic import ValidationError, parse_obj_as, PrivateAttr
+from pydantic import (
+    ValidationError,
+    parse_obj_as,
+    PrivateAttr,
+    validator,
+)
 from pydantic.main import BaseModel
 from pymongo.client_session import ClientSession
 from pymongo.results import (
@@ -26,6 +32,7 @@ from beanie.exceptions import (
     CollectionWasNotInitialized,
     ReplaceError,
     DocumentNotFound,
+    RevisionIdWasChanged,
 )
 from beanie.odm.actions import EventTypes, wrap_with_actions
 from beanie.odm.enums import SortDirection
@@ -69,10 +76,18 @@ class Document(BaseModel, UpdateMethods):
     id: Optional[PydanticObjectId] = None
 
     # State
+    revision_id: Optional[UUID] = None
+    _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
 
     # Settings
     _document_settings: Optional[DocumentSettings] = None
+
+    @validator("revision_id")
+    def set_revision_id(cls, revision_id):
+        if not cls.get_settings().model_settings.use_revision_id:
+            return None
+        return revision_id or uuid4()
 
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
@@ -432,20 +447,35 @@ class Document(BaseModel, UpdateMethods):
     @save_state_after
     @validate_self_before
     async def replace(
-        self: DocType, session: Optional[ClientSession] = None
+        self: DocType,
+        session: Optional[ClientSession] = None,
+        force: bool = False,
     ) -> DocType:
         """
         Fully update the document in the database
 
         :param session: Optional[ClientSession] - pymongo session.
+        :param force: bool - do force replace.
+            Used when revision based protection is turned on.
         :return: self
         """
         if self.id is None:
             raise ValueError("Document must have an id")
 
-        await self.find_one({"_id": self.id}).replace_one(
-            self, session=session
-        )
+        use_revision_id = self.get_settings().model_settings.use_revision_id
+
+        find_query: Dict[str, Any] = {"_id": self.id}
+
+        if use_revision_id and not force:
+            find_query["revision_id"] = self._previous_revision_id
+
+        try:
+            await self.find_one(find_query).replace_one(self, session=session)
+        except DocumentNotFound:
+            if use_revision_id and not force:
+                raise RevisionIdWasChanged
+            else:
+                raise DocumentNotFound
         return self
 
     async def save(
@@ -486,16 +516,31 @@ class Document(BaseModel, UpdateMethods):
 
     @save_state_after
     async def update(
-        self, *args, session: Optional[ClientSession] = None
+        self,
+        *args,
+        session: Optional[ClientSession] = None,
+        force: bool = False,
     ) -> None:
         """
         Partially update the document in the database
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
+        :param force: bool - force update. Will update even if revision id
+        is not the same, as stored
         :return: None
         """
-        await self.find_one({"_id": self.id}).update(*args, session=session)
+        use_revision_id = self.get_settings().model_settings.use_revision_id
+
+        find_query: Dict[str, Any] = {"_id": self.id}
+
+        if use_revision_id and not force:
+            find_query["revision_id"] = self._previous_revision_id
+
+        result = await self.find_one(find_query).update(*args, session=session)
+
+        if use_revision_id and not force and result.modified_count == 0:
+            raise RevisionIdWasChanged
         await self._sync()
 
     @classmethod
@@ -638,11 +683,6 @@ class Document(BaseModel, UpdateMethods):
                 )
         return inspection_result
 
-    # Self validation
-
-    def validate_self(self) -> None:
-        self.parse_obj(self)
-
     # State management
 
     @classmethod
@@ -651,7 +691,7 @@ class Document(BaseModel, UpdateMethods):
 
     def _save_state(self):
         if self.use_state_management():
-            self._saved_state = self.dict()
+            self._saved_state = get_dict(self)
 
     def get_saved_state(self):
         return self._saved_state
@@ -665,7 +705,7 @@ class Document(BaseModel, UpdateMethods):
     @property  # type: ignore
     @saved_state_needed
     def is_changed(self) -> bool:
-        if self._saved_state == self.dict():
+        if self._saved_state == get_dict(self):
             return False
         return True
 
@@ -674,7 +714,7 @@ class Document(BaseModel, UpdateMethods):
         #  TODO search deeply
         changes = {}
         if self.is_changed:
-            current_state = self.dict()
+            current_state = get_dict(self)
             for k, v in self._saved_state.items():  # type: ignore
                 if v != current_state[k]:
                     changes[k] = current_state[k]
@@ -682,19 +722,21 @@ class Document(BaseModel, UpdateMethods):
 
     @saved_state_needed
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
-    @save_state_after
     @validate_self_before
-    async def save_changes(self) -> None:
+    async def save_changes(self, force: bool = False) -> None:
         if not self.is_changed:
             return None
         changes = self.get_changes()
-        await self.set(changes)  # type: ignore #TODO fix this
+        await self.set(changes, force=force)  # type: ignore #TODO fix this
 
     @saved_state_needed
     def rollback(self) -> None:
         if self.is_changed:
             for key, value in self._saved_state.items():  # type: ignore
-                setattr(self, key, value)
+                if key == "_id":
+                    setattr(self, "id", value)
+                else:
+                    setattr(self, key, value)
 
     # Initialization
 

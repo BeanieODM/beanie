@@ -19,6 +19,8 @@ from tests.odm.models import (
     DocumentWithActions,
     DocumentWithTurnedOnStateManagement,
     DocumentWithTurnedOffStateManagement,
+    DocumentWithValidationOnSave,
+    DocumentWithRevisionTurnedOn,
 )
 from tests.odm.models import (
     Sample,
@@ -128,6 +130,8 @@ async def init(loop, db):
         DocumentWithActions,
         DocumentWithTurnedOnStateManagement,
         DocumentWithTurnedOffStateManagement,
+        DocumentWithValidationOnSave,
+        DocumentWithRevisionTurnedOn,
     ]
     await init_beanie(
         database=db,

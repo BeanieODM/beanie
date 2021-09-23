@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 def validate(self: "DocType"):
     if self.get_settings().model_settings.validate_on_save:
-        self.validate_self()
+        self.parse_obj(self)
 
 
 def validate_self_before(f: Callable):
