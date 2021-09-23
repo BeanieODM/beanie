@@ -9,7 +9,11 @@ class ModelSettings(BaseModel):
     validate_on_save: bool = False
 
     @classmethod
-    def parse_settings(cls, settings_class: Optional[Type]) -> "ModelSettings":
+    def init(
+        cls,
+        document_model: Type,
+    ) -> "ModelSettings":
+        settings_class = getattr(document_model, "Settings", None)
         if settings_class is not None:
             return cls.parse_obj(vars(settings_class))
         else:

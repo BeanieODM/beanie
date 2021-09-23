@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 def validate(self: "DocType"):
-    if self.model_settings().validate_on_save:
+    if self.get_settings().model_settings.validate_on_save:
         self.validate_self()
 
 
