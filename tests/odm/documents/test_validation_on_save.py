@@ -6,6 +6,7 @@ from tests.odm.models import DocumentWithValidationOnSave
 
 async def test_validate_on_insert():
     doc = DocumentWithValidationOnSave(num_1=1, num_2=2)
+    print(doc.Config)
     doc.num_1 = "wrong_value"
     with pytest.raises(ValidationError):
         await doc.insert()

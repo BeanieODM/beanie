@@ -7,7 +7,7 @@ class ModelSettings(BaseModel):
     projection: Optional[Dict[str, Any]]
     use_state_management: bool = False
     validate_on_save: bool = False
-    use_revision_id: bool = False
+    use_revision: bool = False
 
     @classmethod
     def init(

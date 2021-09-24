@@ -8,6 +8,6 @@ def get_dict(document: "Document"):
     exclude = set()
     if document.id is None:
         exclude.add("id")
-    if not document.get_settings().model_settings.use_revision_id:
+    if not document.get_settings().model_settings.use_revision:
         exclude.add("revision_id")
     return document.dict(by_alias=True, exclude=exclude)

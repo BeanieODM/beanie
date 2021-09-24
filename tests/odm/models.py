@@ -184,5 +184,12 @@ class DocumentWithRevisionTurnedOn(Document):
     num_2: int
 
     class Settings:
-        use_revision_id = True
+        use_revision = True
         use_state_management = True
+
+
+class DocumentWithPydanticConfig(Document):
+    num_1: int
+
+    class Config(Document.Config):
+        validate_assignment = True

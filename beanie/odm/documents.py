@@ -85,7 +85,7 @@ class Document(BaseModel, UpdateMethods):
 
     @validator("revision_id")
     def set_revision_id(cls, revision_id):
-        if not cls.get_settings().model_settings.use_revision_id:
+        if not cls.get_settings().model_settings.use_revision:
             return None
         return revision_id or uuid4()
 
@@ -462,7 +462,7 @@ class Document(BaseModel, UpdateMethods):
         if self.id is None:
             raise ValueError("Document must have an id")
 
-        use_revision_id = self.get_settings().model_settings.use_revision_id
+        use_revision_id = self.get_settings().model_settings.use_revision
 
         find_query: Dict[str, Any] = {"_id": self.id}
 
@@ -492,6 +492,22 @@ class Document(BaseModel, UpdateMethods):
             return await self.replace(session=session)
         except (ValueError, DocumentNotFound):
             return await self.insert(session=session)
+
+    @saved_state_needed
+    @wrap_with_actions(EventTypes.SAVE_CHANGES)
+    @validate_self_before
+    async def save_changes(self, force: bool = False) -> None:
+        """
+        Save changes.
+        State management usage must be turned on
+
+        :param force: bool - ignore revision id, if revision is turned on
+        :return: None
+        """
+        if not self.is_changed:
+            return None
+        changes = self.get_changes()
+        await self.set(changes, force=force)  # type: ignore #TODO fix typing
 
     @classmethod
     async def replace_many(
@@ -530,7 +546,7 @@ class Document(BaseModel, UpdateMethods):
         is not the same, as stored
         :return: None
         """
-        use_revision_id = self.get_settings().model_settings.use_revision_id
+        use_revision_id = self.get_settings().model_settings.use_revision
 
         find_query: Dict[str, Any] = {"_id": self.id}
 
@@ -635,6 +651,116 @@ class Document(BaseModel, UpdateMethods):
         """
         return await cls.find_all().count()
 
+    # State management
+
+    @classmethod
+    def use_state_management(cls) -> bool:
+        """
+        Is state management turned on
+        :return: bool
+        """
+        return cls.get_settings().model_settings.use_state_management
+
+    def _save_state(self) -> None:
+        """
+        Save current document state. Internal method
+        :return: None
+        """
+        if self.use_state_management():
+            self._saved_state = get_dict(self)
+
+    def get_saved_state(self) -> Optional[Dict[str, Any]]:
+        """
+        Saved state getter. It is protected property.
+        :return: Optional[Dict[str, Any]] - saved state
+        """
+        return self._saved_state
+
+    @classmethod
+    def _parse_obj_saving_state(cls: Type[DocType], obj: Any) -> DocType:
+        """
+        Parse object and save state then. Internal method.
+        :param obj: Any
+        :return: DocType
+        """
+        result: DocType = cls.parse_obj(obj)
+        result._save_state()
+        return result
+
+    @property  # type: ignore
+    @saved_state_needed
+    def is_changed(self) -> bool:
+        if self._saved_state == get_dict(self):
+            return False
+        return True
+
+    @saved_state_needed
+    def get_changes(self) -> Dict[str, Any]:
+        #  TODO search deeply
+        changes = {}
+        if self.is_changed:
+            current_state = get_dict(self)
+            for k, v in self._saved_state.items():  # type: ignore
+                if v != current_state[k]:
+                    changes[k] = current_state[k]
+        return changes
+
+    @saved_state_needed
+    def rollback(self) -> None:
+        if self.is_changed:
+            for key, value in self._saved_state.items():  # type: ignore
+                if key == "_id":
+                    setattr(self, "id", value)
+                else:
+                    setattr(self, key, value)
+
+    # Initialization
+
+    @classmethod
+    def init_fields(cls) -> None:
+        """
+        Init class fields
+        :return: None
+        """
+        for k, v in cls.__fields__.items():
+            path = v.alias or v.name
+            setattr(cls, k, ExpressionField(path))
+
+    @classmethod
+    async def init_settings(
+        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+    ) -> None:
+        """
+        Init document settings (collection and models)
+
+        :param database: AsyncIOMotorDatabase - motor database
+        :param allow_index_dropping: bool
+        :return: None
+        """
+        # TODO looks ugly a little. Too many parameters transfers.
+        cls._document_settings = await DocumentSettings.init(
+            database=database,
+            document_model=cls,
+            allow_index_dropping=allow_index_dropping,
+        )
+
+    @classmethod
+    async def init_model(
+        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+    ) -> None:
+        """
+        Init wrapper
+        :param database: AsyncIOMotorDatabase
+        :param allow_index_dropping: bool
+        :return: None
+        """
+        await cls.init_settings(
+            database=database, allow_index_dropping=allow_index_dropping
+        )
+        cls.init_fields()
+
+    # Other
+
     @classmethod
     def get_settings(cls) -> DocumentSettings:
         """
@@ -682,118 +808,6 @@ class Document(BaseModel, UpdateMethods):
                     )
                 )
         return inspection_result
-
-    # State management
-
-    @classmethod
-    def use_state_management(cls) -> bool:
-        return cls.get_settings().model_settings.use_state_management
-
-    def _save_state(self):
-        if self.use_state_management():
-            self._saved_state = get_dict(self)
-
-    def get_saved_state(self):
-        return self._saved_state
-
-    @classmethod
-    def _parse_obj_saving_state(cls: Type[DocType], obj: Any) -> DocType:
-        result: DocType = cls.parse_obj(obj)
-        result._save_state()
-        return result
-
-    @property  # type: ignore
-    @saved_state_needed
-    def is_changed(self) -> bool:
-        if self._saved_state == get_dict(self):
-            return False
-        return True
-
-    @saved_state_needed
-    def get_changes(self) -> Dict[str, Any]:
-        #  TODO search deeply
-        changes = {}
-        if self.is_changed:
-            current_state = get_dict(self)
-            for k, v in self._saved_state.items():  # type: ignore
-                if v != current_state[k]:
-                    changes[k] = current_state[k]
-        return changes
-
-    @saved_state_needed
-    @wrap_with_actions(EventTypes.SAVE_CHANGES)
-    @validate_self_before
-    async def save_changes(self, force: bool = False) -> None:
-        if not self.is_changed:
-            return None
-        changes = self.get_changes()
-        await self.set(changes, force=force)  # type: ignore #TODO fix this
-
-    @saved_state_needed
-    def rollback(self) -> None:
-        if self.is_changed:
-            for key, value in self._saved_state.items():  # type: ignore
-                if key == "_id":
-                    setattr(self, "id", value)
-                else:
-                    setattr(self, key, value)
-
-    # Initialization
-
-    @classmethod
-    def init_fields(cls):
-        for k, v in cls.__fields__.items():
-            path = v.alias or v.name
-            setattr(cls, k, ExpressionField(path))
-
-    @classmethod
-    async def init_settings(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
-    ):
-        cls._document_settings = await DocumentSettings.init(
-            database=database,
-            document_model=cls,
-            allow_index_dropping=allow_index_dropping,
-        )
-
-    @classmethod
-    def init_pydantic_config(cls):
-        pydantic_config = getattr(cls, "PydanticConfig", None)
-        if pydantic_config is not None:
-            for k, v in vars(pydantic_config).items():
-                if not k.startswith("_"):
-                    if k == "json_encoders":
-                        if ObjectId in v:
-                            raise ValueError(
-                                "Changing ObjectId json encoder "
-                                "will break the system"
-                            )
-                        cls.Config.json_encoders.update(v)
-                    elif k == "fields":
-                        if "id" in v:
-                            raise ValueError(
-                                "Changing id field settings "
-                                "will break the system"
-                            )
-                        cls.Config.fields.update(v)
-                    elif k == "allow_population_by_field_name":
-                        raise ValueError(
-                            "Changing value of "
-                            "allow_population_by_field_name will "
-                            "break the system"
-                        )
-                    else:
-                        setattr(cls.Config, k, v)
-
-    @classmethod
-    async def init_model(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
-    ) -> None:
-        await cls.init_settings(
-            database=database, allow_index_dropping=allow_index_dropping
-        )
-        cls.init_fields()
-        cls.init_pydantic_config()
 
     class Config:
         json_encoders = {
