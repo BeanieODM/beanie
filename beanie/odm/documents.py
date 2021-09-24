@@ -809,6 +809,12 @@ class Document(BaseModel, UpdateMethods):
                 )
         return inspection_result
 
+    @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
+    async def validate_self(self):
+        # TODO it can be sync, but needs some actions controller improvements
+        if self.get_settings().model_settings.validate_on_save:
+            self.parse_obj(self)
+
     class Config:
         json_encoders = {
             ObjectId: lambda v: str(v),

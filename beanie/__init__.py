@@ -6,6 +6,7 @@ from beanie.odm.actions import (
     Insert,
     Replace,
     SaveChanges,
+    ValidateOnSave,
 )
 from beanie.odm.fields import PydanticObjectId, Indexed
 from beanie.odm.utils.general import init_beanie
@@ -24,6 +25,7 @@ __all__ = [
     "Insert",
     "Replace",
     "SaveChanges",
+    "ValidateOnSave",
     # Migrations
     "iterative_migration",
     "free_fall_migration",
