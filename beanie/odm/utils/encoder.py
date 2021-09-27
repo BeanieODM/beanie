@@ -1,7 +1,5 @@
 from collections import defaultdict
 from datetime import datetime
-from enum import Enum
-from pathlib import PurePath
 from types import GeneratorType
 from typing import (
     AbstractSet,
@@ -57,10 +55,6 @@ class Encoder:
                 obj_dict,
                 custom_encoder=encoders,
             )
-        if isinstance(obj, Enum):
-            return obj.value
-        if isinstance(obj, PurePath):
-            return str(obj)
         if isinstance(
             obj, (str, int, float, ObjectId, UUID, datetime, type(None))
         ):

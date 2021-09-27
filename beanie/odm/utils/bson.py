@@ -1,8 +1,7 @@
 import datetime
-# import re
-# import sys
 from collections import deque
 from decimal import Decimal
+from enum import Enum
 from ipaddress import (
     IPv4Address,
     IPv4Interface,
@@ -11,13 +10,8 @@ from ipaddress import (
     IPv6Interface,
     IPv6Network,
 )
+from pathlib import PurePath
 from typing import Any, Callable, Dict, Type
-
-# if sys.version_info >= (3, 7):
-#     Pattern = re.Pattern
-# else:
-#     # python 3.6
-#     Pattern = re.compile("a").__class__
 
 from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
@@ -36,7 +30,8 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     IPv6Address: str,
     IPv6Interface: str,
     IPv6Network: str,
-    # Pattern: lambda o: o.pattern, # bson.regex.Regex?
     SecretBytes: SecretBytes.get_secret_value,
     SecretStr: SecretStr.get_secret_value,
+    Enum: lambda o: o.value,
+    PurePath: str,
 }
