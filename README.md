@@ -79,6 +79,7 @@ asyncio.run(example())
 
 ### Example Projects
 
+- **[fastapi-cosmos-beanie](https://github.com/tonybaloney/ants-azure-demos/tree/master/fastapi-cosmos-beanie)** - FastAPI + Beanie ODM + Azure Cosmos Demo Application by [Anthony Shaw](https://github.com/tonybaloney)
 - **[fastapi-beanie-jwt](https://github.com/flyinactor91/fastapi-beanie-jwt)** - 
   Sample FastAPI server with JWT auth and Beanie ODM by [Michael duPont](https://github.com/flyinactor91)
 

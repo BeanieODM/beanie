@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from .encoder import bsonable_encoder
+from beanie.odm.utils.encoder import bson_encoder
 
 if TYPE_CHECKING:
     from beanie.odm.documents import Document
@@ -8,4 +8,4 @@ if TYPE_CHECKING:
 
 def get_dict(document: "Document"):
     exclude = None if document.id is not None else {"id"}
-    return bsonable_encoder(document, by_alias=True, exclude=exclude)
+    return bson_encoder.encode(document, by_alias=True, exclude=exclude)

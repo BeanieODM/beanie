@@ -25,9 +25,18 @@ from beanie.odm.interfaces.update import UpdateMethods
 from beanie.odm.operators.find.logical import And
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.cursor import BaseCursorQuery
-from beanie.odm.queries.delete import DeleteMany, DeleteOne, DeleteQuery
-from beanie.odm.queries.update import UpdateMany, UpdateOne, UpdateQuery
-from beanie.odm.utils.encoder import bsonable_encoder
+from beanie.odm.utils.encoder import bson_encoder
+from beanie.odm.queries.delete import (
+    DeleteQuery,
+    DeleteMany,
+    DeleteOne,
+)
+from beanie.odm.queries.update import (
+    UpdateQuery,
+    UpdateMany,
+    UpdateOne,
+)
+from beanie.odm.utils.parsing import parse_obj
 from beanie.odm.utils.projection import get_projection
 
 from pydantic import BaseModel
@@ -73,7 +82,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
 
     def get_filter_query(self) -> Mapping[str, Any]:
         if self.find_expressions:
-            return bsonable_encoder(
+            return bson_encoder.encode(
                 And(*self.find_expressions).query, custom_encoder=self.encoders
             )
         else:
@@ -592,7 +601,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         result: UpdateResult = (
             await self.document_model.get_motor_collection().replace_one(
                 self.get_filter_query(),
-                bsonable_encoder(document, by_alias=True, exclude={"id"}),
+                bson_encoder.encode(document, by_alias=True, exclude={"id"}),
                 session=self.session,
             )
         )
@@ -619,5 +628,5 @@ class FindOne(FindQuery[FindQueryResultType]):
         if document is None:
             return None
         return cast(
-            FindQueryResultType, self.projection_model.parse_obj(document)
+            FindQueryResultType, parse_obj(self.projection_model, document)
         )

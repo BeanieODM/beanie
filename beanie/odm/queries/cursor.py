@@ -11,6 +11,7 @@ from typing import (
 )
 
 from pydantic.main import BaseModel
+from beanie.odm.utils.parsing import parse_obj
 
 CursorResultType = TypeVar("CursorResultType")
 
@@ -40,11 +41,9 @@ class BaseCursorQuery(Generic[CursorResultType]):
             self.cursor = self.motor_cursor
         next_item = await self.cursor.__anext__()
         projection = self.get_projection_model()
-        return (
-            projection.parse_obj(next_item)
-            if projection is not None
-            else next_item
-        )  # type: ignore
+        if projection is None:
+            return next_item
+        return parse_obj(projection, next_item)  # type: ignore
 
     async def to_list(
         self, length: Optional[int] = None
@@ -64,6 +63,6 @@ class BaseCursorQuery(Generic[CursorResultType]):
         if projection is not None:
             return cast(
                 List[CursorResultType],
-                [projection.parse_obj(i) for i in motor_list],
+                [parse_obj(projection, i) for i in motor_list],
             )
         return cast(List[CursorResultType], motor_list)

@@ -10,113 +10,108 @@ from typing import (
     Dict,
     List,
     Mapping,
-    Set,
     Tuple,
     Union,
 )
 from uuid import UUID
 
-from pydantic import BaseModel
-
 from bson import ObjectId
+from pydantic import BaseModel
 
 from .bson import ENCODERS_BY_TYPE
 
-SetIntStr = Set[Union[int, str]]
-DictIntStrAny = Dict[Union[int, str], Any]
 
+class Encoder:
+    def __init__(self):
+        self.encoders_by_class_tuples: Dict[
+            Callable[[Any], Any], Tuple[Any, ...]
+        ] = defaultdict(tuple)
+        for type_, encoder in ENCODERS_BY_TYPE.items():
+            self.encoders_by_class_tuples[encoder] += (type_,)
 
-def generate_encoders_by_class_tuples(
-    type_encoder_map: Dict[Any, Callable[[Any], Any]]
-) -> Dict[Callable[[Any], Any], Tuple[Any, ...]]:
-    encoders_by_class_tuples: Dict[
-        Callable[[Any], Any], Tuple[Any, ...]
-    ] = defaultdict(tuple)
-    for type_, encoder in type_encoder_map.items():
-        encoders_by_class_tuples[encoder] += (type_,)
-    return encoders_by_class_tuples
-
-
-encoders_by_class_tuples = generate_encoders_by_class_tuples(ENCODERS_BY_TYPE)
-
-
-def bsonable_encoder(
-    obj: Any,
-    exclude: Union[
-        AbstractSet[Union[str, int]], Mapping[Union[str, int], Any], None
-    ] = None,
-    by_alias: bool = True,
-    custom_encoder: Dict[Any, Callable[[Any], Any]] = {},
-) -> Any:
-    if exclude is not None and not isinstance(exclude, (set, dict)):
-        exclude = set(exclude)
-    if isinstance(obj, BaseModel):
-        encoders = {}
-        collection_class = getattr(obj, "Collection", None)
-        if collection_class:
-            encoders = vars(collection_class).get("bson_encoders", {})
+    def encode(
+        self,
+        obj: Any,
+        exclude: Union[
+            AbstractSet[Union[str, int]], Mapping[Union[str, int], Any], None
+        ] = None,
+        by_alias: bool = True,
+        custom_encoder: Dict[Any, Callable[[Any], Any]] = None,
+    ) -> Any:
+        if custom_encoder is None:
+            custom_encoder = {}
+        if exclude is not None and not isinstance(exclude, (set, dict)):
+            exclude = set(exclude)
+        if isinstance(obj, BaseModel):
+            encoders = {}
+            collection_class = getattr(obj, "Collection", None)
+            if collection_class:
+                encoders = vars(collection_class).get("bson_encoders", {})
+            if custom_encoder:
+                encoders.update(custom_encoder)
+            obj_dict = obj.dict(
+                exclude=exclude,  # type: ignore # in Pydantic
+                by_alias=by_alias,
+            )
+            return self.encode(
+                obj_dict,
+                custom_encoder=encoders,
+            )
+        if isinstance(obj, Enum):
+            return obj.value
+        if isinstance(obj, PurePath):
+            return str(obj)
+        if isinstance(
+            obj, (str, int, float, ObjectId, UUID, datetime, type(None))
+        ):
+            return obj
+        if isinstance(obj, dict):
+            encoded_dict = {}
+            for key, value in obj.items():
+                encoded_value = self.encode(
+                    value,
+                    by_alias=by_alias,
+                    custom_encoder=custom_encoder,
+                )
+                encoded_dict[key] = encoded_value
+            return encoded_dict
+        if isinstance(obj, (list, set, frozenset, GeneratorType, tuple)):
+            return [
+                self.encode(
+                    item,
+                    exclude=exclude,
+                    by_alias=by_alias,
+                    custom_encoder=custom_encoder,
+                )
+                for item in obj
+            ]
         if custom_encoder:
-            encoders.update(custom_encoder)
-        obj_dict = obj.dict(
-            exclude=exclude,  # type: ignore # in Pydantic
-            by_alias=by_alias,
-        )
-        return bsonable_encoder(
-            obj_dict,
-            custom_encoder=encoders,
-        )
-    if isinstance(obj, Enum):
-        return obj.value
-    if isinstance(obj, PurePath):
-        return str(obj)
-    if isinstance(
-        obj, (str, int, float, ObjectId, UUID, datetime, type(None))
-    ):
-        return obj
-    if isinstance(obj, dict):
-        encoded_dict = {}
-        for key, value in obj.items():
-            encoded_value = bsonable_encoder(
-                value,
-                by_alias=by_alias,
-                custom_encoder=custom_encoder,
-            )
-            encoded_dict[key] = encoded_value
-        return encoded_dict
-    if isinstance(obj, (list, set, frozenset, GeneratorType, tuple)):
-        return [
-            bsonable_encoder(
-                item,
-                exclude=exclude,
-                by_alias=by_alias,
-                custom_encoder=custom_encoder,
-            )
-            for item in obj
-        ]
-    if custom_encoder:
-        if type(obj) in custom_encoder:
-            return custom_encoder[type(obj)](obj)
-        for encoder_type, encoder in custom_encoder.items():
-            if isinstance(obj, encoder_type):
+            if type(obj) in custom_encoder:
+                return custom_encoder[type(obj)](obj)
+            for encoder_type, encoder in custom_encoder.items():
+                if isinstance(obj, encoder_type):
+                    return encoder(obj)
+        if type(obj) in ENCODERS_BY_TYPE:
+            return ENCODERS_BY_TYPE[type(obj)](obj)
+        for encoder, classes_tuple in self.encoders_by_class_tuples.items():
+            if isinstance(obj, classes_tuple):
                 return encoder(obj)
-    if type(obj) in ENCODERS_BY_TYPE:
-        return ENCODERS_BY_TYPE[type(obj)](obj)
-    for encoder, classes_tuple in encoders_by_class_tuples.items():
-        if isinstance(obj, classes_tuple):
-            return encoder(obj)
 
-    errors: List[Exception] = []
-    try:
-        data = dict(obj)
-    except Exception as e:
-        errors.append(e)
+        errors: List[Exception] = []
         try:
-            data = vars(obj)
+            data = dict(obj)
         except Exception as e:
             errors.append(e)
-            raise ValueError(errors)
-    return bsonable_encoder(
-        data,
-        by_alias=by_alias,
-        custom_encoder=custom_encoder,
-    )
+            try:
+                data = vars(obj)
+            except Exception as e:
+                errors.append(e)
+                raise ValueError(errors)
+        return self.encode(
+            data,
+            by_alias=by_alias,
+            custom_encoder=custom_encoder,
+        )
+
+
+bson_encoder = Encoder()

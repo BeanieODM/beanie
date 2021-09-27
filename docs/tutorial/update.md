@@ -17,7 +17,7 @@ Or similairly using replace, which trows a `ValueError` if the document does not
 ```python
 bar.price = 10
 try:
-    await bar.update()
+    await bar.replace()
 except (ValueError, beanie.exceptions.DocumentNotFound):
     print("Can't replace a non existing document")
 ```
@@ -46,7 +46,7 @@ await Product.find_one(Product.name == "Tony's").update({"$set": {Product.price:
 
 ## Upsert
 
-To insert a document if no one document was matched the search cruteria during update query, the `upsert` method can be used:
+To insert a document if no one document was matched the search criteria during the update query, the `upsert` method can be used:
 ```python
 await Product.find_one(Product.name == "Tony's").upsert(
     Set({Product.price: 3.33}), 

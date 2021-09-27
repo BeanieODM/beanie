@@ -2,6 +2,69 @@
 
 Beanie project changes
 
+## [1.5.0] - 2021-09-27
+
+### Update
+
+- Custom encoders to be able to configure, 
+how specific type should be presented in the database
+
+### Implementation
+
+- Author - [Nazar Vovk](https://github.com/Vovcharaa)
+- PR - <https://github.com/roman-right/beanie/pull/91>
+
+## [1.4.0] - 2021-09-13
+
+### Added
+
+- Document state management
+
+### Implementation
+
+- PR - <https://github.com/roman-right/beanie/pull/114>
+
+## [1.3.0] - 2021-09-08
+
+### Added
+
+- Active record pattern
+
+### Implementation
+
+- Issue - <https://github.com/roman-right/beanie/issues/110>
+
+## [1.2.8] - 2021-09-01
+
+### Fix
+
+- Delete's return annotation
+
+### Implementation
+
+- PR - <https://github.com/roman-right/beanie/pull/109>
+
+## [1.2.7] - 2021-09-01
+
+### Update
+
+- Annotations for update and delete
+
+### Implementation
+
+- Author - [Anthony Shaw](https://github.com/tonybaloney)
+- PR - <https://github.com/roman-right/beanie/pull/106>
+
+## [1.2.6] - 2021-08-25
+
+### Fixed
+
+- MongoDB 5.0 in GH actions
+
+### Implementation
+
+- PR - <https://github.com/roman-right/beanie/pull/100>
+
 ## [1.2.5] - 2021-07-21
 
 ### Fixed
@@ -391,3 +454,15 @@ Beanie project changes
 [1.2.4]: https://pypi.org/project/beanie/1.2.4
 
 [1.2.5]: https://pypi.org/project/beanie/1.2.5
+
+[1.2.6]: https://pypi.org/project/beanie/1.2.6
+
+[1.2.7]: https://pypi.org/project/beanie/1.2.7
+
+[1.2.8]: https://pypi.org/project/beanie/1.2.8
+
+[1.3.0]: https://pypi.org/project/beanie/1.3.0
+
+[1.4.0]: https://pypi.org/project/beanie/1.4.0
+
+[1.5.0]: https://pypi.org/project/beanie/1.5.0

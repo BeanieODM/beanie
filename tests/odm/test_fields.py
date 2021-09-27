@@ -3,7 +3,7 @@ import pytest
 from pydantic import BaseModel, ValidationError
 
 from beanie.odm.fields import PydanticObjectId
-from beanie.odm.utils.encoder import bsonable_encoder
+from beanie.odm.utils.encoder import bson_encoder
 from tests.odm.models import (
     DocumentWithCustomFiledsTypes,
     DocumentWithBsonEncodersFiledsTypes,
@@ -71,11 +71,11 @@ async def test_custom_filed_types():
         timedelta=4782453,
         set_type=["one", "two", "three"],
         tuple_type=[3, "three"],
-        path=Path("C:\\Windows")
+        path=Path("C:\\Windows"),
     )
     c1 = await custom1.insert()
     c2 = await custom2.insert()
     c1_fromdb = await DocumentWithCustomFiledsTypes.get(c1.id)
     c2_fromdb = await DocumentWithCustomFiledsTypes.get(c2.id)
-    assert bsonable_encoder(c1_fromdb) == bsonable_encoder(c1)
-    assert bsonable_encoder(c2_fromdb) == bsonable_encoder(c2)
+    assert bson_encoder.encode(c1_fromdb) == bson_encoder.encode(c1)
+    assert bson_encoder.encode(c2_fromdb) == bson_encoder.encode(c2)

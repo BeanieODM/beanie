@@ -13,10 +13,13 @@ from typing import List, Optional, Set, Tuple, Union
 from uuid import UUID, uuid4
 
 import pymongo
-from beanie import Document, Indexed
-from pydantic import BaseModel, Field, SecretBytes, SecretStr
+from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
+from pydantic import BaseModel, Field
 from pymongo import IndexModel
+
+from beanie import Document, Indexed, Insert, Replace
+from beanie.odm.actions import before_event, after_event
 
 
 class Option2(BaseModel):
@@ -165,6 +168,40 @@ class DocumentWithBsonEncodersFiledsTypes(Document):
     color: Color
 
     class Collection:
-        bson_encoders = {
-            Color: lambda c: c.as_rgb()
-        }
+        bson_encoders = {Color: lambda c: c.as_rgb()}
+
+
+class DocumentWithActions(Document):
+    name: str
+    num_1: int = 0
+    num_2: int = 10
+    num_3: int = 100
+
+    @before_event(Insert)
+    def capitalize_name(self):
+        self.name = self.name.capitalize()
+
+    @before_event([Insert, Replace])
+    async def add_one(self):
+        self.num_1 += 1
+
+    @after_event(Insert)
+    def num_2_change(self):
+        self.num_2 -= 1
+
+    @after_event(Replace)
+    def num_3_change(self):
+        self.num_3 -= 1
+
+
+class DocumentWithTurnedOnStateManagement(Document):
+    num_1: int
+    num_2: int
+
+    class Collection:
+        use_state_management = True
+
+
+class DocumentWithTurnedOffStateManagement(Document):
+    num_1: int
+    num_2: int
