@@ -1,5 +1,7 @@
 from abc import abstractmethod
+from beanie.odm.utils.encoder import bson_encoder
 from typing import (
+    Callable,
     List,
     Type,
     TYPE_CHECKING,
@@ -8,6 +10,7 @@ from typing import (
     Any,
     Dict,
     Union,
+    Generator,
 )
 
 from pymongo.client_session import ClientSession
@@ -44,6 +47,10 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         self.session = None
         self.is_upsert = False
         self.upsert_insert_doc: Optional["DocType"] = None
+        self.encoders: Dict[Any, Callable[[Any], Any]] = {}
+        collection_class = getattr(self.document_model, "Collection", None)
+        if collection_class:
+            self.encoders = vars(collection_class).get("bson_encoders", {})
 
     @property
     def update_query(self) -> Dict[str, Any]:
@@ -55,7 +62,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
                 query.update(expression)
             else:
                 raise TypeError("Wrong expression type")
-        return query
+        return bson_encoder.encode(query, custom_encoder=self.encoders)
 
     def update(
         self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
@@ -91,10 +98,12 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         return self
 
     @abstractmethod
-    async def _update(self):
+    async def _update(self) -> UpdateResult:
         ...
 
-    def __await__(self) -> Union[UpdateResult, InsertOneResult]:
+    def __await__(
+        self,
+    ) -> Generator[Any, None, Union[UpdateResult, InsertOneResult]]:
         """
         Run the query
         :return:

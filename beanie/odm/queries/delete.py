@@ -1,4 +1,4 @@
-from typing import Type, TYPE_CHECKING, Any, Mapping
+from typing import Generator, Type, TYPE_CHECKING, Any, Mapping
 
 from pymongo.results import DeleteResult
 
@@ -24,7 +24,7 @@ class DeleteQuery(SessionMethods):
 
 
 class DeleteMany(DeleteQuery):
-    def __await__(self) -> DeleteResult:
+    def __await__(self) -> Generator[DeleteResult, None, None]:
         """
         Run the query
         :return:
@@ -35,7 +35,7 @@ class DeleteMany(DeleteQuery):
 
 
 class DeleteOne(DeleteQuery):
-    def __await__(self) -> DeleteResult:
+    def __await__(self) -> Generator[DeleteResult, None, None]:
         """
         Run the query
         :return:
