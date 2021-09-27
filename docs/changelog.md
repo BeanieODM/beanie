@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.5.1] - 2021-09-27
+
+### Update
+
+- Simplification for init_beanie function
+
+### Implementation
+
+- PR - <https://github.com/roman-right/beanie/pull/104>
+
 ## [1.5.0] - 2021-09-27
 
 ### Update
@@ -466,3 +476,5 @@ how specific type should be presented in the database
 [1.4.0]: https://pypi.org/project/beanie/1.4.0
 
 [1.5.0]: https://pypi.org/project/beanie/1.5.0
+
+[1.5.1]: https://pypi.org/project/beanie/1.5.1
