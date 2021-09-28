@@ -2,7 +2,8 @@ import asyncio
 import importlib
 from typing import List, Type, Union, TYPE_CHECKING
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
+from yarl import URL
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
@@ -32,20 +33,36 @@ def get_model(dot_path: str) -> Type["DocType"]:
 
 
 async def init_beanie(
-    database: AsyncIOMotorDatabase,
-    document_models: List[Union[Type["DocType"], str]],
+    database: AsyncIOMotorDatabase = None,
+    connection_string: str = None,
+    document_models: List[Union[Type["DocType"], str]] = None,
     allow_index_dropping: bool = True,
 ):
     """
     Beanie initialization
 
     :param database: AsyncIOMotorDatabase - motor database instance
+    :param connection_string: str - MongoDB connection string
     :param document_models: List[Union[Type[DocType], str]] - model classes
     or strings with dot separated paths
     :param allow_index_dropping: bool - if index dropping is allowed.
     Default True
     :return: None
     """
+    if (connection_string is None and database is None) or (
+        connection_string is not None and database is not None
+    ):
+        raise ValueError(
+            "connection_string parameter or database parameter must be set"
+        )
+
+    if document_models is None:
+        raise ValueError("document_models parameter must be set")
+    if connection_string is not None:
+        database = AsyncIOMotorClient(connection_string)[
+            URL(connection_string).path[1:]
+        ]
+
     collection_inits = []
     for model in document_models:
         if isinstance(model, str):
