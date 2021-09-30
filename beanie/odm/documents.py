@@ -10,10 +10,16 @@ from typing import (
     Any,
     overload,
 )
+from uuid import UUID, uuid4
 
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pydantic import ValidationError, parse_obj_as, PrivateAttr
+from pydantic import (
+    ValidationError,
+    parse_obj_as,
+    PrivateAttr,
+    validator,
+)
 from pydantic.main import BaseModel
 from pymongo.client_session import ClientSession
 from pymongo.results import (
@@ -26,6 +32,7 @@ from beanie.exceptions import (
     CollectionWasNotInitialized,
     ReplaceError,
     DocumentNotFound,
+    RevisionIdWasChanged,
 )
 from beanie.odm.actions import EventTypes, wrap_with_actions
 from beanie.odm.enums import SortDirection
@@ -42,8 +49,9 @@ from beanie.odm.operators.find.comparison import In
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.queries.update import UpdateMany
-from beanie.odm.utils.collection import collection_factory
+from beanie.odm.settings.general import DocumentSettings
 from beanie.odm.utils.dump import get_dict
+from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import saved_state_needed, save_state_after
 
 DocType = TypeVar("DocType", bound="Document")
@@ -67,7 +75,19 @@ class Document(BaseModel, UpdateMethods):
 
     id: Optional[PydanticObjectId] = None
 
+    # State
+    revision_id: Optional[UUID] = None
+    _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
+
+    # Settings
+    _document_settings: Optional[DocumentSettings] = None
+
+    @validator("revision_id")
+    def set_revision_id(cls, revision_id):
+        if not cls.get_settings().model_settings.use_revision:
+            return None
+        return revision_id or uuid4()
 
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
@@ -92,6 +112,7 @@ class Document(BaseModel, UpdateMethods):
 
     @wrap_with_actions(EventTypes.INSERT)
     @save_state_after
+    @validate_self_before
     async def insert(
         self: DocType, session: Optional[ClientSession] = None
     ) -> DocType:
@@ -424,21 +445,37 @@ class Document(BaseModel, UpdateMethods):
 
     @wrap_with_actions(EventTypes.REPLACE)
     @save_state_after
+    @validate_self_before
     async def replace(
-        self: DocType, session: Optional[ClientSession] = None
+        self: DocType,
+        session: Optional[ClientSession] = None,
+        force: bool = False,
     ) -> DocType:
         """
         Fully update the document in the database
 
         :param session: Optional[ClientSession] - pymongo session.
+        :param force: bool - do force replace.
+            Used when revision based protection is turned on.
         :return: self
         """
         if self.id is None:
             raise ValueError("Document must have an id")
 
-        await self.find_one({"_id": self.id}).replace_one(
-            self, session=session
-        )
+        use_revision_id = self.get_settings().model_settings.use_revision
+
+        find_query: Dict[str, Any] = {"_id": self.id}
+
+        if use_revision_id and not force:
+            find_query["revision_id"] = self._previous_revision_id
+
+        try:
+            await self.find_one(find_query).replace_one(self, session=session)
+        except DocumentNotFound:
+            if use_revision_id and not force:
+                raise RevisionIdWasChanged
+            else:
+                raise DocumentNotFound
         return self
 
     async def save(
@@ -455,6 +492,22 @@ class Document(BaseModel, UpdateMethods):
             return await self.replace(session=session)
         except (ValueError, DocumentNotFound):
             return await self.insert(session=session)
+
+    @saved_state_needed
+    @wrap_with_actions(EventTypes.SAVE_CHANGES)
+    @validate_self_before
+    async def save_changes(self, force: bool = False) -> None:
+        """
+        Save changes.
+        State management usage must be turned on
+
+        :param force: bool - ignore revision id, if revision is turned on
+        :return: None
+        """
+        if not self.is_changed:
+            return None
+        changes = self.get_changes()
+        await self.set(changes, force=force)  # type: ignore #TODO fix typing
 
     @classmethod
     async def replace_many(
@@ -479,16 +532,31 @@ class Document(BaseModel, UpdateMethods):
 
     @save_state_after
     async def update(
-        self, *args, session: Optional[ClientSession] = None
+        self,
+        *args,
+        session: Optional[ClientSession] = None,
+        force: bool = False,
     ) -> None:
         """
         Partially update the document in the database
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
+        :param force: bool - force update. Will update even if revision id
+        is not the same, as stored
         :return: None
         """
-        await self.find_one({"_id": self.id}).update(*args, session=session)
+        use_revision_id = self.get_settings().model_settings.use_revision
+
+        find_query: Dict[str, Any] = {"_id": self.id}
+
+        if use_revision_id and not force:
+            find_query["revision_id"] = self._previous_revision_id
+
+        result = await self.find_one(find_query).update(*args, session=session)
+
+        if use_revision_id and not force and result.modified_count == 0:
+            raise RevisionIdWasChanged
         await self._sync()
 
     @classmethod
@@ -583,42 +651,127 @@ class Document(BaseModel, UpdateMethods):
         """
         return await cls.find_all().count()
 
-    @classmethod
-    async def init_collection(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
-    ) -> None:
-        """
-        Internal CollectionMeta class creator
+    # State management
 
-        :param database: AsyncIOMotorDatabase - motor database instance
-        :param allow_index_dropping: bool - if index dropping is allowed
+    @classmethod
+    def use_state_management(cls) -> bool:
+        """
+        Is state management turned on
+        :return: bool
+        """
+        return cls.get_settings().model_settings.use_state_management
+
+    def _save_state(self) -> None:
+        """
+        Save current document state. Internal method
         :return: None
         """
-        collection_class = getattr(cls, "Collection", None)
-        collection_meta = await collection_factory(
-            database=database,
-            document_model=cls,
-            allow_index_dropping=allow_index_dropping,
-            collection_class=collection_class,
-        )
-        setattr(cls, "CollectionMeta", collection_meta)
+        if self.use_state_management():
+            self._saved_state = get_dict(self)
 
+    def get_saved_state(self) -> Optional[Dict[str, Any]]:
+        """
+        Saved state getter. It is protected property.
+        :return: Optional[Dict[str, Any]] - saved state
+        """
+        return self._saved_state
+
+    @classmethod
+    def _parse_obj_saving_state(cls: Type[DocType], obj: Any) -> DocType:
+        """
+        Parse object and save state then. Internal method.
+        :param obj: Any
+        :return: DocType
+        """
+        result: DocType = cls.parse_obj(obj)
+        result._save_state()
+        return result
+
+    @property  # type: ignore
+    @saved_state_needed
+    def is_changed(self) -> bool:
+        if self._saved_state == get_dict(self):
+            return False
+        return True
+
+    @saved_state_needed
+    def get_changes(self) -> Dict[str, Any]:
+        #  TODO search deeply
+        changes = {}
+        if self.is_changed:
+            current_state = get_dict(self)
+            for k, v in self._saved_state.items():  # type: ignore
+                if v != current_state[k]:
+                    changes[k] = current_state[k]
+        return changes
+
+    @saved_state_needed
+    def rollback(self) -> None:
+        if self.is_changed:
+            for key, value in self._saved_state.items():  # type: ignore
+                if key == "_id":
+                    setattr(self, "id", value)
+                else:
+                    setattr(self, key, value)
+
+    # Initialization
+
+    @classmethod
+    def init_fields(cls) -> None:
+        """
+        Init class fields
+        :return: None
+        """
         for k, v in cls.__fields__.items():
             path = v.alias or v.name
             setattr(cls, k, ExpressionField(path))
 
     @classmethod
-    def _get_collection_meta(cls) -> Type:
+    async def init_settings(
+        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+    ) -> None:
         """
-        Get internal CollectionMeta class, which was created on
-        the collection initialization step
+        Init document settings (collection and models)
 
-        :return: CollectionMeta class
+        :param database: AsyncIOMotorDatabase - motor database
+        :param allow_index_dropping: bool
+        :return: None
         """
-        collection_meta = getattr(cls, "CollectionMeta", None)
-        if collection_meta is None:
+        # TODO looks ugly a little. Too many parameters transfers.
+        cls._document_settings = await DocumentSettings.init(
+            database=database,
+            document_model=cls,
+            allow_index_dropping=allow_index_dropping,
+        )
+
+    @classmethod
+    async def init_model(
+        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+    ) -> None:
+        """
+        Init wrapper
+        :param database: AsyncIOMotorDatabase
+        :param allow_index_dropping: bool
+        :return: None
+        """
+        await cls.init_settings(
+            database=database, allow_index_dropping=allow_index_dropping
+        )
+        cls.init_fields()
+
+    # Other
+
+    @classmethod
+    def get_settings(cls) -> DocumentSettings:
+        """
+        Get document settings, which was created on
+        the initialization step
+
+        :return: DocumentSettings class
+        """
+        if cls._document_settings is None:
             raise CollectionWasNotInitialized
-        return collection_meta
+        return cls._document_settings
 
     @classmethod
     def get_motor_collection(cls) -> AsyncIOMotorCollection:
@@ -627,7 +780,7 @@ class Document(BaseModel, UpdateMethods):
 
         :return: AsyncIOMotorCollection
         """
-        collection_meta = cls._get_collection_meta()
+        collection_meta = cls.get_settings().collection_settings
         return collection_meta.motor_collection
 
     @classmethod
@@ -656,58 +809,11 @@ class Document(BaseModel, UpdateMethods):
                 )
         return inspection_result
 
-    # State management
-
-    @classmethod
-    def use_state_management(cls) -> bool:
-        collection_meta = cls._get_collection_meta()
-        return collection_meta.use_state_management
-
-    def _save_state(self):
-        if self.use_state_management():
-            self._saved_state = self.dict()
-
-    def get_saved_state(self):
-        return self._saved_state
-
-    @classmethod
-    def _parse_obj_saving_state(cls: Type[DocType], obj: Any) -> DocType:
-        result: DocType = cls.parse_obj(obj)
-        result._save_state()
-        return result
-
-    @property  # type: ignore
-    @saved_state_needed
-    def is_changed(self) -> bool:
-        if self._saved_state == self.dict():
-            return False
-        return True
-
-    @saved_state_needed
-    def get_changes(self) -> Dict[str, Any]:
-        #  TODO search deeply
-        changes = {}
-        if self.is_changed:
-            current_state = self.dict()
-            for k, v in self._saved_state.items():  # type: ignore
-                if v != current_state[k]:
-                    changes[k] = current_state[k]
-        return changes
-
-    @saved_state_needed
-    @wrap_with_actions(EventTypes.SAVE_CHANGES)
-    @save_state_after
-    async def save_changes(self) -> None:
-        if not self.is_changed:
-            return None
-        changes = self.get_changes()
-        await self.set(changes)  # type: ignore #TODO fix this
-
-    @saved_state_needed
-    def rollback(self) -> None:
-        if self.is_changed:
-            for key, value in self._saved_state.items():  # type: ignore
-                setattr(self, key, value)
+    @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
+    async def validate_self(self):
+        # TODO it can be sync, but needs some actions controller improvements
+        if self.get_settings().model_settings.validate_on_save:
+            self.parse_obj(self)
 
     class Config:
         json_encoders = {

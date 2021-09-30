@@ -10,7 +10,7 @@ from tests.odm.models import (
 
 @pytest.fixture
 def state():
-    return {"num_1": 1, "num_2": 2, "id": ObjectId()}
+    return {"num_1": 1, "num_2": 2, "_id": ObjectId()}
 
 
 @pytest.fixture
@@ -33,11 +33,11 @@ def test_save_state():
     doc = DocumentWithTurnedOnStateManagement(num_1=1, num_2=2)
     assert doc.get_saved_state() is None
     doc._save_state()
-    assert doc.get_saved_state() == {"num_1": 1, "num_2": 2, "id": None}
+    assert doc.get_saved_state() == {"num_1": 1, "num_2": 2}
 
 
 def test_parse_object_with_saving_state():
-    obj = {"num_1": 1, "num_2": 2, "id": ObjectId()}
+    obj = {"num_1": 1, "num_2": 2, "_id": ObjectId()}
     doc = DocumentWithTurnedOnStateManagement._parse_obj_saving_state(obj)
     assert doc.get_saved_state() == obj
 

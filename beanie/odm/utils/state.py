@@ -1,6 +1,7 @@
 import inspect
 from functools import wraps
 from typing import Callable, TYPE_CHECKING
+from uuid import uuid4
 
 from beanie.exceptions import StateManagementIsTurnedOff, StateNotSaved
 
@@ -39,6 +40,9 @@ def save_state_after(f: Callable):
         result = await f(self, *args, **kwargs)
         if self.use_state_management():
             self._save_state()
+        if self.get_settings().model_settings.use_revision:
+            self._previous_revision_id = self.revision_id
+            self.revision_id = uuid4()
         return result
 
     return wrapper

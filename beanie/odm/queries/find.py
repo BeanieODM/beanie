@@ -89,7 +89,10 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
             return {}
 
     def update(
-        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None,
+        **kwargs,
     ):
         """
         Create Update with modifications query

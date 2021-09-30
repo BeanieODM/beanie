@@ -18,7 +18,7 @@ from pydantic.color import Color
 from pydantic import BaseModel, Field
 from pymongo import IndexModel
 
-from beanie import Document, Indexed, Insert, Replace
+from beanie import Document, Indexed, Insert, Replace, ValidateOnSave
 from beanie.odm.actions import before_event, after_event
 
 
@@ -62,7 +62,6 @@ class DocumentTestModel(Document):
     test_int: int
     test_list: List[SubDocument]
     test_str: str
-    # test_sub_doc: SubDocument
 
 
 class DocumentTestModelWithCustomCollectionName(Document):
@@ -198,10 +197,39 @@ class DocumentWithTurnedOnStateManagement(Document):
     num_1: int
     num_2: int
 
-    class Collection:
+    class Settings:
         use_state_management = True
 
 
 class DocumentWithTurnedOffStateManagement(Document):
     num_1: int
     num_2: int
+
+
+class DocumentWithValidationOnSave(Document):
+    num_1: int
+    num_2: int
+
+    @after_event(ValidateOnSave)
+    def num_2_plus_1(self):
+        self.num_2 += 1
+
+    class Settings:
+        validate_on_save = True
+        use_state_management = True
+
+
+class DocumentWithRevisionTurnedOn(Document):
+    num_1: int
+    num_2: int
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
+
+
+class DocumentWithPydanticConfig(Document):
+    num_1: int
+
+    class Config(Document.Config):
+        validate_assignment = True

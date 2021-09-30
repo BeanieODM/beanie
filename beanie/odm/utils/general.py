@@ -68,7 +68,7 @@ async def init_beanie(
         if isinstance(model, str):
             model = get_model(model)
         collection_inits.append(
-            model.init_collection(
+            model.init_model(
                 database, allow_index_dropping=allow_index_dropping
             )
         )

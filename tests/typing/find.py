@@ -26,16 +26,8 @@ async def find_many_generator_with_projection() -> List[ProjectionTest]:
 
 
 async def find_one() -> Optional[Test]:
-    t = await Test.find_one()
-    if t is not None:
-        t1: Test = t
-        print(t1)
-    return t
+    return await Test.find_one()
 
 
 async def find_one_with_projection() -> Optional[ProjectionTest]:
-    doc = await Test.find_one().project(projection_model=ProjectionTest)
-    if doc is not None:
-        doc_1: ProjectionTest = doc
-        print(doc_1)
-    return doc
+    return await Test.find_one().project(projection_model=ProjectionTest)

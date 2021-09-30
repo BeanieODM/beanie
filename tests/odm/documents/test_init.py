@@ -204,4 +204,5 @@ async def test_projection():
         "test_int": 1,
         "test_list": 1,
         "test_str": 1,
+        "revision_id": 1,
     }

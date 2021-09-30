@@ -65,7 +65,10 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         return bson_encoder.encode(query, custom_encoder=self.encoders)
 
     def update(
-        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None,
+        **kwargs
     ) -> "UpdateQuery":
         """
         Provide modifications to the update query.

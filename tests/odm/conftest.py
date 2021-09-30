@@ -21,6 +21,9 @@ from tests.odm.models import (
     DocumentWithActions,
     DocumentWithTurnedOnStateManagement,
     DocumentWithTurnedOffStateManagement,
+    DocumentWithValidationOnSave,
+    DocumentWithRevisionTurnedOn,
+    DocumentWithPydanticConfig,
 )
 from tests.odm.models import (
     Sample,
@@ -117,6 +120,7 @@ async def session(cli, loop):
 @pytest.fixture(autouse=True)
 async def init(loop, db):
     models = [
+        DocumentWithPydanticConfig,
         DocumentTestModel,
         DocumentTestModelWithCustomCollectionName,
         DocumentTestModelWithSimpleIndex,
@@ -132,6 +136,8 @@ async def init(loop, db):
         DocumentWithActions,
         DocumentWithTurnedOnStateManagement,
         DocumentWithTurnedOffStateManagement,
+        DocumentWithValidationOnSave,
+        DocumentWithRevisionTurnedOn,
     ]
     await init_beanie(
         database=db,

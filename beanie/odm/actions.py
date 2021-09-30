@@ -17,11 +17,13 @@ class EventTypes(str, Enum):
     INSERT = "INSERT"
     REPLACE = "REPLACE"
     SAVE_CHANGES = "SAVE_CHANGES"
+    VALIDATE_ON_SAVE = "VALIDATE_ON_SAVE"
 
 
 Insert = EventTypes.INSERT
 Replace = EventTypes.REPLACE
 SaveChanges = EventTypes.SAVE_CHANGES
+ValidateOnSave = EventTypes.VALIDATE_ON_SAVE
 
 
 class ActionDirections(str, Enum):  # TODO think about this name

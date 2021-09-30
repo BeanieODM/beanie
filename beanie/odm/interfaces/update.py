@@ -18,7 +18,10 @@ class UpdateMethods:
 
     @abstractmethod
     def update(
-        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None,
+        **kwargs
     ):
         return self
 
@@ -26,6 +29,7 @@ class UpdateMethods:
         self,
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
+        **kwargs
     ):
         """
         Set values
@@ -48,12 +52,13 @@ class UpdateMethods:
         :param session: Optional[ClientSession] - pymongo session
         :return: self
         """
-        return self.update(Set(expression), session=session)
+        return self.update(Set(expression), session=session, **kwargs)
 
     def current_date(
         self,
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
+        **kwargs
     ):
         """
         Set current date
@@ -64,12 +69,13 @@ class UpdateMethods:
         :param session: Optional[ClientSession] - pymongo session
         :return: self
         """
-        return self.update(CurrentDate(expression), session=session)
+        return self.update(CurrentDate(expression), session=session, **kwargs)
 
     def inc(
         self,
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
+        **kwargs
     ):
         """
         Increment
@@ -91,4 +97,4 @@ class UpdateMethods:
         :param session: Optional[ClientSession] - pymongo session
         :return: self
         """
-        return self.update(Inc(expression), session=session)
+        return self.update(Inc(expression), session=session, **kwargs)

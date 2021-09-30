@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.6.0] - 2021-09-30
+
+### Update
+
+- Validate on save
+
+### Implementation
+
+- PR - <https://github.com/roman-right/beanie/pull/118>
+
 ## [1.5.1] - 2021-09-27
 
 ### Update
@@ -478,3 +488,5 @@ how specific type should be presented in the database
 [1.5.0]: https://pypi.org/project/beanie/1.5.0
 
 [1.5.1]: https://pypi.org/project/beanie/1.5.1
+
+[1.6.0]: https://pypi.org/project/beanie/1.6.0
