@@ -17,7 +17,12 @@ from typing import (
     overload,
 )
 
+from pydantic import BaseModel
+from pymongo.client_session import ClientSession
+from pymongo.results import UpdateResult
+
 from beanie.exceptions import DocumentNotFound
+from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.aggregate import AggregateMethods
 from beanie.odm.interfaces.session import SessionMethods
@@ -25,7 +30,6 @@ from beanie.odm.interfaces.update import UpdateMethods
 from beanie.odm.operators.find.logical import And
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.cursor import BaseCursorQuery
-from beanie.odm.utils.encoder import bson_encoder
 from beanie.odm.queries.delete import (
     DeleteQuery,
     DeleteMany,
@@ -36,13 +40,9 @@ from beanie.odm.queries.update import (
     UpdateMany,
     UpdateOne,
 )
+from beanie.odm.utils.encoder import bson_encoder
 from beanie.odm.utils.parsing import parse_obj
 from beanie.odm.utils.projection import get_projection
-
-from pydantic import BaseModel
-
-from pymongo.client_session import ClientSession
-from pymongo.results import UpdateResult
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
@@ -76,6 +76,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         )
         self.session = None
         self.encoders: Dict[Any, Callable[[Any], Any]] = {}
+        self.ignore_cache: bool = False
         collection_class = getattr(self.document_model, "Collection", None)
         if collection_class:
             self.encoders = vars(collection_class).get("bson_encoders", {})
@@ -204,6 +205,7 @@ class FindMany(
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> "FindMany[FindQueryResultType]":
         ...
 
@@ -216,6 +218,7 @@ class FindMany(
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
 
@@ -227,6 +230,7 @@ class FindMany(
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
     ]:
@@ -241,6 +245,7 @@ class FindMany(
         for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
+        :param ignore_cache: bool
         :return: FindMany - query instance
         """
         self.find_expressions += args  # type: ignore # bool workaround
@@ -249,6 +254,7 @@ class FindMany(
         self.sort(sort)
         self.project(projection_model)
         self.set_session(session=session)
+        self.ignore_cache = ignore_cache
         return self
 
     # TODO probably merge FindOne and FindMany to one class to avoid this
@@ -292,6 +298,7 @@ class FindMany(
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> "FindMany[FindQueryResultType]":
         ...
 
@@ -304,6 +311,7 @@ class FindMany(
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
 
@@ -315,6 +323,7 @@ class FindMany(
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
     ]:
@@ -328,6 +337,7 @@ class FindMany(
             sort=sort,
             projection_model=projection_model,
             session=session,
+            ignore_cache=ignore_cache,
         )
 
     def sort(
@@ -434,6 +444,7 @@ class FindMany(
         aggregation_pipeline: List[Any],
         projection_model: None = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> AggregationQuery[Dict[str, Any]]:
         ...
 
@@ -443,6 +454,7 @@ class FindMany(
         aggregation_pipeline: List[Any],
         projection_model: Type[FindQueryProjectionType],
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> AggregationQuery[FindQueryProjectionType]:
         ...
 
@@ -451,6 +463,7 @@ class FindMany(
         aggregation_pipeline: List[Any],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Union[
         AggregationQuery[Dict[str, Any]],
         AggregationQuery[FindQueryProjectionType],
@@ -462,6 +475,7 @@ class FindMany(
         <https://docs.mongodb.com/manual/core/aggregation-pipeline/>
         :param projection_model: Type[BaseModel] - Projection Model
         :param session: Optional[ClientSession] - PyMongo session
+        :param ignore_cache: bool
         :return:[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
         self.set_session(session=session)
@@ -470,7 +484,37 @@ class FindMany(
             document_model=self.document_model,
             projection_model=projection_model,
             find_query=self.get_filter_query(),
+            ignore_cache=ignore_cache,
         ).set_session(session=self.session)
+
+    @property
+    def _cache_key(self) -> Dict[str, Any]:
+        return LRUCache.create_key(
+            {
+                "type": "FindMany",
+                "filter": self.get_filter_query(),
+                "sort": self.sort_expressions,
+                "projection": get_projection(self.projection_model),
+                "skip": self.skip_number,
+                "limit": self.limit_number,
+            }
+        )
+
+    def _get_cache(self):
+        if (
+            self.document_model.get_settings().model_settings.use_cache
+            and self.ignore_cache is False
+        ):
+            return self.document_model._cache.get(self._cache_key)
+        else:
+            return None
+
+    def _set_cache(self, data):
+        if (
+            self.document_model.get_settings().model_settings.use_cache
+            and self.ignore_cache is False
+        ):
+            return self.document_model._cache.set(self._cache_key, data)
 
     @property
     def motor_cursor(self):
@@ -533,6 +577,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         *args: Union[Mapping[str, Any], bool],
         projection_model: None = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> "FindOne[FindQueryResultType]":
         ...
 
@@ -542,6 +587,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         *args: Union[Mapping[str, Any], bool],
         projection_model: Type[FindQueryProjectionType],
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> "FindOne[FindQueryProjectionType]":
         ...
 
@@ -550,6 +596,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Union[
         "FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"
     ]:
@@ -559,11 +606,13 @@ class FindOne(FindQuery[FindQueryResultType]):
         :param args: *Mapping[str, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
+        :param ignore_cache: bool
         :return: FindOne - query instance
         """
         self.find_expressions += args  # type: ignore # bool workaround
         self.project(projection_model)
         self.set_session(session=session)
+        self.ignore_cache = ignore_cache
         return self
 
     def update_one(
@@ -613,6 +662,13 @@ class FindOne(FindQuery[FindQueryResultType]):
             raise DocumentNotFound
         return result
 
+    async def _find_one(self, projection):
+        return await self.document_model.get_motor_collection().find_one(
+            filter=self.get_filter_query(),
+            projection=projection,
+            session=self.session,
+        )
+
     def __await__(
         self,
     ) -> Generator[Coroutine, Any, Optional[FindQueryResultType]]:
@@ -621,13 +677,21 @@ class FindOne(FindQuery[FindQueryResultType]):
         :return: BaseModel
         """
         projection = get_projection(self.projection_model)
-        document: Dict[str, Any] = (
-            yield from self.document_model.get_motor_collection().find_one(
-                filter=self.get_filter_query(),
-                projection=projection,
-                session=self.session,
+        if (
+            self.document_model.get_settings().model_settings.use_cache
+            and self.ignore_cache is False
+        ):
+            cache_key = LRUCache.create_key(
+                "FindOne", self.get_filter_query(), projection, self.session
             )
-        )
+            document: Dict[str, Any] = self.document_model._cache.get(  # type: ignore
+                cache_key
+            )
+            if document is None:
+                document = yield from self._find_one(projection).__await__()
+                self.document_model._cache.set(cache_key, document)
+        else:
+            document = yield from self._find_one(projection).__await__()
         if document is None:
             return None
         return cast(

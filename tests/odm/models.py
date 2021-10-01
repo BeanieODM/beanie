@@ -63,6 +63,10 @@ class DocumentTestModel(Document):
     test_list: List[SubDocument]
     test_str: str
 
+    class Settings:
+        use_cache = True
+        cache_expiration_time = datetime.timedelta(seconds=10)
+
 
 class DocumentTestModelWithCustomCollectionName(Document):
     test_int: int

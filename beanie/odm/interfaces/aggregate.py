@@ -17,6 +17,7 @@ class AggregateMethods:
         aggregation_pipeline,
         projection_model=None,
         session=None,
+        ignore_cache: bool = False,
     ):
         ...
 
@@ -24,6 +25,7 @@ class AggregateMethods:
         self,
         field: Union[str, ExpressionField],
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Optional[float]:
         """
         Sum of values of the given field
@@ -42,6 +44,7 @@ class AggregateMethods:
 
         :param field: Union[str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
+        :param ignore_cache: bool
         :return: float - sum. None if there are no items.
         """
         pipeline = [
@@ -53,7 +56,9 @@ class AggregateMethods:
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
             await self.aggregate(
-                aggregation_pipeline=pipeline, session=session
+                aggregation_pipeline=pipeline,
+                session=session,
+                ignore_cache=ignore_cache,
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
         if not result:
@@ -61,7 +66,10 @@ class AggregateMethods:
         return result[0]["sum"]
 
     async def avg(
-        self, field, session: Optional[ClientSession] = None
+        self,
+        field,
+        session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Optional[float]:
         """
         Average of values of the given field
@@ -79,6 +87,7 @@ class AggregateMethods:
 
         :param field: Union[str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
+        :param ignore_cache: bool
         :return: Optional[float] - avg. None if there are no items.
         """
         pipeline = [
@@ -89,7 +98,9 @@ class AggregateMethods:
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
             await self.aggregate(
-                aggregation_pipeline=pipeline, session=session
+                aggregation_pipeline=pipeline,
+                session=session,
+                ignore_cache=ignore_cache,
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
         if not result:
@@ -100,6 +111,7 @@ class AggregateMethods:
         self,
         field: Union[str, ExpressionField],
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Optional[float]:
         """
         Max of the values of the given field
@@ -127,7 +139,9 @@ class AggregateMethods:
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
             await self.aggregate(
-                aggregation_pipeline=pipeline, session=session
+                aggregation_pipeline=pipeline,
+                session=session,
+                ignore_cache=ignore_cache,
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
         if not result:
@@ -138,6 +152,7 @@ class AggregateMethods:
         self,
         field: Union[str, ExpressionField],
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Optional[float]:
         """
         Min of the values of the given field
@@ -165,7 +180,9 @@ class AggregateMethods:
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
             await self.aggregate(
-                aggregation_pipeline=pipeline, session=session
+                aggregation_pipeline=pipeline,
+                session=session,
+                ignore_cache=ignore_cache,
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
         if not result:
