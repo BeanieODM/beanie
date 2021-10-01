@@ -488,7 +488,7 @@ class FindMany(
         ).set_session(session=self.session)
 
     @property
-    def _cache_key(self) -> Dict[str, Any]:
+    def _cache_key(self) -> str:
         return LRUCache.create_key(
             {
                 "type": "FindMany",
@@ -505,7 +505,7 @@ class FindMany(
             self.document_model.get_settings().model_settings.use_cache
             and self.ignore_cache is False
         ):
-            return self.document_model._cache.get(self._cache_key)
+            return self.document_model._cache.get(self._cache_key)  # type: ignore
         else:
             return None
 
@@ -514,7 +514,7 @@ class FindMany(
             self.document_model.get_settings().model_settings.use_cache
             and self.ignore_cache is False
         ):
-            return self.document_model._cache.set(self._cache_key, data)
+            return self.document_model._cache.set(self._cache_key, data)  # type: ignore
 
     @property
     def motor_cursor(self):
@@ -689,7 +689,7 @@ class FindOne(FindQuery[FindQueryResultType]):
             )
             if document is None:
                 document = yield from self._find_one(projection).__await__()
-                self.document_model._cache.set(cache_key, document)
+                self.document_model._cache.set(cache_key, document)  # type: ignore
         else:
             document = yield from self._find_one(projection).__await__()
         if document is None:

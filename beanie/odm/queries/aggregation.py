@@ -7,7 +7,6 @@ from typing import (
     Any,
     Generic,
     TypeVar,
-    Dict,
 )
 
 from pydantic import BaseModel
@@ -55,7 +54,7 @@ class AggregationQuery(
         self.ignore_cache = ignore_cache
 
     @property
-    def _cache_key(self) -> Dict[str, Any]:
+    def _cache_key(self) -> str:
         return LRUCache.create_key(
             {
                 "type": "Aggregation",
@@ -72,7 +71,7 @@ class AggregationQuery(
             self.document_model.get_settings().model_settings.use_cache
             and self.ignore_cache is False
         ):
-            return self.document_model._cache.get(self._cache_key)
+            return self.document_model._cache.get(self._cache_key)  # type: ignore
         else:
             return None
 
@@ -81,7 +80,7 @@ class AggregationQuery(
             self.document_model.get_settings().model_settings.use_cache
             and self.ignore_cache is False
         ):
-            return self.document_model._cache.set(self._cache_key, data)
+            return self.document_model._cache.set(self._cache_key, data)  # type: ignore
 
     def get_aggregation_pipeline(
         self,
