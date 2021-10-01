@@ -32,6 +32,7 @@ pydoc-markdown = "^3.13.0"
 flake8 = "^3.9.1"
 pyright = "^0.0.2"
 mkdocs = "1.1"
+icecream = "^2.1.1"
 
 
 [build-system]

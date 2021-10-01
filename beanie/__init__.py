@@ -8,6 +8,7 @@ from beanie.odm.actions import (
     SaveChanges,
     ValidateOnSave,
 )
+from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import PydanticObjectId, Indexed
 from beanie.odm.utils.general import init_beanie
 from beanie.odm.documents import Document
@@ -26,6 +27,8 @@ __all__ = [
     "Replace",
     "SaveChanges",
     "ValidateOnSave",
+    # Bulk Write
+    "BulkWriter",
     # Migrations
     "iterative_migration",
     "free_fall_migration",
