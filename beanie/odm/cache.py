@@ -3,7 +3,6 @@ import datetime
 from datetime import timedelta
 from typing import Any, Optional
 
-from icecream import ic
 from pydantic import BaseModel, Field
 
 
@@ -43,5 +42,4 @@ class LRUCache:
 
     @staticmethod
     def create_key(*args):
-        ic(args)
         return str(args)  # TODO think about this
