@@ -66,6 +66,7 @@ class DocumentTestModel(Document):
     class Settings:
         use_cache = True
         cache_expiration_time = datetime.timedelta(seconds=10)
+        cache_capacity = 5
 
 
 class DocumentTestModelWithCustomCollectionName(Document):

@@ -78,3 +78,25 @@ async def test_aggregation(documents):
         [{"$group": {"_id": "$test_str", "total": {"$sum": "$test_int"}}}]
     ).to_list()
     assert docs != new_docs
+
+
+async def test_capacity(documents):
+    await documents(10)
+    docs = []
+    for i in range(10):
+        docs.append(
+            await DocumentTestModel.find_one(DocumentTestModel.test_int == i)
+        )
+
+    await DocumentTestModel.find_one(DocumentTestModel.test_int == 1).set(
+        {DocumentTestModel.test_str: "NEW_VALUE"}
+    )
+    await DocumentTestModel.find_one(DocumentTestModel.test_int == 9).set(
+        {DocumentTestModel.test_str: "NEW_VALUE"}
+    )
+
+    new_doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 1)
+    assert docs[1] != new_doc
+
+    new_doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 9)
+    assert docs[9] == new_doc
