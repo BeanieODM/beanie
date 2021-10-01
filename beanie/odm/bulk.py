@@ -56,7 +56,7 @@ class BulkWriter:
                     query = op.operation(op.first_query, op.second_query)
                 requests.append(query)
 
-            await obj_class.get_motor_collection().bulk_write(requests)
+            await obj_class.get_motor_collection().bulk_write(requests)  # type: ignore
 
     def add_operation(self, operation: Operation):
         self.operations.append(operation)

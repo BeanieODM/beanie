@@ -532,8 +532,11 @@ class Document(BaseModel, UpdateMethods):
             return None
         changes = self.get_changes()
         await self.set(
-            changes, force=force, session=session, bulk_writer=bulk_writer
-        )  # type: ignore #TODO fix typing
+            changes,  # type: ignore #TODO fix typing
+            force=force,
+            session=session,
+            bulk_writer=bulk_writer,
+        )
 
     @classmethod
     async def replace_many(
