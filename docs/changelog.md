@@ -2,6 +2,17 @@
 
 Beanie project changes
 
+## [1.6.1] - 2021-10-06
+
+### Update
+
+- Customization support. It is possible to change query builder classes, 
+used in the classes, which are inherited from the Document class
+
+### Implementation
+
+- PR - <https://github.com/roman-right/beanie/pull/125>
+
 ## [1.6.0] - 2021-09-30
 
 ### Update
@@ -490,3 +501,5 @@ how specific type should be presented in the database
 [1.5.1]: https://pypi.org/project/beanie/1.5.1
 
 [1.6.0]: https://pypi.org/project/beanie/1.6.0
+
+[1.6.1]: https://pypi.org/project/beanie/1.6.1
