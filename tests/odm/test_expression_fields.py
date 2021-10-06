@@ -78,3 +78,8 @@ def test_pos():
 def test_neg():
     q = -Sample.integer
     assert q == ("integer", SortDirection.DESCENDING)
+
+
+def test_nested_field_alias():
+    q = Sample.nested.snake_case == "alias"
+    assert q == {"nested.camelCase": "alias"}

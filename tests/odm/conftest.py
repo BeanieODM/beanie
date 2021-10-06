@@ -66,6 +66,7 @@ async def preset_documents(point):
             option_1=option_1,
             union=union,
             optional=optional,
+            camelCase=string,
         )
 
         sample = Sample(
@@ -90,6 +91,7 @@ def sample_doc_not_saved(point):
         option_1=Option1(s="TEST"),
         union=Option1(s="TEST"),
         optional=None,
+        camelCase="string",
     )
     geo = GeoObject(
         coordinates=[

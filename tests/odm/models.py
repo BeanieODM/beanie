@@ -35,6 +35,7 @@ class Nested(BaseModel):
     option_1: Option1
     union: Union[Option1, Option2]
     optional: Optional[Option2]
+    snake_case: str = Field(alias="camelCase")
 
 
 class GeoObject(BaseModel):

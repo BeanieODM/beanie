@@ -99,3 +99,20 @@ class ExpressionField(str):
 
     def __neg__(self):
         return self, SortDirection.DESCENDING
+
+
+class ExpressionSubType(dict):
+    def __init__(self, path):
+        self["__self__"] = path
+
+    def __new__(cls, path):
+        return ExpressionField(path)
+
+    def __getattr__(self, item):
+        return ExpressionField(self[item])
+
+    def __setattr__(self, name, value):
+        self[name] = value
+
+    def __str__(self) -> str:
+        return self["__self__"]

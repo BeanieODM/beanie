@@ -20,7 +20,7 @@ from pydantic import (
     PrivateAttr,
     validator,
 )
-from pydantic.main import BaseModel
+from pydantic.main import BaseModel, ModelMetaclass
 from pymongo.client_session import ClientSession
 from pymongo.results import (
     DeleteResult,
@@ -36,7 +36,11 @@ from beanie.exceptions import (
 )
 from beanie.odm.actions import EventTypes, wrap_with_actions
 from beanie.odm.enums import SortDirection
-from beanie.odm.fields import PydanticObjectId, ExpressionField
+from beanie.odm.fields import (
+    ExpressionSubType,
+    PydanticObjectId,
+    ExpressionField,
+)
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
@@ -719,18 +723,6 @@ class Document(BaseModel, UpdateMethods):
                 else:
                     setattr(self, key, value)
 
-    # Initialization
-
-    @classmethod
-    def init_fields(cls) -> None:
-        """
-        Init class fields
-        :return: None
-        """
-        for k, v in cls.__fields__.items():
-            path = v.alias or v.name
-            setattr(cls, k, ExpressionField(path))
-
     @classmethod
     async def init_settings(
         cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
@@ -762,9 +754,25 @@ class Document(BaseModel, UpdateMethods):
         await cls.init_settings(
             database=database, allow_index_dropping=allow_index_dropping
         )
-        cls.init_fields()
 
-    # Other
+        Document.init_model_fields(cls)
+
+    @staticmethod
+    def init_model_fields(model, target=None, super_path=""):
+        target = target or model
+
+        for k, v in model.__fields__.items():
+            path = f"{super_path}{v.alias or v.name}"
+            field_type = v.type_
+
+            if issubclass(type(field_type), ModelMetaclass):
+                sub_field_type = ExpressionSubType(path)
+                Document.init_model_fields(
+                    field_type, target=sub_field_type, super_path=f"{path}."
+                )
+                setattr(target, k, sub_field_type)
+            else:
+                setattr(target, k, ExpressionField(path))
 
     @classmethod
     def get_settings(cls) -> DocumentSettings:
