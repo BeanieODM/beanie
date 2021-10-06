@@ -83,6 +83,11 @@ class Document(BaseModel, UpdateMethods):
     # Settings
     _document_settings: Optional[DocumentSettings] = None
 
+    # Customization
+    # Query builders could be replaced in the inherited classes
+    find_one_query_class = FindOne
+    find_many_query_class = FindMany
+
     @validator("revision_id")
     def set_revision_id(cls, revision_id):
         if not cls.get_settings().model_settings.use_revision:
@@ -232,7 +237,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session instance
         :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
         """
-        return FindOne(document_model=cls).find_one(
+        return cls.find_one_query_class(document_model=cls).find_one(
             *args,
             projection_model=projection_model,
             session=session,
@@ -288,7 +293,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
-        return FindMany(document_model=cls).find_many(
+        return cls.find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
             skip=skip,
