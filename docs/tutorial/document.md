@@ -144,3 +144,31 @@ class DocumentTestModelWithIndex(Document):
             ),
         ]
 ```
+
+
+### Encoders
+
+The `bson_encoders` field of the inner `Collection` class defines how are the Python types going to be represented when saved in the database. The default conversions can be overridden with this.
+
+The `ip` field in the following example would be converted to String by default.
+
+```python
+from ipaddress import IPv4Address
+
+class Sample(Document):
+    ip: IPv4Address
+```
+
+However if you wanted the `ip` field to be represented as Integer in the database you need to override default encoders like this:
+
+```python
+from ipaddress import IPv4Address
+
+class Sample(Document):
+    ip: IPv4Address
+
+    class Collection:
+        bson_encoders = {
+          IPv4Address: int
+        }
+```
