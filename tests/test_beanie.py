@@ -2,4 +2,4 @@ from beanie import __version__
 
 
 def test_version():
-    assert __version__ == "1.6.2"
+    assert __version__ == "1.6.3"

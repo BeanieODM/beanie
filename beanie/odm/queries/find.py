@@ -67,6 +67,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
     DeleteQueryType: Union[
         Type[DeleteOne], Type[DeleteMany], Type[DeleteQuery]
     ] = DeleteQuery
+    AggregationQueryType = AggregationQuery
 
     def __init__(self, document_model: Type["DocType"]):
         self.document_model: Type["DocType"] = document_model
@@ -465,7 +466,7 @@ class FindMany(
         :return:[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
         self.set_session(session=session)
-        return AggregationQuery(
+        return self.AggregationQueryType(
             aggregation_pipeline=aggregation_pipeline,
             document_model=self.document_model,
             projection_model=projection_model,

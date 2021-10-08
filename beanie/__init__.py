@@ -12,7 +12,7 @@ from beanie.odm.fields import PydanticObjectId, Indexed
 from beanie.odm.utils.general import init_beanie
 from beanie.odm.documents import Document
 
-__version__ = "1.6.2"
+__version__ = "1.6.3"
 __all__ = [
     # ODM
     "Document",
