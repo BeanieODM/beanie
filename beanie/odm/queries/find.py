@@ -170,6 +170,25 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
     def get_projection_model(self) -> Type[FindQueryResultType]:
         return self.projection_model
 
+    async def count(self) -> int:
+        """
+        Number of found documents
+        :return: int
+        """
+        return (
+            await self.document_model.get_motor_collection().count_documents(
+                self.get_filter_query()
+            )
+        )
+
+    async def exists(self) -> bool:
+        """
+        If find query will return anything
+
+        :return: bool
+        """
+        return await self.count() > 0
+
 
 class FindMany(
     FindQuery[FindQueryResultType],
@@ -417,17 +436,6 @@ class FindMany(
         # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case
         # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
         return cast(DeleteMany, self.delete(session=session))
-
-    async def count(self) -> int:
-        """
-        Number of found documents
-        :return: int
-        """
-        return (
-            await self.document_model.get_motor_collection().count_documents(
-                self.get_filter_query()
-            )
-        )
 
     @overload
     def aggregate(
