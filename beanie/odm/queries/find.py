@@ -21,8 +21,11 @@ from pydantic import BaseModel
 from pymongo.client_session import ClientSession
 from pymongo.results import UpdateResult
 
+from pymongo import ReplaceOne
+
 from beanie.exceptions import DocumentNotFound
 from beanie.odm.cache import LRUCache
+from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.aggregate import AggregateMethods
 from beanie.odm.interfaces.session import SessionMethods
@@ -67,6 +70,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
     DeleteQueryType: Union[
         Type[DeleteOne], Type[DeleteMany], Type[DeleteQuery]
     ] = DeleteQuery
+    AggregationQueryType = AggregationQuery
 
     def __init__(self, document_model: Type["DocType"]):
         self.document_model: Type["DocType"] = document_model
@@ -93,6 +97,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         self,
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
     ):
         """
@@ -109,7 +114,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
                 document_model=self.document_model,
                 find_query=self.get_filter_query(),
             )
-            .update(*args)
+            .update(*args, bulk_writer=bulk_writer)
             .set_session(session=self.session)
         )
 
@@ -140,7 +145,9 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         )
 
     def delete(
-        self, session: Optional[ClientSession] = None
+        self,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
     ) -> Union[DeleteOne, DeleteMany]:
         """
         Provide search criteria to the Delete query
@@ -152,6 +159,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         return self.DeleteQueryType(
             document_model=self.document_model,
             find_query=self.get_filter_query(),
+            bulk_writer=bulk_writer,
         ).set_session(session=session)
 
     def project(
@@ -401,7 +409,10 @@ class FindMany(
         return self
 
     def update_many(
-        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
     ) -> UpdateMany:
         """
         Provide search criteria to the
@@ -411,10 +422,15 @@ class FindMany(
         :param session: Optional[ClientSession]
         :return: [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
         """
-        return cast(UpdateMany, self.update(*args, session=session))
+        return cast(
+            UpdateMany,
+            self.update(*args, session=session, bulk_writer=bulk_writer),
+        )
 
     def delete_many(
-        self, session: Optional[ClientSession] = None
+        self,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
     ) -> DeleteMany:
         """
         Provide search criteria to the [DeleteMany](https://roman-right.github.io/beanie/api/queries/#deletemany) query
@@ -425,7 +441,9 @@ class FindMany(
         # We need to cast here to tell mypy that we are sure about the type.
         # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case
         # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
-        return cast(DeleteMany, self.delete(session=session))
+        return cast(
+            DeleteMany, self.delete(session=session, bulk_writer=bulk_writer)
+        )
 
     async def count(self) -> int:
         """
@@ -479,7 +497,7 @@ class FindMany(
         :return:[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
         self.set_session(session=session)
-        return AggregationQuery(
+        return self.AggregationQueryType(
             aggregation_pipeline=aggregation_pipeline,
             document_model=self.document_model,
             projection_model=projection_model,
@@ -616,7 +634,10 @@ class FindOne(FindQuery[FindQueryResultType]):
         return self
 
     def update_one(
-        self, *args: Mapping[str, Any], session: Optional[ClientSession] = None
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
     ) -> UpdateOne:
         """
         Create [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query using modifications and
@@ -625,9 +646,16 @@ class FindOne(FindQuery[FindQueryResultType]):
         :param session: Optional[ClientSession] - PyMongo sessions
         :return: [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query
         """
-        return cast(UpdateOne, self.update(*args, session=session))
+        return cast(
+            UpdateOne,
+            self.update(*args, session=session, bulk_writer=bulk_writer),
+        )
 
-    def delete_one(self, session: Optional[ClientSession] = None) -> DeleteOne:
+    def delete_one(
+        self,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+    ) -> DeleteOne:
         """
         Provide search criteria to the [DeleteOne](https://roman-right.github.io/beanie/api/queries/#deleteone) query
         :param session: Optional[ClientSession] - PyMongo sessions
@@ -636,31 +664,50 @@ class FindOne(FindQuery[FindQueryResultType]):
         # We need to cast here to tell mypy that we are sure about the type.
         # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case
         # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
-        return cast(DeleteOne, self.delete(session=session))
+        return cast(
+            DeleteOne, self.delete(session=session, bulk_writer=bulk_writer)
+        )
 
     async def replace_one(
         self,
         document: "DocType",
         session: Optional[ClientSession] = None,
-    ) -> UpdateResult:
+        bulk_writer: Optional[BulkWriter] = None,
+    ) -> Optional[UpdateResult]:
         """
         Replace found document by provided
         :param document: Document - document, which will replace the found one
         :param session: Optional[ClientSession] - PyMongo session
+        :param bulk_writer: Optional[BulkWriter] - Beanie bulk writer
         :return: UpdateResult
         """
         self.set_session(session=session)
-        result: UpdateResult = (
-            await self.document_model.get_motor_collection().replace_one(
-                self.get_filter_query(),
-                bson_encoder.encode(document, by_alias=True, exclude={"id"}),
-                session=self.session,
+        if bulk_writer is None:
+            result: UpdateResult = (
+                await self.document_model.get_motor_collection().replace_one(
+                    self.get_filter_query(),
+                    bson_encoder.encode(
+                        document, by_alias=True, exclude={"id"}
+                    ),
+                    session=self.session,
+                )
             )
-        )
 
-        if not result.raw_result["updatedExisting"]:
-            raise DocumentNotFound
-        return result
+            if not result.raw_result["updatedExisting"]:
+                raise DocumentNotFound
+            return result
+        else:
+            bulk_writer.add_operation(
+                Operation(
+                    operation=ReplaceOne,
+                    first_query=self.get_filter_query(),
+                    second_query=bson_encoder.encode(
+                        document, by_alias=True, exclude={"id"}
+                    ),
+                    object_class=self.document_model,
+                )
+            )
+            return None
 
     async def _find_one(self, projection):
         return await self.document_model.get_motor_collection().find_one(
