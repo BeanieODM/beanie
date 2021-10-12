@@ -19,7 +19,7 @@ async def test_replace():
     with pytest.raises(RevisionIdWasChanged):
         await doc.replace()
 
-    await doc.replace(force=True)
+    await doc.replace(ignore_revision=True)
 
 
 async def test_update():
@@ -37,4 +37,4 @@ async def test_update():
     with pytest.raises(RevisionIdWasChanged):
         await doc.save_changes()
 
-    await doc.save_changes(force=True)
+    await doc.save_changes(ignore_revision=True)
