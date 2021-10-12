@@ -3,6 +3,7 @@ from typing import Dict, Mapping, Union, Any, Optional
 
 from pymongo.client_session import ClientSession
 
+from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import ExpressionField
 from beanie.odm.operators.update.general import (
     Set,
@@ -21,6 +22,7 @@ class UpdateMethods:
         self,
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
         **kwargs
     ):
         return self
@@ -29,6 +31,7 @@ class UpdateMethods:
         self,
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
         **kwargs
     ):
         """
@@ -50,14 +53,18 @@ class UpdateMethods:
         :param expression: Dict[Union[ExpressionField, str], Any] - keys and
         values to set
         :param session: Optional[ClientSession] - pymongo session
+        :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """
-        return self.update(Set(expression), session=session, **kwargs)
+        return self.update(
+            Set(expression), session=session, bulk_writer=bulk_writer, **kwargs
+        )
 
     def current_date(
         self,
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
         **kwargs
     ):
         """
@@ -67,14 +74,21 @@ class UpdateMethods:
 
         :param expression: Dict[Union[ExpressionField, str], Any]
         :param session: Optional[ClientSession] - pymongo session
+        :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """
-        return self.update(CurrentDate(expression), session=session, **kwargs)
+        return self.update(
+            CurrentDate(expression),
+            session=session,
+            bulk_writer=bulk_writer,
+            **kwargs
+        )
 
     def inc(
         self,
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
         **kwargs
     ):
         """
@@ -95,6 +109,9 @@ class UpdateMethods:
 
         :param expression: Dict[Union[ExpressionField, str], Any]
         :param session: Optional[ClientSession] - pymongo session
+        :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """
-        return self.update(Inc(expression), session=session, **kwargs)
+        return self.update(
+            Inc(expression), session=session, bulk_writer=bulk_writer, **kwargs
+        )

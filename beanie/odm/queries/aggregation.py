@@ -11,6 +11,7 @@ from typing import (
 
 from pydantic import BaseModel
 
+from beanie.odm.cache import LRUCache
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.queries.cursor import BaseCursorQuery
 from beanie.odm.utils.projection import get_projection
@@ -41,6 +42,7 @@ class AggregationQuery(
         aggregation_pipeline: List[Mapping[str, Any]],
         find_query: Mapping[str, Any],
         projection_model: Optional[Type[BaseModel]] = None,
+        ignore_cache: bool = False,
     ):
         self.aggregation_pipeline: List[
             Mapping[str, Any]
@@ -49,6 +51,36 @@ class AggregationQuery(
         self.projection_model = projection_model
         self.find_query = find_query
         self.session = None
+        self.ignore_cache = ignore_cache
+
+    @property
+    def _cache_key(self) -> str:
+        return LRUCache.create_key(
+            {
+                "type": "Aggregation",
+                "filter": self.find_query,
+                "pipeline": self.aggregation_pipeline,
+                "projection": get_projection(self.projection_model)
+                if self.projection_model
+                else None,
+            }
+        )
+
+    def _get_cache(self):
+        if (
+            self.document_model.get_settings().model_settings.use_cache
+            and self.ignore_cache is False
+        ):
+            return self.document_model._cache.get(self._cache_key)  # type: ignore
+        else:
+            return None
+
+    def _set_cache(self, data):
+        if (
+            self.document_model.get_settings().model_settings.use_cache
+            and self.ignore_cache is False
+        ):
+            return self.document_model._cache.set(self._cache_key, data)  # type: ignore
 
     def get_aggregation_pipeline(
         self,

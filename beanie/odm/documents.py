@@ -21,6 +21,7 @@ from pydantic import (
     validator,
 )
 from pydantic.main import BaseModel
+from pymongo import InsertOne
 from pymongo.client_session import ClientSession
 from pymongo.results import (
     DeleteResult,
@@ -35,6 +36,8 @@ from beanie.exceptions import (
     RevisionIdWasChanged,
 )
 from beanie.odm.actions import EventTypes, wrap_with_actions
+from beanie.odm.cache import LRUCache
+from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import PydanticObjectId, ExpressionField
 from beanie.odm.interfaces.update import (
@@ -80,6 +83,9 @@ class Document(BaseModel, UpdateMethods):
     _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
 
+    # Cache
+    _cache: Optional[LRUCache] = None
+
     # Settings
     _document_settings: Optional[DocumentSettings] = None
 
@@ -119,7 +125,8 @@ class Document(BaseModel, UpdateMethods):
     @save_state_after
     @validate_self_before
     async def insert(
-        self: DocType, session: Optional[ClientSession] = None
+        self: DocType,
+        session: Optional[ClientSession] = None,
     ) -> DocType:
         """
         Insert the document (self) to the collection
@@ -135,7 +142,8 @@ class Document(BaseModel, UpdateMethods):
         return self
 
     async def create(
-        self: DocType, session: Optional[ClientSession] = None
+        self: DocType,
+        session: Optional[ClientSession] = None,
     ) -> DocType:
         """
         The same as self.insert()
@@ -148,20 +156,31 @@ class Document(BaseModel, UpdateMethods):
         cls: Type[DocType],
         document: DocType,
         session: Optional[ClientSession] = None,
+        bulk_writer: "BulkWriter" = None,
     ) -> InsertOneResult:
         """
         Insert one document to the collection
         :param document: Document - document to insert
         :param session: ClientSession - pymongo session
+        :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: InsertOneResult
         """
         if not isinstance(document, cls):
             raise TypeError(
                 "Inserting document must be of the original document class"
             )
-        return await cls.get_motor_collection().insert_one(
-            get_dict(document), session=session
-        )
+        if bulk_writer is None:
+            return await cls.get_motor_collection().insert_one(
+                get_dict(document), session=session
+            )
+        else:
+            bulk_writer.add_operation(
+                Operation(
+                    operation=InsertOne,
+                    first_query=get_dict(document),
+                    object_class=type(document),
+                )
+            )
 
     @classmethod
     async def insert_many(
@@ -188,17 +207,21 @@ class Document(BaseModel, UpdateMethods):
         cls: Type[DocType],
         document_id: PydanticObjectId,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Optional[DocType]:
         """
         Get document by id, returns None if document does not exist
 
         :param document_id: PydanticObjectId - document id
         :param session: Optional[ClientSession] - pymongo session
+        :param ignore_cache: bool - ignore cache (if it is turned on)
         :return: Union["Document", None]
         """
         if not isinstance(document_id, cls.__fields__["id"].type_):
             document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
-        return await cls.find_one({"_id": document_id}, session=session)
+        return await cls.find_one(
+            {"_id": document_id}, session=session, ignore_cache=ignore_cache
+        )
 
     @overload
     @classmethod
@@ -207,6 +230,7 @@ class Document(BaseModel, UpdateMethods):
         *args: Union[Mapping[str, Any], bool],
         projection_model: None = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> FindOne[DocType]:
         ...
 
@@ -217,6 +241,7 @@ class Document(BaseModel, UpdateMethods):
         *args: Union[Mapping[str, Any], bool],
         projection_model: Type[DocumentProjectionType],
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> FindOne[DocumentProjectionType]:
         ...
 
@@ -226,6 +251,7 @@ class Document(BaseModel, UpdateMethods):
         *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Union[FindOne[DocType], FindOne[DocumentProjectionType]]:
         """
         Find one document by criteria.
@@ -235,12 +261,14 @@ class Document(BaseModel, UpdateMethods):
         :param args: *Mapping[str, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session instance
+        :param ignore_cache: bool
         :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
         """
         return cls._find_one_query_class(document_model=cls).find_one(
             *args,
             projection_model=projection_model,
             session=session,
+            ignore_cache=ignore_cache,
         )
 
     @overload
@@ -253,6 +281,7 @@ class Document(BaseModel, UpdateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> FindMany[DocType]:
         ...
 
@@ -266,6 +295,7 @@ class Document(BaseModel, UpdateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -278,6 +308,7 @@ class Document(BaseModel, UpdateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         Find many documents by criteria.
@@ -291,6 +322,7 @@ class Document(BaseModel, UpdateMethods):
         for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
+        :param ignore_cache: bool
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
         return cls._find_many_query_class(document_model=cls).find_many(
@@ -300,6 +332,7 @@ class Document(BaseModel, UpdateMethods):
             limit=limit,
             projection_model=projection_model,
             session=session,
+            ignore_cache=ignore_cache,
         )
 
     @overload
@@ -312,6 +345,7 @@ class Document(BaseModel, UpdateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> FindMany[DocType]:
         ...
 
@@ -325,6 +359,7 @@ class Document(BaseModel, UpdateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -337,6 +372,7 @@ class Document(BaseModel, UpdateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         The same as find_many
@@ -348,6 +384,7 @@ class Document(BaseModel, UpdateMethods):
             sort=sort,
             projection_model=projection_model,
             session=session,
+            ignore_cache=ignore_cache,
         )
 
     @overload
@@ -359,6 +396,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: None = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> FindMany[DocType]:
         ...
 
@@ -371,6 +409,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -382,6 +421,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         Get all the documents
@@ -402,6 +442,7 @@ class Document(BaseModel, UpdateMethods):
             sort=sort,
             projection_model=projection_model,
             session=session,
+            ignore_cache=ignore_cache,
         )
 
     @overload
@@ -413,6 +454,7 @@ class Document(BaseModel, UpdateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> FindMany[DocType]:
         ...
 
@@ -425,6 +467,7 @@ class Document(BaseModel, UpdateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -436,6 +479,7 @@ class Document(BaseModel, UpdateMethods):
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         the same as find_all
@@ -446,6 +490,7 @@ class Document(BaseModel, UpdateMethods):
             sort=sort,
             projection_model=projection_model,
             session=session,
+            ignore_cache=ignore_cache,
         )
 
     @wrap_with_actions(EventTypes.REPLACE)
@@ -453,8 +498,9 @@ class Document(BaseModel, UpdateMethods):
     @validate_self_before
     async def replace(
         self: DocType,
-        session: Optional[ClientSession] = None,
         force: bool = False,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
     ) -> DocType:
         """
         Fully update the document in the database
@@ -462,6 +508,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session.
         :param force: bool - do force replace.
             Used when revision based protection is turned on.
+        :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: self
         """
         if self.id is None:
@@ -473,9 +520,10 @@ class Document(BaseModel, UpdateMethods):
 
         if use_revision_id and not force:
             find_query["revision_id"] = self._previous_revision_id
-
         try:
-            await self.find_one(find_query).replace_one(self, session=session)
+            await self.find_one(find_query).replace_one(
+                self, session=session, bulk_writer=bulk_writer
+            )
         except DocumentNotFound:
             if use_revision_id and not force:
                 raise RevisionIdWasChanged
@@ -501,18 +549,29 @@ class Document(BaseModel, UpdateMethods):
     @saved_state_needed
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
     @validate_self_before
-    async def save_changes(self, force: bool = False) -> None:
+    async def save_changes(
+        self,
+        force: bool = False,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+    ) -> None:
         """
         Save changes.
         State management usage must be turned on
 
         :param force: bool - ignore revision id, if revision is turned on
+        :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: None
         """
         if not self.is_changed:
             return None
         changes = self.get_changes()
-        await self.set(changes, force=force)  # type: ignore #TODO fix typing
+        await self.set(
+            changes,  # type: ignore #TODO fix typing
+            force=force,
+            session=session,
+            bulk_writer=bulk_writer,
+        )
 
     @classmethod
     async def replace_many(
@@ -539,8 +598,9 @@ class Document(BaseModel, UpdateMethods):
     async def update(
         self,
         *args,
-        session: Optional[ClientSession] = None,
         force: bool = False,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
     ) -> None:
         """
         Partially update the document in the database
@@ -549,6 +609,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: ClientSession - pymongo session.
         :param force: bool - force update. Will update even if revision id
         is not the same, as stored
+        :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: None
         """
         use_revision_id = self.get_settings().model_settings.use_revision
@@ -558,7 +619,9 @@ class Document(BaseModel, UpdateMethods):
         if use_revision_id and not force:
             find_query["revision_id"] = self._previous_revision_id
 
-        result = await self.find_one(find_query).update(*args, session=session)
+        result = await self.find_one(find_query).update(
+            *args, session=session, bulk_writer=bulk_writer
+        )
 
         if use_revision_id and not force and result.modified_count == 0:
             raise RevisionIdWasChanged
@@ -569,38 +632,52 @@ class Document(BaseModel, UpdateMethods):
         cls,
         *args: Union[dict, Mapping],
         session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
     ) -> UpdateMany:
         """
         Partially update all the documents
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
+        :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: UpdateMany query
         """
-        return cls.find_all().update_many(*args, session=session)
+        return cls.find_all().update_many(
+            *args, session=session, bulk_writer=bulk_writer
+        )
 
     async def delete(
-        self, session: Optional[ClientSession] = None
+        self,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
     ) -> Optional[DeleteResult]:
         """
         Delete the document
 
         :param session: Optional[ClientSession] - pymongo session.
+        :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
-        return await self.find_one({"_id": self.id}).delete(session=session)
+        return await self.find_one({"_id": self.id}).delete(
+            session=session, bulk_writer=bulk_writer
+        )
 
     @classmethod
     async def delete_all(
-        cls, session: Optional[ClientSession] = None
+        cls,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
     ) -> Optional[DeleteResult]:
         """
         Delete all the documents
 
         :param session: Optional[ClientSession] - pymongo session.
+        :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
-        return await cls.find_all().delete(session=session)
+        return await cls.find_all().delete(
+            session=session, bulk_writer=bulk_writer
+        )
 
     @overload
     @classmethod
@@ -609,6 +686,7 @@ class Document(BaseModel, UpdateMethods):
         aggregation_pipeline: list,
         projection_model: None = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> AggregationQuery[Dict[str, Any]]:
         ...
 
@@ -619,6 +697,7 @@ class Document(BaseModel, UpdateMethods):
         aggregation_pipeline: list,
         projection_model: Type[DocumentProjectionType],
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> AggregationQuery[DocumentProjectionType]:
         ...
 
@@ -628,6 +707,7 @@ class Document(BaseModel, UpdateMethods):
         aggregation_pipeline: list,
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
     ) -> Union[
         AggregationQuery[Dict[str, Any]],
         AggregationQuery[DocumentProjectionType],
@@ -638,12 +718,14 @@ class Document(BaseModel, UpdateMethods):
         :param aggregation_pipeline: list - aggregation pipeline
         :param projection_model: Type[BaseModel]
         :param session: Optional[ClientSession]
+        :param ignore_cache: bool
         :return: [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
         return cls.find_all().aggregate(
             aggregation_pipeline=aggregation_pipeline,
             projection_model=projection_model,
             session=session,
+            ignore_cache=ignore_cache,
         )
 
     @classmethod
@@ -722,6 +804,18 @@ class Document(BaseModel, UpdateMethods):
     # Initialization
 
     @classmethod
+    def init_cache(cls) -> None:
+        """
+        Init model's cache
+        :return: None
+        """
+        if cls.get_settings().model_settings.use_cache:
+            cls._cache = LRUCache(
+                capacity=cls.get_settings().model_settings.cache_capacity,
+                expiration_time=cls.get_settings().model_settings.cache_expiration_time,
+            )
+
+    @classmethod
     def init_fields(cls) -> None:
         """
         Init class fields
@@ -763,6 +857,7 @@ class Document(BaseModel, UpdateMethods):
             database=database, allow_index_dropping=allow_index_dropping
         )
         cls.init_fields()
+        cls.init_cache()
 
     # Other
 

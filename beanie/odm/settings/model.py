@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Any, Dict, Optional, Type
 
 from pydantic import BaseModel
@@ -8,6 +9,9 @@ class ModelSettings(BaseModel):
     use_state_management: bool = False
     validate_on_save: bool = False
     use_revision: bool = False
+    use_cache: bool = False
+    cache_capacity: int = 32
+    cache_expiration_time: timedelta = timedelta(minutes=10)
 
     @classmethod
     def init(

@@ -31,6 +31,9 @@ class BaseCursorQuery(Generic[CursorResultType]):
     def motor_cursor(self):
         ...
 
+    def _cursor_params(self):
+        ...
+
     def __aiter__(self):
         return self
 
@@ -45,6 +48,12 @@ class BaseCursorQuery(Generic[CursorResultType]):
             return next_item
         return parse_obj(projection, next_item)  # type: ignore
 
+    def _get_cache(self) -> List[Dict[str, Any]]:
+        ...
+
+    def _set_cache(self, data):
+        ...
+
     async def to_list(
         self, length: Optional[int] = None
     ) -> List[CursorResultType]:  # noqa
@@ -56,9 +65,10 @@ class BaseCursorQuery(Generic[CursorResultType]):
         """
         if self.motor_cursor is None:
             raise RuntimeError("self.motor_cursor was not set")
-        motor_list: List[Dict[str, Any]] = await self.motor_cursor.to_list(
-            length
-        )
+        motor_list: List[Dict[str, Any]] = self._get_cache()
+        if motor_list is None:
+            motor_list = await self.motor_cursor.to_list(length)
+            self._set_cache(motor_list)
         projection = self.get_projection_model()
         if projection is not None:
             return cast(
