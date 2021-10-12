@@ -64,6 +64,9 @@ class DocumentTestModel(Document):
     test_str: str
 
     class Settings:
+        use_cache = True
+        cache_expiration_time = datetime.timedelta(seconds=10)
+        cache_capacity = 5
         use_state_management = True
 
 

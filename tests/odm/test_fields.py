@@ -77,5 +77,8 @@ async def test_custom_filed_types():
     c2 = await custom2.insert()
     c1_fromdb = await DocumentWithCustomFiledsTypes.get(c1.id)
     c2_fromdb = await DocumentWithCustomFiledsTypes.get(c2.id)
+    assert set(c1_fromdb.set_type) == set(c1.set_type)
+    assert set(c2_fromdb.set_type) == set(c2.set_type)
+    c1_fromdb.set_type = c2_fromdb.set_type = c1.set_type = c2.set_type = None
     assert bson_encoder.encode(c1_fromdb) == bson_encoder.encode(c1)
     assert bson_encoder.encode(c2_fromdb) == bson_encoder.encode(c2)
