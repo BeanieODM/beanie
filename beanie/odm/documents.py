@@ -498,7 +498,7 @@ class Document(BaseModel, UpdateMethods):
     @validate_self_before
     async def replace(
         self: DocType,
-        force: bool = False,
+        ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
     ) -> DocType:
@@ -506,7 +506,7 @@ class Document(BaseModel, UpdateMethods):
         Fully update the document in the database
 
         :param session: Optional[ClientSession] - pymongo session.
-        :param force: bool - do force replace.
+        :param ignore_revision: bool - do force replace.
             Used when revision based protection is turned on.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: self
@@ -518,14 +518,14 @@ class Document(BaseModel, UpdateMethods):
 
         find_query: Dict[str, Any] = {"_id": self.id}
 
-        if use_revision_id and not force:
+        if use_revision_id and not ignore_revision:
             find_query["revision_id"] = self._previous_revision_id
         try:
             await self.find_one(find_query).replace_one(
                 self, session=session, bulk_writer=bulk_writer
             )
         except DocumentNotFound:
-            if use_revision_id and not force:
+            if use_revision_id and not ignore_revision:
                 raise RevisionIdWasChanged
             else:
                 raise DocumentNotFound
@@ -551,7 +551,7 @@ class Document(BaseModel, UpdateMethods):
     @validate_self_before
     async def save_changes(
         self,
-        force: bool = False,
+        ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
     ) -> None:
@@ -559,7 +559,7 @@ class Document(BaseModel, UpdateMethods):
         Save changes.
         State management usage must be turned on
 
-        :param force: bool - ignore revision id, if revision is turned on
+        :param ignore_revision: bool - ignore revision id, if revision is turned on
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: None
         """
@@ -568,7 +568,7 @@ class Document(BaseModel, UpdateMethods):
         changes = self.get_changes()
         await self.set(
             changes,  # type: ignore #TODO fix typing
-            force=force,
+            ignore_revision=ignore_revision,
             session=session,
             bulk_writer=bulk_writer,
         )
@@ -598,7 +598,7 @@ class Document(BaseModel, UpdateMethods):
     async def update(
         self,
         *args,
-        force: bool = False,
+        ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
     ) -> None:
@@ -607,7 +607,7 @@ class Document(BaseModel, UpdateMethods):
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
-        :param force: bool - force update. Will update even if revision id
+        :param ignore_revision: bool - force update. Will update even if revision id
         is not the same, as stored
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: None
@@ -616,14 +616,18 @@ class Document(BaseModel, UpdateMethods):
 
         find_query: Dict[str, Any] = {"_id": self.id}
 
-        if use_revision_id and not force:
+        if use_revision_id and not ignore_revision:
             find_query["revision_id"] = self._previous_revision_id
 
         result = await self.find_one(find_query).update(
             *args, session=session, bulk_writer=bulk_writer
         )
 
-        if use_revision_id and not force and result.modified_count == 0:
+        if (
+            use_revision_id
+            and not ignore_revision
+            and result.modified_count == 0
+        ):
             raise RevisionIdWasChanged
         await self._sync()
 
