@@ -36,7 +36,7 @@ products = await Product.find(
     In(Product.category.name, ["Chocolate", "Fruits"])).to_list()
 ```
 
-The whole list of the find query operators can be found [here](/api-documentation/operators/find).
+The whole list of the find query operators can be found [here](/beanie/api-documentation/operators/find).
 
 For more complex cases native PyMongo syntax is also supported:
 
@@ -46,13 +46,13 @@ products = await Product.find({"price": 1000}).to_list()
 
 ## Finding single documents
 
-Sometimes you will only need to find a single document. If you are searching by `id` then you can use the [get](/api-documentation/document#get) method:
+Sometimes you will only need to find a single document. If you are searching by `id` then you can use the [get](/beanie/api-documentation/document/#documentget) method:
 
 ```python
 bar = await Product.get("608da169eb9e17281f0ab2ff")
 ```
 
-To find a single document via a searching criteria you can use the [find_one](/api-documentation/document#find_one) method:
+To find a single document via a searching criteria you can use the [find_one](/beanie/api-documentation/document/#documentfind_one) method:
 
 ```python
 bar = await Product.find_one(Product.name == "Peanut Bar")
