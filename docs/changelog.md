@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.7.1] - 2021-11-02
+
+### Fixed
+
+- `revision_id` is hidden in the outputs
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/136>
+
 ## [1.7.0] - 2021-10-12
 
 ### Added
@@ -518,4 +528,6 @@ how specific type should be presented in the database
 
 [1.6.1]: https://pypi.org/project/beanie/1.6.1
 
-[1.7.0]: https://pypi.org/project/beanie/1.6.1
+[1.7.0]: https://pypi.org/project/beanie/1.7.0
+
+[1.7.1]: https://pypi.org/project/beanie/1.7.1
