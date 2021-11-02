@@ -82,3 +82,8 @@ async def test_custom_filed_types():
     c1_fromdb.set_type = c2_fromdb.set_type = c1.set_type = c2.set_type = None
     assert bson_encoder.encode(c1_fromdb) == bson_encoder.encode(c1)
     assert bson_encoder.encode(c2_fromdb) == bson_encoder.encode(c2)
+
+
+def test_hidden(document):
+    assert document.revision_id is None
+    assert "revision_id" not in document.dict()
