@@ -19,6 +19,7 @@ from pydantic import (
     parse_obj_as,
     PrivateAttr,
     validator,
+    Field,
 )
 from pydantic.main import BaseModel
 from pymongo import InsertOne
@@ -57,6 +58,11 @@ from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import saved_state_needed, save_state_after
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
+
 DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
@@ -79,7 +85,7 @@ class Document(BaseModel, UpdateMethods):
     id: Optional[PydanticObjectId] = None
 
     # State
-    revision_id: Optional[UUID] = None
+    revision_id: Optional[UUID] = Field(default=None, hidden=True)
     _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
 
@@ -912,6 +918,37 @@ class Document(BaseModel, UpdateMethods):
                     )
                 )
         return inspection_result
+
+    def dict(
+        self,
+        *,
+        include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+        exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+        by_alias: bool = False,
+        skip_defaults: bool = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+    ) -> "DictStrAny":
+        """
+        Overriding of the respective method from Pydantic
+        Hides fields, marked as "hidden
+        """
+        if exclude is None:
+            exclude = set(
+                attribute_name
+                for attribute_name, model_field in self.__fields__.items()
+                if model_field.field_info.extra.get("hidden") is True
+            )
+        return super().dict(
+            include=include,
+            exclude=exclude,
+            by_alias=by_alias,
+            skip_defaults=skip_defaults,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none,
+        )
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self):
