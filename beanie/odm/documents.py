@@ -9,7 +9,9 @@ from typing import (
     TypeVar,
     Any,
     overload,
+    Set,
 )
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from bson import ObjectId
@@ -22,6 +24,7 @@ from pydantic import (
     Field,
 )
 from pydantic.main import BaseModel
+from pydantic.types import ClassVar
 from pymongo import InsertOne
 from pymongo.client_session import ClientSession
 from pymongo.results import (
@@ -37,8 +40,8 @@ from beanie.exceptions import (
     RevisionIdWasChanged,
 )
 from beanie.odm.actions import EventTypes, wrap_with_actions
-from beanie.odm.cache import LRUCache
 from beanie.odm.bulk import BulkWriter, Operation
+from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import PydanticObjectId, ExpressionField
 from beanie.odm.interfaces.update import (
@@ -57,8 +60,6 @@ from beanie.odm.settings.general import DocumentSettings
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import saved_state_needed, save_state_after
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
@@ -90,15 +91,18 @@ class Document(BaseModel, UpdateMethods):
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
 
     # Cache
-    _cache: Optional[LRUCache] = None
+    _cache: ClassVar[Optional[LRUCache]] = None
 
     # Settings
-    _document_settings: Optional[DocumentSettings] = None
+    _document_settings: ClassVar[Optional[DocumentSettings]] = None
 
     # Customization
     # Query builders could be replaced in the inherited classes
-    _find_one_query_class = FindOne
-    _find_many_query_class = FindMany
+    _find_one_query_class: ClassVar[Type] = FindOne
+    _find_many_query_class: ClassVar[Type] = FindMany
+
+    # Other
+    _hidden_fields: ClassVar[Set[str]] = set()
 
     @validator("revision_id")
     def set_revision_id(cls, revision_id):
@@ -835,6 +839,8 @@ class Document(BaseModel, UpdateMethods):
             path = v.alias or v.name
             setattr(cls, k, ExpressionField(path))
 
+        cls._hidden_fields = cls.get_hidden_fields()
+
     @classmethod
     async def init_settings(
         cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
@@ -919,6 +925,14 @@ class Document(BaseModel, UpdateMethods):
                 )
         return inspection_result
 
+    @classmethod
+    def get_hidden_fields(cls):
+        return set(
+            attribute_name
+            for attribute_name, model_field in cls.__fields__.items()
+            if model_field.field_info.extra.get("hidden") is True
+        )
+
     def dict(
         self,
         *,
@@ -935,11 +949,7 @@ class Document(BaseModel, UpdateMethods):
         Hides fields, marked as "hidden
         """
         if exclude is None:
-            exclude = set(
-                attribute_name
-                for attribute_name, model_field in self.__fields__.items()
-                if model_field.field_info.extra.get("hidden") is True
-            )
+            exclude = self._hidden_fields
         return super().dict(
             include=include,
             exclude=exclude,
@@ -962,3 +972,10 @@ class Document(BaseModel, UpdateMethods):
         }
         allow_population_by_field_name = True
         fields = {"id": "_id"}
+
+        @staticmethod
+        def schema_extra(
+            schema: Dict[str, Any], model: Type["Document"]
+        ) -> None:
+            for field_name in model._hidden_fields:
+                schema.get("properties", {}).pop(field_name, None)
