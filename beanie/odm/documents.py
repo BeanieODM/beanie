@@ -9,6 +9,7 @@ from typing import (
     TypeVar,
     Any,
     overload,
+    Set,
 )
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
@@ -101,7 +102,7 @@ class Document(BaseModel, UpdateMethods):
     _find_many_query_class: ClassVar[Type] = FindMany
 
     # Other
-    _hidden_fields: ClassVar[List[str]] = []
+    _hidden_fields: ClassVar[Set[str]] = set()
 
     @validator("revision_id")
     def set_revision_id(cls, revision_id):
