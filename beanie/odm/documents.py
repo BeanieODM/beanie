@@ -14,7 +14,7 @@ from typing import (
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from bson import ObjectId
+from bson import ObjectId, DBRef
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
 from pydantic import (
     ValidationError,
@@ -43,7 +43,7 @@ from beanie.odm.actions import EventTypes, wrap_with_actions
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
-from beanie.odm.fields import PydanticObjectId, ExpressionField
+from beanie.odm.fields import PydanticObjectId, ExpressionField, Link
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
@@ -103,6 +103,8 @@ class Document(BaseModel, UpdateMethods):
 
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
+    _link_fields: ClassVar[List[Tuple[str, Any]]] = []
+    _is_link: bool = PrivateAttr(default=False)
 
     @validator("revision_id")
     def set_revision_id(cls, revision_id):
@@ -839,6 +841,9 @@ class Document(BaseModel, UpdateMethods):
             path = v.alias or v.name
             setattr(cls, k, ExpressionField(path))
 
+            if issubclass(v.type_, Link):
+                cls._link_fields.append((v.name, v.sub_fields[0].type_))
+
         cls._hidden_fields = cls.get_hidden_fields()
 
     @classmethod
@@ -965,6 +970,16 @@ class Document(BaseModel, UpdateMethods):
         # TODO it can be sync, but needs some actions controller improvements
         if self.get_settings().model_settings.validate_on_save:
             self.parse_obj(self)
+
+    def to_ref(self):
+        return DBRef(self.get_motor_collection().name, self.id)
+
+    async def fetch_all_links(self):
+        for ref in self._link_fields:
+            ref_obj = getattr(self, ref[0], None)
+            if isinstance(ref_obj, Link):
+                value = await ref_obj.fetch()
+                setattr(self, ref[0], value)
 
     class Config:
         json_encoders = {

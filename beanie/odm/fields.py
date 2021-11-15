@@ -1,5 +1,8 @@
-from bson import ObjectId
+from typing import Generic, TypeVar, Union, Type, List
+
+from bson import ObjectId, DBRef
 from bson.errors import InvalidId
+from pydantic.fields import ModelField
 from pydantic.json import ENCODERS_BY_TYPE
 from pymongo import ASCENDING
 
@@ -11,6 +14,7 @@ from beanie.odm.operators.find.comparison import (
     LT,
     LTE,
     NE,
+    In,
 )
 
 
@@ -99,3 +103,47 @@ class ExpressionField(str):
 
     def __neg__(self):
         return self, SortDirection.DESCENDING
+
+
+T = TypeVar("T")
+
+
+class Link(Generic[T]):
+    def __init__(self, ref: DBRef, model_class: Type[T]):
+        self.ref = ref
+        self.model_class = model_class
+
+    async def fetch(self):
+        return await self.model_class.get(self.ref.id)
+
+    @classmethod
+    async def fetch_one(cls, link: "Link"):
+        return await link.fetch()
+
+    @classmethod
+    async def fetch_many(cls, links: List["Link"]):
+        ids = []
+        model_class = None
+        for link in links:
+            if model_class is None:
+                model_class = link.model_class
+            else:
+                if model_class != link.model_class:
+                    raise ValueError(
+                        "All the links must have the same model class"
+                    )
+            ids.append(link.ref.id)
+        return await model_class.find(In("_id", ids)).to_list()  # type: ignore
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v: Union[DBRef, T], field: ModelField):
+        model_class = field.sub_fields[0].type_
+        if isinstance(v, DBRef):
+            return cls(ref=v, model_class=model_class)
+        v = model_class.validate(v)
+        v._is_link = True
+        return v
