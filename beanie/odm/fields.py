@@ -1,7 +1,10 @@
+import asyncio
+from enum import Enum
 from typing import Generic, TypeVar, Union, Type, List
 
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
+from pydantic import BaseModel
 from pydantic.fields import ModelField
 from pydantic.json import ENCODERS_BY_TYPE
 from pymongo import ASCENDING
@@ -105,6 +108,29 @@ class ExpressionField(str):
         return self, SortDirection.DESCENDING
 
 
+class DeleteRules(str, Enum):
+    DO_NOTHING = "DO_NOTHING"
+    NULLIFY = "NULLIFY"
+    CASCADE = "CASCADE"
+    DENY = "DENY"
+
+
+class InsertRules(str, Enum):
+    CASCADE = "CASCADE"
+    DENY = "DENY"
+
+
+class LinkTypes(str, Enum):
+    DIRECT = "DIRECT"
+    LIST = "LIST"
+
+
+class LinkInfo(BaseModel):
+    field: str
+    model_class: Type[BaseModel]  # Document class
+    link_type: LinkTypes
+
+
 T = TypeVar("T")
 
 
@@ -121,7 +147,7 @@ class Link(Generic[T]):
         return await link.fetch()
 
     @classmethod
-    async def fetch_many(cls, links: List["Link"]):
+    async def fetch_list(cls, links: List["Link"]):
         ids = []
         model_class = None
         for link in links:
@@ -136,6 +162,13 @@ class Link(Generic[T]):
         return await model_class.find(In("_id", ids)).to_list()  # type: ignore
 
     @classmethod
+    async def fetch_many(cls, links: List["Link"]):
+        coros = []
+        for link in links:
+            coros.append(link.fetch())
+        return await asyncio.gather(*coros)
+
+    @classmethod
     def __get_validators__(cls):
         yield cls.validate
 
@@ -144,6 +177,7 @@ class Link(Generic[T]):
         model_class = field.sub_fields[0].type_
         if isinstance(v, DBRef):
             return cls(ref=v, model_class=model_class)
-        v = model_class.validate(v)
-        v._is_link = True
-        return v
+        return model_class.validate(v)
+
+    def to_ref(self):
+        return self.ref

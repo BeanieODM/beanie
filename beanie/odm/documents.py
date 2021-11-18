@@ -1,3 +1,4 @@
+import asyncio
 from typing import (
     Dict,
     Optional,
@@ -29,7 +30,6 @@ from pymongo import InsertOne
 from pymongo.client_session import ClientSession
 from pymongo.results import (
     DeleteResult,
-    InsertOneResult,
     InsertManyResult,
 )
 
@@ -38,12 +38,21 @@ from beanie.exceptions import (
     ReplaceError,
     DocumentNotFound,
     RevisionIdWasChanged,
+    DocumentWasNotSaved,
+    NotSupported,
 )
 from beanie.odm.actions import EventTypes, wrap_with_actions
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
-from beanie.odm.fields import PydanticObjectId, ExpressionField, Link
+from beanie.odm.fields import (
+    PydanticObjectId,
+    ExpressionField,
+    Link,
+    LinkInfo,
+    LinkTypes,
+    InsertRules,
+)
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
@@ -103,8 +112,7 @@ class Document(BaseModel, UpdateMethods):
 
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
-    _link_fields: ClassVar[List[Tuple[str, Any]]] = []
-    _is_link: bool = PrivateAttr(default=False)
+    _link_fields: ClassVar[Dict[str, LinkInfo]] = {}
 
     @validator("revision_id")
     def set_revision_id(cls, revision_id):
@@ -138,14 +146,25 @@ class Document(BaseModel, UpdateMethods):
     @validate_self_before
     async def insert(
         self: DocType,
+        *,
+        link_rule: InsertRules = InsertRules.DENY,
         session: Optional[ClientSession] = None,
     ) -> DocType:
         """
         Insert the document (self) to the collection
         :return: Document
         """
+        if link_rule == InsertRules.CASCADE:
+            for field_name in self.get_link_fields():
+                obj = getattr(self, field_name)
+                if isinstance(obj, Document):
+                    try:
+                        await obj.insert(link_rule=InsertRules.CASCADE)
+                    except Exception:  # TODO do smth with this
+                        pass
+
         result = await self.get_motor_collection().insert_one(
-            get_dict(self), session=session
+            get_dict(self, to_db=True), session=session
         )
         new_id = result.inserted_id
         if not isinstance(new_id, self.__fields__["id"].type_):
@@ -169,36 +188,42 @@ class Document(BaseModel, UpdateMethods):
         document: DocType,
         session: Optional[ClientSession] = None,
         bulk_writer: "BulkWriter" = None,
-    ) -> InsertOneResult:
+        link_rule: InsertRules = InsertRules.DENY,
+    ) -> Optional[DocType]:
         """
         Insert one document to the collection
         :param document: Document - document to insert
         :param session: ClientSession - pymongo session
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
-        :return: InsertOneResult
+        :param link_rule: InsertRules - hot to manage link fields
+        :return: DocType
         """
         if not isinstance(document, cls):
             raise TypeError(
                 "Inserting document must be of the original document class"
             )
         if bulk_writer is None:
-            return await cls.get_motor_collection().insert_one(
-                get_dict(document), session=session
-            )
+            return await document.insert(link_rule=link_rule, session=session)
         else:
+            if link_rule == InsertRules.CASCADE:
+                raise NotSupported(
+                    "Cascade insert with bulk writing not supported"
+                )
             bulk_writer.add_operation(
                 Operation(
                     operation=InsertOne,
-                    first_query=get_dict(document),
+                    first_query=get_dict(document, to_db=True),
                     object_class=type(document),
                 )
             )
+            return None
 
     @classmethod
     async def insert_many(
         cls: Type[DocType],
         documents: List[DocType],
         session: Optional[ClientSession] = None,
+        link_rule: InsertRules = InsertRules.DENY,
     ) -> InsertManyResult:
 
         """
@@ -206,9 +231,16 @@ class Document(BaseModel, UpdateMethods):
 
         :param documents:  List["Document"] - documents to insert
         :param session: ClientSession - pymongo session
+        :param link_rule: InsertRules - how to manage link fields
         :return: InsertManyResult
         """
-        documents_list = [get_dict(document) for document in documents]
+        if link_rule == InsertRules.CASCADE:
+            raise NotSupported(
+                "Cascade insert not supported for insert many method"
+            )
+        documents_list = [
+            get_dict(document, to_db=True) for document in documents
+        ]
         return await cls.get_motor_collection().insert_many(
             documents_list,
             session=session,
@@ -793,7 +825,7 @@ class Document(BaseModel, UpdateMethods):
     @property  # type: ignore
     @saved_state_needed
     def is_changed(self) -> bool:
-        if self._saved_state == get_dict(self):
+        if self._saved_state == get_dict(self, to_db=True):
             return False
         return True
 
@@ -802,7 +834,7 @@ class Document(BaseModel, UpdateMethods):
         #  TODO search deeply
         changes = {}
         if self.is_changed:
-            current_state = get_dict(self)
+            current_state = get_dict(self, to_db=True)
             for k, v in self._saved_state.items():  # type: ignore
                 if v != current_state[k]:
                     changes[k] = current_state[k]
@@ -842,7 +874,11 @@ class Document(BaseModel, UpdateMethods):
             setattr(cls, k, ExpressionField(path))
 
             if issubclass(v.type_, Link):
-                cls._link_fields.append((v.name, v.sub_fields[0].type_))
+                cls._link_fields[v.name] = LinkInfo(
+                    field=v.name,
+                    model_class=v.sub_fields[0].type_,
+                    link_type=LinkTypes.DIRECT,
+                )
 
         cls._hidden_fields = cls.get_hidden_fields()
 
@@ -972,14 +1008,24 @@ class Document(BaseModel, UpdateMethods):
             self.parse_obj(self)
 
     def to_ref(self):
+        if self.id is None:
+            raise DocumentWasNotSaved("Can not create dbref without id")
         return DBRef(self.get_motor_collection().name, self.id)
 
+    async def fetch_link(self, field: Union[str, Any]):
+        ref_obj = getattr(self, field, None)
+        if isinstance(ref_obj, Link):
+            value = await ref_obj.fetch()
+            setattr(self, field, value)
+
     async def fetch_all_links(self):
-        for ref in self._link_fields:
-            ref_obj = getattr(self, ref[0], None)
-            if isinstance(ref_obj, Link):
-                value = await ref_obj.fetch()
-                setattr(self, ref[0], value)
+        coros = []
+        for ref in self.get_link_fields().values():
+            coros.append(self.fetch_link(ref.field))
+        await asyncio.gather(*coros)
+
+    def get_link_fields(self) -> Dict[str, LinkInfo]:
+        return self._link_fields
 
     class Config:
         json_encoders = {
