@@ -17,6 +17,7 @@ from bson import ObjectId, DBRef
 from pydantic import BaseModel
 
 from .bson import ENCODERS_BY_TYPE
+from ..fields import LinkTypes
 
 
 class Encoder:
@@ -55,7 +56,10 @@ class Encoder:
             for k, o in obj._iter(to_dict=False, by_alias=by_alias):
                 if k not in exclude:  # TODO get exclude from the class
                     if k in link_fields:
-                        obj_dict[k] = o.to_ref()
+                        if link_fields[k].link_type == LinkTypes.LIST:
+                            obj_dict[k] = [link.to_ref() for link in o]
+                        if link_fields[k].link_type == LinkTypes.DIRECT:
+                            obj_dict[k] = o.to_ref()
                     else:
                         obj_dict[k] = o
             return self.encode(obj_dict, custom_encoder=encoders, to_db=to_db)

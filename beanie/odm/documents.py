@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 from typing import (
     Dict,
     Optional,
@@ -70,6 +71,8 @@ from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import saved_state_needed, save_state_after
 
+from pydantic.typing import get_origin
+
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
 
@@ -112,7 +115,7 @@ class Document(BaseModel, UpdateMethods):
 
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
-    _link_fields: ClassVar[Dict[str, LinkInfo]] = {}
+    _link_fields: ClassVar[Dict[str, LinkInfo]] = None
 
     @validator("revision_id")
     def set_revision_id(cls, revision_id):
@@ -155,13 +158,18 @@ class Document(BaseModel, UpdateMethods):
         :return: Document
         """
         if link_rule == InsertRules.CASCADE:
-            for field_name in self.get_link_fields():
-                obj = getattr(self, field_name)
-                if isinstance(obj, Document):
-                    try:
-                        await obj.insert(link_rule=InsertRules.CASCADE)
-                    except Exception:  # TODO do smth with this
-                        pass
+            for field_info in self.get_link_fields().values():
+                value = getattr(self, field_info.field)
+                if field_info.link_type == LinkTypes.DIRECT:
+                    if isinstance(value, Document):
+                        # try:
+                        await value.insert(link_rule=InsertRules.CASCADE)
+                        # except Exception as e:  # TODO do smth with this
+                        #     pass
+                if field_info.link_type == LinkTypes.LIST:
+                    for obj in value:
+                        if isinstance(obj, Document):
+                            await obj.insert(link_rule=InsertRules.CASCADE)
 
         result = await self.get_motor_collection().insert_one(
             get_dict(self, to_db=True), session=session
@@ -275,6 +283,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: None = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindOne[DocType]:
         ...
 
@@ -286,6 +295,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: Type[DocumentProjectionType],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindOne[DocumentProjectionType]:
         ...
 
@@ -296,6 +306,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Union[FindOne[DocType], FindOne[DocumentProjectionType]]:
         """
         Find one document by criteria.
@@ -313,6 +324,7 @@ class Document(BaseModel, UpdateMethods):
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
         )
 
     @overload
@@ -326,6 +338,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindMany[DocType]:
         ...
 
@@ -340,6 +353,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -353,6 +367,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         Find many documents by criteria.
@@ -377,6 +392,7 @@ class Document(BaseModel, UpdateMethods):
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
         )
 
     @overload
@@ -390,6 +406,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindMany[DocType]:
         ...
 
@@ -404,6 +421,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -417,6 +435,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         The same as find_many
@@ -429,6 +448,7 @@ class Document(BaseModel, UpdateMethods):
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
         )
 
     @overload
@@ -869,15 +889,28 @@ class Document(BaseModel, UpdateMethods):
         Init class fields
         :return: None
         """
+        if cls._link_fields is None:
+            cls._link_fields = {}
         for k, v in cls.__fields__.items():
             path = v.alias or v.name
             setattr(cls, k, ExpressionField(path))
 
-            if issubclass(v.type_, Link):
+            if inspect.isclass(v.type_) and issubclass(v.type_, Link):
                 cls._link_fields[v.name] = LinkInfo(
                     field=v.name,
                     model_class=v.sub_fields[0].type_,
                     link_type=LinkTypes.DIRECT,
+                )
+            if (
+                inspect.isclass(get_origin(v.type_))
+                and inspect.isclass(get_origin(v.outer_type_))
+                and issubclass(get_origin(v.type_), Link)
+                and issubclass(get_origin(v.outer_type_), list)
+            ):
+                cls._link_fields[v.name] = LinkInfo(
+                    field=v.name,
+                    model_class=v.sub_fields[0].sub_fields[0].type_,
+                    link_type=LinkTypes.LIST,
                 )
 
         cls._hidden_fields = cls.get_hidden_fields()
@@ -1017,15 +1050,19 @@ class Document(BaseModel, UpdateMethods):
         if isinstance(ref_obj, Link):
             value = await ref_obj.fetch()
             setattr(self, field, value)
+        if isinstance(ref_obj, list) and ref_obj:
+            values = await Link.fetch_list(ref_obj)
+            setattr(self, field, values)
 
     async def fetch_all_links(self):
         coros = []
         for ref in self.get_link_fields().values():
-            coros.append(self.fetch_link(ref.field))
+            coros.append(self.fetch_link(ref.field))  # TODO lists
         await asyncio.gather(*coros)
 
-    def get_link_fields(self) -> Dict[str, LinkInfo]:
-        return self._link_fields
+    @classmethod
+    def get_link_fields(cls) -> Dict[str, LinkInfo]:
+        return cls._link_fields
 
     class Config:
         json_encoders = {
