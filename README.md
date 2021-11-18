@@ -101,6 +101,11 @@ asyncio.run(example())
 - **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share
   ideas or just say `Hello!!`
 
+## Sponsor the project
+
+- Bitcoin `bc1qz8z0uhftdcra7u8hjyft6nqn30uhktlcgsg0tq`
+- Doge `DPKs32RSEVwPiKuGAAmQHZ8VQ8BQK5Qg4L`
+
 ----
 Supported by [JetBrains](https://jb.gg/OpenSource)
 
