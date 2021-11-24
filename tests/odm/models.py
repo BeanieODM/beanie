@@ -129,6 +129,18 @@ class DocumentTestModelWithDroppedIndex(Document):
         ]
 
 
+class DocumentTestModelWithModifiedIndexs(Document):
+    test_int: int
+    test_list: List[SubDocument]
+    test_str: str
+
+    class Collection:
+        name = "docs_with_index"
+        indexes = [
+            "test_int",
+            "test_list.test_str",
+        ]
+
 class DocumentTestModelStringImport(Document):
     test_int: int
 
