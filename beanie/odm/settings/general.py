@@ -10,12 +10,15 @@ class DocumentSettings:
     collection_settings: CollectionSettings
 
     @classmethod
-    async def init(cls, database, document_model, allow_index_dropping):
+    async def init(
+        cls, database, document_model, allow_index_dropping, auto_index
+    ):
         # Init collection settings
         collection_settings = await CollectionSettings.init(
             database=database,
             document_model=document_model,
             allow_index_dropping=allow_index_dropping,
+            auto_index=auto_index,
         )
 
         # Init model settings

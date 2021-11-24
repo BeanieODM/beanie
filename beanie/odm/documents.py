@@ -843,13 +843,17 @@ class Document(BaseModel, UpdateMethods):
 
     @classmethod
     async def init_settings(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+        cls,
+        database: AsyncIOMotorDatabase,
+        allow_index_dropping: bool,
+        auto_index: bool,
     ) -> None:
         """
         Init document settings (collection and models)
 
         :param database: AsyncIOMotorDatabase - motor database
         :param allow_index_dropping: bool
+        :param auto_index: bool
         :return: None
         """
         # TODO looks ugly a little. Too many parameters transfers.
@@ -857,20 +861,27 @@ class Document(BaseModel, UpdateMethods):
             database=database,
             document_model=cls,
             allow_index_dropping=allow_index_dropping,
+            auto_index=auto_index,
         )
 
     @classmethod
     async def init_model(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+        cls,
+        database: AsyncIOMotorDatabase,
+        allow_index_dropping: bool,
+        auto_index: bool,
     ) -> None:
         """
         Init wrapper
         :param database: AsyncIOMotorDatabase
         :param allow_index_dropping: bool
+        :param auto_index: bool
         :return: None
         """
         await cls.init_settings(
-            database=database, allow_index_dropping=allow_index_dropping
+            database=database,
+            allow_index_dropping=allow_index_dropping,
+            auto_index=auto_index,
         )
         cls.init_fields()
         cls.init_cache()

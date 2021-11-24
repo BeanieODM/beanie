@@ -40,6 +40,7 @@ class CollectionSettings(BaseModel):
         database: AsyncIOMotorDatabase,
         document_model: Type,
         allow_index_dropping: bool,
+        auto_index: bool,
     ) -> "CollectionSettings":
         """
         Collection settings factory.
@@ -67,37 +68,38 @@ class CollectionSettings(BaseModel):
         # create motor collection
         collection = database[collection_parameters.name]
 
-        # indexes
-        old_indexes = (await collection.index_information()).keys()
-        new_indexes = ["_id_"]
+        if auto_index:
+            # indexes
+            old_indexes = (await collection.index_information()).keys()
+            new_indexes = ["_id_"]
 
-        # Indexed field wrapped with Indexed()
-        found_indexes = [
-            IndexModel(
-                [
-                    (
-                        fvalue.alias,
-                        fvalue.type_._indexed[0],
-                    )
-                ],
-                **fvalue.type_._indexed[1]
-            )
-            for _, fvalue in document_model.__fields__.items()
-            if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
-        ]
+            # Indexed field wrapped with Indexed()
+            found_indexes = [
+                IndexModel(
+                    [
+                        (
+                            fvalue.alias,
+                            fvalue.type_._indexed[0],
+                        )
+                    ],
+                    **fvalue.type_._indexed[1]
+                )
+                for _, fvalue in document_model.__fields__.items()
+                if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
+            ]
 
-        # get indexes from the Collection class
-        if collection_parameters.indexes:
-            found_indexes += collection_parameters.indexes
+            # get indexes from the Collection class
+            if collection_parameters.indexes:
+                found_indexes += collection_parameters.indexes
 
-        # create indices
-        if found_indexes:
-            new_indexes += await collection.create_indexes(found_indexes)
+            # create indices
+            if found_indexes:
+                new_indexes += await collection.create_indexes(found_indexes)
 
-        # delete indexes
-        if allow_index_dropping:
-            for index in set(old_indexes) - set(new_indexes):
-                await collection.drop_index(index)
+            # delete indexes
+            if allow_index_dropping:
+                for index in set(old_indexes) - set(new_indexes):
+                    await collection.drop_index(index)
 
         return cls(
             name=collection_parameters.name,

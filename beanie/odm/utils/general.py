@@ -37,6 +37,7 @@ async def init_beanie(
     connection_string: str = None,
     document_models: List[Union[Type["DocType"], str]] = None,
     allow_index_dropping: bool = True,
+    auto_index: bool =True,
 ):
     """
     Beanie initialization
@@ -46,6 +47,8 @@ async def init_beanie(
     :param document_models: List[Union[Type[DocType], str]] - model classes
     or strings with dot separated paths
     :param allow_index_dropping: bool - if index dropping is allowed.
+    Default True
+    :param auto_index: bool - if auto_index is enabled.
     Default True
     :return: None
     """
@@ -69,7 +72,9 @@ async def init_beanie(
             model = get_model(model)
         collection_inits.append(
             model.init_model(
-                database, allow_index_dropping=allow_index_dropping
+                database,
+                allow_index_dropping=allow_index_dropping,
+                auto_index=auto_index,
             )
         )
 
