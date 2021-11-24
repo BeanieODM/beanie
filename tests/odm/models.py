@@ -141,6 +141,7 @@ class DocumentTestModelWithModifiedIndexs(Document):
             "test_list.test_str",
         ]
 
+
 class DocumentTestModelStringImport(Document):
     test_int: int
 

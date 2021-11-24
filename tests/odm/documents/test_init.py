@@ -168,6 +168,7 @@ async def test_index_dropping_is_not_allowed(db):
         "test_string_index_DESCENDING": {"key": [("test_str", -1)], "v": 2},
     }
 
+
 async def auto_index_is_disabled(db):
     await init_beanie(
         database=db, document_models=[DocumentTestModelWithComplexIndex]
@@ -190,7 +191,7 @@ async def auto_index_is_disabled(db):
             "v": 2,
         },
         "test_string_index_DESCENDING": {"key": [("test_str", -1)], "v": 2},
-    }    
+    }
 
 
 async def test_document_string_import(db):

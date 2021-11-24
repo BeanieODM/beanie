@@ -37,7 +37,7 @@ async def init_beanie(
     connection_string: str = None,
     document_models: List[Union[Type["DocType"], str]] = None,
     allow_index_dropping: bool = True,
-    auto_index: bool =True,
+    auto_index: bool = True,
 ):
     """
     Beanie initialization
