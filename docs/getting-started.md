@@ -29,7 +29,7 @@ Getting Beanie setup in your code is really easy:
 from typing import Optional
 from pydantic import BaseModel
 from beanie import Document, Indexed, init_beanie
-import motor
+import motor.motor_asyncio
 
 class Category(BaseModel):
     name: str
