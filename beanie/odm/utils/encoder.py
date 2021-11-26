@@ -55,7 +55,7 @@ class Encoder:
             obj_dict = {}
             for k, o in obj._iter(to_dict=False, by_alias=by_alias):
                 if k not in exclude:  # TODO get exclude from the class
-                    if k in link_fields:
+                    if link_fields and k in link_fields:
                         if link_fields[k].link_type == LinkTypes.LIST:
                             obj_dict[k] = [link.to_ref() for link in o]
                         if link_fields[k].link_type == LinkTypes.DIRECT:

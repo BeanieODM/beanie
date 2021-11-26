@@ -138,7 +138,7 @@ class Link(Generic[T]):
         self.model_class = model_class
 
     async def fetch(self):
-        return await self.model_class.get(self.ref.id)
+        return await self.model_class.get(self.ref.id)  # type: ignore
 
     @classmethod
     async def fetch_one(cls, link: "Link"):
@@ -172,7 +172,7 @@ class Link(Generic[T]):
 
     @classmethod
     def validate(cls, v: Union[DBRef, T], field: ModelField):
-        model_class = field.sub_fields[0].type_
+        model_class = field.sub_fields[0].type_  # type: ignore
         if isinstance(v, DBRef):
             return cls(ref=v, model_class=model_class)
         return model_class.validate(v)

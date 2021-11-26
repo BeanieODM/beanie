@@ -541,9 +541,9 @@ class FindMany(
             self.document_model.get_settings().model_settings.use_cache
             and self.ignore_cache is False
         ):
-            return self.document_model._cache.get(
+            return self.document_model._cache.get(  # type: ignore
                 self._cache_key
-            )  # type: ignore
+            )
         else:
             return None
 
@@ -552,14 +552,16 @@ class FindMany(
             self.document_model.get_settings().model_settings.use_cache
             and self.ignore_cache is False
         ):
-            return self.document_model._cache.set(
+            return self.document_model._cache.set(  # type: ignore
                 self._cache_key, data
-            )  # type: ignore
+            )
 
     @property
     def motor_cursor(self):
         if self.fetch_links:
-            aggregation_pipeline = [{"$match": self.get_filter_query()}]
+            aggregation_pipeline: List[Dict[str, Any]] = [
+                {"$match": self.get_filter_query()}
+            ]
             aggregation_pipeline += construct_lookup_queries(
                 self.document_model
             )
@@ -798,17 +800,16 @@ class FindOne(FindQuery[FindQueryResultType]):
                 self.session,
                 self.fetch_links,
             )
-            document: Dict[str, Any] = self.document_model._cache.get(
-                # type: ignore
+            document: Dict[str, Any] = self.document_model._cache.get(  # type: ignore
                 cache_key
             )
             if document is None:
-                document = yield from self._find_one().__await__()
-                self.document_model._cache.set(
+                document = yield from self._find_one().__await__()  # type: ignore
+                self.document_model._cache.set(  # type: ignore
                     cache_key, document
-                )  # type: ignore
+                )
         else:
-            document = yield from self._find_one().__await__()
+            document = yield from self._find_one().__await__()  # type: ignore
         if document is None:
             return None
         return cast(

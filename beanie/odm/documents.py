@@ -116,7 +116,7 @@ class Document(BaseModel, UpdateMethods):
 
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
-    _link_fields: ClassVar[Dict[str, LinkInfo]] = None
+    _link_fields: ClassVar[Optional[Dict[str, LinkInfo]]] = None
 
     @validator("revision_id")
     def set_revision_id(cls, revision_id):
@@ -159,15 +159,17 @@ class Document(BaseModel, UpdateMethods):
         :return: Document
         """
         if link_rule == WriteRules.WRITE:
-            for field_info in self.get_link_fields().values():
-                value = getattr(self, field_info.field)
-                if field_info.link_type == LinkTypes.DIRECT:
-                    if isinstance(value, Document):
-                        await value.insert(link_rule=WriteRules.WRITE)
-                if field_info.link_type == LinkTypes.LIST:
-                    for obj in value:
-                        if isinstance(obj, Document):
-                            await obj.insert(link_rule=WriteRules.WRITE)
+            link_fields = self.get_link_fields()
+            if link_fields is not None:
+                for field_info in link_fields.values():
+                    value = getattr(self, field_info.field)
+                    if field_info.link_type == LinkTypes.DIRECT:
+                        if isinstance(value, Document):
+                            await value.insert(link_rule=WriteRules.WRITE)
+                    if field_info.link_type == LinkTypes.LIST:
+                        for obj in value:
+                            if isinstance(obj, Document):
+                                await obj.insert(link_rule=WriteRules.WRITE)
 
         result = await self.get_motor_collection().insert_one(
             get_dict(self, to_db=True), session=session
@@ -585,25 +587,27 @@ class Document(BaseModel, UpdateMethods):
             raise NotSupported
 
         if link_rule == WriteRules.WRITE:
-            for field_info in self.get_link_fields().values():
-                value = getattr(self, field_info.field)
-                if field_info.link_type == LinkTypes.DIRECT:
-                    if isinstance(value, Document):
-                        await value.replace(
-                            link_rule=link_rule,
-                            bulk_writer=bulk_writer,
-                            ignore_revision=ignore_revision,
-                            session=session,
-                        )
-                if field_info.link_type == LinkTypes.LIST:
-                    for obj in value:
-                        if isinstance(obj, Document):
-                            await obj.replace(
+            link_fields = self.get_link_fields()
+            if link_fields is not None:
+                for field_info in link_fields.values():
+                    value = getattr(self, field_info.field)
+                    if field_info.link_type == LinkTypes.DIRECT:
+                        if isinstance(value, Document):
+                            await value.replace(
                                 link_rule=link_rule,
                                 bulk_writer=bulk_writer,
                                 ignore_revision=ignore_revision,
                                 session=session,
                             )
+                    if field_info.link_type == LinkTypes.LIST:
+                        for obj in value:
+                            if isinstance(obj, Document):
+                                await obj.replace(
+                                    link_rule=link_rule,
+                                    bulk_writer=bulk_writer,
+                                    ignore_revision=ignore_revision,
+                                    session=session,
+                                )
 
         use_revision_id = self.get_settings().model_settings.use_revision
         find_query: Dict[str, Any] = {"_id": self.id}
@@ -635,17 +639,21 @@ class Document(BaseModel, UpdateMethods):
         :return: None
         """
         if link_rule == WriteRules.WRITE:
-            for field_info in self.get_link_fields().values():
-                value = getattr(self, field_info.field)
-                if field_info.link_type == LinkTypes.DIRECT:
-                    if isinstance(value, Document):
-                        await value.save(link_rule=link_rule, session=session)
-                if field_info.link_type == LinkTypes.LIST:
-                    for obj in value:
-                        if isinstance(obj, Document):
-                            await obj.save(
+            link_fields = self.get_link_fields()
+            if link_fields is not None:
+                for field_info in link_fields.values():
+                    value = getattr(self, field_info.field)
+                    if field_info.link_type == LinkTypes.DIRECT:
+                        if isinstance(value, Document):
+                            await value.save(
                                 link_rule=link_rule, session=session
                             )
+                    if field_info.link_type == LinkTypes.LIST:
+                        for obj in value:
+                            if isinstance(obj, Document):
+                                await obj.save(
+                                    link_rule=link_rule, session=session
+                                )
 
         try:
             return await self.replace(session=session)
@@ -772,17 +780,21 @@ class Document(BaseModel, UpdateMethods):
         """
 
         if link_rule == DeleteRules.DELETE_LINKS:
-            for field_info in self.get_link_fields().values():
-                value = getattr(self, field_info.field)
-                if field_info.link_type == LinkTypes.DIRECT:
-                    if isinstance(value, Document):
-                        await value.delete(link_rule=DeleteRules.DELETE_LINKS)
-                if field_info.link_type == LinkTypes.LIST:
-                    for obj in value:
-                        if isinstance(obj, Document):
-                            await obj.delete(
+            link_fields = self.get_link_fields()
+            if link_fields is not None:
+                for field_info in link_fields.values():
+                    value = getattr(self, field_info.field)
+                    if field_info.link_type == LinkTypes.DIRECT:
+                        if isinstance(value, Document):
+                            await value.delete(
                                 link_rule=DeleteRules.DELETE_LINKS
                             )
+                    if field_info.link_type == LinkTypes.LIST:
+                        for obj in value:
+                            if isinstance(obj, Document):
+                                await obj.delete(
+                                    link_rule=DeleteRules.DELETE_LINKS
+                                )
 
         return await self.find_one({"_id": self.id}).delete(
             session=session, bulk_writer=bulk_writer
@@ -956,7 +968,7 @@ class Document(BaseModel, UpdateMethods):
             if inspect.isclass(v.type_) and issubclass(v.type_, Link):
                 cls._link_fields[v.name] = LinkInfo(
                     field=v.name,
-                    model_class=v.sub_fields[0].type_,
+                    model_class=v.sub_fields[0].type_,  # type: ignore
                     link_type=LinkTypes.DIRECT,
                 )
             if (
@@ -967,7 +979,7 @@ class Document(BaseModel, UpdateMethods):
             ):
                 cls._link_fields[v.name] = LinkInfo(
                     field=v.name,
-                    model_class=v.sub_fields[0].sub_fields[0].type_,
+                    model_class=v.sub_fields[0].sub_fields[0].type_,  # type: ignore
                     link_type=LinkTypes.LIST,
                 )
 
@@ -1114,12 +1126,14 @@ class Document(BaseModel, UpdateMethods):
 
     async def fetch_all_links(self):
         coros = []
-        for ref in self.get_link_fields().values():
-            coros.append(self.fetch_link(ref.field))  # TODO lists
+        link_fields = self.get_link_fields()
+        if link_fields is not None:
+            for ref in link_fields.values():
+                coros.append(self.fetch_link(ref.field))  # TODO lists
         await asyncio.gather(*coros)
 
     @classmethod
-    def get_link_fields(cls) -> Dict[str, LinkInfo]:
+    def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:
         return cls._link_fields
 
     class Config:
