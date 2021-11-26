@@ -52,7 +52,8 @@ from beanie.odm.fields import (
     Link,
     LinkInfo,
     LinkTypes,
-    InsertRules,
+    WriteRules,
+    DeleteRules,
 )
 from beanie.odm.interfaces.update import (
     UpdateMethods,
@@ -150,26 +151,23 @@ class Document(BaseModel, UpdateMethods):
     async def insert(
         self: DocType,
         *,
-        link_rule: InsertRules = InsertRules.DENY,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
         session: Optional[ClientSession] = None,
     ) -> DocType:
         """
         Insert the document (self) to the collection
         :return: Document
         """
-        if link_rule == InsertRules.CASCADE:
+        if link_rule == WriteRules.WRITE:
             for field_info in self.get_link_fields().values():
                 value = getattr(self, field_info.field)
                 if field_info.link_type == LinkTypes.DIRECT:
                     if isinstance(value, Document):
-                        # try:
-                        await value.insert(link_rule=InsertRules.CASCADE)
-                        # except Exception as e:  # TODO do smth with this
-                        #     pass
+                        await value.insert(link_rule=WriteRules.WRITE)
                 if field_info.link_type == LinkTypes.LIST:
                     for obj in value:
                         if isinstance(obj, Document):
-                            await obj.insert(link_rule=InsertRules.CASCADE)
+                            await obj.insert(link_rule=WriteRules.WRITE)
 
         result = await self.get_motor_collection().insert_one(
             get_dict(self, to_db=True), session=session
@@ -196,7 +194,7 @@ class Document(BaseModel, UpdateMethods):
         document: DocType,
         session: Optional[ClientSession] = None,
         bulk_writer: "BulkWriter" = None,
-        link_rule: InsertRules = InsertRules.DENY,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> Optional[DocType]:
         """
         Insert one document to the collection
@@ -213,7 +211,7 @@ class Document(BaseModel, UpdateMethods):
         if bulk_writer is None:
             return await document.insert(link_rule=link_rule, session=session)
         else:
-            if link_rule == InsertRules.CASCADE:
+            if link_rule == WriteRules.WRITE:
                 raise NotSupported(
                     "Cascade insert with bulk writing not supported"
                 )
@@ -231,7 +229,7 @@ class Document(BaseModel, UpdateMethods):
         cls: Type[DocType],
         documents: List[DocType],
         session: Optional[ClientSession] = None,
-        link_rule: InsertRules = InsertRules.DENY,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> InsertManyResult:
 
         """
@@ -242,7 +240,7 @@ class Document(BaseModel, UpdateMethods):
         :param link_rule: InsertRules - how to manage link fields
         :return: InsertManyResult
         """
-        if link_rule == InsertRules.CASCADE:
+        if link_rule == WriteRules.WRITE:
             raise NotSupported(
                 "Cascade insert not supported for insert many method"
             )
@@ -260,6 +258,7 @@ class Document(BaseModel, UpdateMethods):
         document_id: PydanticObjectId,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Optional[DocType]:
         """
         Get document by id, returns None if document does not exist
@@ -272,7 +271,10 @@ class Document(BaseModel, UpdateMethods):
         if not isinstance(document_id, cls.__fields__["id"].type_):
             document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
         return await cls.find_one(
-            {"_id": document_id}, session=session, ignore_cache=ignore_cache
+            {"_id": document_id},
+            session=session,
+            ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
         )
 
     @overload
@@ -565,6 +567,7 @@ class Document(BaseModel, UpdateMethods):
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> DocType:
         """
         Fully update the document in the database
@@ -578,15 +581,40 @@ class Document(BaseModel, UpdateMethods):
         if self.id is None:
             raise ValueError("Document must have an id")
 
-        use_revision_id = self.get_settings().model_settings.use_revision
+        if bulk_writer is not None and link_rule != WriteRules.DO_NOTHING:
+            raise NotSupported
 
+        if link_rule == WriteRules.WRITE:
+            for field_info in self.get_link_fields().values():
+                value = getattr(self, field_info.field)
+                if field_info.link_type == LinkTypes.DIRECT:
+                    if isinstance(value, Document):
+                        await value.replace(
+                            link_rule=link_rule,
+                            bulk_writer=bulk_writer,
+                            ignore_revision=ignore_revision,
+                            session=session,
+                        )
+                if field_info.link_type == LinkTypes.LIST:
+                    for obj in value:
+                        if isinstance(obj, Document):
+                            await obj.replace(
+                                link_rule=link_rule,
+                                bulk_writer=bulk_writer,
+                                ignore_revision=ignore_revision,
+                                session=session,
+                            )
+
+        use_revision_id = self.get_settings().model_settings.use_revision
         find_query: Dict[str, Any] = {"_id": self.id}
 
         if use_revision_id and not ignore_revision:
             find_query["revision_id"] = self._previous_revision_id
         try:
             await self.find_one(find_query).replace_one(
-                self, session=session, bulk_writer=bulk_writer
+                self,
+                session=session,
+                bulk_writer=bulk_writer,
             )
         except DocumentNotFound:
             if use_revision_id and not ignore_revision:
@@ -596,7 +624,9 @@ class Document(BaseModel, UpdateMethods):
         return self
 
     async def save(
-        self: DocType, session: Optional[ClientSession] = None
+        self: DocType,
+        session: Optional[ClientSession] = None,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> DocType:
         """
         Update an existing model in the database or insert it if it does not yet exist.
@@ -604,6 +634,18 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session.
         :return: None
         """
+        if link_rule == WriteRules.WRITE:
+            for field_info in self.get_link_fields().values():
+                value = getattr(self, field_info.field)
+                if field_info.link_type == LinkTypes.DIRECT:
+                    if isinstance(value, Document):
+                        await value.save(link_rule=link_rule, session=session)
+                if field_info.link_type == LinkTypes.LIST:
+                    for obj in value:
+                        if isinstance(obj, Document):
+                            await obj.save(
+                                link_rule=link_rule, session=session
+                            )
 
         try:
             return await self.replace(session=session)
@@ -718,14 +760,30 @@ class Document(BaseModel, UpdateMethods):
         self,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        link_rule: DeleteRules = DeleteRules.DO_NOTHING,
     ) -> Optional[DeleteResult]:
         """
         Delete the document
 
         :param session: Optional[ClientSession] - pymongo session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
+        :param link_rule: DeleteRules - rules for link fields
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
+
+        if link_rule == DeleteRules.DELETE_LINKS:
+            for field_info in self.get_link_fields().values():
+                value = getattr(self, field_info.field)
+                if field_info.link_type == LinkTypes.DIRECT:
+                    if isinstance(value, Document):
+                        await value.delete(link_rule=DeleteRules.DELETE_LINKS)
+                if field_info.link_type == LinkTypes.LIST:
+                    for obj in value:
+                        if isinstance(obj, Document):
+                            await obj.delete(
+                                link_rule=DeleteRules.DELETE_LINKS
+                            )
+
         return await self.find_one({"_id": self.id}).delete(
             session=session, bulk_writer=bulk_writer
         )

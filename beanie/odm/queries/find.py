@@ -735,7 +735,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 await self.document_model.get_motor_collection().replace_one(
                     self.get_filter_query(),
                     bson_encoder.encode(
-                        document, by_alias=True, exclude={"id"}
+                        document, by_alias=True, exclude={"_id"}
                     ),
                     session=self.session,
                 )
@@ -750,7 +750,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                     operation=ReplaceOne,
                     first_query=self.get_filter_query(),
                     second_query=bson_encoder.encode(
-                        document, by_alias=True, exclude={"id"}
+                        document, by_alias=True, exclude={"_id"}
                     ),
                     object_class=self.document_model,
                 )

@@ -110,14 +110,12 @@ class ExpressionField(str):
 
 class DeleteRules(str, Enum):
     DO_NOTHING = "DO_NOTHING"
-    NULLIFY = "NULLIFY"
-    CASCADE = "CASCADE"
-    DENY = "DENY"
+    DELETE_LINKS = "DELETE_LINKS"
 
 
-class InsertRules(str, Enum):
-    CASCADE = "CASCADE"
-    DENY = "DENY"
+class WriteRules(str, Enum):
+    DO_NOTHING = "DO_NOTHING"
+    WRITE = "WRITE"
 
 
 class LinkTypes(str, Enum):

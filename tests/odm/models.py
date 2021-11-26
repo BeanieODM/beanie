@@ -20,6 +20,7 @@ from pymongo import IndexModel
 
 from beanie import Document, Indexed, Insert, Replace, ValidateOnSave
 from beanie.odm.actions import before_event, after_event
+from beanie.odm.fields import Link
 
 
 class Option2(BaseModel):
@@ -239,3 +240,18 @@ class DocumentWithPydanticConfig(Document):
 
     class Config(Document.Config):
         validate_assignment = True
+
+
+class Window(Document):
+    x: int
+    y: int
+
+
+class Door(Document):
+    t: int = 10
+
+
+class House(Document):
+    windows: List[Link[Window]]
+    door: Link[Door]
+    name: str = Field(hidden=True)

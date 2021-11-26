@@ -7,7 +7,7 @@ from tests.odm.models import DocumentTestModel
 
 async def test_insert_one(document_not_inserted):
     result = await DocumentTestModel.insert_one(document_not_inserted)
-    document = await DocumentTestModel.get(result.inserted_id)
+    document = await DocumentTestModel.get(result.id)
     assert document is not None
     assert document.test_int == document_not_inserted.test_int
     assert document.test_list == document_not_inserted.test_list
@@ -35,7 +35,7 @@ async def test_insert_one_with_session(document_not_inserted, session):
     result = await DocumentTestModel.insert_one(
         document_not_inserted, session=session
     )
-    document = await DocumentTestModel.get(result.inserted_id, session=session)
+    document = await DocumentTestModel.get(result.id, session=session)
     assert document is not None
     assert document.test_int == document_not_inserted.test_int
     assert document.test_list == document_not_inserted.test_list
