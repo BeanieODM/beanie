@@ -103,6 +103,9 @@ class Document(BaseModel, UpdateMethods):
     _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
 
+    # Relations
+    _link_fields: ClassVar[Optional[Dict[str, LinkInfo]]] = None
+
     # Cache
     _cache: ClassVar[Optional[LRUCache]] = None
 
@@ -116,7 +119,6 @@ class Document(BaseModel, UpdateMethods):
 
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
-    _link_fields: ClassVar[Optional[Dict[str, LinkInfo]]] = None
 
     @validator("revision_id")
     def set_revision_id(cls, revision_id):
@@ -138,7 +140,7 @@ class Document(BaseModel, UpdateMethods):
         new_instance: Optional[Document] = await self.get(self.id)
         if new_instance is None:
             raise DocumentNotFound(
-                "Can not sync, document not in database anymore."
+                "Can not sync. The document is not in the database anymore."
             )
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
@@ -380,9 +382,7 @@ class Document(BaseModel, UpdateMethods):
         :param args: *Mapping[str, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
-        or a list of (key, direction) pairs specifying the sort order
-        for this query.
+        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
@@ -496,9 +496,7 @@ class Document(BaseModel, UpdateMethods):
 
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
-        or a list of (key, direction) pairs specifying the sort order
-        for this query.
+        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
@@ -721,8 +719,7 @@ class Document(BaseModel, UpdateMethods):
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
-        :param ignore_revision: bool - force update. Will update even if revision id
-        is not the same, as stored
+        :param ignore_revision: bool - force update. Will update even if revision id is not the same, as stored
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: None
         """

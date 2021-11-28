@@ -9,11 +9,17 @@ from beanie.odm.actions import (
     ValidateOnSave,
 )
 from beanie.odm.bulk import BulkWriter
-from beanie.odm.fields import PydanticObjectId, Indexed
+from beanie.odm.fields import (
+    PydanticObjectId,
+    Indexed,
+    Link,
+    WriteRules,
+    DeleteRules,
+)
 from beanie.odm.utils.general import init_beanie
 from beanie.odm.documents import Document
 
-__version__ = "1.7.2"
+__version__ = "1.8.0"
 __all__ = [
     # ODM
     "Document",
@@ -32,4 +38,8 @@ __all__ = [
     # Migrations
     "iterative_migration",
     "free_fall_migration",
+    # Relations
+    "Link",
+    "WriteRules",
+    "DeleteRules",
 ]

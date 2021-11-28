@@ -64,6 +64,18 @@ renderer:
           source: docs/tutorial/collection_setup.md
         - title: Aggregation
           source: docs/tutorial/aggregate.md
+        - title: Relations
+          source: docs/tutorial/relations.md
+        - title: Event-based actions
+          source: docs/tutorial/actions.md
+        - title: Cache
+          source: docs/tutorial/cache.md
+        - title: Revision
+          source: docs/tutorial/revision.md
+        - title: Save changes
+          source: docs/tutorial/state_management.md
+        - title: On save validation
+          source: docs/tutorial/on_save_validation.md
         - title: Migrations
           source: docs/tutorial/migrations.md
     - title: API Documentation
