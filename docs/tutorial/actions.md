@@ -1,4 +1,4 @@
-# Pre- and Post- events actions
+# Event-based actions
 
 You can register methods as pre- or post- actions for document events like `insert`, `replace` and etc.
 
@@ -9,7 +9,7 @@ Currently supported events:
 - SaveChanges
 - ValidateOnSave
 
-To register a pre- or post- action you can use `@before_event` and `@after_event` decorators respectively.
+To register an action you can use `@before_event` and `@after_event` decorators respectively.
 
 ```python
 from beanie import Insert, Replace

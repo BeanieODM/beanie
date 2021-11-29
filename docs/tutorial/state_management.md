@@ -16,7 +16,7 @@ class Sample(Document):
 To save only changed values the `save_changes()` method should be used.
 
 ```python
-s = await Sample.fin_one(Sample.name == "Test")
+s = await Sample.find_one(Sample.name == "Test")
 s.num = 100
 await s.save_changes()
 ```
