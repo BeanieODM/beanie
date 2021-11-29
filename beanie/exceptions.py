@@ -36,3 +36,7 @@ class StateNotSaved(Exception):
 
 class RevisionIdWasChanged(Exception):
     pass
+
+
+class NotSupported(Exception):
+    pass

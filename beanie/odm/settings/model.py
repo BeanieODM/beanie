@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Any, Dict, Optional, Type
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ModelSettings(BaseModel):
@@ -12,6 +12,7 @@ class ModelSettings(BaseModel):
     use_cache: bool = False
     cache_capacity: int = 32
     cache_expiration_time: timedelta = timedelta(minutes=10)
+    bson_encoders: Dict[Any, Any] = Field(default_factory=dict)
 
     @classmethod
     def init(

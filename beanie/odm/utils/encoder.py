@@ -13,10 +13,11 @@ from typing import (
 )
 from uuid import UUID
 
-from bson import ObjectId
+from bson import ObjectId, DBRef
 from pydantic import BaseModel
 
 from .bson import ENCODERS_BY_TYPE
+from ..fields import LinkTypes
 
 
 class Encoder:
@@ -35,28 +36,45 @@ class Encoder:
         ] = None,
         by_alias: bool = True,
         custom_encoder: Dict[Any, Callable[[Any], Any]] = None,
+        to_db: bool = False,
     ) -> Any:
+        from beanie.odm.documents import Document
+
         if custom_encoder is None:
             custom_encoder = {}
-        if exclude is not None and not isinstance(exclude, (set, dict)):
+        if exclude is None:
+            exclude = {}
+        if not isinstance(exclude, (set, dict)):
             exclude = set(exclude)
-        if isinstance(obj, BaseModel):
-            encoders = {}
-            collection_class = getattr(obj, "Collection", None)
-            if collection_class:
-                encoders = vars(collection_class).get("bson_encoders", {})
+        if isinstance(obj, Document):
+            encoders = obj.get_settings().model_settings.bson_encoders
             if custom_encoder:
                 encoders.update(custom_encoder)
-            obj_dict = obj.dict(
-                exclude=exclude,  # type: ignore # in Pydantic
-                by_alias=by_alias,
-            )
-            return self.encode(
-                obj_dict,
-                custom_encoder=encoders,
-            )
+
+            link_fields = obj.get_link_fields()
+            obj_dict = {}
+            for k, o in obj._iter(to_dict=False, by_alias=by_alias):
+                if k not in exclude:  # TODO get exclude from the class
+                    if link_fields and k in link_fields:
+                        if link_fields[k].link_type == LinkTypes.LIST:
+                            obj_dict[k] = [link.to_ref() for link in o]
+                        if link_fields[k].link_type == LinkTypes.DIRECT:
+                            obj_dict[k] = o.to_ref()
+                    else:
+                        obj_dict[k] = o
+            return self.encode(obj_dict, custom_encoder=encoders, to_db=to_db)
+        if isinstance(obj, BaseModel):
+            encoders = {}
+            if custom_encoder:
+                encoders.update(custom_encoder)
+            obj_dict = {}
+            for k, o in obj._iter(to_dict=False, by_alias=by_alias):
+                if k not in exclude:  # TODO get exclude from the class
+                    obj_dict[k] = o
+
+            return self.encode(obj_dict, custom_encoder=encoders, to_db=to_db)
         if isinstance(
-            obj, (str, int, float, ObjectId, UUID, datetime, type(None))
+            obj, (str, int, float, ObjectId, UUID, datetime, type(None), DBRef)
         ):
             return obj
         if isinstance(obj, dict):
@@ -66,6 +84,7 @@ class Encoder:
                     value,
                     by_alias=by_alias,
                     custom_encoder=custom_encoder,
+                    to_db=to_db,
                 )
                 encoded_dict[key] = encoded_value
             return encoded_dict
@@ -76,6 +95,7 @@ class Encoder:
                     exclude=exclude,
                     by_alias=by_alias,
                     custom_encoder=custom_encoder,
+                    to_db=to_db,
                 )
                 for item in obj
             ]
@@ -102,9 +122,7 @@ class Encoder:
                 errors.append(e)
                 raise ValueError(errors)
         return self.encode(
-            data,
-            by_alias=by_alias,
-            custom_encoder=custom_encoder,
+            data, by_alias=by_alias, custom_encoder=custom_encoder, to_db=to_db
         )
 
 

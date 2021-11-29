@@ -17,6 +17,8 @@ from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
 from pydantic.json import isoformat
 
+from beanie.odm.fields import Link
+
 ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     Color: str,
     datetime.date: isoformat,
@@ -34,4 +36,5 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     SecretStr: SecretStr.get_secret_value,
     Enum: lambda o: o.value,
     PurePath: str,
+    Link: lambda l: l.ref,
 }

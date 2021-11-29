@@ -24,6 +24,9 @@ from tests.odm.models import (
     DocumentWithValidationOnSave,
     DocumentWithRevisionTurnedOn,
     DocumentWithPydanticConfig,
+    House,
+    Window,
+    Door,
 )
 from tests.odm.models import (
     Sample,
@@ -138,6 +141,9 @@ async def init(loop, db):
         DocumentWithTurnedOffStateManagement,
         DocumentWithValidationOnSave,
         DocumentWithRevisionTurnedOn,
+        House,
+        Window,
+        Door,
     ]
     await init_beanie(
         database=db,

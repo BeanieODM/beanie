@@ -1,3 +1,5 @@
+import asyncio
+import inspect
 from typing import (
     Dict,
     Optional,
@@ -14,7 +16,7 @@ from typing import (
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from bson import ObjectId
+from bson import ObjectId, DBRef
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
 from pydantic import (
     ValidationError,
@@ -29,7 +31,6 @@ from pymongo import InsertOne
 from pymongo.client_session import ClientSession
 from pymongo.results import (
     DeleteResult,
-    InsertOneResult,
     InsertManyResult,
 )
 
@@ -38,12 +39,22 @@ from beanie.exceptions import (
     ReplaceError,
     DocumentNotFound,
     RevisionIdWasChanged,
+    DocumentWasNotSaved,
+    NotSupported,
 )
 from beanie.odm.actions import EventTypes, wrap_with_actions
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
-from beanie.odm.fields import PydanticObjectId, ExpressionField
+from beanie.odm.fields import (
+    PydanticObjectId,
+    ExpressionField,
+    Link,
+    LinkInfo,
+    LinkTypes,
+    WriteRules,
+    DeleteRules,
+)
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
@@ -60,6 +71,8 @@ from beanie.odm.settings.general import DocumentSettings
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import saved_state_needed, save_state_after
+
+from pydantic.typing import get_origin
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
@@ -89,6 +102,9 @@ class Document(BaseModel, UpdateMethods):
     revision_id: Optional[UUID] = Field(default=None, hidden=True)
     _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
+
+    # Relations
+    _link_fields: ClassVar[Optional[Dict[str, LinkInfo]]] = None
 
     # Cache
     _cache: ClassVar[Optional[LRUCache]] = None
@@ -124,7 +140,7 @@ class Document(BaseModel, UpdateMethods):
         new_instance: Optional[Document] = await self.get(self.id)
         if new_instance is None:
             raise DocumentNotFound(
-                "Can not sync, document not in database anymore."
+                "Can not sync. The document is not in the database anymore."
             )
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
@@ -136,14 +152,29 @@ class Document(BaseModel, UpdateMethods):
     @validate_self_before
     async def insert(
         self: DocType,
+        *,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
         session: Optional[ClientSession] = None,
     ) -> DocType:
         """
         Insert the document (self) to the collection
         :return: Document
         """
+        if link_rule == WriteRules.WRITE:
+            link_fields = self.get_link_fields()
+            if link_fields is not None:
+                for field_info in link_fields.values():
+                    value = getattr(self, field_info.field)
+                    if field_info.link_type == LinkTypes.DIRECT:
+                        if isinstance(value, Document):
+                            await value.insert(link_rule=WriteRules.WRITE)
+                    if field_info.link_type == LinkTypes.LIST:
+                        for obj in value:
+                            if isinstance(obj, Document):
+                                await obj.insert(link_rule=WriteRules.WRITE)
+
         result = await self.get_motor_collection().insert_one(
-            get_dict(self), session=session
+            get_dict(self, to_db=True), session=session
         )
         new_id = result.inserted_id
         if not isinstance(new_id, self.__fields__["id"].type_):
@@ -167,36 +198,42 @@ class Document(BaseModel, UpdateMethods):
         document: DocType,
         session: Optional[ClientSession] = None,
         bulk_writer: "BulkWriter" = None,
-    ) -> InsertOneResult:
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
+    ) -> Optional[DocType]:
         """
         Insert one document to the collection
         :param document: Document - document to insert
         :param session: ClientSession - pymongo session
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
-        :return: InsertOneResult
+        :param link_rule: InsertRules - hot to manage link fields
+        :return: DocType
         """
         if not isinstance(document, cls):
             raise TypeError(
                 "Inserting document must be of the original document class"
             )
         if bulk_writer is None:
-            return await cls.get_motor_collection().insert_one(
-                get_dict(document), session=session
-            )
+            return await document.insert(link_rule=link_rule, session=session)
         else:
+            if link_rule == WriteRules.WRITE:
+                raise NotSupported(
+                    "Cascade insert with bulk writing not supported"
+                )
             bulk_writer.add_operation(
                 Operation(
                     operation=InsertOne,
-                    first_query=get_dict(document),
+                    first_query=get_dict(document, to_db=True),
                     object_class=type(document),
                 )
             )
+            return None
 
     @classmethod
     async def insert_many(
         cls: Type[DocType],
         documents: List[DocType],
         session: Optional[ClientSession] = None,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> InsertManyResult:
 
         """
@@ -204,9 +241,16 @@ class Document(BaseModel, UpdateMethods):
 
         :param documents:  List["Document"] - documents to insert
         :param session: ClientSession - pymongo session
+        :param link_rule: InsertRules - how to manage link fields
         :return: InsertManyResult
         """
-        documents_list = [get_dict(document) for document in documents]
+        if link_rule == WriteRules.WRITE:
+            raise NotSupported(
+                "Cascade insert not supported for insert many method"
+            )
+        documents_list = [
+            get_dict(document, to_db=True) for document in documents
+        ]
         return await cls.get_motor_collection().insert_many(
             documents_list,
             session=session,
@@ -218,6 +262,7 @@ class Document(BaseModel, UpdateMethods):
         document_id: PydanticObjectId,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Optional[DocType]:
         """
         Get document by id, returns None if document does not exist
@@ -230,7 +275,10 @@ class Document(BaseModel, UpdateMethods):
         if not isinstance(document_id, cls.__fields__["id"].type_):
             document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
         return await cls.find_one(
-            {"_id": document_id}, session=session, ignore_cache=ignore_cache
+            {"_id": document_id},
+            session=session,
+            ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
         )
 
     @overload
@@ -241,6 +289,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: None = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindOne[DocType]:
         ...
 
@@ -252,6 +301,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: Type[DocumentProjectionType],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindOne[DocumentProjectionType]:
         ...
 
@@ -262,6 +312,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Union[FindOne[DocType], FindOne[DocumentProjectionType]]:
         """
         Find one document by criteria.
@@ -279,6 +330,7 @@ class Document(BaseModel, UpdateMethods):
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
         )
 
     @overload
@@ -292,6 +344,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindMany[DocType]:
         ...
 
@@ -306,6 +359,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -319,6 +373,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         Find many documents by criteria.
@@ -327,9 +382,7 @@ class Document(BaseModel, UpdateMethods):
         :param args: *Mapping[str, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
-        or a list of (key, direction) pairs specifying the sort order
-        for this query.
+        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
@@ -343,6 +396,7 @@ class Document(BaseModel, UpdateMethods):
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
         )
 
     @overload
@@ -356,6 +410,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindMany[DocType]:
         ...
 
@@ -370,6 +425,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -383,6 +439,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         The same as find_many
@@ -395,6 +452,7 @@ class Document(BaseModel, UpdateMethods):
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
         )
 
     @overload
@@ -438,9 +496,7 @@ class Document(BaseModel, UpdateMethods):
 
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
-        or a list of (key, direction) pairs specifying the sort order
-        for this query.
+        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
@@ -511,6 +567,7 @@ class Document(BaseModel, UpdateMethods):
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> DocType:
         """
         Fully update the document in the database
@@ -524,15 +581,42 @@ class Document(BaseModel, UpdateMethods):
         if self.id is None:
             raise ValueError("Document must have an id")
 
-        use_revision_id = self.get_settings().model_settings.use_revision
+        if bulk_writer is not None and link_rule != WriteRules.DO_NOTHING:
+            raise NotSupported
 
+        if link_rule == WriteRules.WRITE:
+            link_fields = self.get_link_fields()
+            if link_fields is not None:
+                for field_info in link_fields.values():
+                    value = getattr(self, field_info.field)
+                    if field_info.link_type == LinkTypes.DIRECT:
+                        if isinstance(value, Document):
+                            await value.replace(
+                                link_rule=link_rule,
+                                bulk_writer=bulk_writer,
+                                ignore_revision=ignore_revision,
+                                session=session,
+                            )
+                    if field_info.link_type == LinkTypes.LIST:
+                        for obj in value:
+                            if isinstance(obj, Document):
+                                await obj.replace(
+                                    link_rule=link_rule,
+                                    bulk_writer=bulk_writer,
+                                    ignore_revision=ignore_revision,
+                                    session=session,
+                                )
+
+        use_revision_id = self.get_settings().model_settings.use_revision
         find_query: Dict[str, Any] = {"_id": self.id}
 
         if use_revision_id and not ignore_revision:
             find_query["revision_id"] = self._previous_revision_id
         try:
             await self.find_one(find_query).replace_one(
-                self, session=session, bulk_writer=bulk_writer
+                self,
+                session=session,
+                bulk_writer=bulk_writer,
             )
         except DocumentNotFound:
             if use_revision_id and not ignore_revision:
@@ -542,7 +626,9 @@ class Document(BaseModel, UpdateMethods):
         return self
 
     async def save(
-        self: DocType, session: Optional[ClientSession] = None
+        self: DocType,
+        session: Optional[ClientSession] = None,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> DocType:
         """
         Update an existing model in the database or insert it if it does not yet exist.
@@ -550,6 +636,22 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session.
         :return: None
         """
+        if link_rule == WriteRules.WRITE:
+            link_fields = self.get_link_fields()
+            if link_fields is not None:
+                for field_info in link_fields.values():
+                    value = getattr(self, field_info.field)
+                    if field_info.link_type == LinkTypes.DIRECT:
+                        if isinstance(value, Document):
+                            await value.save(
+                                link_rule=link_rule, session=session
+                            )
+                    if field_info.link_type == LinkTypes.LIST:
+                        for obj in value:
+                            if isinstance(obj, Document):
+                                await obj.save(
+                                    link_rule=link_rule, session=session
+                                )
 
         try:
             return await self.replace(session=session)
@@ -617,8 +719,7 @@ class Document(BaseModel, UpdateMethods):
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
-        :param ignore_revision: bool - force update. Will update even if revision id
-        is not the same, as stored
+        :param ignore_revision: bool - force update. Will update even if revision id is not the same, as stored
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: None
         """
@@ -664,14 +765,34 @@ class Document(BaseModel, UpdateMethods):
         self,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        link_rule: DeleteRules = DeleteRules.DO_NOTHING,
     ) -> Optional[DeleteResult]:
         """
         Delete the document
 
         :param session: Optional[ClientSession] - pymongo session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
+        :param link_rule: DeleteRules - rules for link fields
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
+
+        if link_rule == DeleteRules.DELETE_LINKS:
+            link_fields = self.get_link_fields()
+            if link_fields is not None:
+                for field_info in link_fields.values():
+                    value = getattr(self, field_info.field)
+                    if field_info.link_type == LinkTypes.DIRECT:
+                        if isinstance(value, Document):
+                            await value.delete(
+                                link_rule=DeleteRules.DELETE_LINKS
+                            )
+                    if field_info.link_type == LinkTypes.LIST:
+                        for obj in value:
+                            if isinstance(obj, Document):
+                                await obj.delete(
+                                    link_rule=DeleteRules.DELETE_LINKS
+                                )
+
         return await self.find_one({"_id": self.id}).delete(
             session=session, bulk_writer=bulk_writer
         )
@@ -791,7 +912,7 @@ class Document(BaseModel, UpdateMethods):
     @property  # type: ignore
     @saved_state_needed
     def is_changed(self) -> bool:
-        if self._saved_state == get_dict(self):
+        if self._saved_state == get_dict(self, to_db=True):
             return False
         return True
 
@@ -800,7 +921,7 @@ class Document(BaseModel, UpdateMethods):
         #  TODO search deeply
         changes = {}
         if self.is_changed:
-            current_state = get_dict(self)
+            current_state = get_dict(self, to_db=True)
             for k, v in self._saved_state.items():  # type: ignore
                 if v != current_state[k]:
                     changes[k] = current_state[k]
@@ -835,9 +956,29 @@ class Document(BaseModel, UpdateMethods):
         Init class fields
         :return: None
         """
+        if cls._link_fields is None:
+            cls._link_fields = {}
         for k, v in cls.__fields__.items():
             path = v.alias or v.name
             setattr(cls, k, ExpressionField(path))
+
+            if inspect.isclass(v.type_) and issubclass(v.type_, Link):
+                cls._link_fields[v.name] = LinkInfo(
+                    field=v.name,
+                    model_class=v.sub_fields[0].type_,  # type: ignore
+                    link_type=LinkTypes.DIRECT,
+                )
+            if (
+                inspect.isclass(get_origin(v.type_))
+                and inspect.isclass(get_origin(v.outer_type_))
+                and issubclass(get_origin(v.type_), Link)
+                and issubclass(get_origin(v.outer_type_), list)
+            ):
+                cls._link_fields[v.name] = LinkInfo(
+                    field=v.name,
+                    model_class=v.sub_fields[0].sub_fields[0].type_,  # type: ignore
+                    link_type=LinkTypes.LIST,
+                )
 
         cls._hidden_fields = cls.get_hidden_fields()
 
@@ -965,6 +1106,32 @@ class Document(BaseModel, UpdateMethods):
         # TODO it can be sync, but needs some actions controller improvements
         if self.get_settings().model_settings.validate_on_save:
             self.parse_obj(self)
+
+    def to_ref(self):
+        if self.id is None:
+            raise DocumentWasNotSaved("Can not create dbref without id")
+        return DBRef(self.get_motor_collection().name, self.id)
+
+    async def fetch_link(self, field: Union[str, Any]):
+        ref_obj = getattr(self, field, None)
+        if isinstance(ref_obj, Link):
+            value = await ref_obj.fetch()
+            setattr(self, field, value)
+        if isinstance(ref_obj, list) and ref_obj:
+            values = await Link.fetch_list(ref_obj)
+            setattr(self, field, values)
+
+    async def fetch_all_links(self):
+        coros = []
+        link_fields = self.get_link_fields()
+        if link_fields is not None:
+            for ref in link_fields.values():
+                coros.append(self.fetch_link(ref.field))  # TODO lists
+        await asyncio.gather(*coros)
+
+    @classmethod
+    def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:
+        return cls._link_fields
 
     class Config:
         json_encoders = {

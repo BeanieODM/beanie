@@ -44,6 +44,7 @@ from beanie.odm.queries.update import (
     UpdateOne,
 )
 from beanie.odm.utils.encoder import bson_encoder
+from beanie.odm.utils.find import construct_lookup_queries
 from beanie.odm.utils.parsing import parse_obj
 from beanie.odm.utils.projection import get_projection
 
@@ -81,9 +82,10 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         self.session = None
         self.encoders: Dict[Any, Callable[[Any], Any]] = {}
         self.ignore_cache: bool = False
-        collection_class = getattr(self.document_model, "Collection", None)
-        if collection_class:
-            self.encoders = vars(collection_class).get("bson_encoders", {})
+        self.encoders = (
+            self.document_model.get_settings().model_settings.bson_encoders
+        )
+        self.fetch_links: bool = False
 
     def get_filter_query(self) -> Mapping[str, Any]:
         if self.find_expressions:
@@ -233,6 +235,7 @@ class FindMany(
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> "FindMany[FindQueryResultType]":
         ...
 
@@ -246,6 +249,7 @@ class FindMany(
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
 
@@ -258,6 +262,7 @@ class FindMany(
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
     ]:
@@ -282,6 +287,7 @@ class FindMany(
         self.project(projection_model)
         self.set_session(session=session)
         self.ignore_cache = ignore_cache
+        self.fetch_links = fetch_links
         return self
 
     # TODO probably merge FindOne and FindMany to one class to avoid this
@@ -326,6 +332,7 @@ class FindMany(
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> "FindMany[FindQueryResultType]":
         ...
 
@@ -339,6 +346,7 @@ class FindMany(
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
 
@@ -351,6 +359,7 @@ class FindMany(
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
     ]:
@@ -365,6 +374,7 @@ class FindMany(
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
         )
 
     def sort(
@@ -531,7 +541,9 @@ class FindMany(
             self.document_model.get_settings().model_settings.use_cache
             and self.ignore_cache is False
         ):
-            return self.document_model._cache.get(self._cache_key)  # type: ignore
+            return self.document_model._cache.get(  # type: ignore
+                self._cache_key
+            )
         else:
             return None
 
@@ -540,10 +552,36 @@ class FindMany(
             self.document_model.get_settings().model_settings.use_cache
             and self.ignore_cache is False
         ):
-            return self.document_model._cache.set(self._cache_key, data)  # type: ignore
+            return self.document_model._cache.set(  # type: ignore
+                self._cache_key, data
+            )
 
     @property
     def motor_cursor(self):
+        if self.fetch_links:
+            aggregation_pipeline: List[Dict[str, Any]] = [
+                {"$match": self.get_filter_query()}
+            ]
+            aggregation_pipeline += construct_lookup_queries(
+                self.document_model
+            )
+            sort_pipeline = {
+                "$sort": {i[0]: i[1] for i in self.sort_expressions}
+            }
+            if sort_pipeline["$sort"]:
+                aggregation_pipeline.append(sort_pipeline)
+            if self.skip_number != 0:
+                aggregation_pipeline.append({"$skip": self.skip_number})
+            if self.limit_number != 0:
+                aggregation_pipeline.append({"$limit": self.limit_number})
+            aggregation_pipeline.append(
+                {"$project": get_projection(self.projection_model)}
+            )
+
+            return self.document_model.get_motor_collection().aggregate(
+                aggregation_pipeline, session=self.session
+            )
+
         return self.document_model.get_motor_collection().find(
             filter=self.get_filter_query(),
             sort=self.sort_expressions,
@@ -604,6 +642,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         projection_model: None = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> "FindOne[FindQueryResultType]":
         ...
 
@@ -614,6 +653,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         projection_model: Type[FindQueryProjectionType],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> "FindOne[FindQueryProjectionType]":
         ...
 
@@ -623,6 +663,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        fetch_links: bool = False,
     ) -> Union[
         "FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"
     ]:
@@ -639,6 +680,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self.project(projection_model)
         self.set_session(session=session)
         self.ignore_cache = ignore_cache
+        self.fetch_links = fetch_links
         return self
 
     def update_one(
@@ -695,7 +737,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 await self.document_model.get_motor_collection().replace_one(
                     self.get_filter_query(),
                     bson_encoder.encode(
-                        document, by_alias=True, exclude={"id"}
+                        document, by_alias=True, exclude={"_id"}
                     ),
                     session=self.session,
                 )
@@ -710,17 +752,32 @@ class FindOne(FindQuery[FindQueryResultType]):
                     operation=ReplaceOne,
                     first_query=self.get_filter_query(),
                     second_query=bson_encoder.encode(
-                        document, by_alias=True, exclude={"id"}
+                        document, by_alias=True, exclude={"_id"}
                     ),
                     object_class=self.document_model,
                 )
             )
             return None
 
-    async def _find_one(self, projection):
+    async def _find_one(self):
+        if self.fetch_links:
+            lookup_queries = construct_lookup_queries(self.document_model)
+            result = (
+                await self.document_model.find(*self.find_expressions)
+                .aggregate(
+                    aggregation_pipeline=lookup_queries,
+                    projection_model=self.projection_model,
+                    session=self.session,
+                )
+                .to_list(length=1)
+            )
+            if result:
+                return result[0]
+            else:
+                return None
         return await self.document_model.get_motor_collection().find_one(
             filter=self.get_filter_query(),
-            projection=projection,
+            projection=get_projection(self.projection_model),
             session=self.session,
         )
 
@@ -731,22 +788,28 @@ class FindOne(FindQuery[FindQueryResultType]):
         Run the query
         :return: BaseModel
         """
-        projection = get_projection(self.projection_model)
+        # projection = get_projection(self.projection_model)
         if (
             self.document_model.get_settings().model_settings.use_cache
             and self.ignore_cache is False
         ):
             cache_key = LRUCache.create_key(
-                "FindOne", self.get_filter_query(), projection, self.session
+                "FindOne",
+                self.get_filter_query(),
+                self.projection_model,
+                self.session,
+                self.fetch_links,
             )
             document: Dict[str, Any] = self.document_model._cache.get(  # type: ignore
                 cache_key
             )
             if document is None:
-                document = yield from self._find_one(projection).__await__()
-                self.document_model._cache.set(cache_key, document)  # type: ignore
+                document = yield from self._find_one().__await__()  # type: ignore
+                self.document_model._cache.set(  # type: ignore
+                    cache_key, document
+                )
         else:
-            document = yield from self._find_one(projection).__await__()
+            document = yield from self._find_one().__await__()  # type: ignore
         if document is None:
             return None
         return cast(

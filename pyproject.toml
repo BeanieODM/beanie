@@ -1,19 +1,19 @@
 [tool.poetry]
 name = "beanie"
-version = "1.7.2"
+version = "1.8.0"
 description = "Asynchronous Python ODM for MongoDB"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
 homepage = "https://roman-right.github.io/beanie/"
 repository = "https://github.com/roman-right/beanie"
-keywords = ["mongodb", "odm", "pydantic", ]
+keywords = ["mongodb", "odm", "pydantic", "mongo", "async", "python"]
 include = [
     "LICENSE",
 ]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.6.1,<4.0"
+python = ">=3.7,<4.0"
 pydantic = "^1.7"
 motor = "^2.5"
 click = "^7.1.2"
