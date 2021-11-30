@@ -5,7 +5,7 @@ Now that we know how to find documents, how do we change them or delete them?
 
 ## Saving changes to existing documents
 
-The easiest way to change a document in the database is using either the `replace` or `save` methods on a altered document. These methods both write the document to the database, but `replace` will raise an exception when the document does not exist yet, while `save` will insert the document. 
+The easiest way to change a document in the database is using either the `replace` or `save` methods on an altered document. These methods both write the document to the database, but `replace` will raise an exception when the document does not exist yet, while `save` will insert the document. 
 
 Using save:
 ```python
@@ -13,7 +13,7 @@ bar = await Product.find_one(Product.name == "Mars")
 bar.price = 10
 await bar.save()
 ```
-Or similairly using replace, which trows a `ValueError` if the document does not have an `id` yet, or a `beanie.exceptions.DocumentNotFound` if it does but the id is not present in the collection:
+Or similairly using replace, which throws a `ValueError` if the document does not have an `id` yet, or a `beanie.exceptions.DocumentNotFound` if it does but the id is not present in the collection:
 ```python
 bar.price = 10
 try:
@@ -33,7 +33,7 @@ await bar.set({Product.name:"Gold bar"})
 bar = await Product.find_all(Product.price > .5).inc({Product.price: 1})
 ```
 
-More complex update operations can be performed by calling `update()` with a update operator, similair to find queries:
+More complex update operations can be performed by calling `update()` with an update operator, similair to find queries:
 ```python
 await Product.find_one(Product.name == "Tony's").update(Set({Product.price: 3.33}))
 ```
@@ -46,7 +46,7 @@ await Product.find_one(Product.name == "Tony's").update({"$set": {Product.price:
 
 ## Upsert
 
-To insert a document if no one document was matched the search criteria during the update query, the `upsert` method can be used:
+To insert a document, where no documents were matched to the search criteria, the `upsert` method can be used:
 ```python
 await Product.find_one(Product.name == "Tony's").upsert(
     Set({Product.price: 3.33}), 
