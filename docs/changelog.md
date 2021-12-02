@@ -2,6 +2,12 @@
 
 Beanie project changes
 
+## [1.8.1] - 2021-11-30
+
+### Added
+
+- Key-based call of subfields in the query builders
+
 ## [1.8.0] - 2021-11-30
 
 ### Added
@@ -555,3 +561,5 @@ how specific type should be presented in the database
 [1.7.2]: https://pypi.org/project/beanie/1.7.2
 
 [1.8.0]: https://pypi.org/project/beanie/1.8.0
+
+[1.8.0]: https://pypi.org/project/beanie/1.8.1

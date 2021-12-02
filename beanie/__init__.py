@@ -19,7 +19,7 @@ from beanie.odm.fields import (
 from beanie.odm.utils.general import init_beanie
 from beanie.odm.documents import Document
 
-__version__ = "1.8.0"
+__version__ = "1.8.1"
 __all__ = [
     # ODM
     "Document",

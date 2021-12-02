@@ -7,6 +7,7 @@ from beanie.odm.utils.encoder import bson_encoder
 from tests.odm.models import (
     DocumentWithCustomFiledsTypes,
     DocumentWithBsonEncodersFiledsTypes,
+    Sample,
 )
 
 
@@ -87,3 +88,8 @@ async def test_custom_filed_types():
 def test_hidden(document):
     assert document.revision_id is None
     assert "revision_id" not in document.dict()
+
+
+def test_expression_fields():
+    assert Sample.nested.integer == "nested.integer"
+    assert Sample.nested["integer"] == "nested.integer"

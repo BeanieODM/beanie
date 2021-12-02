@@ -34,7 +34,7 @@ class Exists(BaseFindElementOperator):
     def __init__(
         self,
         field,
-        value: bool,
+        value: bool = True,
     ):
         self.field = field
         self.value = value
