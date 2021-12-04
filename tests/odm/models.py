@@ -172,9 +172,13 @@ class DocumentWithCustomFiledsTypes(Document):
 
 class DocumentWithBsonEncodersFiledsTypes(Document):
     color: Color
+    timestamp: datetime.datetime
 
     class Collection:
-        bson_encoders = {Color: lambda c: c.as_rgb()}
+        bson_encoders = {
+            Color: lambda c: c.as_rgb(),
+            datetime.datetime: lambda o: o.isoformat(timespec="microseconds"),
+        }
 
 
 class DocumentWithActions(Document):

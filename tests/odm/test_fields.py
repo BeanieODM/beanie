@@ -1,8 +1,10 @@
+import datetime
 from pathlib import Path
 import pytest
 from pydantic import BaseModel, ValidationError
 
 from beanie.odm.fields import PydanticObjectId
+from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import bson_encoder
 from tests.odm.models import (
     DocumentWithCustomFiledsTypes,
@@ -30,11 +32,15 @@ def test_pydantic_object_id_bytes_input():
 
 async def test_bson_encoders_filed_types():
     custom = DocumentWithBsonEncodersFiledsTypes(
-        color="7fffd4",
+        color="7fffd4", timestamp=datetime.datetime.utcnow()
     )
+    encoded = get_dict(custom)
+    assert isinstance(encoded["timestamp"], str)
     c = await custom.insert()
     c_fromdb = await DocumentWithBsonEncodersFiledsTypes.get(c.id)
     assert c_fromdb.color.as_hex() == c.color.as_hex()
+    assert isinstance(c_fromdb.timestamp, datetime.datetime)
+    assert c_fromdb.timestamp, custom.timestamp
 
 
 async def test_custom_filed_types():

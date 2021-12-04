@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 from pydantic import BaseModel
 from pydantic.color import Color
@@ -291,7 +293,7 @@ async def test_find_many_with_session(preset_documents, session):
 
 async def test_bson_encoders_filed_types():
     custom = DocumentWithBsonEncodersFiledsTypes(
-        color="7fffd4",
+        color="7fffd4", timestamp=datetime.datetime.utcnow()
     )
     c = await custom.insert()
     c_fromdb = await DocumentWithBsonEncodersFiledsTypes.find_one(
