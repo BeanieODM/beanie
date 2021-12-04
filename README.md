@@ -1,5 +1,6 @@
 [![Beanie](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/white_bg.svg)](https://github.com/roman-right/beanie)
 
+[![shields badge](https://shields.io/badge/-docs-blue)](https://roman-right.github.io/beanie/)
 [![pypi](https://img.shields.io/pypi/v/beanie.svg)](https://pypi.python.org/pypi/beanie)
 
 ## Overview
