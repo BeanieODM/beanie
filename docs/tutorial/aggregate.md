@@ -9,7 +9,6 @@ avg_price = await Product.find(
 ).avg(Product.price)
 
 # Over the whole collection:
-```python
 avg_price = await Product.avg(Product.price)
 ```
 
