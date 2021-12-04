@@ -73,10 +73,6 @@ class Encoder:
                     obj_dict[k] = o
 
             return self.encode(obj_dict, custom_encoder=encoders, to_db=to_db)
-        if isinstance(
-            obj, (str, int, float, ObjectId, UUID, datetime, type(None), DBRef)
-        ):
-            return obj
         if isinstance(obj, dict):
             encoded_dict = {}
             for key, value in obj.items():
@@ -110,6 +106,10 @@ class Encoder:
         for encoder, classes_tuple in self.encoders_by_class_tuples.items():
             if isinstance(obj, classes_tuple):
                 return encoder(obj)
+        if isinstance(
+            obj, (str, int, float, ObjectId, UUID, datetime, type(None), DBRef)
+        ):
+            return obj
 
         errors: List[Exception] = []
         try:
