@@ -2,12 +2,13 @@ import asyncio
 import inspect
 from enum import Enum
 from functools import wraps
-from typing import Callable, List, Union, Dict, TYPE_CHECKING, Any
+from typing import Callable, List, Union, Dict, TYPE_CHECKING, Any, Type
 
 from beanie.odm.utils.class_path import (
-    get_class_path_for_method,
-    get_class_path_for_object,
+    get_class_for_method,
+    get_class_for_object,
 )
+from beanie.odm.utils.general import get_model
 
 if TYPE_CHECKING:
     from beanie.odm.documents import Document
@@ -33,6 +34,7 @@ class ActionDirections(str, Enum):  # TODO think about this name
 
 class ActionRegistry:
     _actions: Dict[str, Any] = {}
+    _classes: Dict[str, Type] = {}
 
     # TODO the real type is
     #  Dict[str, Dict[EventTypes,Dict[ActionDirections: List[Callable]]]]
@@ -51,9 +53,9 @@ class ActionRegistry:
         :param action_direction: ActionDirections - before or after
         :param funct: Callable - function
         """
-        class_path = get_class_path_for_method(funct)
-        if cls._actions.get(class_path) is None:
-            cls._actions[class_path] = {
+        class_instance = get_class_for_method(funct)
+        if cls._actions.get(class_instance) is None:
+            cls._actions[class_instance] = {
                 action_type: {
                     action_direction: []
                     for action_direction in ActionDirections
@@ -61,14 +63,14 @@ class ActionRegistry:
                 for action_type in EventTypes
             }
         for event_type in event_types:
-            cls._actions[class_path][event_type][action_direction].append(
+            cls._actions[class_instance][event_type][action_direction].append(
                 funct
             )
 
     @classmethod
     def get_action_list(
         cls,
-        class_path: str,
+        class_path: Type,
         event_types: EventTypes,
         action_direction: ActionDirections,
     ) -> List[Callable]:
@@ -79,9 +81,17 @@ class ActionRegistry:
         :param action_direction: ActionDirections - before or after
         :return: List[Callable] - list of stored methods
         """
-        if class_path not in cls._actions:
-            return []
-        return cls._actions[class_path][event_types][action_direction]
+        for registered_class_path in cls._actions:
+            if registered_class_path not in cls._classes:
+                cls._classes[registered_class_path] = get_model(
+                    registered_class_path
+                )
+            registered_class = cls._classes[registered_class_path]
+            if issubclass(class_path, registered_class):
+                return cls._actions[registered_class_path][event_types][
+                    action_direction
+                ]
+        return []
 
     @classmethod
     async def run_actions(
@@ -96,7 +106,7 @@ class ActionRegistry:
         :param event_type: EventTypes - event types
         :param action_direction: ActionDirections - before or after
         """
-        class_path = get_class_path_for_object(instance)
+        class_path = get_class_for_object(instance)
         actions_list = cls.get_action_list(
             class_path, event_type, action_direction
         )

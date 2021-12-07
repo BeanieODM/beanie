@@ -204,6 +204,10 @@ class DocumentWithActions(Document):
         self.num_3 -= 1
 
 
+class InheritedDocumentWithActions(DocumentWithActions):
+    ...
+
+
 class DocumentWithTurnedOnStateManagement(Document):
     num_1: int
     num_2: int

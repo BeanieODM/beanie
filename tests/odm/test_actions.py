@@ -1,9 +1,14 @@
-from tests.odm.models import DocumentWithActions
+import pytest
+
+from tests.odm.models import DocumentWithActions, InheritedDocumentWithActions
 
 
-async def test_actions_insert_replace():
+@pytest.mark.parametrize(
+    "doc_class", [DocumentWithActions, InheritedDocumentWithActions]
+)
+async def test_actions_insert_replace(doc_class):
     test_name = "test_name"
-    sample = DocumentWithActions(name=test_name)
+    sample = doc_class(name=test_name)
 
     # TEST INSERT
     await sample.insert()
