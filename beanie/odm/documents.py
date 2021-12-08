@@ -1012,8 +1012,8 @@ class Document(BaseModel, UpdateMethods):
                 if hasattr(f, "has_action"):
                     ActionRegistry.add_action(
                         document_class=cls,
-                        event_types=f.event_types,
-                        action_direction=f.action_direction,
+                        event_types=f.event_types,  # type: ignore
+                        action_direction=f.action_direction,  # type: ignore
                         funct=f,
                     )
 
