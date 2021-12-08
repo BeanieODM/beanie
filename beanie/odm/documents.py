@@ -42,7 +42,7 @@ from beanie.exceptions import (
     DocumentWasNotSaved,
     NotSupported,
 )
-from beanie.odm.actions import EventTypes, wrap_with_actions
+from beanie.odm.actions import EventTypes, wrap_with_actions, ActionRegistry
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
@@ -1001,6 +1001,23 @@ class Document(BaseModel, UpdateMethods):
         )
 
     @classmethod
+    def init_actions(cls):
+        """
+        Init event-based actions
+        """
+        ActionRegistry.clean_actions(cls)
+        for attr in dir(cls):
+            f = getattr(cls, attr)
+            if inspect.isfunction(f):
+                if hasattr(f, "has_action"):
+                    ActionRegistry.add_action(
+                        document_class=cls,
+                        event_types=f.event_types,  # type: ignore
+                        action_direction=f.action_direction,  # type: ignore
+                        funct=f,
+                    )
+
+    @classmethod
     async def init_model(
         cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
     ) -> None:
@@ -1015,6 +1032,7 @@ class Document(BaseModel, UpdateMethods):
         )
         cls.init_fields()
         cls.init_cache()
+        cls.init_actions()
 
     # Other
 

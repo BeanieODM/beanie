@@ -2,6 +2,12 @@
 
 Beanie project changes
 
+## [1.8.3] - 2021-12-07
+
+### Added
+
+- Subclasses inherit event-based actions
+
 ## [1.8.2] - 2021-12-04
 
 ### Fixed
@@ -571,3 +577,5 @@ how specific type should be presented in the database
 [1.8.1]: https://pypi.org/project/beanie/1.8.1
 
 [1.8.2]: https://pypi.org/project/beanie/1.8.2
+
+[1.8.3]: https://pypi.org/project/beanie/1.8.3
