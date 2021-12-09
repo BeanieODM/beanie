@@ -31,13 +31,15 @@ async def house(house_not_inserted):
 async def houses():
     for i in range(10):
         roof = Roof() if i % 2 == 0 else None
-        await House(
+        house = await House(
             door=Door(),
             windows=[Window(x=10, y=10), Window(x=11, y=11)],
             roof=roof,
             name="test",
             height=i,
         ).insert(link_rule=WriteRules.WRITE)
+        if i == 9:
+            await house.windows[0].delete()
 
 
 class TestInsert:
@@ -76,6 +78,11 @@ class TestFind:
         assert isinstance(items[0].door, Door)
         assert items[0].roof is None
         assert isinstance(items[1].roof, Roof)
+
+        houses = await House.find_many(
+            House.height == 9, fetch_links=True
+        ).to_list()
+        assert houses[0].windows == 1
 
     async def test_prefetch_find_one(self, house):
         house = await House.find_one(House.name == "test")
