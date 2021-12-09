@@ -300,3 +300,13 @@ async def test_bson_encoders_filed_types():
         DocumentWithBsonEncodersFiledsTypes.color == Color("7fffd4")
     )
     assert c_fromdb.color.as_hex() == c.color.as_hex()
+
+
+async def test_find_by_datetime(preset_documents):
+    datetime_1 = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+    datetime_2 = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+    docs = await Sample.find(
+        Sample.timestamp >= datetime_1,
+        Sample.timestamp <= datetime_2,
+    ).to_list()
+    assert len(docs) == 5
