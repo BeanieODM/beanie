@@ -20,6 +20,16 @@ def construct_lookup_queries(cls: Type["Document"]) -> List[Dict[str, Any]]:
                     }
                 }
             )
-            if link_info.link_type == LinkTypes.DIRECT:
-                queries.append({"$unwind": f"${link_info.field}"})  # type: ignore
+            if link_info.link_type in [
+                LinkTypes.DIRECT,
+                LinkTypes.OPTIONAL_DIRECT,
+            ]:
+                queries.append(
+                    {
+                        "$unwind": {
+                            "path": f"${link_info.field}",
+                            "preserveNullAndEmptyArrays": True,
+                        }
+                    }
+                )  # type: ignore
     return queries

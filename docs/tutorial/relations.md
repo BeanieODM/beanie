@@ -4,6 +4,12 @@ The document can contain links to other documents in their fields.
 
 *Only top-level fields are fully supported for now.*
 
+The next field types are supported:
+
+- `Link[...]`
+- `Optional[Link[...]]`
+- `List[Link[...]]`
+
 Direct link to the document:
 
 ```python
@@ -17,6 +23,23 @@ class Door(Document):
 class House(Document):
     name: str
     door: Link[Door]
+```
+
+Optional direct link to the document:
+
+```python
+from typing import Optional
+
+from beanie import Document, Link
+
+class Door(Document):
+    height: int = 2
+    width: int = 1
+
+
+class House(Document):
+    name: str
+    door: Optional[Link[Door]]
 ```
 
 List of the links:

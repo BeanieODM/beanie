@@ -129,6 +129,7 @@ class WriteRules(str, Enum):
 
 class LinkTypes(str, Enum):
     DIRECT = "DIRECT"
+    OPTIONAL_DIRECT = "OPTIONAL_DIRECT"
     LIST = "LIST"
 
 
