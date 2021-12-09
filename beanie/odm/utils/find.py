@@ -17,8 +17,7 @@ def construct_lookup_queries(cls: Type["Document"]) -> List[Dict[str, Any]]:
                 queries += [
                     {
                         "$lookup": {
-                            "from": link_info.model_class.get_motor_collection().name,
-                            # type: ignore
+                            "from": link_info.model_class.get_motor_collection().name,  # type: ignore
                             "localField": f"{link_info.field}.$id",
                             "foreignField": "_id",
                             "as": f"_link_{link_info.field}",
@@ -51,8 +50,7 @@ def construct_lookup_queries(cls: Type["Document"]) -> List[Dict[str, Any]]:
                 queries.append(
                     {
                         "$lookup": {
-                            "from": link_info.model_class.get_motor_collection().name,
-                            # type: ignore
+                            "from": link_info.model_class.get_motor_collection().name,  # type: ignore
                             "localField": f"{link_info.field}.$id",
                             "foreignField": "_id",
                             "as": link_info.field,
