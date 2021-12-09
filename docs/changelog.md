@@ -2,6 +2,12 @@
 
 Beanie project changes
 
+## [1.8.4] - 2021-12-12
+
+### Fixed
+
+- DateTime bson type
+
 ## [1.8.3] - 2021-12-07
 
 ### Added
@@ -579,3 +585,5 @@ how specific type should be presented in the database
 [1.8.2]: https://pypi.org/project/beanie/1.8.2
 
 [1.8.3]: https://pypi.org/project/beanie/1.8.3
+
+[1.8.4]: https://pypi.org/project/beanie/1.8.4

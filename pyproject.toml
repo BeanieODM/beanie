@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "beanie"
-version = "1.8.3"
+version = "1.8.4"
 description = "Asynchronous Python ODM for MongoDB"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
 homepage = "https://roman-right.github.io/beanie/"
 repository = "https://github.com/roman-right/beanie"
-keywords = ["mongodb", "odm", "pydantic", "mongo", "async", "python"]
+keywords = ["mongodb", "odm", "orm", "pydantic", "mongo", "async", "python"]
 include = [
     "LICENSE",
 ]
