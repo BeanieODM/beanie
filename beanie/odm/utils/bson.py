@@ -15,14 +15,11 @@ from typing import Any, Callable, Dict, Type
 
 from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
-from pydantic.json import isoformat
 
 from beanie.odm.fields import Link
 
 ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     Color: str,
-    datetime.date: isoformat,
-    datetime.time: isoformat,
     datetime.timedelta: lambda td: td.total_seconds(),
     Decimal: float,
     deque: list,
