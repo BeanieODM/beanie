@@ -162,8 +162,6 @@ class DocumentWithCustomFiledsTypes(Document):
     ipv6address: IPv6Address
     ipv6interface: IPv6Interface
     ipv6network: IPv6Network
-    date: datetime.date
-    time: datetime.time
     timedelta: datetime.timedelta
     set_type: Set[str]
     tuple_type: Tuple[int, str]

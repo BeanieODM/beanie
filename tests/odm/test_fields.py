@@ -35,7 +35,7 @@ async def test_bson_encoders_filed_types():
         color="7fffd4", timestamp=datetime.datetime.utcnow()
     )
     encoded = get_dict(custom)
-    assert isinstance(encoded["timestamp"], str)
+    assert isinstance(encoded["timestamp"], datetime.datetime)
     c = await custom.insert()
     c_fromdb = await DocumentWithBsonEncodersFiledsTypes.get(c.id)
     assert c_fromdb.color.as_hex() == c.color.as_hex()
@@ -55,8 +55,6 @@ async def test_custom_filed_types():
         ipv6address="::abc:7:def",
         ipv6interface="2001:db00::2/24",
         ipv6network="2001:db00::0/24",
-        date="2000-12-24",
-        time="12:24:12.000333",
         timedelta=4782453,
         set_type={"one", "two", "three"},
         tuple_type=tuple([3, "string"]),
@@ -73,8 +71,6 @@ async def test_custom_filed_types():
         ipv6address="::abc:7:def",
         ipv6interface="2001:db00::2/24",
         ipv6network="2001:db00::0/24",
-        date=1627498153,
-        time="12:35",
         timedelta=4782453,
         set_type=["one", "two", "three"],
         tuple_type=[3, "three"],
