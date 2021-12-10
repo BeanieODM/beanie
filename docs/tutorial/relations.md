@@ -114,6 +114,8 @@ All the find methods supported:
 
 Beanie uses a single aggregation query under the hood to fetch all the linked documents. This operation is very effective.
 
+If a direct link is referred to a non-existent document, after the fetching it will stay the object of the `Link` class.
+
 ### On-demand fetch
 
 If you don't use prefetching, linked documents will be presented as objects of the `Link` class. You can fetch them manually then.
