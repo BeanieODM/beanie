@@ -40,6 +40,7 @@ async def houses():
         ).insert(link_rule=WriteRules.WRITE)
         if i == 9:
             await house.windows[0].delete()
+            await house.door.delete()
 
 
 class TestInsert:
@@ -82,7 +83,10 @@ class TestFind:
         houses = await House.find_many(
             House.height == 9, fetch_links=True
         ).to_list()
-        assert houses[0].windows == 1
+        assert len(houses[0].windows) == 1
+        assert isinstance(houses[0].door, Link)
+        await houses[0].fetch_link(House.door)
+        assert isinstance(houses[0].door, Link)
 
     async def test_prefetch_find_one(self, house):
         house = await House.find_one(House.name == "test")
