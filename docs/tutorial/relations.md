@@ -116,6 +116,8 @@ Beanie uses a single aggregation query under the hood to fetch all the linked do
 
 If a direct link is referred to a non-existent document, after the fetching it will stay the object of the `Link` class.
 
+Fetching will ignore non-existent documents for the list of links fields.
+
 ### On-demand fetch
 
 If you don't use prefetching, linked documents will be presented as objects of the `Link` class. You can fetch them manually then.
