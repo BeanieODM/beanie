@@ -257,7 +257,13 @@ class Door(Document):
     t: int = 10
 
 
+class Roof(Document):
+    r: int = 100
+
+
 class House(Document):
     windows: List[Link[Window]]
     door: Link[Door]
+    roof: Optional[Link[Roof]]
     name: str = Field(hidden=True)
+    height: int = 2

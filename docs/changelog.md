@@ -2,6 +2,13 @@
 
 Beanie project changes
 
+## [1.8.5] - 2021-12-09
+
+### Added
+
+- `Optional[Link[Sample]]` is allowed field type syntax now
+
+
 ## [1.8.4] - 2021-12-12
 
 ### Fixed
@@ -587,3 +594,5 @@ how specific type should be presented in the database
 [1.8.3]: https://pypi.org/project/beanie/1.8.3
 
 [1.8.4]: https://pypi.org/project/beanie/1.8.4
+
+[1.8.5]: https://pypi.org/project/beanie/1.8.5

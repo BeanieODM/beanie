@@ -69,10 +69,9 @@ from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.queries.update import UpdateMany
 from beanie.odm.settings.general import DocumentSettings
 from beanie.odm.utils.dump import get_dict
+from beanie.odm.utils.relations import detect_link
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import saved_state_needed, save_state_after
-
-from pydantic.typing import get_origin
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
@@ -165,7 +164,10 @@ class Document(BaseModel, UpdateMethods):
             if link_fields is not None:
                 for field_info in link_fields.values():
                     value = getattr(self, field_info.field)
-                    if field_info.link_type == LinkTypes.DIRECT:
+                    if field_info.link_type in [
+                        LinkTypes.DIRECT,
+                        LinkTypes.OPTIONAL_DIRECT,
+                    ]:
                         if isinstance(value, Document):
                             await value.insert(link_rule=WriteRules.WRITE)
                     if field_info.link_type == LinkTypes.LIST:
@@ -589,7 +591,10 @@ class Document(BaseModel, UpdateMethods):
             if link_fields is not None:
                 for field_info in link_fields.values():
                     value = getattr(self, field_info.field)
-                    if field_info.link_type == LinkTypes.DIRECT:
+                    if field_info.link_type in [
+                        LinkTypes.DIRECT,
+                        LinkTypes.OPTIONAL_DIRECT,
+                    ]:
                         if isinstance(value, Document):
                             await value.replace(
                                 link_rule=link_rule,
@@ -641,7 +646,10 @@ class Document(BaseModel, UpdateMethods):
             if link_fields is not None:
                 for field_info in link_fields.values():
                     value = getattr(self, field_info.field)
-                    if field_info.link_type == LinkTypes.DIRECT:
+                    if field_info.link_type in [
+                        LinkTypes.DIRECT,
+                        LinkTypes.OPTIONAL_DIRECT,
+                    ]:
                         if isinstance(value, Document):
                             await value.save(
                                 link_rule=link_rule, session=session
@@ -781,7 +789,10 @@ class Document(BaseModel, UpdateMethods):
             if link_fields is not None:
                 for field_info in link_fields.values():
                     value = getattr(self, field_info.field)
-                    if field_info.link_type == LinkTypes.DIRECT:
+                    if field_info.link_type in [
+                        LinkTypes.DIRECT,
+                        LinkTypes.OPTIONAL_DIRECT,
+                    ]:
                         if isinstance(value, Document):
                             await value.delete(
                                 link_rule=DeleteRules.DELETE_LINKS
@@ -905,6 +916,9 @@ class Document(BaseModel, UpdateMethods):
         :param obj: Any
         :return: DocType
         """
+        # if isinstance(obj, dict):
+        #     for k in cls.get_link_fields().keys():
+        #         obj[k] = obj.get(f"_link_{k}", None) or obj[k]
         result: DocType = cls.parse_obj(obj)
         result._save_state()
         return result
@@ -962,23 +976,9 @@ class Document(BaseModel, UpdateMethods):
             path = v.alias or v.name
             setattr(cls, k, ExpressionField(path))
 
-            if inspect.isclass(v.type_) and issubclass(v.type_, Link):
-                cls._link_fields[v.name] = LinkInfo(
-                    field=v.name,
-                    model_class=v.sub_fields[0].type_,  # type: ignore
-                    link_type=LinkTypes.DIRECT,
-                )
-            if (
-                inspect.isclass(get_origin(v.type_))
-                and inspect.isclass(get_origin(v.outer_type_))
-                and issubclass(get_origin(v.type_), Link)
-                and issubclass(get_origin(v.outer_type_), list)
-            ):
-                cls._link_fields[v.name] = LinkInfo(
-                    field=v.name,
-                    model_class=v.sub_fields[0].sub_fields[0].type_,  # type: ignore
-                    link_type=LinkTypes.LIST,
-                )
+            link_info = detect_link(v)
+            if link_info is not None:
+                cls._link_fields[v.name] = link_info
 
         cls._hidden_fields = cls.get_hidden_fields()
 

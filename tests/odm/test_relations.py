@@ -2,7 +2,7 @@ import pytest
 
 from beanie.exceptions import DocumentWasNotSaved
 from beanie.odm.fields import WriteRules, Link, DeleteRules
-from tests.odm.models import Window, Door, House
+from tests.odm.models import Window, Door, House, Roof
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def windows_not_inserted():
 
 @pytest.fixture
 def door_not_inserted():
-    return Door()
+    return Door(t=10)
 
 
 @pytest.fixture
@@ -25,6 +25,22 @@ def house_not_inserted(windows_not_inserted, door_not_inserted):
 @pytest.fixture
 async def house(house_not_inserted):
     return await house_not_inserted.insert(link_rule=WriteRules.WRITE)
+
+
+@pytest.fixture
+async def houses():
+    for i in range(10):
+        roof = Roof() if i % 2 == 0 else None
+        house = await House(
+            door=Door(),
+            windows=[Window(x=10, y=10), Window(x=11, y=11)],
+            roof=roof,
+            name="test",
+            height=i,
+        ).insert(link_rule=WriteRules.WRITE)
+        if i == 9:
+            await house.windows[0].delete()
+            await house.door.delete()
 
 
 class TestInsert:
@@ -43,18 +59,34 @@ class TestInsert:
 
 
 class TestFind:
-    async def test_prefetch_find_many(self, house):
-        houses = await House.find(House.name == "test").to_list()
-        for window in houses[0].windows:
+    async def test_prefetch_find_many(self, houses):
+        items = await House.find(House.height > 2).sort(House.height).to_list()
+        assert len(items) == 7
+        for window in items[0].windows:
             assert isinstance(window, Link)
-        assert isinstance(houses[0].door, Link)
+        assert isinstance(items[0].door, Link)
+        assert items[0].roof is None
+        assert isinstance(items[1].roof, Link)
 
-        houses = await House.find(
-            House.name == "test", fetch_links=True
-        ).to_list()
-        for window in houses[0].windows:
+        items = (
+            await House.find(House.height > 2, fetch_links=True)
+            .sort(House.height)
+            .to_list()
+        )
+        assert len(items) == 7
+        for window in items[0].windows:
             assert isinstance(window, Window)
-        assert isinstance(houses[0].door, Door)
+        assert isinstance(items[0].door, Door)
+        assert items[0].roof is None
+        assert isinstance(items[1].roof, Roof)
+
+        houses = await House.find_many(
+            House.height == 9, fetch_links=True
+        ).to_list()
+        assert len(houses[0].windows) == 1
+        assert isinstance(houses[0].door, Link)
+        await houses[0].fetch_link(House.door)
+        assert isinstance(houses[0].door, Link)
 
     async def test_prefetch_find_one(self, house):
         house = await House.find_one(House.name == "test")

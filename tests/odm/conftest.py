@@ -27,6 +27,7 @@ from tests.odm.models import (
     House,
     Window,
     Door,
+    Roof,
     InheritedDocumentWithActions,
 )
 from tests.odm.models import (
@@ -145,6 +146,7 @@ async def init(loop, db):
         House,
         Window,
         Door,
+        Roof,
         InheritedDocumentWithActions,
     ]
     await init_beanie(

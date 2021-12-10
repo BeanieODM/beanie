@@ -4,6 +4,12 @@ The document can contain links to other documents in their fields.
 
 *Only top-level fields are fully supported for now.*
 
+The next field types are supported:
+
+- `Link[...]`
+- `Optional[Link[...]]`
+- `List[Link[...]]`
+
 Direct link to the document:
 
 ```python
@@ -17,6 +23,23 @@ class Door(Document):
 class House(Document):
     name: str
     door: Link[Door]
+```
+
+Optional direct link to the document:
+
+```python
+from typing import Optional
+
+from beanie import Document, Link
+
+class Door(Document):
+    height: int = 2
+    width: int = 1
+
+
+class House(Document):
+    name: str
+    door: Optional[Link[Door]]
 ```
 
 List of the links:
@@ -90,6 +113,10 @@ All the find methods supported:
 - get
 
 Beanie uses a single aggregation query under the hood to fetch all the linked documents. This operation is very effective.
+
+If a direct link is referred to a non-existent document, after the fetching it will stay the object of the `Link` class.
+
+Fetching will ignore non-existent documents for the list of links fields.
 
 ### On-demand fetch
 

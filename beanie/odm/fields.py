@@ -129,6 +129,7 @@ class WriteRules(str, Enum):
 
 class LinkTypes(str, Enum):
     DIRECT = "DIRECT"
+    OPTIONAL_DIRECT = "OPTIONAL_DIRECT"
     LIST = "LIST"
 
 
@@ -146,8 +147,9 @@ class Link(Generic[T]):
         self.ref = ref
         self.model_class = model_class
 
-    async def fetch(self):
-        return await self.model_class.get(self.ref.id)  # type: ignore
+    async def fetch(self) -> Union[T, "Link"]:
+        result = await self.model_class.get(self.ref.id)  # type: ignore
+        return result or self
 
     @classmethod
     async def fetch_one(cls, link: "Link"):
