@@ -5,7 +5,7 @@ from pydantic import BaseModel, ValidationError
 
 from beanie.odm.fields import PydanticObjectId
 from beanie.odm.utils.dump import get_dict
-from beanie.odm.utils.encoder import bson_encoder
+from beanie.odm.utils.encoder import Encoder
 from tests.odm.models import (
     DocumentWithCustomFiledsTypes,
     DocumentWithBsonEncodersFiledsTypes,
@@ -35,7 +35,7 @@ async def test_bson_encoders_filed_types():
         color="7fffd4", timestamp=datetime.datetime.utcnow()
     )
     encoded = get_dict(custom)
-    assert isinstance(encoded["timestamp"], datetime.datetime)
+    assert isinstance(encoded["timestamp"], str)
     c = await custom.insert()
     c_fromdb = await DocumentWithBsonEncodersFiledsTypes.get(c.id)
     assert c_fromdb.color.as_hex() == c.color.as_hex()
@@ -83,8 +83,8 @@ async def test_custom_filed_types():
     assert set(c1_fromdb.set_type) == set(c1.set_type)
     assert set(c2_fromdb.set_type) == set(c2.set_type)
     c1_fromdb.set_type = c2_fromdb.set_type = c1.set_type = c2.set_type = None
-    assert bson_encoder.encode(c1_fromdb) == bson_encoder.encode(c1)
-    assert bson_encoder.encode(c2_fromdb) == bson_encoder.encode(c2)
+    assert Encoder().encode(c1_fromdb) == Encoder().encode(c1)
+    assert Encoder().encode(c2_fromdb) == Encoder().encode(c2)
 
 
 def test_hidden(document):

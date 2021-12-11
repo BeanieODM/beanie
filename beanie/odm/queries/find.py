@@ -43,7 +43,7 @@ from beanie.odm.queries.update import (
     UpdateMany,
     UpdateOne,
 )
-from beanie.odm.utils.encoder import bson_encoder
+from beanie.odm.utils.encoder import Encoder
 from beanie.odm.utils.find import construct_lookup_queries
 from beanie.odm.utils.parsing import parse_obj
 from beanie.odm.utils.projection import get_projection
@@ -89,8 +89,8 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
 
     def get_filter_query(self) -> Mapping[str, Any]:
         if self.find_expressions:
-            return bson_encoder.encode(
-                And(*self.find_expressions).query, custom_encoder=self.encoders
+            return Encoder(custom_encoders=self.encoders).encode(
+                And(*self.find_expressions).query
             )
         else:
             return {}
@@ -108,6 +108,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
 
         :param args: *Mapping[str,Any] - the modifications to apply.
         :param session: Optional[ClientSession]
+        :param bulk_writer: Optional[BulkWriter]
         :return: UpdateMany query
         """
         self.set_session(session)
@@ -736,9 +737,7 @@ class FindOne(FindQuery[FindQueryResultType]):
             result: UpdateResult = (
                 await self.document_model.get_motor_collection().replace_one(
                     self.get_filter_query(),
-                    bson_encoder.encode(
-                        document, by_alias=True, exclude={"_id"}
-                    ),
+                    Encoder(by_alias=True, exclude={"_id"}).encode(document),
                     session=self.session,
                 )
             )
@@ -751,9 +750,9 @@ class FindOne(FindQuery[FindQueryResultType]):
                 Operation(
                     operation=ReplaceOne,
                     first_query=self.get_filter_query(),
-                    second_query=bson_encoder.encode(
-                        document, by_alias=True, exclude={"_id"}
-                    ),
+                    second_query=Encoder(
+                        by_alias=True, exclude={"_id"}
+                    ).encode(document),
                     object_class=self.document_model,
                 )
             )
