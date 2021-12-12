@@ -2,6 +2,12 @@
 
 Beanie project changes
 
+## [1.8.6] - 2021-12-12
+
+### Improved
+
+- Encoder
+
 ## [1.8.5] - 2021-12-09
 
 ### Added
@@ -596,3 +602,5 @@ how specific type should be presented in the database
 [1.8.4]: https://pypi.org/project/beanie/1.8.4
 
 [1.8.5]: https://pypi.org/project/beanie/1.8.5
+
+[1.8.6]: https://pypi.org/project/beanie/1.8.6
