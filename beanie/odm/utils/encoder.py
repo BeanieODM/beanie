@@ -21,7 +21,7 @@ from typing import (
 from typing import Any, Callable, Dict, Type
 from uuid import UUID
 
-from bson import ObjectId, DBRef
+from bson import ObjectId, DBRef, Binary
 from pydantic import BaseModel
 from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
@@ -45,6 +45,7 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     Enum: lambda o: o.value,
     PurePath: str,
     Link: lambda l: l.ref,
+    bytes: Binary,
 }
 
 
