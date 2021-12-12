@@ -27,6 +27,7 @@ from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
 
 from beanie.odm.fields import Link, LinkTypes
+from beanie.odm import documents
 
 ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     Color: str,
@@ -112,7 +113,6 @@ class Encoder:
         self,
         obj,
     ) -> Any:
-        from beanie.odm.documents import Document
 
         if self.custom_encoders:
             if type(obj) in self.custom_encoders:
@@ -126,7 +126,7 @@ class Encoder:
             if isinstance(obj, cls):
                 return encoder(obj)
 
-        if isinstance(obj, Document):
+        if isinstance(obj, documents.Document):
             return self.encode_document(obj)
         if isinstance(obj, BaseModel):
             return self.encode_base_model(obj)
