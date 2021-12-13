@@ -172,7 +172,7 @@ class DocumentWithBsonEncodersFiledsTypes(Document):
     color: Color
     timestamp: datetime.datetime
 
-    class Collection:
+    class Settings:
         bson_encoders = {
             Color: lambda c: c.as_rgb(),
             datetime.datetime: lambda o: o.isoformat(timespec="microseconds"),
@@ -267,3 +267,8 @@ class House(Document):
     roof: Optional[Link[Roof]]
     name: str = Field(hidden=True)
     height: int = 2
+
+
+class DocumentForEncodingTest(Document):
+    bytes_field: Optional[bytes]
+    datetime_field: Optional[datetime.datetime]

@@ -1,119 +1,141 @@
-from collections import defaultdict
-from datetime import datetime
+from collections import deque
+from datetime import datetime, timedelta
+from decimal import Decimal
+from enum import Enum
+from ipaddress import (
+    IPv4Address,
+    IPv4Interface,
+    IPv4Network,
+    IPv6Address,
+    IPv6Interface,
+    IPv6Network,
+)
+from pathlib import PurePath
 from types import GeneratorType
 from typing import (
     AbstractSet,
-    Any,
-    Callable,
-    Dict,
     List,
     Mapping,
-    Tuple,
     Union,
 )
+from typing import Any, Callable, Dict, Type
 from uuid import UUID
 
-from bson import ObjectId, DBRef
+from bson import ObjectId, DBRef, Binary
 from pydantic import BaseModel
+from pydantic import SecretBytes, SecretStr
+from pydantic.color import Color
 
-from .bson import ENCODERS_BY_TYPE
-from ..fields import LinkTypes
+from beanie.odm.fields import Link, LinkTypes
+from beanie.odm import documents
+
+ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
+    Color: str,
+    timedelta: lambda td: td.total_seconds(),
+    Decimal: float,
+    deque: list,
+    IPv4Address: str,
+    IPv4Interface: str,
+    IPv4Network: str,
+    IPv6Address: str,
+    IPv6Interface: str,
+    IPv6Network: str,
+    SecretBytes: SecretBytes.get_secret_value,
+    SecretStr: SecretStr.get_secret_value,
+    Enum: lambda o: o.value,
+    PurePath: str,
+    Link: lambda l: l.ref,
+    bytes: Binary,
+}
 
 
 class Encoder:
-    def __init__(self):
-        self.encoders_by_class_tuples: Dict[
-            Callable[[Any], Any], Tuple[Any, ...]
-        ] = defaultdict(tuple)
-        for type_, encoder in ENCODERS_BY_TYPE.items():
-            self.encoders_by_class_tuples[encoder] += (type_,)
-
-    def encode(
+    def __init__(
         self,
-        obj: Any,
         exclude: Union[
             AbstractSet[Union[str, int]], Mapping[Union[str, int], Any], None
         ] = None,
+        custom_encoders: Dict[Type, Callable] = None,
         by_alias: bool = True,
-        custom_encoder: Dict[Any, Callable[[Any], Any]] = None,
         to_db: bool = False,
-    ) -> Any:
-        from beanie.odm.documents import Document
+    ):
+        self.exclude = exclude or {}
+        self.by_alias = by_alias
+        self.custom_encoders = custom_encoders or {}
+        self.to_db = to_db
 
-        if custom_encoder is None:
-            custom_encoder = {}
-        if exclude is None:
-            exclude = {}
-        if not isinstance(exclude, (set, dict)):
-            exclude = set(exclude)
-        if isinstance(obj, Document):
-            encoders = obj.get_settings().model_settings.bson_encoders
-            if custom_encoder:
-                encoders.update(custom_encoder)
+    def encode(self, obj: Any):
+        return self._encode(obj=obj)
 
-            link_fields = obj.get_link_fields()
-            obj_dict: Dict[str, Any] = {}
-            for k, o in obj._iter(to_dict=False, by_alias=by_alias):
-                if k not in exclude:  # TODO get exclude from the class
-                    if link_fields and k in link_fields:
-                        if link_fields[k].link_type == LinkTypes.LIST:
-                            obj_dict[k] = [link.to_ref() for link in o]
-                        if link_fields[k].link_type == LinkTypes.DIRECT:
+    def encode_document(self, obj):
+        encoder = Encoder(
+            exclude=self.exclude,
+            custom_encoders=obj.get_settings().model_settings.bson_encoders,
+            by_alias=self.by_alias,
+            to_db=self.to_db,
+        )
+
+        link_fields = obj.get_link_fields()
+        obj_dict: Dict[str, Any] = {}
+        for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
+            if k not in self.exclude:
+                if link_fields and k in link_fields:
+                    if link_fields[k].link_type == LinkTypes.LIST:
+                        obj_dict[k] = [link.to_ref() for link in o]
+                    if link_fields[k].link_type == LinkTypes.DIRECT:
+                        obj_dict[k] = o.to_ref()
+                    if link_fields[k].link_type == LinkTypes.OPTIONAL_DIRECT:
+                        if o is not None:
                             obj_dict[k] = o.to_ref()
-                        if (
-                            link_fields[k].link_type
-                            == LinkTypes.OPTIONAL_DIRECT
-                        ):
-                            if o is not None:
-                                obj_dict[k] = o.to_ref()
-                            else:
-                                obj_dict[k] = o
-                    else:
-                        obj_dict[k] = o
-            return self.encode(obj_dict, custom_encoder=encoders, to_db=to_db)
-        if isinstance(obj, BaseModel):
-            encoders = {}
-            if custom_encoder:
-                encoders.update(custom_encoder)
-            obj_dict = {}
-            for k, o in obj._iter(to_dict=False, by_alias=by_alias):
-                if k not in exclude:  # TODO get exclude from the class
+                        else:
+                            obj_dict[k] = o
+                else:
                     obj_dict[k] = o
+                obj_dict[k] = encoder.encode(obj_dict[k])
+        return obj_dict
 
-            return self.encode(obj_dict, custom_encoder=encoders, to_db=to_db)
-        if isinstance(obj, dict):
-            encoded_dict = {}
-            for key, value in obj.items():
-                encoded_value = self.encode(
-                    value,
-                    by_alias=by_alias,
-                    custom_encoder=custom_encoder,
-                    to_db=to_db,
-                )
-                encoded_dict[key] = encoded_value
-            return encoded_dict
-        if isinstance(obj, (list, set, frozenset, GeneratorType, tuple)):
-            return [
-                self.encode(
-                    item,
-                    exclude=exclude,
-                    by_alias=by_alias,
-                    custom_encoder=custom_encoder,
-                    to_db=to_db,
-                )
-                for item in obj
-            ]
-        if custom_encoder:
-            if type(obj) in custom_encoder:
-                return custom_encoder[type(obj)](obj)
-            for encoder_type, encoder in custom_encoder.items():
+    def encode_base_model(self, obj):
+        obj_dict = {}
+        for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
+            if k not in self.exclude:
+                obj_dict[k] = self._encode(o)
+
+        return obj_dict
+
+    def encode_dict(self, obj):
+        for key, value in obj.items():
+            obj[key] = self._encode(value)
+        return obj
+
+    def encode_iterable(self, obj):
+        return [self._encode(item) for item in obj]
+
+    def _encode(
+        self,
+        obj,
+    ) -> Any:
+
+        if self.custom_encoders:
+            if type(obj) in self.custom_encoders:
+                return self.custom_encoders[type(obj)](obj)
+            for encoder_type, encoder in self.custom_encoders.items():
                 if isinstance(obj, encoder_type):
                     return encoder(obj)
         if type(obj) in ENCODERS_BY_TYPE:
             return ENCODERS_BY_TYPE[type(obj)](obj)
-        for encoder, classes_tuple in self.encoders_by_class_tuples.items():
-            if isinstance(obj, classes_tuple):
+        for cls, encoder in ENCODERS_BY_TYPE.items():
+            if isinstance(obj, cls):
                 return encoder(obj)
+
+        if isinstance(obj, documents.Document):
+            return self.encode_document(obj)
+        if isinstance(obj, BaseModel):
+            return self.encode_base_model(obj)
+        if isinstance(obj, dict):
+            return self.encode_dict(obj)
+        if isinstance(obj, (list, set, frozenset, GeneratorType, tuple)):
+            return self.encode_iterable(obj)
+
         if isinstance(
             obj, (str, int, float, ObjectId, UUID, datetime, type(None), DBRef)
         ):
@@ -129,9 +151,4 @@ class Encoder:
             except Exception as e:
                 errors.append(e)
                 raise ValueError(errors)
-        return self.encode(
-            data, by_alias=by_alias, custom_encoder=custom_encoder, to_db=to_db
-        )
-
-
-bson_encoder = Encoder()
+        return self._encode(data)

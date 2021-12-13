@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 
 from beanie.odm.bulk import BulkWriter, Operation
-from beanie.odm.utils.encoder import bson_encoder
+from beanie.odm.utils.encoder import Encoder
 from typing import (
     Callable,
     List,
@@ -68,7 +68,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
                 query.update(expression)
             else:
                 raise TypeError("Wrong expression type")
-        return bson_encoder.encode(query, custom_encoder=self.encoders)
+        return Encoder(custom_encoders=self.encoders).encode(query)
 
     def update(
         self,
