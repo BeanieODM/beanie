@@ -267,3 +267,8 @@ class House(Document):
     roof: Optional[Link[Roof]]
     name: str = Field(hidden=True)
     height: int = 2
+
+
+class DocumentForEncodingTest(Document):
+    bytes_field: Optional[bytes]
+    datetime_field: Optional[datetime.datetime]
