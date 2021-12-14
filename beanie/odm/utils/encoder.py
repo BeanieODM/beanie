@@ -121,6 +121,8 @@ class Encoder:
             for encoder_type, encoder in self.custom_encoders.items():
                 if isinstance(obj, encoder_type):
                     return encoder(obj)
+        if isinstance(obj,Binary):
+            return obj
         if type(obj) in ENCODERS_BY_TYPE:
             return ENCODERS_BY_TYPE[type(obj)](obj)
         for cls, encoder in ENCODERS_BY_TYPE.items():
