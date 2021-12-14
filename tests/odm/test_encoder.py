@@ -22,9 +22,18 @@ def test_encode_with_custom_encoder():
 
 
 async def test_bytes():
-    assert isinstance(Encoder().encode(b"test"), Binary)
+    encoded_b = Encoder().encode(b"test")
+    assert isinstance(encoded_b, Binary)
+    assert encoded_b.subtype == 0
 
     doc = DocumentForEncodingTest(bytes_field=b"test")
     await doc.insert()
     new_doc = await DocumentForEncodingTest.get(doc.id)
     assert isinstance(new_doc.bytes_field, bytes)
+
+
+async def test_bytes_already_binary():
+    b = Binary(b"123", 3)
+    encoded_b = Encoder().encode(b)
+    assert isinstance(encoded_b, Binary)
+    assert encoded_b.subtype == 3

@@ -45,11 +45,15 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     Enum: lambda o: o.value,
     PurePath: str,
     Link: lambda l: l.ref,
-    bytes: Binary,
+    bytes: lambda b: b if isinstance(b, Binary) else Binary(b),
 }
 
 
 class Encoder:
+    """
+    BSON encoding class
+    """
+
     def __init__(
         self,
         exclude: Union[
@@ -65,9 +69,15 @@ class Encoder:
         self.to_db = to_db
 
     def encode(self, obj: Any):
+        """
+        Run the encoder
+        """
         return self._encode(obj=obj)
 
     def encode_document(self, obj):
+        """
+        Beanie Document class case
+        """
         encoder = Encoder(
             exclude=self.exclude,
             custom_encoders=obj.get_settings().model_settings.bson_encoders,
@@ -95,6 +105,9 @@ class Encoder:
         return obj_dict
 
     def encode_base_model(self, obj):
+        """
+        BaseModel case
+        """
         obj_dict = {}
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
             if k not in self.exclude:
@@ -103,17 +116,24 @@ class Encoder:
         return obj_dict
 
     def encode_dict(self, obj):
+        """
+        Dictionary case
+        """
         for key, value in obj.items():
             obj[key] = self._encode(value)
         return obj
 
     def encode_iterable(self, obj):
+        """
+        Iterable case
+        """
         return [self._encode(item) for item in obj]
 
     def _encode(
         self,
         obj,
     ) -> Any:
+        """"""
 
         if self.custom_encoders:
             if type(obj) in self.custom_encoders:
