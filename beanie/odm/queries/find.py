@@ -798,8 +798,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 self.session,
                 self.fetch_links,
             )
-            document: Dict[str, Any] = self.document_model._cache.get(
-                # type: ignore
+            document: Dict[str, Any] = self.document_model._cache.get(  # type: ignore
                 cache_key
             )
             if document is None:
