@@ -118,6 +118,26 @@ If a direct link is referred to a non-existent document, after the fetching it w
 
 Fetching will ignore non-existent documents for the list of links fields.
 
+####Search by linked documents fields:
+
+If the `fetch_links` parameter is set to `True` searching by linked documents fields is available.
+
+By field of the direct link:
+```python
+houses = await House.find(
+    House.door.height == 2,
+    fetch_links=True
+).to_list()
+```
+
+List of links:
+```python
+houses = await House.find(
+    House.windows.x > 10,
+    fetch_links=True
+).to_list()
+```
+
 ### On-demand fetch
 
 If you don't use prefetching, linked documents will be presented as objects of the `Link` class. You can fetch them manually then.

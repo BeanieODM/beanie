@@ -560,12 +560,9 @@ class FindMany(
     @property
     def motor_cursor(self):
         if self.fetch_links:
-            aggregation_pipeline: List[Dict[str, Any]] = [
-                {"$match": self.get_filter_query()}
-            ]
-            aggregation_pipeline += construct_lookup_queries(
-                self.document_model
-            )
+            aggregation_pipeline: List[
+                Dict[str, Any]
+            ] = construct_lookup_queries(self.document_model)
             sort_pipeline = {
                 "$sort": {i[0]: i[1] for i in self.sort_expressions}
             }
@@ -575,10 +572,12 @@ class FindMany(
                 aggregation_pipeline.append({"$skip": self.skip_number})
             if self.limit_number != 0:
                 aggregation_pipeline.append({"$limit": self.limit_number})
+
+            aggregation_pipeline.append({"$match": self.get_filter_query()})
+
             aggregation_pipeline.append(
                 {"$project": get_projection(self.projection_model)}
             )
-
             return self.document_model.get_motor_collection().aggregate(
                 aggregation_pipeline, session=self.session
             )
@@ -799,7 +798,8 @@ class FindOne(FindQuery[FindQueryResultType]):
                 self.session,
                 self.fetch_links,
             )
-            document: Dict[str, Any] = self.document_model._cache.get(  # type: ignore
+            document: Dict[str, Any] = self.document_model._cache.get(
+                # type: ignore
                 cache_key
             )
             if document is None:

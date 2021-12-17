@@ -32,8 +32,8 @@ async def houses():
     for i in range(10):
         roof = Roof() if i % 2 == 0 else None
         house = await House(
-            door=Door(),
-            windows=[Window(x=10, y=10), Window(x=11, y=11)],
+            door=Door(t=i),
+            windows=[Window(x=10, y=10 + i), Window(x=11, y=11 + i)],
             roof=roof,
             name="test",
             height=i,
@@ -87,6 +87,18 @@ class TestFind:
         assert isinstance(houses[0].door, Link)
         await houses[0].fetch_link(House.door)
         assert isinstance(houses[0].door, Link)
+
+        houses = await House.find_many(
+            House.door.t > 5, fetch_links=True
+        ).to_list()
+
+        assert len(houses) == 3
+
+        houses = await House.find_many(
+            House.windows.y == 15, fetch_links=True
+        ).to_list()
+
+        assert len(houses) == 2
 
     async def test_prefetch_find_one(self, house):
         house = await House.find_one(House.name == "test")

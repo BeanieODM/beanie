@@ -2,6 +2,12 @@
 
 Beanie project changes
 
+## [1.8.8] - 2021-12-17
+
+### Added
+
+- Search by linked documents fields (for pre-fetching search only)
+
 ## [1.8.7] - 2021-12-12
 
 ### Fixed
@@ -612,3 +618,5 @@ how specific type should be presented in the database
 [1.8.6]: https://pypi.org/project/beanie/1.8.6
 
 [1.8.7]: https://pypi.org/project/beanie/1.8.7
+
+[1.8.8]: https://pypi.org/project/beanie/1.8.8
