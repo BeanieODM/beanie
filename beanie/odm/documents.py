@@ -916,9 +916,6 @@ class Document(BaseModel, UpdateMethods):
         :param obj: Any
         :return: DocType
         """
-        # if isinstance(obj, dict):
-        #     for k in cls.get_link_fields().keys():
-        #         obj[k] = obj.get(f"_link_{k}", None) or obj[k]
         result: DocType = cls.parse_obj(obj)
         result._save_state()
         return result
