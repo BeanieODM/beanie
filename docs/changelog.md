@@ -630,3 +630,5 @@ how specific type should be presented in the database
 [1.8.7]: https://pypi.org/project/beanie/1.8.7
 
 [1.8.8]: https://pypi.org/project/beanie/1.8.8
+
+[1.8.9]: https://pypi.org/project/beanie/1.8.9
