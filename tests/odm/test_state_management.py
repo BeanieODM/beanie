@@ -5,12 +5,18 @@ from beanie.exceptions import StateManagementIsTurnedOff, StateNotSaved
 from tests.odm.models import (
     DocumentWithTurnedOnStateManagement,
     DocumentWithTurnedOffStateManagement,
+    InternalDoc,
 )
 
 
 @pytest.fixture
 def state():
-    return {"num_1": 1, "num_2": 2, "_id": ObjectId()}
+    return {
+        "num_1": 1,
+        "num_2": 2,
+        "_id": ObjectId(),
+        "internal": InternalDoc(),
+    }
 
 
 @pytest.fixture
@@ -30,14 +36,25 @@ def test_use_state_management_property():
 
 
 def test_save_state():
-    doc = DocumentWithTurnedOnStateManagement(num_1=1, num_2=2)
+    doc = DocumentWithTurnedOnStateManagement(
+        num_1=1, num_2=2, internal=InternalDoc(num=1, string="s")
+    )
     assert doc.get_saved_state() is None
     doc._save_state()
-    assert doc.get_saved_state() == {"num_1": 1, "num_2": 2}
+    assert doc.get_saved_state() == {
+        "num_1": 1,
+        "num_2": 2,
+        "internal": {"num": 1, "string": "s"},
+    }
 
 
 def test_parse_object_with_saving_state():
-    obj = {"num_1": 1, "num_2": 2, "_id": ObjectId()}
+    obj = {
+        "num_1": 1,
+        "num_2": 2,
+        "_id": ObjectId(),
+        "internal": InternalDoc(),
+    }
     doc = DocumentWithTurnedOnStateManagement._parse_obj_saving_state(obj)
     assert doc.get_saved_state() == obj
 
@@ -47,7 +64,9 @@ def test_saved_state_needed():
     with pytest.raises(StateManagementIsTurnedOff):
         doc_1.is_changed
 
-    doc_2 = DocumentWithTurnedOnStateManagement(num_1=1, num_2=2)
+    doc_2 = DocumentWithTurnedOnStateManagement(
+        num_1=1, num_2=2, internal=InternalDoc()
+    )
     with pytest.raises(StateNotSaved):
         doc_2.is_changed
 
@@ -59,18 +78,21 @@ def test_if_changed(doc):
 
 
 def test_get_changes(doc):
-    doc.num_1 = 100
-    assert doc.get_changes() == {"num_1": 100}
+    doc.internal.num = 1000
+    doc.internal.string = "new_value"
+    assert doc.get_changes() == {
+        "internal.num": 1000,
+        "internal.string": "new_value",
+    }
 
 
 async def test_save_changes(saved_doc):
-    saved_doc.num_1 = 100
+    saved_doc.internal.num = 10000
     await saved_doc.save_changes()
-
-    assert saved_doc.get_saved_state()["num_1"] == 100
+    assert saved_doc.get_saved_state()["internal"]["num"] == 10000
 
     new_doc = await DocumentWithTurnedOnStateManagement.get(saved_doc.id)
-    assert new_doc.num_1 == 100
+    assert new_doc.internal.num == 10000
 
 
 async def test_find_one(saved_doc, state):
@@ -86,7 +108,11 @@ async def test_find_one(saved_doc, state):
 async def test_find_many():
     docs = []
     for i in range(10):
-        docs.append(DocumentWithTurnedOnStateManagement(num_1=i, num_2=i + 1))
+        docs.append(
+            DocumentWithTurnedOnStateManagement(
+                num_1=i, num_2=i + 1, internal=InternalDoc()
+            )
+        )
     await DocumentWithTurnedOnStateManagement.insert_many(docs)
 
     found_docs = await DocumentWithTurnedOnStateManagement.find(

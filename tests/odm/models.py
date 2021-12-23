@@ -206,9 +206,15 @@ class InheritedDocumentWithActions(DocumentWithActions):
     ...
 
 
+class InternalDoc(BaseModel):
+    num: int = 100
+    string: str = "test"
+
+
 class DocumentWithTurnedOnStateManagement(Document):
     num_1: int
     num_2: int
+    internal: InternalDoc
 
     class Settings:
         use_state_management = True

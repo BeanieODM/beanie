@@ -2,6 +2,16 @@
 
 Beanie project changes
 
+## [1.8.9] - 2021-12-23
+
+### Improvement
+
+- Deep search of updates for the `save_changes()` method
+
+### Kudos
+
+- Thanks, [Tigran Khazhakyan](https://github.com/tigrankh) for the deep search algo here
+
 ## [1.8.8] - 2021-12-17
 
 ### Added
