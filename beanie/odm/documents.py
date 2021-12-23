@@ -927,16 +927,49 @@ class Document(BaseModel, UpdateMethods):
             return False
         return True
 
+    def _collect_updates(
+        self, old_dict: Dict[str, Any], new_dict: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Compares old_dict with new_dict and returns field paths that have been updated
+        Args:
+            old_dict: dict1
+            new_dict: dict2
+
+        Returns: dictionary with updates
+
+        """
+        updates = {}
+
+        for field_name, field_value in new_dict.items():
+            if field_value != old_dict.get(field_name):
+                if not (
+                    isinstance(field_value, dict)
+                    and isinstance(old_dict.get(field_name), dict)
+                ):
+                    updates[field_name] = field_value
+                else:
+                    if old_dict.get(field_name) is None:
+                        updates[field_name] = field_value
+                    elif isinstance(field_value, dict) and isinstance(
+                        old_dict.get(field_name), dict
+                    ):
+
+                        field_data = self._collect_updates(
+                            old_dict.get(field_name),  # type: ignore
+                            field_value,
+                        )
+
+                        for k, v in field_data.items():
+                            updates[f"{field_name}.{k}"] = v
+
+        return updates
+
     @saved_state_needed
     def get_changes(self) -> Dict[str, Any]:
-        #  TODO search deeply
-        changes = {}
-        if self.is_changed:
-            current_state = get_dict(self, to_db=True)
-            for k, v in self._saved_state.items():  # type: ignore
-                if v != current_state[k]:
-                    changes[k] = current_state[k]
-        return changes
+        return self._collect_updates(
+            self._saved_state, get_dict(self, to_db=True)  # type: ignore
+        )
 
     @saved_state_needed
     def rollback(self) -> None:
