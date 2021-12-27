@@ -1139,7 +1139,7 @@ class Document(BaseModel, UpdateMethods):
         Hides fields, marked as "hidden
         """
         if exclude_hidden:
-            exclude = self._hidden_fields if exclude is None else {*self._hidden_fields, *exclude}
+            exclude = self._hidden_fields if not exclude else {*self._hidden_fields, *exclude}
         return super().dict(
             include=include,
             exclude=exclude,
