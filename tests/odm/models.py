@@ -209,6 +209,7 @@ class InheritedDocumentWithActions(DocumentWithActions):
 class InternalDoc(BaseModel):
     num: int = 100
     string: str = "test"
+    lst: List[int] = [1, 2, 3, 4, 5]
 
 
 class DocumentWithTurnedOnStateManagement(Document):
