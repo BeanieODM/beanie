@@ -22,7 +22,6 @@ from pydantic import (
     ValidationError,
     parse_obj_as,
     PrivateAttr,
-    validator,
     Field,
 )
 from pydantic.main import BaseModel
@@ -71,7 +70,11 @@ from beanie.odm.settings.general import DocumentSettings
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.relations import detect_link
 from beanie.odm.utils.self_validation import validate_self_before
-from beanie.odm.utils.state import saved_state_needed, save_state_after
+from beanie.odm.utils.state import (
+    saved_state_needed,
+    save_state_after,
+    swap_revision_after,
+)
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
@@ -119,11 +122,9 @@ class Document(BaseModel, UpdateMethods):
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
 
-    @validator("revision_id")
-    def set_revision_id(cls, revision_id):
-        if not cls.get_settings().model_settings.use_revision:
-            return None
-        return revision_id or uuid4()
+    def swap_revision(self):
+        self._previous_revision_id = self.revision_id
+        self.revision_id = uuid4()
 
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
@@ -148,6 +149,7 @@ class Document(BaseModel, UpdateMethods):
 
     @wrap_with_actions(EventTypes.INSERT)
     @save_state_after
+    @swap_revision_after
     @validate_self_before
     async def insert(
         self: DocType,
@@ -563,6 +565,7 @@ class Document(BaseModel, UpdateMethods):
 
     @wrap_with_actions(EventTypes.REPLACE)
     @save_state_after
+    @swap_revision_after
     @validate_self_before
     async def replace(
         self: DocType,
@@ -918,6 +921,7 @@ class Document(BaseModel, UpdateMethods):
         """
         result: DocType = cls.parse_obj(obj)
         result._save_state()
+        result.swap_revision()
         return result
 
     @property  # type: ignore

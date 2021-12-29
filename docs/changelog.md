@@ -2,6 +2,12 @@
 
 Beanie project changes
 
+## [1.8.10] - 2021-12-29
+
+### Fix
+
+- Revision didn't swap previous revision id and the current one on getting objects from db
+
 ## [1.8.9] - 2021-12-23
 
 ### Improvement
