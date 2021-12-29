@@ -47,8 +47,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
         projection = self.get_projection_model()
         if projection is None:
             return next_item
-        result = parse_obj(projection, next_item)  # type: ignore
-        return result
+        return parse_obj(projection, next_item)  # type: ignore
 
     def _get_cache(self) -> List[Dict[str, Any]]:
         ...
