@@ -2,6 +2,12 @@
 
 Beanie project changes
 
+## [1.8.11] - 2021-12-30
+
+### Improvement
+
+- Only safe pydantic version are allowed. https://github.com/samuelcolvin/pydantic/security/advisories/GHSA-5jqp-qgf6-3pvh
+
 ## [1.8.10] - 2021-12-29
 
 ### Fix
@@ -638,3 +644,7 @@ how specific type should be presented in the database
 [1.8.8]: https://pypi.org/project/beanie/1.8.8
 
 [1.8.9]: https://pypi.org/project/beanie/1.8.9
+
+[1.8.9]: https://pypi.org/project/beanie/1.8.10
+
+[1.8.9]: https://pypi.org/project/beanie/1.8.11
