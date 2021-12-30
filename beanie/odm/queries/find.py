@@ -34,7 +34,6 @@ from beanie.odm.operators.find.logical import And
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.cursor import BaseCursorQuery
 from beanie.odm.queries.delete import (
-    DeleteQuery,
     DeleteMany,
     DeleteOne,
 )
@@ -68,9 +67,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
     UpdateQueryType: Union[
         Type[UpdateQuery], Type[UpdateMany], Type[UpdateOne]
     ] = UpdateQuery
-    DeleteQueryType: Union[
-        Type[DeleteOne], Type[DeleteMany], Type[DeleteQuery]
-    ] = DeleteQuery
+    DeleteQueryType: Union[Type[DeleteOne], Type[DeleteMany]] = DeleteMany
     AggregationQueryType = AggregationQuery
 
     def __init__(self, document_model: Type["DocType"]):
