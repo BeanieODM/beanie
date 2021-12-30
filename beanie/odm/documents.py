@@ -1,5 +1,6 @@
 import asyncio
 import inspect
+from typing import ClassVar
 from typing import (
     Dict,
     Optional,
@@ -25,7 +26,6 @@ from pydantic import (
     Field,
 )
 from pydantic.main import BaseModel
-from pydantic.types import ClassVar
 from pymongo import InsertOne
 from pymongo.client_session import ClientSession
 from pymongo.results import (
