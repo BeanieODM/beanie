@@ -1,10 +1,9 @@
 import datetime
 from pathlib import Path
-from typing import Union, Mapping, AbstractSet
+from typing import Mapping, AbstractSet
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from beanie import Document
 from beanie.odm.fields import PydanticObjectId
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
