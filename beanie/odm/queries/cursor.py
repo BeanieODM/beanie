@@ -11,6 +11,7 @@ from typing import (
 )
 
 from pydantic.main import BaseModel
+
 from beanie.odm.utils.parsing import parse_obj
 
 CursorResultType = TypeVar("CursorResultType")

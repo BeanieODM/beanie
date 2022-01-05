@@ -83,6 +83,8 @@ async def test_custom_filed_types():
     assert set(c1_fromdb.set_type) == set(c1.set_type)
     assert set(c2_fromdb.set_type) == set(c2.set_type)
     c1_fromdb.set_type = c2_fromdb.set_type = c1.set_type = c2.set_type = None
+    c1_fromdb.revision_id = None
+    c2_fromdb.revision_id = None
     assert Encoder().encode(c1_fromdb) == Encoder().encode(c1)
     assert Encoder().encode(c2_fromdb) == Encoder().encode(c2)
 

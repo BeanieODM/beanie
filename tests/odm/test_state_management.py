@@ -44,7 +44,7 @@ def test_save_state():
     assert doc.get_saved_state() == {
         "num_1": 1,
         "num_2": 2,
-        "internal": {"num": 1, "string": "s"},
+        "internal": {"num": 1, "string": "s", "lst": [1, 2, 3, 4, 5]},
     }
 
 
@@ -80,9 +80,11 @@ def test_if_changed(doc):
 def test_get_changes(doc):
     doc.internal.num = 1000
     doc.internal.string = "new_value"
+    doc.internal.lst.append(100)
     assert doc.get_changes() == {
         "internal.num": 1000,
         "internal.string": "new_value",
+        "internal.lst": [1, 2, 3, 4, 5, 100],
     }
 
 

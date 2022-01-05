@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beanie"
-version = "1.8.9"
+version = "1.8.11"
 description = "Asynchronous Python ODM for MongoDB"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
@@ -14,11 +14,11 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-pydantic = "^1.7"
+pydantic = ">=1.7.4,<1.8 || >=1.8.2"
 motor = "^2.5"
-click = "^7.1.2"
-toml = "^0.10.2"
-yarl = "^1.6.3"
+click = ">=7"
+toml = "*"
+yarl = ">=1.6"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.3.0"
@@ -28,9 +28,9 @@ pytest-cov = "^2.8.1"
 Pygments = "^2.8.0"
 dnspython = "^2.1.0"
 mkdocs-material = "^7.1.0"
-pydoc-markdown = "^3.13.0"
-flake8 = "^3.9.1"
-pyright = "^0.0.2"
+pydoc-markdown = ">=3"
+flake8 = ">=3"
+pyright = ">=0"
 mkdocs = "1.1"
 icecream = "^2.1.1"
 
