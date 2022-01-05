@@ -16,17 +16,6 @@ from tests.odm.models import (
 )
 
 
-class ExcludeTestCase:
-    def __init__(self, doc: Document, exclude: Union[Mapping, AbstractSet]):
-        self.doc = doc
-        self.exclude = exclude
-
-    def dict(self, *args, **kwargs):
-        x = self.doc.dict(exclude=self.exclude, *args, **kwargs)
-        print(x)
-        return x
-
-
 class M(BaseModel):
     p: PydanticObjectId
 
@@ -109,25 +98,21 @@ async def test_hidden(document):
     assert "test_list" not in document.dict()
 
 
-async def test_param_exclude(document):
+@pytest.mark.parametrize("exclude", [{"test_int"}, {"test_doc": {"test_int"}}])
+async def test_param_exclude(document, exclude):
     document = await DocumentTestModel.find_one()
-    cases = [
-        ExcludeTestCase(document, {"test_int"}),
-        ExcludeTestCase(document, {"test_doc": {"test_int"}})
-    ]
 
-    for case in cases:
-        result = case.dict()
-        if isinstance(case.exclude, AbstractSet):
-            for k in case.exclude:
-                assert k not in result
-        elif isinstance(case.exclude, Mapping):
-            for k, v in case.exclude.items():
-                if isinstance(v, bool) and v:
-                    assert k not in result
-                elif isinstance(v, AbstractSet):
-                    for another_k in v:
-                        assert another_k not in result[k]
+    doc_dict = document.dict(exclude=exclude)
+    if isinstance(exclude, AbstractSet):
+        for k in exclude:
+            assert k not in doc_dict
+    elif isinstance(exclude, Mapping):
+        for k, v in exclude.items():
+            if isinstance(v, bool) and v:
+                assert k not in doc_dict
+            elif isinstance(v, AbstractSet):
+                for another_k in v:
+                    assert another_k not in doc_dict[k]
 
 
 def test_expression_fields():
