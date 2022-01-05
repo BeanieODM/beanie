@@ -1,16 +1,30 @@
 import datetime
 from pathlib import Path
+from typing import Union, Mapping, AbstractSet
 import pytest
 from pydantic import BaseModel, ValidationError
 
+from beanie import Document
 from beanie.odm.fields import PydanticObjectId
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
 from tests.odm.models import (
     DocumentWithCustomFiledsTypes,
     DocumentWithBsonEncodersFiledsTypes,
-    Sample,
+    DocumentTestModel,
+    Sample
 )
+
+
+class ExcludeTestCase:
+    def __init__(self, doc: Document, exclude: Union[Mapping, AbstractSet]):
+        self.doc = doc
+        self.exclude = exclude
+
+    def dict(self, *args, **kwargs):
+        x = self.doc.dict(exclude=self.exclude, *args, **kwargs)
+        print(x)
+        return x
 
 
 class M(BaseModel):
@@ -89,9 +103,31 @@ async def test_custom_filed_types():
     assert Encoder().encode(c2_fromdb) == Encoder().encode(c2)
 
 
-def test_hidden(document):
-    assert document.revision_id is None
-    assert "revision_id" not in document.dict()
+async def test_hidden(document):
+    document = await DocumentTestModel.find_one()
+
+    assert "test_list" not in document.dict()
+
+
+async def test_param_exclude(document):
+    document = await DocumentTestModel.find_one()
+    cases = [
+        ExcludeTestCase(document, {"test_int"}),
+        ExcludeTestCase(document, {"test_doc": {"test_int"}})
+    ]
+
+    for case in cases:
+        result = case.dict()
+        if isinstance(case.exclude, AbstractSet):
+            for k in case.exclude:
+                assert k not in result
+        elif isinstance(case.exclude, Mapping):
+            for k, v in case.exclude.items():
+                if isinstance(v, bool) and v:
+                    assert k not in result
+                elif isinstance(v, AbstractSet):
+                    for another_k in v:
+                        assert another_k not in result[k]
 
 
 def test_expression_fields():

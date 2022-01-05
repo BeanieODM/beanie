@@ -182,3 +182,6 @@ tests/assets/tmp
 src/api_files/storage_dir
 docker-compose-aws.yml
 tilt_modules
+
+# Poetry stuff
+poetry.lock

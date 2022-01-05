@@ -1,6 +1,6 @@
 import asyncio
 import inspect
-from typing import ClassVar
+from typing import ClassVar, AbstractSet
 from typing import (
     Dict,
     Optional,
@@ -1143,7 +1143,12 @@ class Document(BaseModel, UpdateMethods):
         Hides fields, marked as "hidden
         """
         if exclude_hidden:
-            exclude = self._hidden_fields if not exclude else {*self._hidden_fields, *exclude}
+            if isinstance(exclude, AbstractSet):
+                exclude = {*self._hidden_fields, *exclude}
+            elif isinstance(exclude, Mapping):
+                exclude = dict({k: True for k in self._hidden_fields}, **exclude)
+            elif exclude is None:
+                exclude = self._hidden_fields
         return super().dict(
             include=include,
             exclude=exclude,
