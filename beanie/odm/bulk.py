@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional, Union, Type
+from typing import Dict, Any, List, Optional, Union, Type, Mapping
 
 from pydantic import BaseModel
 from pymongo import (
@@ -20,7 +20,7 @@ class Operation(BaseModel):
         Type[UpdateOne],
         Type[UpdateMany],
     ]
-    first_query: Dict[str, Any]
+    first_query: Mapping[str, Any]
     second_query: Optional[Dict[str, Any]] = None
     object_class: Type
 
