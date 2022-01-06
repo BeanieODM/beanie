@@ -1,5 +1,6 @@
 import datetime
 from pathlib import Path
+from typing import Mapping, AbstractSet
 import pytest
 from pydantic import BaseModel, ValidationError
 
@@ -9,7 +10,8 @@ from beanie.odm.utils.encoder import Encoder
 from tests.odm.models import (
     DocumentWithCustomFiledsTypes,
     DocumentWithBsonEncodersFiledsTypes,
-    Sample,
+    DocumentTestModel,
+    Sample
 )
 
 
@@ -89,9 +91,27 @@ async def test_custom_filed_types():
     assert Encoder().encode(c2_fromdb) == Encoder().encode(c2)
 
 
-def test_hidden(document):
-    assert document.revision_id is None
-    assert "revision_id" not in document.dict()
+async def test_hidden(document):
+    document = await DocumentTestModel.find_one()
+
+    assert "test_list" not in document.dict()
+
+
+@pytest.mark.parametrize("exclude", [{"test_int"}, {"test_doc": {"test_int"}}])
+async def test_param_exclude(document, exclude):
+    document = await DocumentTestModel.find_one()
+
+    doc_dict = document.dict(exclude=exclude)
+    if isinstance(exclude, AbstractSet):
+        for k in exclude:
+            assert k not in doc_dict
+    elif isinstance(exclude, Mapping):
+        for k, v in exclude.items():
+            if isinstance(v, bool) and v:
+                assert k not in doc_dict
+            elif isinstance(v, AbstractSet):
+                for another_k in v:
+                    assert another_k not in doc_dict[k]
 
 
 def test_expression_fields():

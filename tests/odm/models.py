@@ -57,11 +57,13 @@ class Sample(Document):
 
 class SubDocument(BaseModel):
     test_str: str
+    test_int: int = 42
 
 
 class DocumentTestModel(Document):
     test_int: int
-    test_list: List[SubDocument]
+    test_list: List[SubDocument] = Field(hidden=True)
+    test_doc: SubDocument
     test_str: str
 
     class Settings:

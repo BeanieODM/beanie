@@ -28,7 +28,7 @@ def detect_link(field: ModelField) -> Optional[LinkInfo]:
         )
     if (
         inspect.isclass(get_origin(field.outer_type_))
-        and issubclass(get_origin(field.outer_type_), list)
+        and issubclass(get_origin(field.outer_type_), list)  # type: ignore
         and len(field.sub_fields) == 1  # type: ignore
     ):
         internal_field = field.sub_fields[0]  # type: ignore

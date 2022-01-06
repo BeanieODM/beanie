@@ -167,6 +167,7 @@ def document_not_inserted():
     return DocumentTestModel(
         test_int=42,
         test_list=[SubDocument(test_str="foo"), SubDocument(test_str="bar")],
+        test_doc=SubDocument(test_str="foobar"),
         test_str="kipasa",
     )
 
@@ -183,6 +184,7 @@ def documents_not_inserted():
                     SubDocument(test_str="foo"),
                     SubDocument(test_str="bar"),
                 ],
+                test_doc=SubDocument(test_str="foobar"),
                 test_str="kipasa" if test_str is None else test_str,
             )
             for i in range(number)

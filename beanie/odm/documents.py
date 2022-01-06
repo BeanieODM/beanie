@@ -1,6 +1,6 @@
 import asyncio
 import inspect
-from typing import ClassVar
+from typing import ClassVar, AbstractSet
 from typing import (
     Dict,
     Optional,
@@ -1133,6 +1133,7 @@ class Document(BaseModel, UpdateMethods):
         exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
         by_alias: bool = False,
         skip_defaults: bool = None,
+        exclude_hidden: bool = True,
         exclude_unset: bool = False,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
@@ -1141,8 +1142,13 @@ class Document(BaseModel, UpdateMethods):
         Overriding of the respective method from Pydantic
         Hides fields, marked as "hidden
         """
-        if exclude is None:
-            exclude = self._hidden_fields
+        if exclude_hidden:
+            if isinstance(exclude, AbstractSet):
+                exclude = {*self._hidden_fields, *exclude}
+            elif isinstance(exclude, Mapping):
+                exclude = dict({k: True for k in self._hidden_fields}, **exclude)  # type: ignore
+            elif exclude is None:
+                exclude = self._hidden_fields
         return super().dict(
             include=include,
             exclude=exclude,

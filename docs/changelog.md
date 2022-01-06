@@ -2,6 +2,18 @@
 
 Beanie project changes
 
+## [1.8.12] - 2022-01-06
+
+### Improvement
+
+- Add exclude_hidden to dict() to be able to keep hidden fields hidden when the exclude parameter set
+
+### Implementation
+
+- Author - [Yallxe](https://github.com/yallxe)
+- PR - <https://github.com/roman-right/beanie/pull/178>
+
+
 ## [1.8.11] - 2021-12-30
 
 ### Improvement
@@ -645,6 +657,8 @@ how specific type should be presented in the database
 
 [1.8.9]: https://pypi.org/project/beanie/1.8.9
 
-[1.8.9]: https://pypi.org/project/beanie/1.8.10
+[1.8.10]: https://pypi.org/project/beanie/1.8.10
 
-[1.8.9]: https://pypi.org/project/beanie/1.8.11
+[1.8.11]: https://pypi.org/project/beanie/1.8.11
+
+[1.8.12]: https://pypi.org/project/beanie/1.8.12
