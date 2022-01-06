@@ -1146,7 +1146,7 @@ class Document(BaseModel, UpdateMethods):
             if isinstance(exclude, AbstractSet):
                 exclude = {*self._hidden_fields, *exclude}
             elif isinstance(exclude, Mapping):
-                exclude = dict({k: True for k in self._hidden_fields}, **exclude)
+                exclude = dict({k: True for k in self._hidden_fields}, **exclude)  # type: ignore
             elif exclude is None:
                 exclude = self._hidden_fields
         return super().dict(
