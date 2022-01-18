@@ -1,7 +1,7 @@
 Beanie uses Motor as an async database engine. To init previously created documents, you should provide a Motor database instance and list of your document models to the `init_beanie(...)` function, as it is shown in the example:
 ```python
 from beanie import init_beanie, Document
-import motor
+import motor.motor_asyncio
 
 class Sample(Document):
     name: str
