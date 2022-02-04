@@ -19,14 +19,7 @@ renderer:
     theme:
        name: material
        palette:
-           - scheme: default
-             toggle:
-             icon: material/brightness-4
-             name: Switch to dark mode
-           - scheme: slate 
-             toggle:
-             icon: material/brightness-7
-             name: Switch to light mode
+           primary: white
        logo: assets/logo.svg
        favicon: assets/favicon.png
     markdown_extensions:
