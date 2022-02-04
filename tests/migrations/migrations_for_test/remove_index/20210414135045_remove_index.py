@@ -23,6 +23,9 @@ class Note(Document):
 
     class Collection:
         name = "notes"
+        indexes = [
+            "_id",
+        ]
 
 
 class Forward:

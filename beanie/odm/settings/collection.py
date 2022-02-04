@@ -95,6 +95,7 @@ class CollectionSettings(BaseModel):
             new_indexes += await collection.create_indexes(found_indexes)
 
         # delete indexes
+        # Only drop indexes if the user specifically allows for it
         if allow_index_dropping:
             for index in set(old_indexes) - set(new_indexes):
                 await collection.drop_index(index)

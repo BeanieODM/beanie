@@ -59,7 +59,7 @@ async def test_remove_index_allowed(settings, notes, db):
     }
 
 
-async def test_remove_index(settings, notes, db):
+async def test_remove_index_default(settings, notes, db):
     migration_settings = MigrationSettings(
         connection_uri=settings.mongodb_dsn,
         database_name=settings.mongodb_db_name,
@@ -74,6 +74,7 @@ async def test_remove_index(settings, notes, db):
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
+        "title_1": {"key": [("title", 1)], "v": 2},
     }
 
 
