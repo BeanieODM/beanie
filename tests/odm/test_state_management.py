@@ -174,7 +174,7 @@ async def test_replace(saved_doc_default):
     assert saved_doc_default.get_saved_state()["num_1"] == 100
 
 
-async def test_save_changes(saved_doc_default):
+async def test_save_chages(saved_doc_default):
     saved_doc_default.num_1 = 100
     await saved_doc_default.save_changes()
     assert saved_doc_default.get_saved_state()["num_1"] == 100
