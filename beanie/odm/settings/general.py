@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from typing import Type
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from beanie.odm.settings.collection import CollectionSettings
 from beanie.odm.settings.model import ModelSettings
@@ -10,7 +12,7 @@ class DocumentSettings:
     collection_settings: CollectionSettings
 
     @classmethod
-    async def init(cls, database, document_model, allow_index_dropping):
+    async def init(cls, database: AsyncIOMotorDatabase, document_model: Type, allow_index_dropping: bool):
         # Init collection settings
         collection_settings = await CollectionSettings.init(
             database=database,

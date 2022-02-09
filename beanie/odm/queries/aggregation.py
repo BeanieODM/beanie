@@ -11,6 +11,8 @@ from typing import (
 
 from pydantic import BaseModel
 
+from motor.core import AgnosticCommandCursor
+
 from beanie.odm.cache import LRUCache
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.queries.cursor import BaseCursorQuery
@@ -96,7 +98,7 @@ class AggregationQuery(
         return match_pipeline + self.aggregation_pipeline + projection_pipeline
 
     @property
-    def motor_cursor(self):
+    def motor_cursor(self) -> AgnosticCommandCursor:
         aggregation_pipeline = self.get_aggregation_pipeline()
         return self.document_model.get_motor_collection().aggregate(
             aggregation_pipeline, session=self.session

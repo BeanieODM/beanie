@@ -9,6 +9,7 @@ repository = "https://github.com/roman-right/beanie"
 keywords = ["mongodb", "odm", "orm", "pydantic", "mongo", "async", "python"]
 include = [
     "LICENSE",
+    "beanie/py.typed"
 ]
 readme = "README.md"
 

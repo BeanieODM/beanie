@@ -162,10 +162,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
             bulk_writer=bulk_writer,
         ).set_session(session=session)
 
-    def project(
-        self,
-        projection_model,
-    ):
+    def project(self, projection_model):
         """
         Apply projection parameter
         :param projection_model: Optional[Type[BaseModel]] - projection model
