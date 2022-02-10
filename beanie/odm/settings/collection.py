@@ -20,8 +20,6 @@ class IndexModelField(IndexModel):
 
 class CollectionInputParameters(BaseModel):
     name: str = ""
-    use_state_management: bool = False
-    state_management_replace_objects: bool = False
     indexes: List[IndexModelField] = []
 
     class Config:
