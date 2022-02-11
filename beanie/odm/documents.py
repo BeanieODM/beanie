@@ -897,6 +897,14 @@ class Document(BaseModel, UpdateMethods):
         """
         return cls.get_settings().model_settings.use_state_management
 
+    @classmethod
+    def state_management_replace_objects(cls) -> bool:
+        """
+        Should objects be replaced when using state management
+        :return: bool
+        """
+        return cls.get_settings().model_settings.state_management_replace_objects
+
     def _save_state(self) -> None:
         """
         Save current document state. Internal method
@@ -947,12 +955,10 @@ class Document(BaseModel, UpdateMethods):
 
         for field_name, field_value in new_dict.items():
             if field_value != old_dict.get(field_name):
-                if not (
+                if not self.state_management_replace_objects() and (
                     isinstance(field_value, dict)
                     and isinstance(old_dict.get(field_name), dict)
                 ):
-                    updates[field_name] = field_value
-                else:
                     if old_dict.get(field_name) is None:
                         updates[field_name] = field_value
                     elif isinstance(field_value, dict) and isinstance(
@@ -966,6 +972,8 @@ class Document(BaseModel, UpdateMethods):
 
                         for k, v in field_data.items():
                             updates[f"{field_name}.{k}"] = v
+                else:
+                    updates[field_name] = field_value
 
         return updates
 
