@@ -79,7 +79,7 @@ class Mod(BaseFindEvaluationOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/mod/>
     """
 
-    def __init__(self, field, divisor, remainder):
+    def __init__(self, field, divisor: int, remainder: int):
         self.field = field
         self.divisor = divisor
         self.remainder = remainder
@@ -97,7 +97,12 @@ class RegEx(BaseFindEvaluationOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/regex/>
     """
 
-    def __init__(self, field, pattern, options: Optional[str] = None):
+    def __init__(
+        self,
+        field,
+        pattern: str,
+        options: Optional[str] = None,
+    ):
         self.field = field
         self.pattern = pattern
         self.options = options
