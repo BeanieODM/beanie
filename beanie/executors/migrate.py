@@ -35,7 +35,7 @@ class MigrationSettings(BaseSettings):
     connection_uri: str
     database_name: str
     path: Path
-    allow_index_dropping: bool = True
+    allow_index_dropping: bool = False
 
     class Config:
         env_prefix = "beanie_"
@@ -125,7 +125,8 @@ async def run_migrate(settings: MigrationSettings):
 @click.option(
     "--allow-index-dropping/--forbid-index-dropping",
     required=False,
-    default=True,
+    default=False,
+    help="if allow-index-dropping is set, Beanie will drop indexes from your collection",
 )
 def migrate(
     direction,

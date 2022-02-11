@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 class ModelSettings(BaseModel):
     projection: Optional[Dict[str, Any]] = None
     use_state_management: bool = False
+    state_management_replace_objects: bool = False
     validate_on_save: bool = False
     use_revision: bool = False
     use_cache: bool = False

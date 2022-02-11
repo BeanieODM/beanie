@@ -4,6 +4,7 @@ from bson import ObjectId
 from beanie.exceptions import StateManagementIsTurnedOff, StateNotSaved
 from tests.odm.models import (
     DocumentWithTurnedOnStateManagement,
+    DocumentWithTurnedOnReplaceObjects,
     DocumentWithTurnedOffStateManagement,
     InternalDoc,
 )
@@ -20,14 +21,19 @@ def state():
 
 
 @pytest.fixture
-def doc(state):
+def doc_default(state):
     return DocumentWithTurnedOnStateManagement._parse_obj_saving_state(state)
 
 
 @pytest.fixture
-async def saved_doc(doc):
-    await doc.insert()
-    return doc
+def doc_replace(state):
+    return DocumentWithTurnedOnReplaceObjects._parse_obj_saving_state(state)
+
+
+@pytest.fixture
+async def saved_doc_default(doc_default):
+    await doc_default.insert()
+    return doc_default
 
 
 def test_use_state_management_property():
@@ -71,38 +77,68 @@ def test_saved_state_needed():
         doc_2.is_changed
 
 
-def test_if_changed(doc):
-    assert doc.is_changed is False
-    doc.num_1 = 10
-    assert doc.is_changed is True
+def test_if_changed(doc_default):
+    assert doc_default.is_changed is False
+    doc_default.num_1 = 10
+    assert doc_default.is_changed is True
 
 
-def test_get_changes(doc):
-    doc.internal.num = 1000
-    doc.internal.string = "new_value"
-    doc.internal.lst.append(100)
-    assert doc.get_changes() == {
+def test_get_changes_default(doc_default):
+    doc_default.internal.num = 1000
+    doc_default.internal.string = "new_value"
+    doc_default.internal.lst.append(100)
+    assert doc_default.get_changes() == {
         "internal.num": 1000,
         "internal.string": "new_value",
         "internal.lst": [1, 2, 3, 4, 5, 100],
     }
 
 
-async def test_save_changes(saved_doc):
-    saved_doc.internal.num = 10000
-    await saved_doc.save_changes()
-    assert saved_doc.get_saved_state()["internal"]["num"] == 10000
+def test_get_changes_default_whole(doc_default):
+    doc_default.internal = {"num": 1000, "string": "new_value"}
+    assert doc_default.get_changes() == {
+        "internal.num": 1000,
+        "internal.string": "new_value",
+    }
 
-    new_doc = await DocumentWithTurnedOnStateManagement.get(saved_doc.id)
+
+def test_get_changes_replace(doc_replace):
+    doc_replace.internal.num = 1000
+    doc_replace.internal.string = "new_value"
+    assert doc_replace.get_changes() == {
+        "internal": {
+            "num": 1000,
+            "string": "new_value",
+            "lst": [1, 2, 3, 4, 5],
+        }
+    }
+
+
+def test_get_changes_replace_whole(doc_replace):
+    doc_replace.internal = {"num": 1000, "string": "new_value"}
+    assert doc_replace.get_changes() == {
+        "internal": {
+            "num": 1000,
+            "string": "new_value",
+        }
+    }
+
+
+async def test_save_changes(saved_doc_default):
+    saved_doc_default.internal.num = 10000
+    await saved_doc_default.save_changes()
+    assert saved_doc_default.get_saved_state()["internal"]["num"] == 10000
+
+    new_doc = await DocumentWithTurnedOnStateManagement.get(saved_doc_default.id)
     assert new_doc.internal.num == 10000
 
 
-async def test_find_one(saved_doc, state):
-    new_doc = await DocumentWithTurnedOnStateManagement.get(saved_doc.id)
+async def test_find_one(saved_doc_default, state):
+    new_doc = await DocumentWithTurnedOnStateManagement.get(saved_doc_default.id)
     assert new_doc.get_saved_state() == state
 
     new_doc = await DocumentWithTurnedOnStateManagement.find_one(
-        DocumentWithTurnedOnStateManagement.id == saved_doc.id
+        DocumentWithTurnedOnStateManagement.id == saved_doc_default.id
     )
     assert new_doc.get_saved_state() == state
 
@@ -132,19 +168,19 @@ async def test_insert(state):
     assert doc.get_saved_state() == state
 
 
-async def test_replace(saved_doc):
-    saved_doc.num_1 = 100
-    await saved_doc.replace()
-    assert saved_doc.get_saved_state()["num_1"] == 100
+async def test_replace(saved_doc_default):
+    saved_doc_default.num_1 = 100
+    await saved_doc_default.replace()
+    assert saved_doc_default.get_saved_state()["num_1"] == 100
 
 
-async def test_save_chages(saved_doc):
-    saved_doc.num_1 = 100
-    await saved_doc.save_changes()
-    assert saved_doc.get_saved_state()["num_1"] == 100
+async def test_save_chages(saved_doc_default):
+    saved_doc_default.num_1 = 100
+    await saved_doc_default.save_changes()
+    assert saved_doc_default.get_saved_state()["num_1"] == 100
 
 
-async def test_rollback(doc, state):
-    doc.num_1 = 100
-    doc.rollback()
-    assert doc.num_1 == state["num_1"]
+async def test_rollback(doc_default, state):
+    doc_default.num_1 = 100
+    doc_default.rollback()
+    assert doc_default.num_1 == state["num_1"]

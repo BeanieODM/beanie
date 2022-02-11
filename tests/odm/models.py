@@ -223,6 +223,16 @@ class DocumentWithTurnedOnStateManagement(Document):
         use_state_management = True
 
 
+class DocumentWithTurnedOnReplaceObjects(Document):
+    num_1: int
+    num_2: int
+    internal: InternalDoc
+
+    class Settings:
+        use_state_management = True
+        state_management_replace_objects = True
+
+
 class DocumentWithTurnedOffStateManagement(Document):
     num_1: int
     num_2: int
