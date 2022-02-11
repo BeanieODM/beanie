@@ -2,6 +2,17 @@
 
 Beanie project 
 
+## [1.9.1] - 2022-02-11
+
+### Improvement
+
+- Add support for py.typed file
+
+### Implementation
+
+- Author - [Nicholas Smith](https://github.com/nzsmith1)
+- PR - <https://github.com/roman-right/beanie/pull/201>
+
 ## [1.9.0] - 2022-02-11
 
 ### Breaking Change
@@ -688,3 +699,5 @@ how specific type should be presented in the database
 [1.8.13]: https://pypi.org/project/beanie/1.8.13
 
 [1.9.0]: https://pypi.org/project/beanie/1.9.0
+
+[1.9.1]: https://pypi.org/project/beanie/1.9.1
