@@ -29,3 +29,6 @@ await init_beanie(
         ],
     )
 ```
+
+### Warning
+`init_beanie` supports a parameter `allow_index_dropping` this will drop indexes from your collection(s).  `allow_index_dropping` is default set to `False` if you set this to `True` your indexes will get dropped, ensure that you are not managing your indexes in another manner, if you are these will be deleted when setting `allow_index_dropping = True`

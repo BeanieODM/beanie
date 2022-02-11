@@ -2,6 +2,17 @@
 
 Beanie project 
 
+## [1.9.0] - 2022-02-11
+
+### Breaking Change
+
+- Property allow_index_dropping to be default False. Indexes will not be deleted by default
+
+### Implementation
+
+- Author - [Nicholas Smith](https://github.com/nzsmith1)
+- PR - <https://github.com/roman-right/beanie/pull/196>
+
 ## [1.8.13] - 2022-02-10
 
 ### Improvement
@@ -675,3 +686,5 @@ how specific type should be presented in the database
 [1.8.12]: https://pypi.org/project/beanie/1.8.12
 
 [1.8.13]: https://pypi.org/project/beanie/1.8.13
+
+[1.9.0]: https://pypi.org/project/beanie/1.9.0

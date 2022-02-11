@@ -130,7 +130,9 @@ async def test_index_dropping_is_allowed(db):
         database=db, document_models=[DocumentTestModelWithComplexIndex]
     )
     await init_beanie(
-        database=db, document_models=[DocumentTestModelWithDroppedIndex]
+        database=db,
+        document_models=[DocumentTestModelWithDroppedIndex],
+        allow_index_dropping=True,
     )
 
     collection: AsyncIOMotorCollection = (
@@ -151,6 +153,30 @@ async def test_index_dropping_is_not_allowed(db):
         database=db,
         document_models=[DocumentTestModelWithDroppedIndex],
         allow_index_dropping=False,
+    )
+
+    collection: AsyncIOMotorCollection = (
+        DocumentTestModelWithComplexIndex.get_motor_collection()
+    )
+    index_info = await collection.index_information()
+    assert index_info == {
+        "_id_": {"key": [("_id", 1)], "v": 2},
+        "test_int_1": {"key": [("test_int", 1)], "v": 2},
+        "test_int_1_test_str_-1": {
+            "key": [("test_int", 1), ("test_str", -1)],
+            "v": 2,
+        },
+        "test_string_index_DESCENDING": {"key": [("test_str", -1)], "v": 2},
+    }
+
+
+async def test_index_dropping_is_not_allowed_as_default(db):
+    await init_beanie(
+        database=db, document_models=[DocumentTestModelWithComplexIndex]
+    )
+    await init_beanie(
+        database=db,
+        document_models=[DocumentTestModelWithDroppedIndex],
     )
 
     collection: AsyncIOMotorCollection = (
@@ -204,6 +230,6 @@ async def test_projection():
         "test_int": 1,
         "test_list": 1,
         "test_str": 1,
-        'test_doc': 1,
+        "test_doc": 1,
         "revision_id": 1,
     }

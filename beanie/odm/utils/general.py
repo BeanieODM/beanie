@@ -36,7 +36,7 @@ async def init_beanie(
     database: AsyncIOMotorDatabase = None,
     connection_string: str = None,
     document_models: List[Union[Type["DocType"], str]] = None,
-    allow_index_dropping: bool = True,
+    allow_index_dropping: bool = False,
 ):
     """
     Beanie initialization
@@ -46,7 +46,7 @@ async def init_beanie(
     :param document_models: List[Union[Type[DocType], str]] - model classes
     or strings with dot separated paths
     :param allow_index_dropping: bool - if index dropping is allowed.
-    Default True
+    Default False
     :return: None
     """
     if (connection_string is None and database is None) or (
