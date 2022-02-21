@@ -9,19 +9,28 @@ hooks:
   pre-render:
     - mkdir -p docs/build/content
     - cp -r docs/assets docs/build/content
-    
-renderer:  
+
+renderer:
   type: mkdocs
   output_directory: docs/build
   mkdocs_config:
     site_name: Beanie Documentation
     site_url: https://roman-right.github.io/beanie/
     theme:
-       name: material
-       palette:
-           primary: white
-       logo: assets/logo.svg
-       favicon: assets/favicon.png
+      name: material
+      palette:
+        - scheme: default
+          primary: white
+          toggle:
+            icon: material/toggle-switch-off-outline
+            name: Switch to dark mode
+        - scheme: slate
+          primary: deep orange
+          toggle:
+            icon: material/toggle-switch
+            name: Switch to light mode
+      logo: assets/logo.svg
+      favicon: assets/favicon.png
     markdown_extensions:
       - pymdownx.highlight
       - pymdownx.superfences
@@ -49,7 +58,7 @@ renderer:
     - title: Getting started
       source: docs/getting-started.md
     - title: Tutorial
-      children: 
+      children:
         - title: Defining a document
           source: docs/tutorial/defining-a-document.md
         - title: Initialization
@@ -99,13 +108,10 @@ renderer:
                 - beanie.odm.operators.update.*
         - title: Fields
           contents:
-            - beanie.odm.fields.*            
+            - beanie.odm.fields.*
     - title: Development
       source: docs/development.md
     - title: Code of conduct
       source: docs/code-of-conduct.md
     - title: Changelog
       source: docs/changelog.md
-      
-
-      
