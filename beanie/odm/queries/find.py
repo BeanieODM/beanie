@@ -585,6 +585,15 @@ class FindMany(
             session=self.session,
         )
 
+    async def first_or_none(self) -> Optional[FindQueryResultType]:
+        """
+        Returns the first found element or None if no elements were found
+        """
+        res = await self.limit(1).to_list()
+        if not res:
+            return None
+        return res[0]
+
 
 class FindOne(FindQuery[FindQueryResultType]):
     """
