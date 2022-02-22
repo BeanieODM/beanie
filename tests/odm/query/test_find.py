@@ -310,3 +310,19 @@ async def test_find_by_datetime(preset_documents):
         Sample.timestamp <= datetime_2,
     ).to_list()
     assert len(docs) == 5
+
+
+async def test_find_first_or_none(preset_documents):
+    doc = (
+        await Sample.find(Sample.increment > 1)
+        .sort(-Sample.increment)
+        .first_or_none()
+    )
+    assert doc.increment == 9
+
+    doc = (
+        await Sample.find(Sample.increment > 9)
+        .sort(-Sample.increment)
+        .first_or_none()
+    )
+    assert doc is None
