@@ -17,6 +17,12 @@ If you prefer a list of the results then you can call `to_list()`:
 result = await Product.find(search_criteria).to_list()
 ```
 
+To get the first document you can use `.first_or_none()` method. It returns the first found document or None, if no documents were found.
+
+```python
+result = await Product.find(search_criteria).first_or_none()
+```
+
 ### Search criteria
 
 As search criteria, Beanie supports python-based syntax.
