@@ -2,6 +2,16 @@
 
 Beanie project 
 
+## [1.9.2] - 2022-02-22
+
+### Improvement
+
+- First or None for find queries
+
+### Implementation
+
+- ISSUE - <https://github.com/roman-right/beanie/issues/207>
+
 ## [1.9.1] - 2022-02-11
 
 ### Improvement
@@ -701,3 +711,5 @@ how specific type should be presented in the database
 [1.9.0]: https://pypi.org/project/beanie/1.9.0
 
 [1.9.1]: https://pypi.org/project/beanie/1.9.1
+
+[1.9.2]: https://pypi.org/project/beanie/1.9.2
