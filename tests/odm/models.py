@@ -291,3 +291,14 @@ class House(Document):
 class DocumentForEncodingTest(Document):
     bytes_field: Optional[bytes]
     datetime_field: Optional[datetime.datetime]
+
+
+class DocumentWithDateEncoder(Document):
+    date: datetime.date
+
+    class Settings:
+        bson_encoders = {
+            datetime.date: lambda o: datetime.datetime.combine(
+                o, datetime.datetime.min.time()
+            )
+        }

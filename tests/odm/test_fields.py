@@ -11,7 +11,8 @@ from tests.odm.models import (
     DocumentWithCustomFiledsTypes,
     DocumentWithBsonEncodersFiledsTypes,
     DocumentTestModel,
-    Sample
+    Sample,
+    DocumentWithDateEncoder,
 )
 
 
@@ -117,3 +118,10 @@ async def test_param_exclude(document, exclude):
 def test_expression_fields():
     assert Sample.nested.integer == "nested.integer"
     assert Sample.nested["integer"] == "nested.integer"
+
+
+async def test_date_field():
+    doc = DocumentWithDateEncoder(date=datetime.date.today())
+    await doc.insert()
+    found_doc = await DocumentWithDateEncoder.get(doc.id)
+    assert found_doc.date == doc.date
