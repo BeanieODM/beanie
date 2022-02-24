@@ -6,11 +6,12 @@ Beanie project
 
 ### Improvement
 
-- Timeseries collections
+- Timeseries collections support
+- Pymongo kwargs for find, aggregate, update and delete operations
 
 ### Implementation
 
-- PR --
+- PR <https://github.com/roman-right/beanie/pull/214>
 
 ## [1.9.2] - 2022-02-22
 
