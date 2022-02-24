@@ -1,4 +1,4 @@
-# Indexes & collection names
+# Collection setup (name, indexes, timeseries)
 
 Although the basic pydantic syntax allows you to set all aspects of individual fields, there is also some need to configure collections as a whole. In particular you might want to:
 
@@ -78,3 +78,7 @@ class DocumentTestModelWithIndex(Document):
             ),
         ]
 ```
+
+## Time series
+
+You can setup a timeseries collection using inner 

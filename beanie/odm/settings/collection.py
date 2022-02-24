@@ -4,6 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorCollection, AsyncIOMotorDatabase
 from pydantic.main import BaseModel
 from pymongo import IndexModel
 
+from beanie.exceptions import MongoDBVersionError
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 
 
@@ -65,6 +66,16 @@ class CollectionSettings(BaseModel):
         # set collection name
         if not collection_parameters.name:
             collection_parameters.name = document_model.__name__
+
+        # check mongodb version
+        build_info = await database.command({"buildInfo": 1})
+        mongo_version = build_info["version"]
+        major_version = int(mongo_version.split(".")[0])
+
+        if collection_parameters.timeseries is not None and major_version < 5:
+            raise MongoDBVersionError(
+                "Timeseries are supported by MongoDB version 5 and higher"
+            )
 
         # create motor collection
         if (
