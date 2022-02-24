@@ -1,8 +1,10 @@
-from typing import List, Type
+from typing import List, Type, Optional
 
 from motor.motor_asyncio import AsyncIOMotorCollection, AsyncIOMotorDatabase
 from pydantic.main import BaseModel
 from pymongo import IndexModel
+
+from beanie.odm.settings.timeseries import TimeSeriesConfig
 
 
 class IndexModelField(IndexModel):
@@ -21,6 +23,7 @@ class IndexModelField(IndexModel):
 class CollectionInputParameters(BaseModel):
     name: str = ""
     indexes: List[IndexModelField] = []
+    timeseries: Optional[TimeSeriesConfig]
 
     class Config:
         arbitrary_types_allowed = True
@@ -64,7 +67,19 @@ class CollectionSettings(BaseModel):
             collection_parameters.name = document_model.__name__
 
         # create motor collection
-        collection = database[collection_parameters.name]
+        if (
+            collection_parameters.timeseries is not None
+            and collection_parameters.name
+            not in await database.list_collection_names()
+        ):
+
+            collection = await database.create_collection(
+                **collection_parameters.timeseries.build_query(
+                    collection_parameters.name
+                )
+            )
+        else:
+            collection = database[collection_parameters.name]
 
         # indexes
         old_indexes = (await collection.index_information()).keys()

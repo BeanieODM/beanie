@@ -21,6 +21,7 @@ from pymongo import IndexModel
 from beanie import Document, Indexed, Insert, Replace, ValidateOnSave
 from beanie.odm.actions import before_event, after_event
 from beanie.odm.fields import Link
+from beanie.odm.settings.timeseries import TimeSeriesConfig
 
 
 class Option2(BaseModel):
@@ -291,3 +292,10 @@ class House(Document):
 class DocumentForEncodingTest(Document):
     bytes_field: Optional[bytes]
     datetime_field: Optional[datetime.datetime]
+
+
+class DocumentWithTimeseries(Document):
+    ts: datetime.datetime = Field(default_factory=datetime.datetime.now)
+
+    class Collection:
+        timeseries = TimeSeriesConfig(time_field="ts", expire_after_seconds=2)
