@@ -16,16 +16,19 @@ from beanie.odm.fields import (
     WriteRules,
     DeleteRules,
 )
+from beanie.odm.settings.timeseries import TimeSeriesConfig, Granularity
 from beanie.odm.utils.general import init_beanie
 from beanie.odm.documents import Document
 
-__version__ = "1.9.2"
+__version__ = "1.10.0"
 __all__ = [
     # ODM
     "Document",
     "init_beanie",
     "PydanticObjectId",
     "Indexed",
+    "TimeSeriesConfig",
+    "Granularity",
     # Actions
     "before_event",
     "after_event",
