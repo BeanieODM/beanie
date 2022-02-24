@@ -15,16 +15,17 @@ pip install beanie
 ```shell
 poetry add beanie
 ```
+
 ## Initialization
 
 Getting Beanie setup in your code is really easy:
 
- 1. Write your database model as a Pydantic class but use `beanie.Document` in place of `pydantic.BaseModel`.
- 2. Initialize Motor, as Beanie uses this as an async database engine under the hood.
- 3. Call `beanie.init_beanie` with the Motor client and list of Beanie models
- 
- The code below should get you started and shows of some of the field types that you can use with beanie.
- 
+1.  Write your database model as a Pydantic class but use `beanie.Document` in place of `pydantic.BaseModel`.
+2.  Initialize Motor, as Beanie uses this as an async database engine under the hood.
+3.  Call `beanie.init_beanie` with the Motor client and list of Beanie models
+
+The code below should get you started and shows of some of the field types that you can use with beanie.
+
 ```python
 from typing import Optional
 from pydantic import BaseModel
@@ -44,16 +45,12 @@ class Product(Document):
 
 # Call this from within your event loop to get beanie setup.
 async def init():
-    # Crete Motor client
+    # Create Motor client
     client = motor.motor_asyncio.AsyncIOMotorClient(
         "mongodb://user:pass@host:27017"
     )
 
     # Init beanie with the Product document class
     await init_beanie(database=client.db_name, document_models=[Product])
-    
+
 ```
- 
- 
-
-
