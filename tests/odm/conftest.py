@@ -31,7 +31,6 @@ from tests.odm.models import (
     Roof,
     InheritedDocumentWithActions,
     DocumentForEncodingTest,
-    DocumentWithTimeseries,
 )
 from tests.odm.models import (
     Sample,
@@ -153,7 +152,6 @@ async def init(loop, db):
         Roof,
         InheritedDocumentWithActions,
         DocumentForEncodingTest,
-        DocumentWithTimeseries,
     ]
     await init_beanie(
         database=db,
