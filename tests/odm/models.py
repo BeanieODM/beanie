@@ -46,8 +46,8 @@ class GeoObject(BaseModel):
 
 class Sample(Document):
     timestamp: datetime.datetime
-    increment: int
-    integer: int
+    increment: Indexed(int)
+    integer: Indexed(int)
     float_num: float
     string: str
     nested: Nested
@@ -285,8 +285,8 @@ class House(Document):
     windows: List[Link[Window]]
     door: Link[Door]
     roof: Optional[Link[Roof]]
-    name: str = Field(hidden=True)
-    height: int = 2
+    name: Indexed(str) = Field(hidden=True)
+    height: Indexed(int) = 2
 
 
 class DocumentForEncodingTest(Document):

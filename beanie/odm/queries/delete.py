@@ -1,4 +1,4 @@
-from typing import Generator, Type, TYPE_CHECKING, Any, Mapping, Optional
+from typing import Generator, Type, TYPE_CHECKING, Any, Mapping, Optional, Dict
 
 from pymongo.results import DeleteResult
 
@@ -21,11 +21,13 @@ class DeleteQuery(SessionMethods):
         document_model: Type["DocType"],
         find_query: Mapping[str, Any],
         bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs
     ):
         self.document_model = document_model
         self.find_query = find_query
         self.session = None
         self.bulk_writer = bulk_writer
+        self.pymongo_kwargs: Dict[str, Any] = pymongo_kwargs
 
 
 class DeleteMany(DeleteQuery):
@@ -36,7 +38,7 @@ class DeleteMany(DeleteQuery):
         """
         if self.bulk_writer is None:
             yield from self.document_model.get_motor_collection().delete_many(
-                self.find_query, session=self.session
+                self.find_query, session=self.session, **self.pymongo_kwargs
             )
         else:
             self.bulk_writer.add_operation(
@@ -56,7 +58,7 @@ class DeleteOne(DeleteQuery):
         """
         if self.bulk_writer is None:
             yield from self.document_model.get_motor_collection().delete_one(
-                self.find_query, session=self.session
+                self.find_query, session=self.session, **self.pymongo_kwargs
             )
         else:
             self.bulk_writer.add_operation(

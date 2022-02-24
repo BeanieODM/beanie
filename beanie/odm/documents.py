@@ -267,6 +267,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> Optional[DocType]:
         """
         Get document by id, returns None if document does not exist
@@ -274,6 +275,7 @@ class Document(BaseModel, UpdateMethods):
         :param document_id: PydanticObjectId - document id
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool - ignore cache (if it is turned on)
+        :param **pymongo_kwargs: pymongo native parameters for find operation
         :return: Union["Document", None]
         """
         if not isinstance(document_id, cls.__fields__["id"].type_):
@@ -283,6 +285,7 @@ class Document(BaseModel, UpdateMethods):
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
+            **pymongo_kwargs,
         )
 
     @overload
@@ -294,6 +297,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> FindOne[DocType]:
         ...
 
@@ -306,6 +310,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> FindOne[DocumentProjectionType]:
         ...
 
@@ -317,6 +322,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> Union[FindOne[DocType], FindOne[DocumentProjectionType]]:
         """
         Find one document by criteria.
@@ -327,6 +333,7 @@ class Document(BaseModel, UpdateMethods):
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session instance
         :param ignore_cache: bool
+        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
         """
         return cls._find_one_query_class(document_model=cls).find_one(
@@ -335,6 +342,7 @@ class Document(BaseModel, UpdateMethods):
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
+            **pymongo_kwargs,
         )
 
     @overload
@@ -349,6 +357,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> FindMany[DocType]:
         ...
 
@@ -364,6 +373,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -378,6 +388,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         Find many documents by criteria.
@@ -390,6 +401,7 @@ class Document(BaseModel, UpdateMethods):
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
+        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
         return cls._find_many_query_class(document_model=cls).find_many(
@@ -401,6 +413,7 @@ class Document(BaseModel, UpdateMethods):
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
+            **pymongo_kwargs,
         )
 
     @overload
@@ -415,6 +428,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> FindMany[DocType]:
         ...
 
@@ -430,6 +444,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -444,6 +459,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         The same as find_many
@@ -457,6 +473,7 @@ class Document(BaseModel, UpdateMethods):
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
+            **pymongo_kwargs,
         )
 
     @overload
@@ -469,6 +486,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: None = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> FindMany[DocType]:
         ...
 
@@ -482,6 +500,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -494,6 +513,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         Get all the documents
@@ -503,6 +523,7 @@ class Document(BaseModel, UpdateMethods):
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
+        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
         return cls.find_many(
@@ -513,6 +534,7 @@ class Document(BaseModel, UpdateMethods):
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
+            **pymongo_kwargs,
         )
 
     @overload
@@ -525,6 +547,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> FindMany[DocType]:
         ...
 
@@ -538,6 +561,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> FindMany[DocumentProjectionType]:
         ...
 
@@ -550,6 +574,7 @@ class Document(BaseModel, UpdateMethods):
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
         """
         the same as find_all
@@ -561,6 +586,7 @@ class Document(BaseModel, UpdateMethods):
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
+            **pymongo_kwargs,
         )
 
     @wrap_with_actions(EventTypes.REPLACE)
@@ -724,6 +750,7 @@ class Document(BaseModel, UpdateMethods):
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> None:
         """
         Partially update the document in the database
@@ -732,6 +759,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: ClientSession - pymongo session.
         :param ignore_revision: bool - force update. Will update even if revision id is not the same, as stored
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
+        :param **pymongo_kwargs: pymongo native parameters for update operation
         :return: None
         """
         use_revision_id = self.get_settings().model_settings.use_revision
@@ -742,7 +770,7 @@ class Document(BaseModel, UpdateMethods):
             find_query["revision_id"] = self._previous_revision_id
 
         result = await self.find_one(find_query).update(
-            *args, session=session, bulk_writer=bulk_writer
+            *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
 
         if (
@@ -759,6 +787,7 @@ class Document(BaseModel, UpdateMethods):
         *args: Union[dict, Mapping],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> UpdateMany:
         """
         Partially update all the documents
@@ -766,10 +795,11 @@ class Document(BaseModel, UpdateMethods):
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
+        :param **pymongo_kwargs: pymongo native parameters for find operation
         :return: UpdateMany query
         """
         return cls.find_all().update_many(
-            *args, session=session, bulk_writer=bulk_writer
+            *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
 
     async def delete(
@@ -777,6 +807,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
+        **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         """
         Delete the document
@@ -784,6 +815,7 @@ class Document(BaseModel, UpdateMethods):
         :param session: Optional[ClientSession] - pymongo session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param link_rule: DeleteRules - rules for link fields
+        :param **pymongo_kwargs: pymongo native parameters for delete operation
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
 
@@ -798,17 +830,19 @@ class Document(BaseModel, UpdateMethods):
                     ]:
                         if isinstance(value, Document):
                             await value.delete(
-                                link_rule=DeleteRules.DELETE_LINKS
+                                link_rule=DeleteRules.DELETE_LINKS,
+                                **pymongo_kwargs,
                             )
                     if field_info.link_type == LinkTypes.LIST:
                         for obj in value:
                             if isinstance(obj, Document):
                                 await obj.delete(
-                                    link_rule=DeleteRules.DELETE_LINKS
+                                    link_rule=DeleteRules.DELETE_LINKS,
+                                    **pymongo_kwargs,
                                 )
 
         return await self.find_one({"_id": self.id}).delete(
-            session=session, bulk_writer=bulk_writer
+            session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
 
     @classmethod
@@ -816,16 +850,18 @@ class Document(BaseModel, UpdateMethods):
         cls,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         """
         Delete all the documents
 
         :param session: Optional[ClientSession] - pymongo session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
+        :param **pymongo_kwargs: pymongo native parameters for delete operation
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
         return await cls.find_all().delete(
-            session=session, bulk_writer=bulk_writer
+            session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
 
     @overload
@@ -836,6 +872,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: None = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> AggregationQuery[Dict[str, Any]]:
         ...
 
@@ -847,6 +884,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: Type[DocumentProjectionType],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> AggregationQuery[DocumentProjectionType]:
         ...
 
@@ -857,6 +895,7 @@ class Document(BaseModel, UpdateMethods):
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> Union[
         AggregationQuery[Dict[str, Any]],
         AggregationQuery[DocumentProjectionType],
@@ -868,6 +907,7 @@ class Document(BaseModel, UpdateMethods):
         :param projection_model: Type[BaseModel]
         :param session: Optional[ClientSession]
         :param ignore_cache: bool
+        :param **pymongo_kwargs: pymongo native parameters for aggregate operation
         :return: [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
         return cls.find_all().aggregate(
@@ -875,6 +915,7 @@ class Document(BaseModel, UpdateMethods):
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
+            **pymongo_kwargs,
         )
 
     @classmethod
@@ -903,7 +944,9 @@ class Document(BaseModel, UpdateMethods):
         Should objects be replaced when using state management
         :return: bool
         """
-        return cls.get_settings().model_settings.state_management_replace_objects
+        return (
+            cls.get_settings().model_settings.state_management_replace_objects
+        )
 
     def _save_state(self) -> None:
         """

@@ -83,8 +83,14 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
             self.document_model.get_settings().model_settings.bson_encoders
         )
         self.fetch_links: bool = False
+        self.pymongo_kwargs: Dict[str, Any] = {}
 
     def get_filter_query(self) -> Mapping[str, Any]:
+        """
+
+        Returns: MongoDB filter query
+
+        """
         if self.find_expressions:
             return Encoder(custom_encoders=self.encoders).encode(
                 And(*self.find_expressions).query
@@ -97,7 +103,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **pymongo_kwargs,
     ):
         """
         Create Update with modifications query
@@ -114,7 +120,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
                 document_model=self.document_model,
                 find_query=self.get_filter_query(),
             )
-            .update(*args, bulk_writer=bulk_writer)
+            .update(*args, bulk_writer=bulk_writer, **pymongo_kwargs)
             .set_session(session=self.session)
         )
 
@@ -123,6 +129,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         *args: Mapping[str, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
+        **pymongo_kwargs,
     ):
         """
         Create Update with modifications query
@@ -140,7 +147,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
                 document_model=self.document_model,
                 find_query=self.get_filter_query(),
             )
-            .upsert(*args, on_insert=on_insert)
+            .upsert(*args, on_insert=on_insert, **pymongo_kwargs)
             .set_session(session=self.session)
         )
 
@@ -148,6 +155,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         self,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> Union[DeleteOne, DeleteMany]:
         """
         Provide search criteria to the Delete query
@@ -160,6 +168,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
             document_model=self.document_model,
             find_query=self.get_filter_query(),
             bulk_writer=bulk_writer,
+            **pymongo_kwargs,
         ).set_session(session=session)
 
     def project(self, projection_model):
@@ -231,6 +240,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> "FindMany[FindQueryResultType]":
         ...
 
@@ -245,6 +255,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
 
@@ -258,6 +269,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
     ]:
@@ -273,6 +285,7 @@ class FindMany(
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
+        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: FindMany - query instance
         """
         self.find_expressions += args  # type: ignore # bool workaround
@@ -283,6 +296,7 @@ class FindMany(
         self.set_session(session=session)
         self.ignore_cache = ignore_cache
         self.fetch_links = fetch_links
+        self.pymongo_kwargs.update(pymongo_kwargs)
         return self
 
     # TODO probably merge FindOne and FindMany to one class to avoid this
@@ -328,6 +342,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> "FindMany[FindQueryResultType]":
         ...
 
@@ -342,6 +357,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
 
@@ -355,6 +371,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
     ]:
@@ -370,6 +387,7 @@ class FindMany(
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
+            **pymongo_kwargs,
         )
 
     def sort(
@@ -437,6 +455,7 @@ class FindMany(
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> UpdateMany:
         """
         Provide search criteria to the
@@ -448,13 +467,19 @@ class FindMany(
         """
         return cast(
             UpdateMany,
-            self.update(*args, session=session, bulk_writer=bulk_writer),
+            self.update(
+                *args,
+                session=session,
+                bulk_writer=bulk_writer,
+                **pymongo_kwargs,
+            ),
         )
 
     def delete_many(
         self,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> DeleteMany:
         """
         Provide search criteria to the [DeleteMany](https://roman-right.github.io/beanie/api/queries/#deletemany) query
@@ -466,7 +491,10 @@ class FindMany(
         # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case
         # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
         return cast(
-            DeleteMany, self.delete(session=session, bulk_writer=bulk_writer)
+            DeleteMany,
+            self.delete(
+                session=session, bulk_writer=bulk_writer, **pymongo_kwargs
+            ),
         )
 
     @overload
@@ -476,6 +504,7 @@ class FindMany(
         projection_model: None = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> AggregationQuery[Dict[str, Any]]:
         ...
 
@@ -486,6 +515,7 @@ class FindMany(
         projection_model: Type[FindQueryProjectionType],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> AggregationQuery[FindQueryProjectionType]:
         ...
 
@@ -495,6 +525,7 @@ class FindMany(
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> Union[
         AggregationQuery[Dict[str, Any]],
         AggregationQuery[FindQueryProjectionType],
@@ -516,6 +547,7 @@ class FindMany(
             projection_model=projection_model,
             find_query=self.get_filter_query(),
             ignore_cache=ignore_cache,
+            **pymongo_kwargs,
         ).set_session(session=self.session)
 
     @property
@@ -573,7 +605,9 @@ class FindMany(
                 {"$project": get_projection(self.projection_model)}
             )
             return self.document_model.get_motor_collection().aggregate(
-                aggregation_pipeline, session=self.session
+                aggregation_pipeline,
+                session=self.session,
+                **self.pymongo_kwargs,
             )
 
         return self.document_model.get_motor_collection().find(
@@ -583,6 +617,7 @@ class FindMany(
             skip=self.skip_number,
             limit=self.limit_number,
             session=self.session,
+            **self.pymongo_kwargs,
         )
 
     async def first_or_none(self) -> Optional[FindQueryResultType]:
@@ -646,6 +681,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> "FindOne[FindQueryResultType]":
         ...
 
@@ -657,6 +693,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> "FindOne[FindQueryProjectionType]":
         ...
 
@@ -667,6 +704,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        **pymongo_kwargs,
     ) -> Union[
         "FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"
     ]:
@@ -677,6 +715,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
+        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: FindOne - query instance
         """
         self.find_expressions += args  # type: ignore # bool workaround
@@ -684,6 +723,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self.set_session(session=session)
         self.ignore_cache = ignore_cache
         self.fetch_links = fetch_links
+        self.pymongo_kwargs.update(pymongo_kwargs)
         return self
 
     def update_one(
@@ -691,6 +731,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> UpdateOne:
         """
         Create [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query using modifications and
@@ -701,13 +742,19 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         return cast(
             UpdateOne,
-            self.update(*args, session=session, bulk_writer=bulk_writer),
+            self.update(
+                *args,
+                session=session,
+                bulk_writer=bulk_writer,
+                **pymongo_kwargs,
+            ),
         )
 
     def delete_one(
         self,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> DeleteOne:
         """
         Provide search criteria to the [DeleteOne](https://roman-right.github.io/beanie/api/queries/#deleteone) query
@@ -718,7 +765,10 @@ class FindOne(FindQuery[FindQueryResultType]):
         # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case
         # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
         return cast(
-            DeleteOne, self.delete(session=session, bulk_writer=bulk_writer)
+            DeleteOne,
+            self.delete(
+                session=session, bulk_writer=bulk_writer, **pymongo_kwargs
+            ),
         )
 
     async def replace_one(
@@ -769,6 +819,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                     aggregation_pipeline=lookup_queries,
                     projection_model=self.projection_model,
                     session=self.session,
+                    **self.pymongo_kwargs,
                 )
                 .to_list(length=1)
             )
@@ -780,6 +831,7 @@ class FindOne(FindQuery[FindQueryResultType]):
             filter=self.get_filter_query(),
             projection=get_projection(self.projection_model),
             session=self.session,
+            **self.pymongo_kwargs,
         )
 
     def __await__(

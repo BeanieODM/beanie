@@ -1,3 +1,4 @@
+import pytest
 from pydantic import Field
 from pydantic.main import BaseModel
 
@@ -80,3 +81,17 @@ async def test_aggregate_with_session(preset_documents, session):
     assert {"_id": "test_1", "total": 2} in result
     assert {"_id": "test_2", "total": 6} in result
     assert {"_id": "test_3", "total": 3} in result
+
+
+async def test_aggregate_pymongo_kwargs(preset_documents):
+    with pytest.raises(TypeError):
+        await Sample.find(Sample.increment >= 4).aggregate(
+            [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}],
+            wrong=True,
+        )
+
+    with pytest.raises(TypeError):
+        await Sample.find(Sample.increment >= 4).aggregate(
+            [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}],
+            hint="integer_1",
+        )

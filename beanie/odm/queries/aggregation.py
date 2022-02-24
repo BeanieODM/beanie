@@ -45,6 +45,7 @@ class AggregationQuery(
         find_query: Mapping[str, Any],
         projection_model: Optional[Type[BaseModel]] = None,
         ignore_cache: bool = False,
+        **pymongo_kwargs
     ):
         self.aggregation_pipeline: List[
             Mapping[str, Any]
@@ -54,6 +55,7 @@ class AggregationQuery(
         self.find_query = find_query
         self.session = None
         self.ignore_cache = ignore_cache
+        self.pymongo_kwargs = pymongo_kwargs
 
     @property
     def _cache_key(self) -> str:
@@ -101,7 +103,7 @@ class AggregationQuery(
     def motor_cursor(self) -> AgnosticCommandCursor:
         aggregation_pipeline = self.get_aggregation_pipeline()
         return self.document_model.get_motor_collection().aggregate(
-            aggregation_pipeline, session=self.session
+            aggregation_pipeline, session=self.session, **self.pymongo_kwargs
         )
 
     def get_projection_model(self) -> Optional[Type[BaseModel]]:
