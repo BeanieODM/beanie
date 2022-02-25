@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from pydantic.color import Color
 
 from beanie.odm.enums import SortDirection
-from tests.odm.models import Sample, DocumentWithBsonEncodersFiledsTypes
+from tests.odm.models import Sample, DocumentWithBsonEncodersFiledsTypes, House
 
 
 async def test_find_query():
@@ -326,3 +326,30 @@ async def test_find_first_or_none(preset_documents):
         .first_or_none()
     )
     assert doc is None
+
+
+async def test_find_pymongo_kwargs(preset_documents):
+    with pytest.raises(TypeError):
+        await Sample.find_many(Sample.increment > 1, wrong=100).to_list()
+
+    await Sample.find_many(
+        Sample.increment > 1, Sample.integer > 1, allow_disk_use=True
+    ).to_list()
+
+    await Sample.find_many(
+        Sample.increment > 1, Sample.integer > 1, hint="integer_1"
+    ).to_list()
+
+    await House.find_many(
+        House.height > 1, fetch_links=True, hint="height_1"
+    ).to_list()
+
+    await House.find_many(
+        House.height > 1, fetch_links=True, allowDiskUse=True
+    ).to_list()
+
+    await Sample.find_one(
+        Sample.increment > 1, Sample.integer > 1, hint="integer_1"
+    )
+
+    await House.find_one(House.height > 1, fetch_links=True, hint="height_1")

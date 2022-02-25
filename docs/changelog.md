@@ -2,6 +2,17 @@
 
 Beanie project 
 
+## [1.10.0] - 2022-02-24
+
+### Improvement
+
+- Timeseries collections support
+- Pymongo kwargs for find, aggregate, update and delete operations
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/214>
+
 ## [1.9.2] - 2022-02-22
 
 ### Improvement
@@ -713,3 +724,5 @@ how specific type should be presented in the database
 [1.9.1]: https://pypi.org/project/beanie/1.9.1
 
 [1.9.2]: https://pypi.org/project/beanie/1.9.2
+
+[1.10.0]: https://pypi.org/project/beanie/1.10.0

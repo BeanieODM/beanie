@@ -1,4 +1,4 @@
-# Indexes & collection names
+# Collection setup (name, indexes, timeseries)
 
 Although the basic pydantic syntax allows you to set all aspects of individual fields, there is also some need to configure collections as a whole. In particular you might want to:
 
@@ -12,6 +12,9 @@ This is done by defining a `Collection` class within your `Document` class.
 To set MongoDB collection name you can use the `name` field of the `Collection` inner class.
 
 ```python
+from beanie import Document
+
+
 class Sample(Document):
     num: int
     description: str
@@ -27,7 +30,8 @@ class Sample(Document):
 To setup an index over a single field the `Indexed` function can be used to wrap the type and does not require a `Collection` class:
 
 ```python
-from beanie import Indexed
+from beanie import Document, Indexed
+
 
 class Sample(Document):
     num: Indexed(int)
@@ -36,6 +40,11 @@ class Sample(Document):
 
 The `Indexed` function takes an optional argument `index_type`, which may be set to a pymongo index type:
 ```python
+import pymongo
+
+from beanie import Document, Indexed
+
+
 class Sample(Document):
     description: Indexed(str, index_type = pymongo.TEXT)
 ```
@@ -45,6 +54,9 @@ class Sample(Document):
 For example to create `unique` index:
 
 ```python
+from beanie import Document, Indexed
+
+
 class Sample(Document):
     name: Indexed(str, unique=True)
 ```
@@ -60,9 +72,14 @@ The `indexes` field of the inner `Collection` class is responsible for more comp
   option. [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)
 
 ```python
-class DocumentTestModelWithIndex(Document):
+import pymongo
+from pymongo import IndexModel
+
+from beanie import Document
+
+
+class Sample(Document):
     test_int: int
-    test_list: List[SubDocument]
     test_str: str
 
     class Collection:
@@ -78,3 +95,33 @@ class DocumentTestModelWithIndex(Document):
             ),
         ]
 ```
+
+## Time series
+
+You can setup a timeseries collection using inner class `Collection`.
+
+**Be aware, timeseries collections a supported by MongoDB 5.0 and higher only.**
+
+```python
+from datetime import datetime
+
+from beanie import Document, TimeSeriesConfig, Granularity
+from pydantic import Field
+
+
+class Sample(Document):
+    ts: datetime = Field(default_factory=datetime.now)
+    meta: str
+
+    class Collection:
+        timeseries = TimeSeriesConfig(
+            time_field="ts", #  Required
+            meta_field="meta", #  Optional
+            granularity=Granularity.hours, #  Optional
+            expire_after_seconds=2  #  Optional
+        )
+```
+
+TimeSeriesConfig fields are reflecting the respective parameters of the timeseries creation function of MongoDB.
+
+MongoDB documentation: https://docs.mongodb.com/manual/core/timeseries-collections/

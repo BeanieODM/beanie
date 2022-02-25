@@ -1,3 +1,5 @@
+import pytest
+
 from tests.odm.models import Sample
 from beanie.odm.queries.delete import DeleteMany
 
@@ -85,3 +87,12 @@ async def test_delete_many_with_session(preset_documents, session):
 
     count_after = await Sample.count()
     assert count_before - count_find == count_after
+
+
+async def test_delete_pymongo_kwargs(preset_documents):
+    with pytest.raises(TypeError):
+        await Sample.find_many(Sample.increment > 4).delete(wrong="integer_1")
+
+    await Sample.find_many(Sample.increment > 4).delete(hint="integer_1")
+
+    await Sample.find_one(Sample.increment > 4).delete(hint="integer_1")

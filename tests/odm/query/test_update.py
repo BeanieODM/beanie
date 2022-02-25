@@ -194,3 +194,18 @@ async def test_update_one_upsert_without_insert(
         Sample.string == sample_doc_not_saved.string
     ).to_list()
     assert len(new_docs) == 0
+
+
+async def test_update_pymongo_kwargs(preset_documents):
+    with pytest.raises(TypeError):
+        await Sample.find_many(Sample.increment > 4).update(
+            Set({Sample.increment: 100}), wrong="integer_1"
+        )
+
+    await Sample.find_many(Sample.increment > 4).update(
+        Set({Sample.increment: 100}), hint="integer_1"
+    )
+
+    await Sample.find_one(Sample.increment > 4).update(
+        Set({Sample.increment: 100}), hint="integer_1"
+    )

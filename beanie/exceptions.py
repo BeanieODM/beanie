@@ -40,3 +40,7 @@ class RevisionIdWasChanged(Exception):
 
 class NotSupported(Exception):
     pass
+
+
+class MongoDBVersionError(Exception):
+    pass
