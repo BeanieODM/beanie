@@ -2,7 +2,7 @@ import asyncio
 import inspect
 from enum import Enum
 from functools import wraps
-from typing import Callable, List, Union, Dict, TYPE_CHECKING, Any, Type, Set, Optional
+from typing import Callable, List, Union, Dict, TYPE_CHECKING, Any, Type, Optional
 
 if TYPE_CHECKING:
     from beanie.odm.documents import Document
@@ -94,7 +94,7 @@ class ActionRegistry:
         instance: "Document",
         event_type: EventTypes,
         action_direction: ActionDirections,
-        exclude: Set[Union[ActionDirections, str]],
+        exclude: List[Union[ActionDirections, str]],
     ):
         """
         Run actions
@@ -191,9 +191,7 @@ def wrap_with_actions(event_type: EventTypes):
             kwargs["skip_actions"] = skip_actions
 
             if skip_actions is None:
-                skip_actions = set()
-            else:
-                skip_actions = set(skip_actions)
+                skip_actions = []
 
             await ActionRegistry.run_actions(
                 self,
