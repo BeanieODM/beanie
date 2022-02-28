@@ -665,6 +665,7 @@ class Document(BaseModel, UpdateMethods):
         self: DocType,
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
+        **kwargs,
     ) -> DocType:
         """
         Update an existing model in the database or insert it if it does not yet exist.
@@ -693,9 +694,9 @@ class Document(BaseModel, UpdateMethods):
                                 )
 
         try:
-            return await self.replace(session=session)
+            return await self.replace(session=session, **kwargs)
         except (ValueError, DocumentNotFound):
-            return await self.insert(session=session)
+            return await self.insert(session=session, **kwargs)
 
     @saved_state_needed
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
