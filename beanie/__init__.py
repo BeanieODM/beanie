@@ -7,6 +7,8 @@ from beanie.odm.actions import (
     Replace,
     SaveChanges,
     ValidateOnSave,
+    Before,
+    After,
 )
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import (
@@ -36,6 +38,8 @@ __all__ = [
     "Replace",
     "SaveChanges",
     "ValidateOnSave",
+    "Before",
+    "After",
     # Bulk Write
     "BulkWriter",
     # Migrations

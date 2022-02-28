@@ -1,6 +1,6 @@
 import pytest
 
-from beanie.odm.actions import Before, After
+from beanie import Before, After
 
 from tests.odm.models import DocumentWithActions, InheritedDocumentWithActions
 
