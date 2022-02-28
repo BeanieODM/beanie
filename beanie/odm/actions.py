@@ -26,6 +26,10 @@ class ActionDirections(str, Enum):  # TODO think about this name
     AFTER = "AFTER"
 
 
+Before = ActionDirections.BEFORE
+After = ActionDirections.AFTER
+
+
 class ActionRegistry:
     _actions: Dict[Type, Any] = {}
 
@@ -183,6 +187,8 @@ def wrap_with_actions(event_type: EventTypes):
             skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
             **kwargs,
         ):
+            # Forwards the parameter
+            kwargs["skip_actions"] = skip_actions
 
             if skip_actions is None:
                 skip_actions = set()

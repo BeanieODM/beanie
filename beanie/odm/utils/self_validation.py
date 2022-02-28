@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 def validate_self_before(f: Callable):
     @wraps(f)
     async def wrapper(self: "DocType", *args, **kwargs):
-        await self.validate_self()
+        await self.validate_self(*args, **kwargs)
         return await f(self, *args, **kwargs)
 
     return wrapper
