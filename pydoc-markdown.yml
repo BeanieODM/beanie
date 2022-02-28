@@ -49,7 +49,7 @@ renderer:
     - title: Getting started
       source: docs/getting-started.md
     - title: Tutorial
-      children: 
+      children:
         - title: Defining a document
           source: docs/tutorial/defining-a-document.md
         - title: Initialization
@@ -72,7 +72,7 @@ renderer:
           source: docs/tutorial/cache.md
         - title: Revision
           source: docs/tutorial/revision.md
-        - title: Save changes
+        - title: State Management
           source: docs/tutorial/state_management.md
         - title: On save validation
           source: docs/tutorial/on_save_validation.md

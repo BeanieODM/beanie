@@ -44,7 +44,8 @@ i = Item(name="Test", attributes={"attribute_1": 1.0, "attribute_2": 2.0})
 await i.insert()
 i.attributes = {"attribute_1": 1.0}
 await i.save_changes()
-# Changes will consist of: {"attributes.attribute": 1.0}
+# Changes will consist of: {"attributes.attribute_1": 1.0}
+# Keeping attribute_2
 ```
 
 However, there's some cases where you want to replace the whole object when one of its attributes changed.
