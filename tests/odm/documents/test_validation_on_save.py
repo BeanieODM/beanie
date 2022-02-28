@@ -31,3 +31,9 @@ async def test_validate_on_save_action():
     doc = DocumentWithValidationOnSave(num_1=1, num_2=2)
     await doc.insert()
     assert doc.num_2 == 3
+
+
+async def test_validate_on_save_skip_action():
+    doc = DocumentWithValidationOnSave(num_1=1, num_2=2)
+    await doc.insert(skip_actions=['num_2_plus_1'])
+    assert doc.num_2 == 2
