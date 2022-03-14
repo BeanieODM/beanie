@@ -2,7 +2,7 @@ import asyncio
 import inspect
 from enum import Enum
 from functools import wraps
-from typing import Callable, List, Union, Dict, TYPE_CHECKING, Any, Type
+from typing import Callable, List, Union, Dict, TYPE_CHECKING, Any, Type, Optional
 
 if TYPE_CHECKING:
     from beanie.odm.documents import Document
@@ -24,6 +24,10 @@ ValidateOnSave = EventTypes.VALIDATE_ON_SAVE
 class ActionDirections(str, Enum):  # TODO think about this name
     BEFORE = "BEFORE"
     AFTER = "AFTER"
+
+
+Before = ActionDirections.BEFORE
+After = ActionDirections.AFTER
 
 
 class ActionRegistry:
@@ -90,6 +94,7 @@ class ActionRegistry:
         instance: "Document",
         event_type: EventTypes,
         action_direction: ActionDirections,
+        exclude: List[Union[ActionDirections, str]],
     ):
         """
         Run actions
@@ -97,16 +102,23 @@ class ActionRegistry:
         :param event_type: EventTypes - event types
         :param action_direction: ActionDirections - before or after
         """
+        if action_direction in exclude:
+            return
+
         document_class = instance.__class__
         actions_list = cls.get_action_list(
             document_class, event_type, action_direction
         )
         coros = []
         for action in actions_list:
+            if action.__name__ in exclude:
+                continue
+
             if inspect.iscoroutinefunction(action):
                 coros.append(action(instance))
             elif inspect.isfunction(action):
                 action(instance)
+
         await asyncio.gather(*coros)
 
 
@@ -169,11 +181,23 @@ def wrap_with_actions(event_type: EventTypes):
 
     def decorator(f: Callable):
         @wraps(f)
-        async def wrapper(self, *args, **kwargs):
+        async def wrapper(
+            self,
+            *args,
+            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+            **kwargs,
+        ):
+            # Forwards the parameter
+            kwargs["skip_actions"] = skip_actions
+
+            if skip_actions is None:
+                skip_actions = []
+
             await ActionRegistry.run_actions(
                 self,
                 event_type=event_type,
                 action_direction=ActionDirections.BEFORE,
+                exclude=skip_actions,
             )
 
             result = await f(self, *args, **kwargs)
@@ -182,6 +206,7 @@ def wrap_with_actions(event_type: EventTypes):
                 self,
                 event_type=event_type,
                 action_direction=ActionDirections.AFTER,
+                exclude=skip_actions,
             )
 
             return result

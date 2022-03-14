@@ -156,6 +156,7 @@ class Document(BaseModel, UpdateMethods):
         *,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         session: Optional[ClientSession] = None,
+        **kwargs,
     ) -> DocType:
         """
         Insert the document (self) to the collection
@@ -599,6 +600,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
+        **kwargs,
     ) -> DocType:
         """
         Fully update the document in the database
@@ -663,6 +665,7 @@ class Document(BaseModel, UpdateMethods):
         self: DocType,
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
+        **kwargs,
     ) -> DocType:
         """
         Update an existing model in the database or insert it if it does not yet exist.
@@ -691,9 +694,9 @@ class Document(BaseModel, UpdateMethods):
                                 )
 
         try:
-            return await self.replace(session=session)
+            return await self.replace(session=session, **kwargs)
         except (ValueError, DocumentNotFound):
-            return await self.insert(session=session)
+            return await self.insert(session=session, **kwargs)
 
     @saved_state_needed
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
@@ -703,6 +706,7 @@ class Document(BaseModel, UpdateMethods):
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        **kwargs,
     ) -> None:
         """
         Save changes.
@@ -1211,7 +1215,7 @@ class Document(BaseModel, UpdateMethods):
         )
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
-    async def validate_self(self):
+    async def validate_self(self, *args, **kwargs):
         # TODO it can be sync, but needs some actions controller improvements
         if self.get_settings().model_settings.validate_on_save:
             self.parse_obj(self)
