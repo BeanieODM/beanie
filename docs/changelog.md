@@ -1,6 +1,17 @@
 # Changelog
 
-Beanie project 
+Beanie project
+
+## [1.10.1] - 2022-02-24
+
+### Improvement
+
+- Skip actions
+
+### Implementation
+
+- Author - [Paul Renvoisé](https://github.com/paul-finary)
+- PR <https://github.com/roman-right/beanie/pull/218>
 
 ## [1.10.0] - 2022-02-24
 
