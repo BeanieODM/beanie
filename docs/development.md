@@ -6,7 +6,7 @@ Also please read the [Code of conduct](code-of-conduct.md).
 
 ## Setting up the development environment
 
-We assume you are familiar with the general forking and pull request workflow for submitting to open-source projects. If not, don't worry, there are plenty of good guides available, maybe check out [this one.](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow).
+We assume you are familiar with the general forking and pull request workflow for submitting to open-source projects. If not, don't worry, there are plenty of good guides available, maybe check out [this one](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow).
 
 Beanie uses [poetry](https://python-poetry.org/) to manage dependencies and packaging.
 If you are not familiar with poetry, it might be usefully to read up on it before working on Beanie, but here is a quick guide to get you started.
