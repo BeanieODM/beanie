@@ -101,6 +101,98 @@ async def test_replace(documents, document_not_inserted):
     )
 
 
+async def test_upsert_find_many_not_found(documents, document_not_inserted):
+    await documents(5)
+    document_not_inserted.test_int = -10000
+    async with BulkWriter() as bulk_writer:
+        await DocumentTestModel.find(
+            DocumentTestModel.test_int < -1000
+        ).upsert(
+            {"$set": {DocumentTestModel.test_int: 0}},
+            on_insert=document_not_inserted,
+        )
+
+        await bulk_writer.commit()
+
+    assert len(await DocumentTestModel.find_all().to_list()) == 6
+    assert (
+        len(
+            await DocumentTestModel.find(
+                DocumentTestModel.test_int == -10000
+            ).to_list()
+        )
+        == 1
+    )
+
+
+async def test_upsert_find_one_not_found(documents, document_not_inserted):
+    await documents(5)
+    document_not_inserted.test_int = -10000
+    async with BulkWriter() as bulk_writer:
+        await DocumentTestModel.find_one(
+            DocumentTestModel.test_int < -1000
+        ).upsert(
+            {"$set": {DocumentTestModel.test_int: 0}},
+            on_insert=document_not_inserted,
+        )
+
+        await bulk_writer.commit()
+
+    assert len(await DocumentTestModel.find_all().to_list()) == 6
+    assert (
+        len(
+            await DocumentTestModel.find(
+                DocumentTestModel.test_int == -10000
+            ).to_list()
+        )
+        == 1
+    )
+
+
+async def test_upsert_find_many_found(documents, document_not_inserted):
+    await documents(5)
+    async with BulkWriter() as bulk_writer:
+        await DocumentTestModel.find(DocumentTestModel.test_int == 1).upsert(
+            {"$set": {DocumentTestModel.test_int: -10000}},
+            on_insert=document_not_inserted,
+        )
+
+        await bulk_writer.commit()
+
+    assert len(await DocumentTestModel.find_all().to_list()) == 5
+    assert (
+        len(
+            await DocumentTestModel.find(
+                DocumentTestModel.test_int == -10000
+            ).to_list()
+        )
+        == 1
+    )
+
+
+async def test_upsert_find_one_found(documents, document_not_inserted):
+    await documents(5)
+    async with BulkWriter() as bulk_writer:
+        await DocumentTestModel.find_one(
+            DocumentTestModel.test_int == 1
+        ).upsert(
+            {"$set": {DocumentTestModel.test_int: -10000}},
+            on_insert=document_not_inserted,
+        )
+
+        await bulk_writer.commit()
+
+    assert len(await DocumentTestModel.find_all().to_list()) == 5
+    assert (
+        len(
+            await DocumentTestModel.find(
+                DocumentTestModel.test_int == -10000
+            ).to_list()
+        )
+        == 1
+    )
+
+
 async def test_internal_error(document):
     with pytest.raises(BulkWriteError):
         async with BulkWriter() as bulk_writer:
