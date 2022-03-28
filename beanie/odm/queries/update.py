@@ -99,6 +99,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         *args: Mapping[str, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
     ) -> "UpdateQuery":
         """
@@ -112,7 +113,9 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         :return: UpdateMany query
         """
         self.upsert_insert_doc = on_insert  # type: ignore
-        self.update(*args, session=session, **pymongo_kwargs)
+        self.update(
+            *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
+        )
         return self
 
     @abstractmethod
