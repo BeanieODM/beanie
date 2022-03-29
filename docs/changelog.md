@@ -6,6 +6,16 @@ Beanie project
 
 ### Improvement
 
+- Delete action
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/225>
+
+## [1.10.2] - 2022-02-24
+
+### Improvement
+
 - Bulk writer for upsert
 
 ### Implementation
@@ -751,3 +761,5 @@ how specific type should be presented in the database
 [1.10.1]: https://pypi.org/project/beanie/1.10.1
 
 [1.10.2]: https://pypi.org/project/beanie/1.10.2
+
+[1.10.3]: https://pypi.org/project/beanie/1.10.3

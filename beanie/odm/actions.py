@@ -2,7 +2,16 @@ import asyncio
 import inspect
 from enum import Enum
 from functools import wraps
-from typing import Callable, List, Union, Dict, TYPE_CHECKING, Any, Type, Optional
+from typing import (
+    Callable,
+    List,
+    Union,
+    Dict,
+    TYPE_CHECKING,
+    Any,
+    Type,
+    Optional,
+)
 
 if TYPE_CHECKING:
     from beanie.odm.documents import Document
@@ -13,12 +22,14 @@ class EventTypes(str, Enum):
     REPLACE = "REPLACE"
     SAVE_CHANGES = "SAVE_CHANGES"
     VALIDATE_ON_SAVE = "VALIDATE_ON_SAVE"
+    DELETE = "DELETE"
 
 
 Insert = EventTypes.INSERT
 Replace = EventTypes.REPLACE
 SaveChanges = EventTypes.SAVE_CHANGES
 ValidateOnSave = EventTypes.VALIDATE_ON_SAVE
+Delete = EventTypes.DELETE
 
 
 class ActionDirections(str, Enum):  # TODO think about this name
@@ -187,8 +198,6 @@ def wrap_with_actions(event_type: EventTypes):
             skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
             **kwargs,
         ):
-            # Forwards the parameter
-            kwargs["skip_actions"] = skip_actions
 
             if skip_actions is None:
                 skip_actions = []
@@ -200,7 +209,7 @@ def wrap_with_actions(event_type: EventTypes):
                 exclude=skip_actions,
             )
 
-            result = await f(self, *args, **kwargs)
+            result = await f(self, *args, skip_actions=skip_actions, **kwargs)
 
             await ActionRegistry.run_actions(
                 self,

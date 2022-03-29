@@ -41,7 +41,12 @@ from beanie.exceptions import (
     DocumentWasNotSaved,
     NotSupported,
 )
-from beanie.odm.actions import EventTypes, wrap_with_actions, ActionRegistry
+from beanie.odm.actions import (
+    EventTypes,
+    wrap_with_actions,
+    ActionRegistry,
+    ActionDirections,
+)
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
@@ -156,7 +161,7 @@ class Document(BaseModel, UpdateMethods):
         *,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         session: Optional[ClientSession] = None,
-        **kwargs,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> DocType:
         """
         Insert the document (self) to the collection
@@ -600,7 +605,7 @@ class Document(BaseModel, UpdateMethods):
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
-        **kwargs,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> DocType:
         """
         Fully update the document in the database
@@ -706,7 +711,7 @@ class Document(BaseModel, UpdateMethods):
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> None:
         """
         Save changes.
@@ -806,11 +811,13 @@ class Document(BaseModel, UpdateMethods):
             *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
 
+    @wrap_with_actions(EventTypes.DELETE)
     async def delete(
         self,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         """
