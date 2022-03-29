@@ -9,6 +9,7 @@ from beanie.odm.actions import (
     ValidateOnSave,
     Before,
     After,
+    Delete,
 )
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import (
@@ -22,7 +23,7 @@ from beanie.odm.settings.timeseries import TimeSeriesConfig, Granularity
 from beanie.odm.utils.general import init_beanie
 from beanie.odm.documents import Document
 
-__version__ = "1.10.2"
+__version__ = "1.10.3"
 __all__ = [
     # ODM
     "Document",
@@ -38,6 +39,7 @@ __all__ = [
     "Replace",
     "SaveChanges",
     "ValidateOnSave",
+    "Delete",
     "Before",
     "After",
     # Bulk Write

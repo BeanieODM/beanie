@@ -19,7 +19,7 @@ from pydantic import BaseModel, Field
 from pymongo import IndexModel
 
 from beanie import Document, Indexed, Insert, Replace, ValidateOnSave
-from beanie.odm.actions import before_event, after_event
+from beanie.odm.actions import before_event, after_event, Delete
 from beanie.odm.fields import Link
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 
@@ -188,6 +188,10 @@ class DocumentWithActions(Document):
     num_2: int = 10
     num_3: int = 100
 
+    class Inner:
+        inner_num_1 = 0
+        inner_num_2 = 0
+
     @before_event(Insert)
     def capitalize_name(self):
         self.name = self.name.capitalize()
@@ -203,6 +207,14 @@ class DocumentWithActions(Document):
     @after_event(Replace)
     def num_3_change(self):
         self.num_3 -= 1
+
+    @before_event(Delete)
+    def inner_num_to_one(self):
+        self.Inner.inner_num_1 = 1
+
+    @after_event(Delete)
+    def inner_num_to_two(self):
+        self.Inner.inner_num_2 = 2
 
 
 class InheritedDocumentWithActions(DocumentWithActions):
