@@ -311,3 +311,22 @@ class DocumentWithTimeseries(Document):
 
     class Collection:
         timeseries = TimeSeriesConfig(time_field="ts", expire_after_seconds=2)
+
+
+class DocumentForEncodingTestDate(Document):
+    date_field: datetime.date = Field(default_factory=datetime.date.today)
+
+    class Collection:
+        name = "test_date"
+
+    class Settings:
+        bson_encoders = {
+            datetime.date: lambda dt: datetime.datetime(
+                year=dt.year,
+                month=dt.month,
+                day=dt.day,
+                hour=0,
+                minute=0,
+                second=0,
+            )
+        }
