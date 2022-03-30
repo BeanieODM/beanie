@@ -24,6 +24,7 @@ async def test_encode_date():
     doc = DocumentForEncodingTestDate()
     await doc.insert()
     new_doc = await DocumentForEncodingTestDate.get(doc.id)
+    assert new_doc.date_field == doc.date_field
     assert isinstance(new_doc.date_field, date)
 
 
