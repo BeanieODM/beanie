@@ -1,9 +1,12 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from bson import Binary
 
 from beanie.odm.utils.encoder import Encoder
-from tests.odm.models import DocumentForEncodingTest
+from tests.odm.models import (
+    DocumentForEncodingTest,
+    DocumentForEncodingTestDate,
+)
 
 
 async def test_encode_datetime():
@@ -13,6 +16,16 @@ async def test_encode_datetime():
     await doc.insert()
     new_doc = await DocumentForEncodingTest.get(doc.id)
     assert isinstance(new_doc.datetime_field, datetime)
+
+
+async def test_encode_date():
+    assert isinstance(Encoder().encode(datetime.now()), datetime)
+
+    doc = DocumentForEncodingTestDate()
+    await doc.insert()
+    new_doc = await DocumentForEncodingTestDate.get(doc.id)
+    assert new_doc.date_field == doc.date_field
+    assert isinstance(new_doc.date_field, date)
 
 
 def test_encode_with_custom_encoder():
