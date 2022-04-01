@@ -2,7 +2,18 @@
 
 Beanie project
 
-## [1.10.2] - 2022-02-24
+## [1.10.4] - 2022-02-24
+
+### Improvement
+
+- Allow custom MigrationNode for build
+
+### Implementation
+
+- Author - [amos402](https://github.com/amos402)
+- PR <https://github.com/roman-right/beanie/pull/234>
+
+## [1.10.3] - 2022-02-29
 
 ### Improvement
 
@@ -12,7 +23,7 @@ Beanie project
 
 - ISSUE <https://github.com/roman-right/beanie/issues/225>
 
-## [1.10.2] - 2022-02-24
+## [1.10.2] - 2022-02-28
 
 ### Improvement
 
@@ -763,3 +774,5 @@ how specific type should be presented in the database
 [1.10.2]: https://pypi.org/project/beanie/1.10.2
 
 [1.10.3]: https://pypi.org/project/beanie/1.10.3
+
+[1.10.4]: https://pypi.org/project/beanie/1.10.4

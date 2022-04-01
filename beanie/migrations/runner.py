@@ -176,7 +176,7 @@ class MigrationNode:
         )
         current_migration = await MigrationLog.find_one({"is_current": True})
 
-        root_migration_node = MigrationNode("root")
+        root_migration_node = cls("root")
         prev_migration_node = root_migration_node
 
         for name in names:
@@ -185,7 +185,7 @@ class MigrationNode:
             ).load_module((path / name).stem)
             forward_class = getattr(module, "Forward", None)
             backward_class = getattr(module, "Backward", None)
-            migration_node = MigrationNode(
+            migration_node = cls(
                 name=name,
                 prev_migration=prev_migration_node,
                 forward_class=forward_class,
