@@ -22,6 +22,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
     BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
     which parse result with model
     """
+    cursor = None
 
     @abstractmethod
     def get_projection_model(self) -> Optional[Type[BaseModel]]:
@@ -36,16 +37,14 @@ class BaseCursorQuery(Generic[CursorResultType]):
         ...
 
     def __aiter__(self):
+        if self.cursor is None:
+            self.cursor = self.motor_cursor
         return self
 
     async def __anext__(self) -> CursorResultType:
-        try:
-            cursor = self.cursor
-        except AttributeError:
-            self.cursor = cursor = self.motor_cursor
-            if cursor is None:
-                raise RuntimeError("self.motor_cursor was not set")
-        next_item = await cursor.__anext__()
+        if self.cursor is None:
+            raise RuntimeError("cursor was not set")
+        next_item = await self.cursor.__anext__()
         projection = self.get_projection_model()
         if projection is None:
             return next_item
