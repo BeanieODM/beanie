@@ -834,20 +834,13 @@ class FindOne(FindQuery[FindQueryResultType]):
                     fetch_links=self.fetch_links,
                 )
 
-        print(self.find_expressions)
-
         if self.fetch_links:
-            lookup_queries = construct_lookup_queries(self.document_model)
-            result = (
-                await self.document_model.find(*self.find_expressions)
-                .aggregate(
-                    aggregation_pipeline=lookup_queries,
-                    projection_model=self.projection_model,
-                    session=self.session,
-                    **self.pymongo_kwargs,
-                )
-                .to_list(length=1)
-            )
+            result = await self.document_model.find(
+                *self.find_expressions,
+                session=self.session,
+                fetch_links=self.fetch_links,
+                **self.pymongo_kwargs,
+            ).to_list(length=1)
             if result:
                 return result[0]
             else:

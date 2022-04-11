@@ -102,6 +102,7 @@ class AggregationQuery(
     @property
     def motor_cursor(self) -> AgnosticCommandCursor:
         aggregation_pipeline = self.get_aggregation_pipeline()
+        print(aggregation_pipeline)
         return self.document_model.get_motor_collection().aggregate(
             aggregation_pipeline, session=self.session, **self.pymongo_kwargs
         )
