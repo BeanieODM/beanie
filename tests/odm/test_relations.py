@@ -138,6 +138,23 @@ class TestFind:
         for window in house.windows:
             assert isinstance(window, Window)
 
+    async def test_find_by_id_of_the_linked_docs(self, house):
+        house_lst_1 = await House.find(
+            House.door.id == house.door.id
+        ).to_list()
+        house_lst_2 = await House.find(
+            House.door.id == house.door.id, fetch_links=True
+        ).to_list()
+        assert len(house_lst_1) == 1
+        assert len(house_lst_2) == 1
+
+        house_1 = await House.find_one(House.door.id == house.door.id)
+        house_2 = await House.find_one(
+            House.door.id == house.door.id, fetch_links=True
+        )
+        assert house_1 is not None
+        assert house_2 is not None
+
 
 class TestReplace:
     async def test_do_nothing(self, house):
