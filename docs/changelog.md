@@ -2,7 +2,18 @@
 
 Beanie project
 
-## [1.10.4] - 2022-02-24
+## [1.10.5] - 2022-04-11
+
+### Improvement
+
+- Avoid creating redundant query object
+
+### Implementation
+
+- Author - [amos402](https://github.com/amos402)
+- PR <https://github.com/roman-right/beanie/pull/235>
+
+## [1.10.4] - 2022-03-24
 
 ### Improvement
 
@@ -776,3 +787,5 @@ how specific type should be presented in the database
 [1.10.3]: https://pypi.org/project/beanie/1.10.3
 
 [1.10.4]: https://pypi.org/project/beanie/1.10.4
+
+[1.10.5]: https://pypi.org/project/beanie/1.10.5
