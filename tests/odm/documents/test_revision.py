@@ -48,3 +48,11 @@ async def test_update():
         await doc.save_changes()
 
     await doc.save_changes(ignore_revision=True)
+
+
+async def test_empty_update():
+    doc = DocumentWithRevisionTurnedOn(num_1=1, num_2=2)
+    await doc.insert()
+
+    # This fails with RevisionIdWasChanged
+    await doc.update({"$set": {"num_1": 1}})

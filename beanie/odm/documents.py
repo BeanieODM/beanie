@@ -785,7 +785,7 @@ class Document(BaseModel, UpdateMethods):
         if (
             use_revision_id
             and not ignore_revision
-            and result.modified_count == 0
+            and result.matched_count == 0
         ):
             raise RevisionIdWasChanged
         await self._sync()
