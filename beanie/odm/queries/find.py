@@ -46,6 +46,7 @@ from beanie.odm.utils.encoder import Encoder
 from beanie.odm.utils.find import construct_lookup_queries
 from beanie.odm.utils.parsing import parse_obj
 from beanie.odm.utils.projection import get_projection
+from beanie.odm.utils.relations import convert_ids
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
@@ -591,6 +592,14 @@ class FindMany(
 
     @property
     def motor_cursor(self):
+        if self.document_model.get_link_fields() is not None:
+            for i, query in enumerate(self.find_expressions):
+                self.find_expressions[i] = convert_ids(
+                    query,
+                    doc=self.document_model,
+                    fetch_links=self.fetch_links,
+                )
+
         if self.fetch_links:
             aggregation_pipeline: List[
                 Dict[str, Any]
@@ -817,18 +826,21 @@ class FindOne(FindQuery[FindQueryResultType]):
             return None
 
     async def _find_one(self):
-        if self.fetch_links:
-            lookup_queries = construct_lookup_queries(self.document_model)
-            result = (
-                await self.document_model.find(*self.find_expressions)
-                .aggregate(
-                    aggregation_pipeline=lookup_queries,
-                    projection_model=self.projection_model,
-                    session=self.session,
-                    **self.pymongo_kwargs,
+        if self.document_model.get_link_fields() is not None:
+            for i, query in enumerate(self.find_expressions):
+                self.find_expressions[i] = convert_ids(
+                    query,
+                    doc=self.document_model,
+                    fetch_links=self.fetch_links,
                 )
-                .to_list(length=1)
-            )
+
+        if self.fetch_links:
+            result = await self.document_model.find(
+                *self.find_expressions,
+                session=self.session,
+                fetch_links=self.fetch_links,
+                **self.pymongo_kwargs,
+            ).to_list(length=1)
             if result:
                 return result[0]
             else:

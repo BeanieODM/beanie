@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.10.6] - 2022-04-12
+
+### Improvement
+
+- Single syntax for find by id
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/238>
+
 ## [1.10.5] - 2022-04-11
 
 ### Improvement
@@ -789,3 +799,5 @@ how specific type should be presented in the database
 [1.10.4]: https://pypi.org/project/beanie/1.10.4
 
 [1.10.5]: https://pypi.org/project/beanie/1.10.5
+
+[1.10.6]: https://pypi.org/project/beanie/1.10.6
