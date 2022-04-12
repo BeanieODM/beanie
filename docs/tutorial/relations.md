@@ -138,6 +138,16 @@ houses = await House.find(
 ).to_list()
 ```
 
+Search by id of the linked documents works using syntax:
+
+```python
+houses = await House.find(
+    House.door.id == "DOOR_ID_HERE"
+).to_list()
+```
+
+It works the same way with `fetch_links` True and False and for `find_many` and `find_one` methods
+
 ### On-demand fetch
 
 If you don't use prefetching, linked documents will be presented as objects of the `Link` class. You can fetch them manually then.
