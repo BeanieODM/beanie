@@ -100,6 +100,12 @@ class TestFind:
 
         assert len(houses) == 2
 
+        houses = await House.find_many(
+            House.height > 5, limit=3, fetch_links=True
+        ).to_list()
+
+        assert len(houses) == 3
+
     async def test_prefetch_find_one(self, house):
         house = await House.find_one(House.name == "test")
         for window in house.windows:
