@@ -604,6 +604,9 @@ class FindMany(
             aggregation_pipeline: List[
                 Dict[str, Any]
             ] = construct_lookup_queries(self.document_model)
+
+            aggregation_pipeline.append({"$match": self.get_filter_query()})
+
             sort_pipeline = {
                 "$sort": {i[0]: i[1] for i in self.sort_expressions}
             }
@@ -613,8 +616,6 @@ class FindMany(
                 aggregation_pipeline.append({"$skip": self.skip_number})
             if self.limit_number != 0:
                 aggregation_pipeline.append({"$limit": self.limit_number})
-
-            aggregation_pipeline.append({"$match": self.get_filter_query()})
 
             aggregation_pipeline.append(
                 {"$project": get_projection(self.projection_model)}

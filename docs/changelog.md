@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.10.8] - 2022-04-13
+
+### Fix
+
+- Match step after limit step
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/241>
+
 ## [1.10.7] - 2022-04-12
 
 ### Fix
@@ -813,3 +823,5 @@ how specific type should be presented in the database
 [1.10.6]: https://pypi.org/project/beanie/1.10.6
 
 [1.10.7]: https://pypi.org/project/beanie/1.10.7
+
+[1.10.8]: https://pypi.org/project/beanie/1.10.8
