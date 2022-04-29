@@ -14,6 +14,7 @@ class ModelSettings(BaseModel):
     cache_capacity: int = 32
     cache_expiration_time: timedelta = timedelta(minutes=10)
     bson_encoders: Dict[Any, Any] = Field(default_factory=dict)
+    multi_model: bool = False
 
     @classmethod
     def init(

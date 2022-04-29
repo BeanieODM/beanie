@@ -87,6 +87,8 @@ class Encoder:
 
         link_fields = obj.get_link_fields()
         obj_dict: Dict[str, Any] = {}
+        if obj.get_settings().model_settings.multi_model:
+            obj_dict["_class_name"] = obj.__class__.__name__
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
             if k not in self.exclude:
                 if link_fields and k in link_fields:

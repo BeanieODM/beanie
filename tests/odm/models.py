@@ -330,3 +330,25 @@ class DocumentForEncodingTestDate(Document):
                 second=0,
             )
         }
+
+
+class DocumentMultiModelOne(Document):
+    int_filed: int = 0
+    shared: int = 0
+
+    class Collection:
+        name = "multi_model"
+
+    class Settings:
+        multi_model = True
+
+
+class DocumentMultiModelTwo(Document):
+    str_filed: str = "test"
+    shared: int = 0
+
+    class Collection:
+        name = "multi_model"
+
+    class Settings:
+        multi_model = True

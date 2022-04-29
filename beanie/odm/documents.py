@@ -342,6 +342,7 @@ class Document(BaseModel, UpdateMethods):
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
         """
+        args += (cls._get_class_name_filter(),)
         return cls._find_one_query_class(document_model=cls).find_one(
             *args,
             projection_model=projection_model,
@@ -410,6 +411,7 @@ class Document(BaseModel, UpdateMethods):
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
+        args += (cls._get_class_name_filter(),)
         return cls._find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
@@ -1208,7 +1210,9 @@ class Document(BaseModel, UpdateMethods):
             if isinstance(exclude, AbstractSet):
                 exclude = {*self._hidden_fields, *exclude}
             elif isinstance(exclude, Mapping):
-                exclude = dict({k: True for k in self._hidden_fields}, **exclude)  # type: ignore
+                exclude = dict(
+                    {k: True for k in self._hidden_fields}, **exclude
+                )  # type: ignore
             elif exclude is None:
                 exclude = self._hidden_fields
         return super().dict(
@@ -1252,6 +1256,12 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:
         return cls._link_fields
+
+    @classmethod
+    def _get_class_name_filter(cls):
+        if cls.get_settings().model_settings.multi_model:
+            return {"_class_name": cls.__name__}
+        return {}
 
     class Config:
         json_encoders = {
