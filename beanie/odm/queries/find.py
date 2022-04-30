@@ -16,6 +16,7 @@ from typing import (
     cast,
     overload,
 )
+from beanie.odm.fields import LinkTypes
 
 from pydantic import BaseModel
 from pymongo.client_session import ClientSession
@@ -196,9 +197,25 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         Number of found documents
         :return: int
         """
+        link_fields = self.document_model.get_link_fields()
+        filter_query = self.get_filter_query()
+        if link_fields is not None:
+            for link_info in link_fields.values():
+                if link_info.link_type in [
+                    LinkTypes.DIRECT,
+                    LinkTypes.OPTIONAL_DIRECT,
+                ]:
+                    if filter_query.get(f"{link_info.field}.id"):
+                        filter_query[f"{link_info.field}.$id"] = filter_query.pop(
+                            f"{link_info.field}.id"
+                        )
+                    elif filter_query.get(link_info.field):
+                        filter_query[f"{link_info.field}.$id"] = filter_query.pop(
+                            link_info.field
+                        ).get('_id')
         return (
             await self.document_model.get_motor_collection().count_documents(
-                self.get_filter_query()
+                filter_query
             )
         )
 
