@@ -7,6 +7,7 @@ from yarl import URL
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
+    from beanie.odm.views import View
 
 
 def get_model(dot_path: str) -> Type["DocType"]:
@@ -35,8 +36,9 @@ def get_model(dot_path: str) -> Type["DocType"]:
 async def init_beanie(
     database: AsyncIOMotorDatabase = None,
     connection_string: str = None,
-    document_models: List[Union[Type["DocType"], str]] = None,
+    document_models: List[Union[Type["DocType"], Type["View"], str]] = None,
     allow_index_dropping: bool = False,
+    recreate_views: bool = False,
 ):
     """
     Beanie initialization
@@ -67,10 +69,15 @@ async def init_beanie(
     for model in document_models:
         if isinstance(model, str):
             model = get_model(model)
-        collection_inits.append(
-            model.init_model(
-                database, allow_index_dropping=allow_index_dropping
+        if hasattr(model, "init_model"):
+            collection_inits.append(
+                model.init_model(
+                    database, allow_index_dropping=allow_index_dropping
+                )
             )
-        )
+        if hasattr(model, "init_view"):
+            collection_inits.append(
+                model.init_view(database, recreate_view=recreate_views)
+            )
 
     await asyncio.gather(*collection_inits)

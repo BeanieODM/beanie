@@ -7,7 +7,6 @@ from typing import (
     List,
     Type,
     Union,
-    Tuple,
     Mapping,
     TypeVar,
     Any,
@@ -21,7 +20,6 @@ from bson import ObjectId, DBRef
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
 from pydantic import (
     ValidationError,
-    parse_obj_as,
     PrivateAttr,
     Field,
 )
@@ -49,7 +47,6 @@ from beanie.odm.actions import (
 )
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.cache import LRUCache
-from beanie.odm.enums import SortDirection
 from beanie.odm.fields import (
     PydanticObjectId,
     ExpressionField,
@@ -59,6 +56,7 @@ from beanie.odm.fields import (
     WriteRules,
     DeleteRules,
 )
+from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
@@ -88,7 +86,7 @@ DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
-class Document(BaseModel, UpdateMethods):
+class Document(BaseModel, UpdateMethods, FindInterface):
     """
     Document Mapping class.
 
@@ -118,11 +116,6 @@ class Document(BaseModel, UpdateMethods):
 
     # Settings
     _document_settings: ClassVar[Optional[DocumentSettings]] = None
-
-    # Customization
-    # Query builders could be replaced in the inherited classes
-    _find_one_query_class: ClassVar[Type] = FindOne
-    _find_many_query_class: ClassVar[Type] = FindMany
 
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
@@ -264,335 +257,6 @@ class Document(BaseModel, UpdateMethods):
         return await cls.get_motor_collection().insert_many(
             documents_list,
             session=session,
-        )
-
-    @classmethod
-    async def get(
-        cls: Type[DocType],
-        document_id: PydanticObjectId,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> Optional[DocType]:
-        """
-        Get document by id, returns None if document does not exist
-
-        :param document_id: PydanticObjectId - document id
-        :param session: Optional[ClientSession] - pymongo session
-        :param ignore_cache: bool - ignore cache (if it is turned on)
-        :param **pymongo_kwargs: pymongo native parameters for find operation
-        :return: Union["Document", None]
-        """
-        if not isinstance(document_id, cls.__fields__["id"].type_):
-            document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
-        return await cls.find_one(
-            {"_id": document_id},
-            session=session,
-            ignore_cache=ignore_cache,
-            fetch_links=fetch_links,
-            **pymongo_kwargs,
-        )
-
-    @overload
-    @classmethod
-    def find_one(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindOne[DocType]:
-        ...
-
-    @overload
-    @classmethod
-    def find_one(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Type[DocumentProjectionType],
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindOne[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def find_one(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[FindOne[DocType], FindOne[DocumentProjectionType]]:
-        """
-        Find one document by criteria.
-        Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object.
-        When awaited this will either return a document or None if no document exists for the search criteria.
-
-        :param args: *Mapping[str, Any] - search criteria
-        :param projection_model: Optional[Type[BaseModel]] - projection model
-        :param session: Optional[ClientSession] - pymongo session instance
-        :param ignore_cache: bool
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
-        :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
-        """
-        return cls._find_one_query_class(document_model=cls).find_one(
-            *args,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            fetch_links=fetch_links,
-            **pymongo_kwargs,
-        )
-
-    @overload
-    @classmethod
-    def find_many(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocType]:
-        ...
-
-    @overload
-    @classmethod
-    def find_many(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Type[DocumentProjectionType] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def find_many(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
-        """
-        Find many documents by criteria.
-        Returns [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query object
-
-        :param args: *Mapping[str, Any] - search criteria
-        :param skip: Optional[int] - The number of documents to omit.
-        :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
-        :param projection_model: Optional[Type[BaseModel]] - projection model
-        :param session: Optional[ClientSession] - pymongo session
-        :param ignore_cache: bool
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
-        :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
-        """
-        return cls._find_many_query_class(document_model=cls).find_many(
-            *args,
-            sort=sort,
-            skip=skip,
-            limit=limit,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            fetch_links=fetch_links,
-            **pymongo_kwargs,
-        )
-
-    @overload
-    @classmethod
-    def find(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocType]:
-        ...
-
-    @overload
-    @classmethod
-    def find(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Type[DocumentProjectionType],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def find(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
-        """
-        The same as find_many
-        """
-        return cls.find_many(
-            *args,
-            skip=skip,
-            limit=limit,
-            sort=sort,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            fetch_links=fetch_links,
-            **pymongo_kwargs,
-        )
-
-    @overload
-    @classmethod
-    def find_all(
-        cls: Type[DocType],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: None = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocType]:
-        ...
-
-    @overload
-    @classmethod
-    def find_all(
-        cls: Type[DocType],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def find_all(
-        cls: Type[DocType],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
-        """
-        Get all the documents
-
-        :param skip: Optional[int] - The number of documents to omit.
-        :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
-        :param projection_model: Optional[Type[BaseModel]] - projection model
-        :param session: Optional[ClientSession] - pymongo session
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
-        :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
-        """
-        return cls.find_many(
-            {},
-            skip=skip,
-            limit=limit,
-            sort=sort,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            **pymongo_kwargs,
-        )
-
-    @overload
-    @classmethod
-    def all(
-        cls: Type[DocType],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocType]:
-        ...
-
-    @overload
-    @classmethod
-    def all(
-        cls: Type[DocType],
-        projection_model: Type[DocumentProjectionType],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def all(
-        cls: Type[DocType],
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
-        """
-        the same as find_all
-        """
-        return cls.find_all(
-            skip=skip,
-            limit=limit,
-            sort=sort,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            **pymongo_kwargs,
         )
 
     @wrap_with_actions(EventTypes.REPLACE)
@@ -1208,7 +872,9 @@ class Document(BaseModel, UpdateMethods):
             if isinstance(exclude, AbstractSet):
                 exclude = {*self._hidden_fields, *exclude}
             elif isinstance(exclude, Mapping):
-                exclude = dict({k: True for k in self._hidden_fields}, **exclude)  # type: ignore
+                exclude = dict(
+                    {k: True for k in self._hidden_fields}, **exclude
+                )  # type: ignore
             elif exclude is None:
                 exclude = self._hidden_fields
         return super().dict(
@@ -1252,6 +918,19 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:
         return cls._link_fields
+
+    @classmethod
+    def get_collection_name(cls):
+        input_collection_class = getattr(cls, "Collection", None)
+        if input_collection_class is None or not hasattr(
+            input_collection_class, "name"
+        ):
+            return cls.__name__
+        return input_collection_class.name
+
+    @classmethod
+    def get_bson_encoders(cls):
+        return cls.get_settings().model_settings.bson_encoders
 
     class Config:
         json_encoders = {

@@ -80,9 +80,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         self.session = None
         self.encoders: Dict[Any, Callable[[Any], Any]] = {}
         self.ignore_cache: bool = False
-        self.encoders = (
-            self.document_model.get_settings().model_settings.bson_encoders
-        )
+        self.encoders = self.document_model.get_bson_encoders()
         self.fetch_links: bool = False
         self.pymongo_kwargs: Dict[str, Any] = {}
 

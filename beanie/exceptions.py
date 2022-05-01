@@ -44,3 +44,11 @@ class NotSupported(Exception):
 
 class MongoDBVersionError(Exception):
     pass
+
+
+class ViewWasNotInitialized(Exception):
+    pass
+
+
+class ViewHasNoSettings(Exception):
+    pass

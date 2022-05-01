@@ -33,6 +33,7 @@ from tests.odm.models import (
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
 )
+from tests.odm.views import TestView
 from tests.odm.models import (
     Sample,
     Nested,
@@ -154,6 +155,7 @@ async def init(loop, db):
         InheritedDocumentWithActions,
         DocumentForEncodingTest,
         DocumentForEncodingTestDate,
+        TestView,
     ]
     await init_beanie(
         database=db,
