@@ -60,12 +60,16 @@ renderer:
           source: docs/tutorial/find.md
         - title: Updating & Deleting
           source: docs/tutorial/update.md
+        - title: Multi-model mode
+          source: docs/tutorial/multi-model.md
         - title: Indexes & collection names
           source: docs/tutorial/collection_setup.md
         - title: Aggregation
           source: docs/tutorial/aggregate.md
         - title: Relations
           source: docs/tutorial/relations.md
+        - title: Views
+          source: docs/tutorial/views.md
         - title: Event-based actions
           source: docs/tutorial/actions.md
         - title: Cache
