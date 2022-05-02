@@ -5,11 +5,11 @@ Although the basic pydantic syntax allows you to set all aspects of individual f
 - Set the MongoDB collection name
 - Configure indexes
 
-This is done by defining a `Collection` class within your `Document` class.
+This is done by defining a `Settings` class within your `Document` class.
 
 ## Declaring the collection name
 
-To set MongoDB collection name you can use the `name` field of the `Collection` inner class.
+To set MongoDB collection name you can use the `name` field of the `Settings` inner class.
 
 ```python
 from beanie import Document
@@ -19,7 +19,7 @@ class Sample(Document):
     num: int
     description: str
 
-    class Collection:
+    class Settings:
         name = "samples"
 ```
 
@@ -27,7 +27,7 @@ class Sample(Document):
 
 ### Indexed function
 
-To setup an index over a single field the `Indexed` function can be used to wrap the type and does not require a `Collection` class:
+To setup an index over a single field the `Indexed` function can be used to wrap the type and does not require a `Settings` class:
 
 ```python
 from beanie import Document, Indexed
@@ -63,7 +63,7 @@ class Sample(Document):
 
 ### Multi-field indices
 
-The `indexes` field of the inner `Collection` class is responsible for more complex indexes. It is a list where items could be:
+The `indexes` field of the inner `Settings` class is responsible for more complex indexes. It is a list where items could be:
 
 - single key. Name of the document's field (this is equivalent to using the Indexed function described above without any additional arguments)
 - list of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
@@ -82,7 +82,7 @@ class Sample(Document):
     test_int: int
     test_str: str
 
-    class Collection:
+    class Settings:
         indexes = [
             "test_int",
             [
@@ -98,7 +98,7 @@ class Sample(Document):
 
 ## Time series
 
-You can setup a timeseries collection using inner class `Collection`.
+You can setup a timeseries collection using inner class `Settings`.
 
 **Be aware, timeseries collections a supported by MongoDB 5.0 and higher only.**
 
@@ -113,7 +113,7 @@ class Sample(Document):
     ts: datetime = Field(default_factory=datetime.now)
     meta: str
 
-    class Collection:
+    class Settings:
         timeseries = TimeSeriesConfig(
             time_field="ts", #  Required
             meta_field="meta", #  Optional

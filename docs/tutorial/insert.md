@@ -18,7 +18,7 @@ class Product(Document):  # This is the model
     price: Indexed(float)
     category: Category
 
-    class Collection:
+    class Settings:
         name = "products"
         
 chocolate = Category(name="Chocolate", description="A preparation of roasted and ground cacao seeds.")
