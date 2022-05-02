@@ -22,7 +22,7 @@ class ViewSettings(ItemSettings):
         view_settings = cls.parse_obj(vars(settings_class))
 
         if view_settings.name is None:
-            view_settings.name = cls.__name__
+            view_settings.name = view_class.__name__
 
         if isclass(view_settings.source):
             view_settings.source = view_settings.source.get_collection_name()

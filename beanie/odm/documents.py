@@ -10,7 +10,6 @@ from typing import (
     Mapping,
     TypeVar,
     Any,
-    overload,
     Set,
 )
 from typing import TYPE_CHECKING
@@ -57,6 +56,7 @@ from beanie.odm.fields import (
     WriteRules,
     DeleteRules,
 )
+from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
 from beanie.odm.interfaces.update import (
@@ -68,7 +68,6 @@ from beanie.odm.models import (
     InspectionError,
 )
 from beanie.odm.operators.find.comparison import In
-from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.update import UpdateMany
 
 # from beanie.odm.settings.general import DocumentSettings
@@ -89,7 +88,13 @@ DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
-class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
+class Document(
+    BaseModel,
+    UpdateMethods,
+    FindInterface,
+    AggregateInterface,
+    OtherGettersInterface,
+):
     """
     Document Mapping class.
 
@@ -569,70 +574,6 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
         return await cls.find_all().delete(
             session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
-
-    @overload
-    @classmethod
-    def aggregate(
-        cls: Type[DocType],
-        aggregation_pipeline: list,
-        projection_model: None = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> AggregationQuery[Dict[str, Any]]:
-        ...
-
-    @overload
-    @classmethod
-    def aggregate(
-        cls: Type[DocType],
-        aggregation_pipeline: list,
-        projection_model: Type[DocumentProjectionType],
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> AggregationQuery[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def aggregate(
-        cls: Type[DocType],
-        aggregation_pipeline: list,
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[
-        AggregationQuery[Dict[str, Any]],
-        AggregationQuery[DocumentProjectionType],
-    ]:
-        """
-        Aggregate over collection.
-        Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) query object
-        :param aggregation_pipeline: list - aggregation pipeline
-        :param projection_model: Type[BaseModel]
-        :param session: Optional[ClientSession]
-        :param ignore_cache: bool
-        :param **pymongo_kwargs: pymongo native parameters for aggregate operation
-        :return: [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
-        """
-        return cls.find_all().aggregate(
-            aggregation_pipeline=aggregation_pipeline,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            **pymongo_kwargs,
-        )
-
-    @classmethod
-    async def count(cls) -> int:
-        """
-        Number of documents in the collections
-        The same as find_all().count()
-
-        :return: int
-        """
-        return await cls.find_all().count()
 
     # State management
 

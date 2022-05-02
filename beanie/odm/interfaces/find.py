@@ -338,6 +338,16 @@ class FindInterface:
         )
 
     @classmethod
+    async def count(cls) -> int:
+        """
+        Number of documents in the collections
+        The same as find_all().count()
+
+        :return: int
+        """
+        return await cls.find_all().count()
+
+    @classmethod
     def _add_class_name_filter(cls, args: Tuple):
         if cls.get_settings().multi_model:
             args += ({"_class_name": cls.__name__},)

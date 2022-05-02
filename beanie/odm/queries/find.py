@@ -27,7 +27,7 @@ from beanie.exceptions import DocumentNotFound
 from beanie.odm.cache import LRUCache
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.enums import SortDirection
-from beanie.odm.interfaces.aggregate import AggregateMethods
+from beanie.odm.interfaces.aggregation_methods import AggregateMethods
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import UpdateMethods
 from beanie.odm.operators.find.logical import And
