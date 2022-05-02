@@ -1,3 +1,4 @@
+import warnings
 from typing import Optional, Type, List
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -47,6 +48,13 @@ class DocumentSettings(ItemSettings):
         # deprecated Collection class support
 
         collection_class = getattr(document_model, "Collection", None)
+
+        if collection_class is not None:
+            warnings.warn(
+                "Collection inner class is deprecated, use Settings instead",
+                DeprecationWarning,
+            )
+
         collection_vars = (
             {} if collection_class is None else dict(vars(collection_class))
         )
