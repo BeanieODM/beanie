@@ -33,21 +33,23 @@ class DocumentSettings(ItemSettings):
 
     @classmethod
     async def init(
-            cls,
-            database: AsyncIOMotorDatabase,
-            document_model: Type,
-            allow_index_dropping: bool,
+        cls,
+        database: AsyncIOMotorDatabase,
+        document_model: Type,
+        allow_index_dropping: bool,
     ) -> "DocumentSettings":
 
         settings_class = getattr(document_model, "Settings", None)
-        settings_vars = {} if settings_class is None else dict(
-            vars(settings_class))
+        settings_vars = (
+            {} if settings_class is None else dict(vars(settings_class))
+        )
 
         # deprecated Collection class support
 
         collection_class = getattr(document_model, "Collection", None)
-        collection_vars = {} if collection_class is None else dict(
-            vars(collection_class))
+        collection_vars = (
+            {} if collection_class is None else dict(vars(collection_class))
+        )
 
         settings_vars.update(collection_vars)
 
@@ -72,9 +74,9 @@ class DocumentSettings(ItemSettings):
 
         # create motor collection
         if (
-                document_settings.timeseries is not None
-                and document_settings.name
-                not in await database.list_collection_names()
+            document_settings.timeseries is not None
+            and document_settings.name
+            not in await database.list_collection_names()
         ):
 
             collection = await database.create_collection(

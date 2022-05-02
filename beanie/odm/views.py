@@ -24,9 +24,8 @@ class View(BaseModel, FindInterface, OtherGettersInterface):
     async def init_view(cls, database, recreate_view: bool):
         await cls.init_settings(database)
         if (
-                recreate_view
-                or not cls._settings.name
-                       in await database.list_collection_names()
+            recreate_view
+            or cls._settings.name not in await database.list_collection_names()
         ):
             await database.command(
                 {
@@ -38,8 +37,9 @@ class View(BaseModel, FindInterface, OtherGettersInterface):
 
     @classmethod
     async def init_settings(cls, database: AsyncIOMotorDatabase) -> None:
-        cls._settings = await ViewSettings.init(database=database,
-                                                view_class=cls)
+        cls._settings = await ViewSettings.init(
+            database=database, view_class=cls
+        )
 
     @classmethod
     def get_settings(cls) -> ViewSettings:

@@ -12,8 +12,9 @@ class ViewSettings(ItemSettings):
     pipeline: List[Dict[str, Any]]
 
     @classmethod
-    async def init(cls, view_class: Type,
-                   database: AsyncIOMotorDatabase) -> "ViewSettings":
+    async def init(
+        cls, view_class: Type, database: AsyncIOMotorDatabase
+    ) -> "ViewSettings":
         settings_class = getattr(view_class, "Settings", None)
         if settings_class is None:
             raise ViewHasNoSettings("View must have Settings inner class")

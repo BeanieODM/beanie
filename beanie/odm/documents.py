@@ -17,11 +17,12 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from bson import ObjectId, DBRef
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import (
     ValidationError,
     PrivateAttr,
     Field,
+    parse_obj_as,
 )
 from pydantic.main import BaseModel
 from pymongo import InsertOne
@@ -68,8 +69,8 @@ from beanie.odm.models import (
 )
 from beanie.odm.operators.find.comparison import In
 from beanie.odm.queries.aggregation import AggregationQuery
-from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.queries.update import UpdateMany
+
 # from beanie.odm.settings.general import DocumentSettings
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict
@@ -147,16 +148,44 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
         if self.use_state_management():
             self._save_state()
 
+    @classmethod
+    async def get(
+        cls: Type["DocType"],
+        document_id: PydanticObjectId,
+        session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
+        fetch_links: bool = False,
+        **pymongo_kwargs,
+    ) -> Optional["DocType"]:
+        """
+        Get document by id, returns None if document does not exist
+
+        :param document_id: PydanticObjectId - document id
+        :param session: Optional[ClientSession] - pymongo session
+        :param ignore_cache: bool - ignore cache (if it is turned on)
+        :param **pymongo_kwargs: pymongo native parameters for find operation
+        :return: Union["Document", None]
+        """
+        if not isinstance(document_id, cls.__fields__["id"].type_):
+            document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
+        return await cls.find_one(
+            {"_id": document_id},
+            session=session,
+            ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
+            **pymongo_kwargs,
+        )
+
     @wrap_with_actions(EventTypes.INSERT)
     @save_state_after
     @swap_revision_after
     @validate_self_before
     async def insert(
-            self: DocType,
-            *,
-            link_rule: WriteRules = WriteRules.DO_NOTHING,
-            session: Optional[ClientSession] = None,
-            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        self: DocType,
+        *,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
+        session: Optional[ClientSession] = None,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> DocType:
         """
         Insert the document (self) to the collection
@@ -188,8 +217,8 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
         return self
 
     async def create(
-            self: DocType,
-            session: Optional[ClientSession] = None,
+        self: DocType,
+        session: Optional[ClientSession] = None,
     ) -> DocType:
         """
         The same as self.insert()
@@ -199,11 +228,11 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
 
     @classmethod
     async def insert_one(
-            cls: Type[DocType],
-            document: DocType,
-            session: Optional[ClientSession] = None,
-            bulk_writer: "BulkWriter" = None,
-            link_rule: WriteRules = WriteRules.DO_NOTHING,
+        cls: Type[DocType],
+        document: DocType,
+        session: Optional[ClientSession] = None,
+        bulk_writer: "BulkWriter" = None,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> Optional[DocType]:
         """
         Insert one document to the collection
@@ -235,10 +264,10 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
 
     @classmethod
     async def insert_many(
-            cls: Type[DocType],
-            documents: List[DocType],
-            session: Optional[ClientSession] = None,
-            link_rule: WriteRules = WriteRules.DO_NOTHING,
+        cls: Type[DocType],
+        documents: List[DocType],
+        session: Optional[ClientSession] = None,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> InsertManyResult:
 
         """
@@ -266,12 +295,12 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
     @swap_revision_after
     @validate_self_before
     async def replace(
-            self: DocType,
-            ignore_revision: bool = False,
-            session: Optional[ClientSession] = None,
-            bulk_writer: Optional[BulkWriter] = None,
-            link_rule: WriteRules = WriteRules.DO_NOTHING,
-            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        self: DocType,
+        ignore_revision: bool = False,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> DocType:
         """
         Fully update the document in the database
@@ -333,10 +362,10 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
         return self
 
     async def save(
-            self: DocType,
-            session: Optional[ClientSession] = None,
-            link_rule: WriteRules = WriteRules.DO_NOTHING,
-            **kwargs,
+        self: DocType,
+        session: Optional[ClientSession] = None,
+        link_rule: WriteRules = WriteRules.DO_NOTHING,
+        **kwargs,
     ) -> DocType:
         """
         Update an existing model in the database or insert it if it does not yet exist.
@@ -373,11 +402,11 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
     @validate_self_before
     async def save_changes(
-            self,
-            ignore_revision: bool = False,
-            session: Optional[ClientSession] = None,
-            bulk_writer: Optional[BulkWriter] = None,
-            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        self,
+        ignore_revision: bool = False,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> None:
         """
         Save changes.
@@ -399,9 +428,9 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
 
     @classmethod
     async def replace_many(
-            cls: Type[DocType],
-            documents: List[DocType],
-            session: Optional[ClientSession] = None,
+        cls: Type[DocType],
+        documents: List[DocType],
+        session: Optional[ClientSession] = None,
     ) -> None:
         """
         Replace list of documents
@@ -420,12 +449,12 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
 
     @save_state_after
     async def update(
-            self,
-            *args,
-            ignore_revision: bool = False,
-            session: Optional[ClientSession] = None,
-            bulk_writer: Optional[BulkWriter] = None,
-            **pymongo_kwargs,
+        self,
+        *args,
+        ignore_revision: bool = False,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> None:
         """
         Partially update the document in the database
@@ -449,20 +478,20 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
         )
 
         if (
-                use_revision_id
-                and not ignore_revision
-                and result.matched_count == 0
+            use_revision_id
+            and not ignore_revision
+            and result.matched_count == 0
         ):
             raise RevisionIdWasChanged
         await self._sync()
 
     @classmethod
     def update_all(
-            cls,
-            *args: Union[dict, Mapping],
-            session: Optional[ClientSession] = None,
-            bulk_writer: Optional[BulkWriter] = None,
-            **pymongo_kwargs,
+        cls,
+        *args: Union[dict, Mapping],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> UpdateMany:
         """
         Partially update all the documents
@@ -479,12 +508,12 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
 
     @wrap_with_actions(EventTypes.DELETE)
     async def delete(
-            self,
-            session: Optional[ClientSession] = None,
-            bulk_writer: Optional[BulkWriter] = None,
-            link_rule: DeleteRules = DeleteRules.DO_NOTHING,
-            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-            **pymongo_kwargs,
+        self,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        link_rule: DeleteRules = DeleteRules.DO_NOTHING,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         """
         Delete the document
@@ -524,10 +553,10 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
 
     @classmethod
     async def delete_all(
-            cls,
-            session: Optional[ClientSession] = None,
-            bulk_writer: Optional[BulkWriter] = None,
-            **pymongo_kwargs,
+        cls,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         """
         Delete all the documents
@@ -544,35 +573,35 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
     @overload
     @classmethod
     def aggregate(
-            cls: Type[DocType],
-            aggregation_pipeline: list,
-            projection_model: None = None,
-            session: Optional[ClientSession] = None,
-            ignore_cache: bool = False,
-            **pymongo_kwargs,
+        cls: Type[DocType],
+        aggregation_pipeline: list,
+        projection_model: None = None,
+        session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> AggregationQuery[Dict[str, Any]]:
         ...
 
     @overload
     @classmethod
     def aggregate(
-            cls: Type[DocType],
-            aggregation_pipeline: list,
-            projection_model: Type[DocumentProjectionType],
-            session: Optional[ClientSession] = None,
-            ignore_cache: bool = False,
-            **pymongo_kwargs,
+        cls: Type[DocType],
+        aggregation_pipeline: list,
+        projection_model: Type[DocumentProjectionType],
+        session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> AggregationQuery[DocumentProjectionType]:
         ...
 
     @classmethod
     def aggregate(
-            cls: Type[DocType],
-            aggregation_pipeline: list,
-            projection_model: Optional[Type[DocumentProjectionType]] = None,
-            session: Optional[ClientSession] = None,
-            ignore_cache: bool = False,
-            **pymongo_kwargs,
+        cls: Type[DocType],
+        aggregation_pipeline: list,
+        projection_model: Optional[Type[DocumentProjectionType]] = None,
+        session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
+        **pymongo_kwargs,
     ) -> Union[
         AggregationQuery[Dict[str, Any]],
         AggregationQuery[DocumentProjectionType],
@@ -621,9 +650,7 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
         Should objects be replaced when using state management
         :return: bool
         """
-        return (
-            cls.get_settings().state_management_replace_objects
-        )
+        return cls.get_settings().state_management_replace_objects
 
     def _save_state(self) -> None:
         """
@@ -660,7 +687,7 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
         return True
 
     def _collect_updates(
-            self, old_dict: Dict[str, Any], new_dict: Dict[str, Any]
+        self, old_dict: Dict[str, Any], new_dict: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Compares old_dict with new_dict and returns field paths that have been updated
@@ -676,13 +703,13 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
         for field_name, field_value in new_dict.items():
             if field_value != old_dict.get(field_name):
                 if not self.state_management_replace_objects() and (
-                        isinstance(field_value, dict)
-                        and isinstance(old_dict.get(field_name), dict)
+                    isinstance(field_value, dict)
+                    and isinstance(old_dict.get(field_name), dict)
                 ):
                     if old_dict.get(field_name) is None:
                         updates[field_name] = field_value
                     elif isinstance(field_value, dict) and isinstance(
-                            old_dict.get(field_name), dict
+                        old_dict.get(field_name), dict
                     ):
 
                         field_data = self._collect_updates(
@@ -746,7 +773,7 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
 
     @classmethod
     async def init_settings(
-            cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
     ) -> None:
         """
         Init document settings (collection and models)
@@ -781,7 +808,7 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
 
     @classmethod
     async def init_model(
-            cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
     ) -> None:
         """
         Init wrapper
@@ -812,7 +839,7 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
 
     @classmethod
     async def inspect_collection(
-            cls, session: Optional[ClientSession] = None
+        cls, session: Optional[ClientSession] = None
     ) -> InspectionResult:
         """
         Check, if documents, stored in the MongoDB collection
@@ -822,7 +849,7 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
         """
         inspection_result = InspectionResult()
         async for json_document in cls.get_motor_collection().find(
-                {}, session=session
+            {}, session=session
         ):
             try:
                 cls.parse_obj(json_document)
@@ -845,16 +872,16 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
         )
 
     def dict(
-            self,
-            *,
-            include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-            exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-            by_alias: bool = False,
-            skip_defaults: bool = None,
-            exclude_hidden: bool = True,
-            exclude_unset: bool = False,
-            exclude_defaults: bool = False,
-            exclude_none: bool = False,
+        self,
+        *,
+        include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+        exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+        by_alias: bool = False,
+        skip_defaults: bool = None,
+        exclude_hidden: bool = True,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
     ) -> "DictStrAny":
         """
         Overriding of the respective method from Pydantic
@@ -920,7 +947,7 @@ class Document(BaseModel, UpdateMethods, FindInterface, OtherGettersInterface):
 
         @staticmethod
         def schema_extra(
-                schema: Dict[str, Any], model: Type["Document"]
+            schema: Dict[str, Any], model: Type["Document"]
         ) -> None:
             for field_name in model._hidden_fields:
                 schema.get("properties", {}).pop(field_name, None)

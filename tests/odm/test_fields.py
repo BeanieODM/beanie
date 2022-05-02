@@ -11,7 +11,7 @@ from tests.odm.models import (
     DocumentWithCustomFiledsTypes,
     DocumentWithBsonEncodersFiledsTypes,
     DocumentTestModel,
-    Sample
+    Sample,
 )
 
 

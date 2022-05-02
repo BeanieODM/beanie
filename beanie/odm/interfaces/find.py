@@ -8,22 +8,19 @@ from typing import (
     Any,
     overload,
     ClassVar,
+    TypeVar,
 )
-from typing import TYPE_CHECKING
 
 from pydantic import (
-    parse_obj_as,
+    BaseModel,
 )
 from pymongo.client_session import ClientSession
 
 from beanie.odm.enums import SortDirection
-from beanie.odm.fields import (
-    PydanticObjectId,
-)
 from beanie.odm.queries.find import FindOne, FindMany
 
-if TYPE_CHECKING:
-    from beanie.odm.documents import DocType, DocumentProjectionType
+DocType = TypeVar("DocType", bound="FindInterface")
+DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
 class FindInterface:
@@ -31,34 +28,6 @@ class FindInterface:
     # Query builders could be replaced in the inherited classes
     _find_one_query_class: ClassVar[Type] = FindOne
     _find_many_query_class: ClassVar[Type] = FindMany
-
-    @classmethod
-    async def get(
-        cls: Type["DocType"],
-        document_id: PydanticObjectId,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> Optional["DocType"]:
-        """
-        Get document by id, returns None if document does not exist
-
-        :param document_id: PydanticObjectId - document id
-        :param session: Optional[ClientSession] - pymongo session
-        :param ignore_cache: bool - ignore cache (if it is turned on)
-        :param **pymongo_kwargs: pymongo native parameters for find operation
-        :return: Union["Document", None]
-        """
-        if not isinstance(document_id, cls.__fields__["id"].type_):
-            document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
-        return await cls.find_one(
-            {"_id": document_id},
-            session=session,
-            ignore_cache=ignore_cache,
-            fetch_links=fetch_links,
-            **pymongo_kwargs,
-        )
 
     @overload
     @classmethod

@@ -22,6 +22,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
     BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
     which parse result with model
     """
+
     cursor = None
 
     @abstractmethod
