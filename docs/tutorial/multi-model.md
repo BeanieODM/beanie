@@ -15,7 +15,7 @@ class One(Document):
     shared: int = 0        
 
     class Settings:
-        name = "multi_model"  # set collection name
+        name = "items"  # set collection name
         multi_model = True    # turn on multi-model mode
 
 
@@ -24,7 +24,7 @@ class Two(Document):
     shared: int = 0
 
     class Settings:
-        name = "multi_model"  # set collection name
+        name = "items"  # set collection name
         multi_model = True    # turn on multi-model mode
 ```
 
@@ -36,6 +36,8 @@ Insert a document
 await One().insert()
 await One().insert()
 await One().insert()
+
+await Two().insert()
 ```
 
 Find all the doc of the first type:
@@ -53,7 +55,7 @@ Of the second type:
 docs = await Two.all().to_list()
 print(len(docs))
 
->> 0
+>> 1
 ```
 
 Aggregations will work separately for these two document classes too.
