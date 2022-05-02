@@ -82,6 +82,9 @@ class DocumentTestModelWithCustomCollectionName(Document):
     class Collection:
         name = "custom"
 
+    # class Settings:
+    #     name = "custom"
+
 
 class DocumentTestModelWithSimpleIndex(Document):
     test_int: Indexed(int)
@@ -120,6 +123,20 @@ class DocumentTestModelWithComplexIndex(Document):
             ),
         ]
 
+    # class Settings:
+    #     name = "docs_with_index"
+    #     indexes = [
+    #         "test_int",
+    #         [
+    #             ("test_int", pymongo.ASCENDING),
+    #             ("test_str", pymongo.DESCENDING),
+    #         ],
+    #         IndexModel(
+    #             [("test_str", pymongo.DESCENDING)],
+    #             name="test_string_index_DESCENDING",
+    #         ),
+    #     ]
+
 
 class DocumentTestModelWithDroppedIndex(Document):
     test_int: int
@@ -127,6 +144,12 @@ class DocumentTestModelWithDroppedIndex(Document):
     test_str: str
 
     class Collection:
+        name = "docs_with_index"
+        indexes = [
+            "test_int",
+        ]
+
+    class Settings:
         name = "docs_with_index"
         indexes = [
             "test_int",
@@ -141,6 +164,9 @@ class DocumentTestModelFailInspection(Document):
     test_int_2: int
 
     class Collection:
+        name = "DocumentTestModel"
+
+    class Settings:
         name = "DocumentTestModel"
 
 
@@ -309,17 +335,15 @@ class DocumentForEncodingTest(Document):
 class DocumentWithTimeseries(Document):
     ts: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
-    class Collection:
+    class Settings:
         timeseries = TimeSeriesConfig(time_field="ts", expire_after_seconds=2)
 
 
 class DocumentForEncodingTestDate(Document):
     date_field: datetime.date = Field(default_factory=datetime.date.today)
 
-    class Collection:
-        name = "test_date"
-
     class Settings:
+        name = "test_date"
         bson_encoders = {
             datetime.date: lambda dt: datetime.datetime(
                 year=dt.year,

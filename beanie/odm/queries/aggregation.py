@@ -72,7 +72,7 @@ class AggregationQuery(
 
     def _get_cache(self):
         if (
-            self.document_model.get_settings().model_settings.use_cache
+            self.document_model.get_settings().use_cache
             and self.ignore_cache is False
         ):
             return self.document_model._cache.get(self._cache_key)  # type: ignore
@@ -81,7 +81,7 @@ class AggregationQuery(
 
     def _set_cache(self, data):
         if (
-            self.document_model.get_settings().model_settings.use_cache
+            self.document_model.get_settings().use_cache
             and self.ignore_cache is False
         ):
             return self.document_model._cache.set(self._cache_key, data)  # type: ignore

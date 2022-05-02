@@ -80,7 +80,7 @@ class Encoder:
         """
         encoder = Encoder(
             exclude=self.exclude,
-            custom_encoders=obj.get_settings().model_settings.bson_encoders,
+            custom_encoders=obj.get_settings().bson_encoders,
             by_alias=self.by_alias,
             to_db=self.to_db,
         )

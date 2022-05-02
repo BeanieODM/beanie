@@ -570,7 +570,7 @@ class FindMany(
 
     def _get_cache(self):
         if (
-            self.document_model.get_settings().model_settings.use_cache
+            self.document_model.get_settings().use_cache
             and self.ignore_cache is False
         ):
             return self.document_model._cache.get(  # type: ignore
@@ -581,7 +581,7 @@ class FindMany(
 
     def _set_cache(self, data):
         if (
-            self.document_model.get_settings().model_settings.use_cache
+            self.document_model.get_settings().use_cache
             and self.ignore_cache is False
         ):
             return self.document_model._cache.set(  # type: ignore
@@ -860,7 +860,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         # projection = get_projection(self.projection_model)
         if (
-            self.document_model.get_settings().model_settings.use_cache
+            self.document_model.get_settings().use_cache
             and self.ignore_cache is False
         ):
             cache_key = LRUCache.create_key(
