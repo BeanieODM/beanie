@@ -24,7 +24,7 @@ from beanie.odm.utils.general import init_beanie
 from beanie.odm.documents import Document
 from beanie.odm.views import View
 
-__version__ = "1.10.8"
+__version__ = "1.11.0"
 __all__ = [
     # ODM
     "Document",
