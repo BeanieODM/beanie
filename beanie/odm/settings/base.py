@@ -17,5 +17,7 @@ class ItemSettings(BaseModel):
     motor_db: Optional[AsyncIOMotorDatabase]
     motor_collection: Optional[AsyncIOMotorCollection] = None
 
+    multi_model: bool = False
+
     class Config:
         arbitrary_types_allowed = True

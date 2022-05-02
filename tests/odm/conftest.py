@@ -32,6 +32,8 @@ from tests.odm.models import (
     InheritedDocumentWithActions,
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
+    DocumentMultiModelOne,
+    DocumentMultiModelTwo,
 )
 from tests.odm.views import TestView
 from tests.odm.models import (
@@ -156,6 +158,8 @@ async def init(loop, db):
         DocumentForEncodingTest,
         DocumentForEncodingTestDate,
         TestView,
+        DocumentMultiModelOne,
+        DocumentMultiModelTwo,
     ]
     await init_beanie(
         database=db,

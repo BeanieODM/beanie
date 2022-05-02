@@ -18,6 +18,7 @@ from pymongo.client_session import ClientSession
 
 from beanie.odm.enums import SortDirection
 from beanie.odm.queries.find import FindOne, FindMany
+from beanie.odm.settings.base import ItemSettings
 
 DocType = TypeVar("DocType", bound="FindInterface")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
@@ -28,6 +29,10 @@ class FindInterface:
     # Query builders could be replaced in the inherited classes
     _find_one_query_class: ClassVar[Type] = FindOne
     _find_many_query_class: ClassVar[Type] = FindMany
+
+    @classmethod
+    def get_settings(cls) -> ItemSettings:
+        pass
 
     @overload
     @classmethod
@@ -77,6 +82,7 @@ class FindInterface:
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
         """
+        args = cls._add_class_name_filter(args)
         return cls._find_one_query_class(document_model=cls).find_one(
             *args,
             projection_model=projection_model,
@@ -145,6 +151,7 @@ class FindInterface:
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
+        args = cls._add_class_name_filter(args)
         return cls._find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
@@ -329,3 +336,9 @@ class FindInterface:
             ignore_cache=ignore_cache,
             **pymongo_kwargs,
         )
+
+    @classmethod
+    def _add_class_name_filter(cls, args: Tuple):
+        if cls.get_settings().multi_model:
+            args += ({"_class_name": cls.__name__},)
+        return args
