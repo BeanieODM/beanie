@@ -119,8 +119,7 @@ class Encoder:
         """
         Dictionary case
         """
-        for key, value in obj.items():
-            obj[key] = self._encode(value)
+        obj = {str(key): self._encode(value) for key, value in obj.items()}
         return obj
 
     def encode_iterable(self, obj):
