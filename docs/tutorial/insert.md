@@ -43,7 +43,7 @@ await Product.insert_one(tonybar)
 
 ## Inserting many documents
 
-To reduce the number of database queries, similarly typed documents should be inserted together by calling the class method `insert_many`.
+To reduce the number of database queries, similarly typed documents should be inserted together by calling the classmethod `insert_many`.
 ```python
 await Product.insert_many([tonybar,marsbar])
 ```
