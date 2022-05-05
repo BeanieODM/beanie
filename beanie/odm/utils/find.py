@@ -1,11 +1,16 @@
+from beanie.exceptions import NotSupported
 from beanie.odm.fields import LinkTypes
 from typing import TYPE_CHECKING, List, Dict, Any, Type
+
+from beanie.odm.interfaces.detector import ModelType
 
 if TYPE_CHECKING:
     from beanie import Document
 
 
 def construct_lookup_queries(cls: Type["Document"]) -> List[Dict[str, Any]]:
+    if cls.get_model_type() == ModelType.UnionDoc:
+        raise NotSupported("UnionDoc doesn't support link fetching")
     queries = []
     link_fields = cls.get_link_fields()
     if link_fields is not None:

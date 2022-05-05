@@ -615,9 +615,12 @@ class FindMany(
             if self.limit_number != 0:
                 aggregation_pipeline.append({"$limit": self.limit_number})
 
-            aggregation_pipeline.append(
-                {"$project": get_projection(self.projection_model)}
-            )
+            projection = get_projection(self.projection_model)
+
+            if projection is not None:
+                aggregation_pipeline.append({"$project": projection})
+
+            print(aggregation_pipeline)
             return self.document_model.get_motor_collection().aggregate(
                 aggregation_pipeline,
                 session=self.session,

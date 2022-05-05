@@ -47,3 +47,21 @@ class TestMultiModel:
         assert isinstance(docs[1], DocumentMultiModelTwo)
         assert isinstance(docs[2], DocumentMultiModelOne)
         assert isinstance(docs[3], DocumentMultiModelTwo)
+
+    async def test_union_doc_aggregation(self):
+        await DocumentMultiModelOne().insert()
+        await DocumentMultiModelTwo().insert()
+        await DocumentMultiModelOne().insert()
+        await DocumentMultiModelTwo().insert()
+
+        docs = await DocumentUnion.aggregate(
+            [{"$match": {"$expr": {"$eq": ["$int_filed", 0]}}}]
+        ).to_list()
+        assert len(docs) == 2
+
+    async def test_union_doc_link(self):
+        doc_1 = await DocumentMultiModelOne().insert()
+        await DocumentMultiModelTwo(linked_doc=doc_1).insert()
+
+        docs = await DocumentMultiModelTwo.find({}, fetch_links=True).to_list()
+        assert isinstance(docs[0].linked_doc, DocumentMultiModelOne)

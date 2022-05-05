@@ -373,6 +373,7 @@ class DocumentMultiModelOne(Document):
 class DocumentMultiModelTwo(Document):
     str_filed: str = "test"
     shared: int = 0
+    linked_doc: Optional[Link[DocumentMultiModelOne]] = None
 
     class Settings:
         union_model = DocumentUnion
