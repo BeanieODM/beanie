@@ -15,16 +15,21 @@ if TYPE_CHECKING:
 def parse_obj(
     model: Union[Type[BaseModel], Type["Document"]], data: Any
 ) -> BaseModel:
-    if model.get_model_type() == ModelType.UnionDoc:
+    if (
+        hasattr(model, "get_model_type")
+        and model.get_model_type() == ModelType.UnionDoc
+    ):
         if model._document_models is None:
             raise UnionHasNoRegisteredDocs
 
         if isinstance(data, dict):
-            if data["_class_name"] not in model._document_models:
-                raise DocWasNotRegisteredInUnionClass
-            return parse_obj(
-                model=model._document_models[data["_class_name"]], data=data
-            )
+            class_name = data["_class_name"]
+        else:
+            class_name = data._class_name
+
+        if class_name not in model._document_models:
+            raise DocWasNotRegisteredInUnionClass
+        return parse_obj(model=model._document_models[class_name], data=data)
 
     if hasattr(model, "_parse_obj_saving_state"):
         return model._parse_obj_saving_state(data)  # type: ignore
