@@ -52,3 +52,15 @@ class ViewWasNotInitialized(Exception):
 
 class ViewHasNoSettings(Exception):
     pass
+
+
+class UnionHasNoRegisteredDocs(Exception):
+    pass
+
+
+class UnionDocNotInited(Exception):
+    pass
+
+
+class DocWasNotRegisteredInUnionClass(Exception):
+    pass

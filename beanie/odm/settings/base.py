@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Type
 
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
 from pydantic import BaseModel, Field
@@ -17,7 +17,8 @@ class ItemSettings(BaseModel):
     motor_db: Optional[AsyncIOMotorDatabase]
     motor_collection: Optional[AsyncIOMotorCollection] = None
 
-    multi_model: bool = False
+    # multi_model: bool = False
+    union_model: Optional[Type] = None
 
     class Config:
         arbitrary_types_allowed = True

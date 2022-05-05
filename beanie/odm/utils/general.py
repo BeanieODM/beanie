@@ -5,6 +5,8 @@ from typing import List, Type, Union, TYPE_CHECKING
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from yarl import URL
 
+from beanie.odm.interfaces.detector import ModelType
+
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
     from beanie.odm.views import View
@@ -69,13 +71,17 @@ async def init_beanie(
     for model in document_models:
         if isinstance(model, str):
             model = get_model(model)
-        if hasattr(model, "init_model"):
+
+        if model.get_model_type() == ModelType.UnionDoc:
+            model.init(database)
+
+        if model.get_model_type() == ModelType.Document:
             collection_inits.append(
                 model.init_model(
                     database, allow_index_dropping=allow_index_dropping
                 )
             )
-        if hasattr(model, "init_view"):
+        if model.get_model_type() == ModelType.View:
             collection_inits.append(
                 model.init_view(database, recreate_view=recreate_views)
             )

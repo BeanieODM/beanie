@@ -67,6 +67,15 @@ class DocumentSettings(ItemSettings):
 
         document_settings.motor_db = database
 
+        # register in the Union Doc
+
+        if document_settings.union_model is not None:
+            document_settings.name = (
+                document_settings.union_model.register_doc(document_model)
+            )
+
+        # set a name
+
         if not document_settings.name:
             document_settings.name = document_model.__name__
 

@@ -9,7 +9,7 @@ from ipaddress import (
     IPv6Network,
 )
 from pathlib import Path
-from typing import List, Optional, Set, Tuple, Union
+from typing import List, Optional, Set, Tuple, Union, Literal, Annotated
 from uuid import UUID, uuid4
 
 import pymongo
@@ -22,6 +22,7 @@ from beanie import Document, Indexed, Insert, Replace, ValidateOnSave
 from beanie.odm.actions import before_event, after_event, Delete
 from beanie.odm.fields import Link
 from beanie.odm.settings.timeseries import TimeSeriesConfig
+from beanie.odm.union_doc import UnionDoc
 
 
 class Option2(BaseModel):
@@ -356,23 +357,40 @@ class DocumentForEncodingTestDate(Document):
         }
 
 
+class DocumentUnion(UnionDoc):
+    class Settings:
+        name = "multi_model"
+
+
 class DocumentMultiModelOne(Document):
     int_filed: int = 0
     shared: int = 0
 
-    class Collection:
-        name = "multi_model"
-
     class Settings:
-        multi_model = True
+        union_model = DocumentUnion
 
 
 class DocumentMultiModelTwo(Document):
     str_filed: str = "test"
     shared: int = 0
 
-    class Collection:
-        name = "multi_model"
-
     class Settings:
-        multi_model = True
+        union_model = DocumentUnion
+
+
+class DocumentRootOne(Document):
+    name: Literal["one"]
+    int_filed: int = 0
+    shared: int = 0
+
+
+class DocumentRootTwo(Document):
+    name: Literal["two"]
+    str_filed: str = "test"
+    shared: int = 0
+
+
+class DocumentRootMain(BaseModel):
+    __root__: Annotated[
+        Union[DocumentRootOne, DocumentRootTwo], Field(discriminator="name")
+    ]

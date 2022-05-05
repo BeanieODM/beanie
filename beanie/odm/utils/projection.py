@@ -1,11 +1,17 @@
-from typing import Dict, Type, TypeVar
+from typing import Dict, Type, TypeVar, Optional
 
 from pydantic import BaseModel
+
+from beanie.odm.interfaces.detector import ModelType
 
 ProjectionModelType = TypeVar("ProjectionModelType", bound=BaseModel)
 
 
-def get_projection(model: Type[ProjectionModelType]) -> Dict[str, int]:
+def get_projection(
+    model: Type[ProjectionModelType],
+) -> Optional[Dict[str, int]]:
+    if model.get_model_type() == ModelType.UnionDoc:
+        return None
     if hasattr(model, "Settings"):  # MyPy checks
         settings = getattr(model, "Settings")
         if hasattr(settings, "projection"):
