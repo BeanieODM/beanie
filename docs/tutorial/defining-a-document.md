@@ -87,7 +87,7 @@ The `Indexed` function takes an optional argument `index_type`, which may be set
 class Sample(Document):
     description: Indexed(str, index_type = pymongo.TEXT)
 ```
- The `Indexed` function supports pymogo `IndexModel` kwargs arguments ([PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)). 
+ The `Indexed` function supports pymongo `IndexModel` kwargs arguments ([PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)). 
  
 For example to create `unique` index:
 

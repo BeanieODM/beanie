@@ -274,6 +274,7 @@ class Document(
         documents: List[DocType],
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
+        **pymongo_kwargs,
     ) -> InsertManyResult:
 
         """
@@ -292,8 +293,7 @@ class Document(
             get_dict(document, to_db=True) for document in documents
         ]
         return await cls.get_motor_collection().insert_many(
-            documents_list,
-            session=session,
+            documents_list, session=session, **pymongo_kwargs
         )
 
     @wrap_with_actions(EventTypes.REPLACE)

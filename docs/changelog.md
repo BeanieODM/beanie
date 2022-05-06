@@ -2,12 +2,18 @@
 
 Beanie project
 
-## [1.11.0] - 2022-05-02
+## [1.11.0] - 2022-05-06
 
 ### Features
 
 - Multi-model mode
 - Views
+
+## [1.10.9] - 2022-05-06
+
+### Improvement
+
+- pymongo_kwargs for insert many
 
 ## [1.10.8] - 2022-04-13
 
@@ -834,3 +840,5 @@ how specific type should be presented in the database
 [1.10.8]: https://pypi.org/project/beanie/1.10.8
 
 [1.11.0]: https://pypi.org/project/beanie/1.11.0
+
+[1.10.9]: https://pypi.org/project/beanie/1.10.9
