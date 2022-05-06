@@ -1,8 +1,8 @@
-# Union doc
+# Multi-model pattern
 
-`UnionDoc` is a class, that used to wrap two or more `Document` models to keep data of them in a single collection.
+Documents with different schemes could be stored in a single collection and managed correctly. `UnionDoc` class is used for this.
 
-`UnionDoc` class supports find and aggregate methods. For find it will fetch all the found documents into the respective `Document` classes.
+It supports find and aggregate methods. For find it will fetch all the found documents into the respective `Document` classes.
 
 Documents that have `union_doc` in the settings still can be used in find and other queries. Queries of one such class will not see data of others.
 

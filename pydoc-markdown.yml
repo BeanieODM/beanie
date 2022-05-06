@@ -60,7 +60,7 @@ renderer:
           source: docs/tutorial/find.md
         - title: Updating & Deleting
           source: docs/tutorial/update.md
-        - title: Multi-model mode
+        - title: Multi-model pattern
           source: docs/tutorial/multi-model.md
         - title: Indexes & collection names
           source: docs/tutorial/collection_setup.md
