@@ -23,7 +23,7 @@ from beanie.odm.settings.timeseries import TimeSeriesConfig, Granularity
 from beanie.odm.utils.general import init_beanie
 from beanie.odm.documents import Document
 
-__version__ = "1.10.8"
+__version__ = "1.10.9"
 __all__ = [
     # ODM
     "Document",
