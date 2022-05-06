@@ -620,7 +620,6 @@ class FindMany(
             if projection is not None:
                 aggregation_pipeline.append({"$project": projection})
 
-            print(aggregation_pipeline)
             return self.document_model.get_motor_collection().aggregate(
                 aggregation_pipeline,
                 session=self.session,

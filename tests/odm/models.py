@@ -367,7 +367,7 @@ class DocumentMultiModelOne(Document):
     shared: int = 0
 
     class Settings:
-        union_model = DocumentUnion
+        union_doc = DocumentUnion
 
 
 class DocumentMultiModelTwo(Document):
@@ -376,7 +376,7 @@ class DocumentMultiModelTwo(Document):
     linked_doc: Optional[Link[DocumentMultiModelOne]] = None
 
     class Settings:
-        union_model = DocumentUnion
+        union_doc = DocumentUnion
 
 
 class DocumentRootOne(Document):

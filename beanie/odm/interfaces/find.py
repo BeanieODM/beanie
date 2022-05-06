@@ -349,6 +349,6 @@ class FindInterface:
 
     @classmethod
     def _add_class_name_filter(cls, args: Tuple):
-        if cls.get_settings().union_model:
+        if cls.get_settings().union_doc:
             args += ({"_class_name": cls.__name__},)
         return args

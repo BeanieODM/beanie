@@ -1,31 +1,36 @@
-# Multi-model mode
+# Union doc
 
-A Document can be used in multi-model mode. If two or more Document classes have the same collection name in the Settings and multi-model mode turned on, they will save documents into the same collection, but read operations for each Document class will happen separately. One model will not find documents of another model.
+`UnionDoc` is a class, that used to wrap two or more `Document` models to keep data of them in a single collection.
+
+`UnionDoc` class supports find and aggregate methods. For find it will fetch all the found documents into the respective `Document` classes.
+
+Documents that have `union_doc` in the settings still can be used in find and other queries. Queries of one such class will not see data of others.
 
 ## Example
 
-Create documents with multi-model mode turned on
+Create documents
 
 ```python
-from beanie import Document
+from beanie import Document, UnionDoc
 
+class Parent(UnionDoc):  # Union
+    class Settings:
+        name = "union_doc_collection"  # Collection name
 
 class One(Document):
-    int_filed: int = 0
+    int_field: int = 0
     shared: int = 0        
 
     class Settings:
-        name = "items"  # set collection name
-        multi_model = True    # turn on multi-model mode
+        union_doc = Parent
 
 
 class Two(Document):
-    str_filed: str = "test"
+    str_field: str = "test"
     shared: int = 0
 
     class Settings:
-        name = "items"  # set collection name
-        multi_model = True    # turn on multi-model mode
+        union_doc = Parent
 ```
 
 The schemas could be incompatible.
@@ -46,7 +51,7 @@ Find all the doc of the first type:
 docs = await One.all().to_list()
 print(len(docs))
 
->> 3
+>> 3 # It found only documents of class One
 ```
 
 Of the second type:
@@ -55,7 +60,16 @@ Of the second type:
 docs = await Two.all().to_list()
 print(len(docs))
 
->> 1
+>> 1 # It found only documents of class One
+```
+
+Of both:
+
+```python
+docs = await Parent.all().to_list()
+print(len(docs))
+
+>> 4 # instances of the both classes will be in the output here
 ```
 
 Aggregations will work separately for these two document classes too.
