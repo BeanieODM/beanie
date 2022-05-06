@@ -570,7 +570,7 @@ class GeoObject(BaseModel):
 class Place(Document):
     geo: GeoObject
 
-    class Collection:
+    class Settings:
         name = "places"
         indexes = [
             [("geo", pymongo.GEOSPHERE)],  # GEO index
@@ -617,7 +617,7 @@ class GeoObject(BaseModel):
 class Place(Document):
     geo: GeoObject
 
-    class Collection:
+    class Settings:
         name = "places"
         indexes = [
             [("geo", pymongo.GEOSPHERE)],  # GEO index
@@ -664,7 +664,7 @@ class GeoObject(BaseModel):
 class Place(Document):
     geo: GeoObject
 
-    class Collection:
+    class Settings:
         name = "places"
         indexes = [
             [("geo", pymongo.GEOSPHERE)],  # GEO index
@@ -712,7 +712,7 @@ class GeoObject(BaseModel):
 class Place(Document):
     geo: GeoObject
 
-    class Collection:
+    class Settings:
         name = "places"
         indexes = [
             [("geo", pymongo.GEOSPHERE)],  # GEO index

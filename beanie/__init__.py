@@ -22,11 +22,15 @@ from beanie.odm.fields import (
 from beanie.odm.settings.timeseries import TimeSeriesConfig, Granularity
 from beanie.odm.utils.general import init_beanie
 from beanie.odm.documents import Document
+from beanie.odm.views import View
+from beanie.odm.union_doc import UnionDoc
 
-__version__ = "1.10.9"
+__version__ = "1.11.0"
 __all__ = [
     # ODM
     "Document",
+    "View",
+    "UnionDoc",
     "init_beanie",
     "PydanticObjectId",
     "Indexed",

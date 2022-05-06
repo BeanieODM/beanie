@@ -129,12 +129,16 @@ async def test_save_changes(saved_doc_default):
     await saved_doc_default.save_changes()
     assert saved_doc_default.get_saved_state()["internal"]["num"] == 10000
 
-    new_doc = await DocumentWithTurnedOnStateManagement.get(saved_doc_default.id)
+    new_doc = await DocumentWithTurnedOnStateManagement.get(
+        saved_doc_default.id
+    )
     assert new_doc.internal.num == 10000
 
 
 async def test_find_one(saved_doc_default, state):
-    new_doc = await DocumentWithTurnedOnStateManagement.get(saved_doc_default.id)
+    new_doc = await DocumentWithTurnedOnStateManagement.get(
+        saved_doc_default.id
+    )
     assert new_doc.get_saved_state() == state
 
     new_doc = await DocumentWithTurnedOnStateManagement.find_one(

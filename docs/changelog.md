@@ -2,6 +2,13 @@
 
 Beanie project
 
+## [1.11.0] - 2022-05-06
+
+### Features
+
+- Multi-model mode
+- Views
+
 ## [1.10.9] - 2022-05-06
 
 ### Improvement
@@ -831,5 +838,7 @@ how specific type should be presented in the database
 [1.10.7]: https://pypi.org/project/beanie/1.10.7
 
 [1.10.8]: https://pypi.org/project/beanie/1.10.8
+
+[1.11.0]: https://pypi.org/project/beanie/1.11.0
 
 [1.10.9]: https://pypi.org/project/beanie/1.10.9

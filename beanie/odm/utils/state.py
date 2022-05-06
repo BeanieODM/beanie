@@ -48,7 +48,7 @@ def swap_revision_after(f: Callable):
     @wraps(f)
     async def wrapper(self: "DocType", *args, **kwargs):
         result = await f(self, *args, **kwargs)
-        if self.get_settings().model_settings.use_revision:
+        if self.get_settings().use_revision:
             self.swap_revision()
         return result
 

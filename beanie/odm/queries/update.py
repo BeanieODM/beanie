@@ -54,9 +54,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         self.upsert_insert_doc: Optional["DocType"] = None
         self.encoders: Dict[Any, Callable[[Any], Any]] = {}
         self.bulk_writer: Optional[BulkWriter] = None
-        self.encoders = (
-            self.document_model.get_settings().model_settings.bson_encoders
-        )
+        self.encoders = self.document_model.get_settings().bson_encoders
         self.pymongo_kwargs: Dict[str, Any] = {}
 
     @property

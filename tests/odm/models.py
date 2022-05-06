@@ -22,6 +22,7 @@ from beanie import Document, Indexed, Insert, Replace, ValidateOnSave
 from beanie.odm.actions import before_event, after_event, Delete
 from beanie.odm.fields import Link
 from beanie.odm.settings.timeseries import TimeSeriesConfig
+from beanie.odm.union_doc import UnionDoc
 
 
 class Option2(BaseModel):
@@ -82,6 +83,9 @@ class DocumentTestModelWithCustomCollectionName(Document):
     class Collection:
         name = "custom"
 
+    # class Settings:
+    #     name = "custom"
+
 
 class DocumentTestModelWithSimpleIndex(Document):
     test_int: Indexed(int)
@@ -120,6 +124,20 @@ class DocumentTestModelWithComplexIndex(Document):
             ),
         ]
 
+    # class Settings:
+    #     name = "docs_with_index"
+    #     indexes = [
+    #         "test_int",
+    #         [
+    #             ("test_int", pymongo.ASCENDING),
+    #             ("test_str", pymongo.DESCENDING),
+    #         ],
+    #         IndexModel(
+    #             [("test_str", pymongo.DESCENDING)],
+    #             name="test_string_index_DESCENDING",
+    #         ),
+    #     ]
+
 
 class DocumentTestModelWithDroppedIndex(Document):
     test_int: int
@@ -127,6 +145,12 @@ class DocumentTestModelWithDroppedIndex(Document):
     test_str: str
 
     class Collection:
+        name = "docs_with_index"
+        indexes = [
+            "test_int",
+        ]
+
+    class Settings:
         name = "docs_with_index"
         indexes = [
             "test_int",
@@ -141,6 +165,9 @@ class DocumentTestModelFailInspection(Document):
     test_int_2: int
 
     class Collection:
+        name = "DocumentTestModel"
+
+    class Settings:
         name = "DocumentTestModel"
 
 
@@ -309,17 +336,15 @@ class DocumentForEncodingTest(Document):
 class DocumentWithTimeseries(Document):
     ts: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
-    class Collection:
+    class Settings:
         timeseries = TimeSeriesConfig(time_field="ts", expire_after_seconds=2)
 
 
 class DocumentForEncodingTestDate(Document):
     date_field: datetime.date = Field(default_factory=datetime.date.today)
 
-    class Collection:
-        name = "test_date"
-
     class Settings:
+        name = "test_date"
         bson_encoders = {
             datetime.date: lambda dt: datetime.datetime(
                 year=dt.year,
@@ -330,3 +355,25 @@ class DocumentForEncodingTestDate(Document):
                 second=0,
             )
         }
+
+
+class DocumentUnion(UnionDoc):
+    class Settings:
+        name = "multi_model"
+
+
+class DocumentMultiModelOne(Document):
+    int_filed: int = 0
+    shared: int = 0
+
+    class Settings:
+        union_doc = DocumentUnion
+
+
+class DocumentMultiModelTwo(Document):
+    str_filed: str = "test"
+    shared: int = 0
+    linked_doc: Optional[Link[DocumentMultiModelOne]] = None
+
+    class Settings:
+        union_doc = DocumentUnion

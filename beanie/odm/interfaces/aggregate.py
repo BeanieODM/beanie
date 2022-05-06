@@ -1,190 +1,70 @@
-from abc import abstractmethod
-from typing import Any, Optional, Union, List, Dict, cast
+from typing import TypeVar, Type, Optional, Union, Dict, Any, overload
 
+from pydantic import BaseModel
 from pymongo.client_session import ClientSession
 
-from beanie.odm.fields import ExpressionField
+from beanie.odm.queries.aggregation import AggregationQuery
+from beanie.odm.queries.find import FindMany
+
+DocType = TypeVar("DocType", bound="AggregateInterface")
+DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
-class AggregateMethods:
-    """
-    Aggregate methods
-    """
+class AggregateInterface:
+    @classmethod
+    def find_all(cls) -> FindMany:
+        pass
 
-    @abstractmethod
+    @overload
+    @classmethod
     def aggregate(
-        self,
-        aggregation_pipeline,
-        projection_model=None,
-        session=None,
+        cls: Type[DocType],
+        aggregation_pipeline: list,
+        projection_model: None = None,
+        session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
-    ):
+        **pymongo_kwargs,
+    ) -> AggregationQuery[Dict[str, Any]]:
         ...
 
-    async def sum(
-        self,
-        field: Union[str, ExpressionField],
+    @overload
+    @classmethod
+    def aggregate(
+        cls: Type[DocType],
+        aggregation_pipeline: list,
+        projection_model: Type[DocumentProjectionType],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
-    ) -> Optional[float]:
+        **pymongo_kwargs,
+    ) -> AggregationQuery[DocumentProjectionType]:
+        ...
+
+    @classmethod
+    def aggregate(
+        cls: Type[DocType],
+        aggregation_pipeline: list,
+        projection_model: Optional[Type[DocumentProjectionType]] = None,
+        session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
+        **pymongo_kwargs,
+    ) -> Union[
+        AggregationQuery[Dict[str, Any]],
+        AggregationQuery[DocumentProjectionType],
+    ]:
         """
-        Sum of values of the given field
-
-        Example:
-
-        ```python
-
-        class Sample(Document):
-            price: int
-            count: int
-
-        sum_count = await Document.find(Sample.price <= 100).sum(Sample.count)
-
-        ```
-
-        :param field: Union[str, ExpressionField]
-        :param session: Optional[ClientSession] - pymongo session
+        Aggregate over collection.
+        Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) query object
+        :param aggregation_pipeline: list - aggregation pipeline
+        :param projection_model: Type[BaseModel]
+        :param session: Optional[ClientSession]
         :param ignore_cache: bool
-        :return: float - sum. None if there are no items.
+        :param **pymongo_kwargs: pymongo native parameters for aggregate operation
+        :return: [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
-        pipeline = [
-            {"$group": {"_id": None, "sum": {"$sum": f"${field}"}}},
-            {"$project": {"_id": 0, "sum": 1}},
-        ]
-
-        # As we did not supply a projection we can safely cast the type (hinting to mypy that we know the type)
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
-            await self.aggregate(
-                aggregation_pipeline=pipeline,
-                session=session,
-                ignore_cache=ignore_cache,
-            ).to_list(),  # type: ignore # TODO: pyright issue, fix
+        return cls.find_all().aggregate(
+            aggregation_pipeline=aggregation_pipeline,
+            projection_model=projection_model,
+            session=session,
+            ignore_cache=ignore_cache,
+            **pymongo_kwargs,
         )
-        if not result:
-            return None
-        return result[0]["sum"]
-
-    async def avg(
-        self,
-        field,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-    ) -> Optional[float]:
-        """
-        Average of values of the given field
-
-        Example:
-
-        ```python
-
-        class Sample(Document):
-            price: int
-            count: int
-
-        avg_count = await Document.find(Sample.price <= 100).avg(Sample.count)
-        ```
-
-        :param field: Union[str, ExpressionField]
-        :param session: Optional[ClientSession] - pymongo session
-        :param ignore_cache: bool
-        :return: Optional[float] - avg. None if there are no items.
-        """
-        pipeline = [
-            {"$group": {"_id": None, "avg": {"$avg": f"${field}"}}},
-            {"$project": {"_id": 0, "avg": 1}},
-        ]
-
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
-            await self.aggregate(
-                aggregation_pipeline=pipeline,
-                session=session,
-                ignore_cache=ignore_cache,
-            ).to_list(),  # type: ignore # TODO: pyright issue, fix
-        )
-        if not result:
-            return None
-        return result[0]["avg"]
-
-    async def max(
-        self,
-        field: Union[str, ExpressionField],
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-    ) -> Optional[float]:
-        """
-        Max of the values of the given field
-
-        Example:
-
-        ```python
-
-        class Sample(Document):
-            price: int
-            count: int
-
-        max_count = await Document.find(Sample.price <= 100).max(Sample.count)
-        ```
-
-        :param field: Union[str, ExpressionField]
-        :param session: Optional[ClientSession] - pymongo session
-        :return: float - max. None if there are no items.
-        """
-        pipeline = [
-            {"$group": {"_id": None, "max": {"$max": f"${field}"}}},
-            {"$project": {"_id": 0, "max": 1}},
-        ]
-
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
-            await self.aggregate(
-                aggregation_pipeline=pipeline,
-                session=session,
-                ignore_cache=ignore_cache,
-            ).to_list(),  # type: ignore # TODO: pyright issue, fix
-        )
-        if not result:
-            return None
-        return result[0]["max"]
-
-    async def min(
-        self,
-        field: Union[str, ExpressionField],
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-    ) -> Optional[float]:
-        """
-        Min of the values of the given field
-
-        Example:
-
-        ```python
-
-        class Sample(Document):
-            price: int
-            count: int
-
-        min_count = await Document.find(Sample.price <= 100).min(Sample.count)
-        ```
-
-        :param field: Union[str, ExpressionField]
-        :param session: Optional[ClientSession] - pymongo session
-        :return: float - min. None if there are no items.
-        """
-        pipeline = [
-            {"$group": {"_id": None, "min": {"$min": f"${field}"}}},
-            {"$project": {"_id": 0, "min": 1}},
-        ]
-
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
-            await self.aggregate(
-                aggregation_pipeline=pipeline,
-                session=session,
-                ignore_cache=ignore_cache,
-            ).to_list(),  # type: ignore # TODO: pyright issue, fix
-        )
-        if not result:
-            return None
-        return result[0]["min"]

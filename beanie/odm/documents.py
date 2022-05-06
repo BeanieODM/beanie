@@ -7,23 +7,21 @@ from typing import (
     List,
     Type,
     Union,
-    Tuple,
     Mapping,
     TypeVar,
     Any,
-    overload,
     Set,
 )
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from bson import ObjectId, DBRef
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import (
     ValidationError,
-    parse_obj_as,
     PrivateAttr,
     Field,
+    parse_obj_as,
 )
 from pydantic.main import BaseModel
 from pymongo import InsertOne
@@ -49,7 +47,6 @@ from beanie.odm.actions import (
 )
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.cache import LRUCache
-from beanie.odm.enums import SortDirection
 from beanie.odm.fields import (
     PydanticObjectId,
     ExpressionField,
@@ -59,6 +56,10 @@ from beanie.odm.fields import (
     WriteRules,
     DeleteRules,
 )
+from beanie.odm.interfaces.aggregate import AggregateInterface
+from beanie.odm.interfaces.detector import ModelType
+from beanie.odm.interfaces.find import FindInterface
+from beanie.odm.interfaces.getters import OtherGettersInterface
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
@@ -68,10 +69,10 @@ from beanie.odm.models import (
     InspectionError,
 )
 from beanie.odm.operators.find.comparison import In
-from beanie.odm.queries.aggregation import AggregationQuery
-from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.queries.update import UpdateMany
-from beanie.odm.settings.general import DocumentSettings
+
+# from beanie.odm.settings.general import DocumentSettings
+from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.relations import detect_link
 from beanie.odm.utils.self_validation import validate_self_before
@@ -88,7 +89,13 @@ DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
-class Document(BaseModel, UpdateMethods):
+class Document(
+    BaseModel,
+    UpdateMethods,
+    FindInterface,
+    AggregateInterface,
+    OtherGettersInterface,
+):
     """
     Document Mapping class.
 
@@ -119,11 +126,6 @@ class Document(BaseModel, UpdateMethods):
     # Settings
     _document_settings: ClassVar[Optional[DocumentSettings]] = None
 
-    # Customization
-    # Query builders could be replaced in the inherited classes
-    _find_one_query_class: ClassVar[Type] = FindOne
-    _find_many_query_class: ClassVar[Type] = FindMany
-
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
 
@@ -151,6 +153,34 @@ class Document(BaseModel, UpdateMethods):
             setattr(self, key, value)
         if self.use_state_management():
             self._save_state()
+
+    @classmethod
+    async def get(
+        cls: Type["DocType"],
+        document_id: PydanticObjectId,
+        session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
+        fetch_links: bool = False,
+        **pymongo_kwargs,
+    ) -> Optional["DocType"]:
+        """
+        Get document by id, returns None if document does not exist
+
+        :param document_id: PydanticObjectId - document id
+        :param session: Optional[ClientSession] - pymongo session
+        :param ignore_cache: bool - ignore cache (if it is turned on)
+        :param **pymongo_kwargs: pymongo native parameters for find operation
+        :return: Union["Document", None]
+        """
+        if not isinstance(document_id, cls.__fields__["id"].type_):
+            document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
+        return await cls.find_one(
+            {"_id": document_id},
+            session=session,
+            ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
+            **pymongo_kwargs,
+        )
 
     @wrap_with_actions(EventTypes.INSERT)
     @save_state_after
@@ -266,335 +296,6 @@ class Document(BaseModel, UpdateMethods):
             documents_list, session=session, **pymongo_kwargs
         )
 
-    @classmethod
-    async def get(
-        cls: Type[DocType],
-        document_id: PydanticObjectId,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> Optional[DocType]:
-        """
-        Get document by id, returns None if document does not exist
-
-        :param document_id: PydanticObjectId - document id
-        :param session: Optional[ClientSession] - pymongo session
-        :param ignore_cache: bool - ignore cache (if it is turned on)
-        :param **pymongo_kwargs: pymongo native parameters for find operation
-        :return: Union["Document", None]
-        """
-        if not isinstance(document_id, cls.__fields__["id"].type_):
-            document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
-        return await cls.find_one(
-            {"_id": document_id},
-            session=session,
-            ignore_cache=ignore_cache,
-            fetch_links=fetch_links,
-            **pymongo_kwargs,
-        )
-
-    @overload
-    @classmethod
-    def find_one(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindOne[DocType]:
-        ...
-
-    @overload
-    @classmethod
-    def find_one(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Type[DocumentProjectionType],
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindOne[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def find_one(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[FindOne[DocType], FindOne[DocumentProjectionType]]:
-        """
-        Find one document by criteria.
-        Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object.
-        When awaited this will either return a document or None if no document exists for the search criteria.
-
-        :param args: *Mapping[str, Any] - search criteria
-        :param projection_model: Optional[Type[BaseModel]] - projection model
-        :param session: Optional[ClientSession] - pymongo session instance
-        :param ignore_cache: bool
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
-        :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
-        """
-        return cls._find_one_query_class(document_model=cls).find_one(
-            *args,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            fetch_links=fetch_links,
-            **pymongo_kwargs,
-        )
-
-    @overload
-    @classmethod
-    def find_many(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocType]:
-        ...
-
-    @overload
-    @classmethod
-    def find_many(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Type[DocumentProjectionType] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def find_many(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
-        """
-        Find many documents by criteria.
-        Returns [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query object
-
-        :param args: *Mapping[str, Any] - search criteria
-        :param skip: Optional[int] - The number of documents to omit.
-        :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
-        :param projection_model: Optional[Type[BaseModel]] - projection model
-        :param session: Optional[ClientSession] - pymongo session
-        :param ignore_cache: bool
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
-        :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
-        """
-        return cls._find_many_query_class(document_model=cls).find_many(
-            *args,
-            sort=sort,
-            skip=skip,
-            limit=limit,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            fetch_links=fetch_links,
-            **pymongo_kwargs,
-        )
-
-    @overload
-    @classmethod
-    def find(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocType]:
-        ...
-
-    @overload
-    @classmethod
-    def find(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Type[DocumentProjectionType],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def find(
-        cls: Type[DocType],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
-        """
-        The same as find_many
-        """
-        return cls.find_many(
-            *args,
-            skip=skip,
-            limit=limit,
-            sort=sort,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            fetch_links=fetch_links,
-            **pymongo_kwargs,
-        )
-
-    @overload
-    @classmethod
-    def find_all(
-        cls: Type[DocType],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: None = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocType]:
-        ...
-
-    @overload
-    @classmethod
-    def find_all(
-        cls: Type[DocType],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def find_all(
-        cls: Type[DocType],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
-        """
-        Get all the documents
-
-        :param skip: Optional[int] - The number of documents to omit.
-        :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
-        :param projection_model: Optional[Type[BaseModel]] - projection model
-        :param session: Optional[ClientSession] - pymongo session
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
-        :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
-        """
-        return cls.find_many(
-            {},
-            skip=skip,
-            limit=limit,
-            sort=sort,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            **pymongo_kwargs,
-        )
-
-    @overload
-    @classmethod
-    def all(
-        cls: Type[DocType],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocType]:
-        ...
-
-    @overload
-    @classmethod
-    def all(
-        cls: Type[DocType],
-        projection_model: Type[DocumentProjectionType],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def all(
-        cls: Type[DocType],
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[FindMany[DocType], FindMany[DocumentProjectionType]]:
-        """
-        the same as find_all
-        """
-        return cls.find_all(
-            skip=skip,
-            limit=limit,
-            sort=sort,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            **pymongo_kwargs,
-        )
-
     @wrap_with_actions(EventTypes.REPLACE)
     @save_state_after
     @swap_revision_after
@@ -648,7 +349,7 @@ class Document(BaseModel, UpdateMethods):
                                     session=session,
                                 )
 
-        use_revision_id = self.get_settings().model_settings.use_revision
+        use_revision_id = self.get_settings().use_revision
         find_query: Dict[str, Any] = {"_id": self.id}
 
         if use_revision_id and not ignore_revision:
@@ -771,7 +472,7 @@ class Document(BaseModel, UpdateMethods):
         :param **pymongo_kwargs: pymongo native parameters for update operation
         :return: None
         """
-        use_revision_id = self.get_settings().model_settings.use_revision
+        use_revision_id = self.get_settings().use_revision
 
         find_query: Dict[str, Any] = {"_id": self.id}
 
@@ -875,70 +576,6 @@ class Document(BaseModel, UpdateMethods):
             session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
 
-    @overload
-    @classmethod
-    def aggregate(
-        cls: Type[DocType],
-        aggregation_pipeline: list,
-        projection_model: None = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> AggregationQuery[Dict[str, Any]]:
-        ...
-
-    @overload
-    @classmethod
-    def aggregate(
-        cls: Type[DocType],
-        aggregation_pipeline: list,
-        projection_model: Type[DocumentProjectionType],
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> AggregationQuery[DocumentProjectionType]:
-        ...
-
-    @classmethod
-    def aggregate(
-        cls: Type[DocType],
-        aggregation_pipeline: list,
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        **pymongo_kwargs,
-    ) -> Union[
-        AggregationQuery[Dict[str, Any]],
-        AggregationQuery[DocumentProjectionType],
-    ]:
-        """
-        Aggregate over collection.
-        Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) query object
-        :param aggregation_pipeline: list - aggregation pipeline
-        :param projection_model: Type[BaseModel]
-        :param session: Optional[ClientSession]
-        :param ignore_cache: bool
-        :param **pymongo_kwargs: pymongo native parameters for aggregate operation
-        :return: [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
-        """
-        return cls.find_all().aggregate(
-            aggregation_pipeline=aggregation_pipeline,
-            projection_model=projection_model,
-            session=session,
-            ignore_cache=ignore_cache,
-            **pymongo_kwargs,
-        )
-
-    @classmethod
-    async def count(cls) -> int:
-        """
-        Number of documents in the collections
-        The same as find_all().count()
-
-        :return: int
-        """
-        return await cls.find_all().count()
-
     # State management
 
     @classmethod
@@ -947,7 +584,7 @@ class Document(BaseModel, UpdateMethods):
         Is state management turned on
         :return: bool
         """
-        return cls.get_settings().model_settings.use_state_management
+        return cls.get_settings().use_state_management
 
     @classmethod
     def state_management_replace_objects(cls) -> bool:
@@ -955,9 +592,7 @@ class Document(BaseModel, UpdateMethods):
         Should objects be replaced when using state management
         :return: bool
         """
-        return (
-            cls.get_settings().model_settings.state_management_replace_objects
-        )
+        return cls.get_settings().state_management_replace_objects
 
     def _save_state(self) -> None:
         """
@@ -1054,10 +689,10 @@ class Document(BaseModel, UpdateMethods):
         Init model's cache
         :return: None
         """
-        if cls.get_settings().model_settings.use_cache:
+        if cls.get_settings().use_cache:
             cls._cache = LRUCache(
-                capacity=cls.get_settings().model_settings.cache_capacity,
-                expiration_time=cls.get_settings().model_settings.cache_expiration_time,
+                capacity=cls.get_settings().cache_capacity,
+                expiration_time=cls.get_settings().cache_expiration_time,
             )
 
     @classmethod
@@ -1145,16 +780,6 @@ class Document(BaseModel, UpdateMethods):
         return cls._document_settings
 
     @classmethod
-    def get_motor_collection(cls) -> AsyncIOMotorCollection:
-        """
-        Get Motor Collection to access low level control
-
-        :return: AsyncIOMotorCollection
-        """
-        collection_meta = cls.get_settings().collection_settings
-        return collection_meta.motor_collection
-
-    @classmethod
     async def inspect_collection(
         cls, session: Optional[ClientSession] = None
     ) -> InspectionResult:
@@ -1208,7 +833,9 @@ class Document(BaseModel, UpdateMethods):
             if isinstance(exclude, AbstractSet):
                 exclude = {*self._hidden_fields, *exclude}
             elif isinstance(exclude, Mapping):
-                exclude = dict({k: True for k in self._hidden_fields}, **exclude)  # type: ignore
+                exclude = dict(
+                    {k: True for k in self._hidden_fields}, **exclude
+                )  # type: ignore
             elif exclude is None:
                 exclude = self._hidden_fields
         return super().dict(
@@ -1224,7 +851,7 @@ class Document(BaseModel, UpdateMethods):
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args, **kwargs):
         # TODO it can be sync, but needs some actions controller improvements
-        if self.get_settings().model_settings.validate_on_save:
+        if self.get_settings().validate_on_save:
             self.parse_obj(self)
 
     def to_ref(self):
@@ -1252,6 +879,10 @@ class Document(BaseModel, UpdateMethods):
     @classmethod
     def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:
         return cls._link_fields
+
+    @classmethod
+    def get_model_type(cls) -> ModelType:
+        return ModelType.Document
 
     class Config:
         json_encoders = {

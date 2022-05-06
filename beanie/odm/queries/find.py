@@ -27,7 +27,7 @@ from beanie.exceptions import DocumentNotFound
 from beanie.odm.cache import LRUCache
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.enums import SortDirection
-from beanie.odm.interfaces.aggregate import AggregateMethods
+from beanie.odm.interfaces.aggregation_methods import AggregateMethods
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import UpdateMethods
 from beanie.odm.operators.find.logical import And
@@ -80,9 +80,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         self.session = None
         self.encoders: Dict[Any, Callable[[Any], Any]] = {}
         self.ignore_cache: bool = False
-        self.encoders = (
-            self.document_model.get_settings().model_settings.bson_encoders
-        )
+        self.encoders = self.document_model.get_bson_encoders()
         self.fetch_links: bool = False
         self.pymongo_kwargs: Dict[str, Any] = {}
 
@@ -572,7 +570,7 @@ class FindMany(
 
     def _get_cache(self):
         if (
-            self.document_model.get_settings().model_settings.use_cache
+            self.document_model.get_settings().use_cache
             and self.ignore_cache is False
         ):
             return self.document_model._cache.get(  # type: ignore
@@ -583,7 +581,7 @@ class FindMany(
 
     def _set_cache(self, data):
         if (
-            self.document_model.get_settings().model_settings.use_cache
+            self.document_model.get_settings().use_cache
             and self.ignore_cache is False
         ):
             return self.document_model._cache.set(  # type: ignore
@@ -617,9 +615,11 @@ class FindMany(
             if self.limit_number != 0:
                 aggregation_pipeline.append({"$limit": self.limit_number})
 
-            aggregation_pipeline.append(
-                {"$project": get_projection(self.projection_model)}
-            )
+            projection = get_projection(self.projection_model)
+
+            if projection is not None:
+                aggregation_pipeline.append({"$project": projection})
+
             return self.document_model.get_motor_collection().aggregate(
                 aggregation_pipeline,
                 session=self.session,
@@ -862,7 +862,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         # projection = get_projection(self.projection_model)
         if (
-            self.document_model.get_settings().model_settings.use_cache
+            self.document_model.get_settings().use_cache
             and self.ignore_cache is False
         ):
             cache_key = LRUCache.create_key(

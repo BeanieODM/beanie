@@ -80,13 +80,15 @@ class Encoder:
         """
         encoder = Encoder(
             exclude=self.exclude,
-            custom_encoders=obj.get_settings().model_settings.bson_encoders,
+            custom_encoders=obj.get_settings().bson_encoders,
             by_alias=self.by_alias,
             to_db=self.to_db,
         )
 
         link_fields = obj.get_link_fields()
         obj_dict: Dict[str, Any] = {}
+        if obj.get_settings().union_doc is not None:
+            obj_dict["_class_id"] = obj.__class__.__name__
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
             if k not in self.exclude:
                 if link_fields and k in link_fields:
