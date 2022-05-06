@@ -82,7 +82,7 @@ class FindInterface:
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
         """
-        args = cls._add_class_name_filter(args)
+        args = cls._add_class_id_filter(args)
         return cls._find_one_query_class(document_model=cls).find_one(
             *args,
             projection_model=projection_model,
@@ -151,7 +151,7 @@ class FindInterface:
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
-        args = cls._add_class_name_filter(args)
+        args = cls._add_class_id_filter(args)
         return cls._find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
@@ -348,7 +348,7 @@ class FindInterface:
         return await cls.find_all().count()
 
     @classmethod
-    def _add_class_name_filter(cls, args: Tuple):
+    def _add_class_id_filter(cls, args: Tuple):
         if cls.get_settings().union_doc:
-            args += ({"_class_name": cls.__name__},)
+            args += ({"_class_id": cls.__name__},)
         return args

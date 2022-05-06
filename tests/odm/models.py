@@ -9,7 +9,7 @@ from ipaddress import (
     IPv6Network,
 )
 from pathlib import Path
-from typing import List, Optional, Set, Tuple, Union, Literal, Annotated
+from typing import List, Optional, Set, Tuple, Union
 from uuid import UUID, uuid4
 
 import pymongo
@@ -377,21 +377,3 @@ class DocumentMultiModelTwo(Document):
 
     class Settings:
         union_doc = DocumentUnion
-
-
-class DocumentRootOne(Document):
-    name: Literal["one"]
-    int_filed: int = 0
-    shared: int = 0
-
-
-class DocumentRootTwo(Document):
-    name: Literal["two"]
-    str_filed: str = "test"
-    shared: int = 0
-
-
-class DocumentRootMain(BaseModel):
-    __root__: Annotated[
-        Union[DocumentRootOne, DocumentRootTwo], Field(discriminator="name")
-    ]
