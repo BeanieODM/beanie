@@ -28,7 +28,7 @@ marsbar = Product(name="Mars", price=1, category=chocolate)
 This however does not save the documents to the database yet.
 
 ## Insert a single document
-To insert a document into the database, you can call either `insert()` or `create()` on it, the are synonyms:
+To insert a document into the database, you can call either `insert()` or `create()` on it, they are synonyms:
 
 ```python
 await tonybar.insert()
