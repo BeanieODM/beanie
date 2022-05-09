@@ -25,6 +25,7 @@ from tests.odm.models import (
     DocumentWithValidationOnSave,
     DocumentWithRevisionTurnedOn,
     DocumentWithPydanticConfig,
+    DocumentWithExtras,
     House,
     Window,
     Door,
@@ -132,6 +133,7 @@ async def session(cli, loop):
 @pytest.fixture(autouse=True)
 async def init(loop, db):
     models = [
+        DocumentWithExtras,
         DocumentWithPydanticConfig,
         DocumentTestModel,
         DocumentTestModelWithCustomCollectionName,

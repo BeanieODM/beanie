@@ -19,7 +19,12 @@ def get_projection(
         settings = getattr(model, "Settings")
         if hasattr(settings, "projection"):
             return getattr(settings, "projection")
+
+    if getattr(model.Config, "extra", None) == "allow":
+        return None
+
     document_projection: Dict[str, int] = {}
+
     for name, field in model.__fields__.items():
         document_projection[field.alias] = 1
     return document_projection
