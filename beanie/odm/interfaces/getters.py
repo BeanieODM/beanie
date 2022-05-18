@@ -26,3 +26,7 @@ class OtherGettersInterface:
     @classmethod
     def get_link_fields(cls):
         return None
+
+    @classmethod
+    def get_unique_fields(cls):
+        return cls.get_settings().unique_fields

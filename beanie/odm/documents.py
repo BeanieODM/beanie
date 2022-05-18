@@ -67,6 +67,7 @@ from beanie.odm.models import (
     InspectionResult,
     InspectionStatuses,
     InspectionError,
+    UniqueFieldsModel,
 )
 from beanie.odm.operators.find.comparison import In
 from beanie.odm.queries.update import UpdateMany
@@ -95,6 +96,7 @@ class Document(
     FindInterface,
     AggregateInterface,
     OtherGettersInterface,
+    UniqueFieldsModel,
 ):
     """
     Document Mapping class.

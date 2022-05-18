@@ -64,3 +64,7 @@ class UnionDocNotInited(Exception):
 
 class DocWasNotRegisteredInUnionClass(Exception):
     pass
+
+
+class UniqueFieldExists(Exception):
+    pass

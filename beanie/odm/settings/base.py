@@ -19,5 +19,7 @@ class ItemSettings(BaseModel):
 
     union_doc: Optional[Type] = None
 
+    unique_fields: Optional[list] = None
+
     class Config:
         arbitrary_types_allowed = True
