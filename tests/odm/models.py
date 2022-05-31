@@ -13,7 +13,7 @@ from typing import List, Optional, Set, Tuple, Union
 from uuid import UUID, uuid4
 
 import pymongo
-from pydantic import SecretBytes, SecretStr
+from pydantic import SecretBytes, SecretStr, Extra
 from pydantic.color import Color
 from pydantic import BaseModel, Field
 from pymongo import IndexModel
@@ -305,6 +305,17 @@ class DocumentWithPydanticConfig(Document):
 
     class Config(Document.Config):
         validate_assignment = True
+
+
+class DocumentWithExtras(Document):
+    num_1: int
+
+    class Config(Document.Config):
+        extra = Extra.allow
+
+
+class DocumentWithExtrasKw(Document, extra=Extra.allow):
+    num_1: int
 
 
 class Window(Document):
