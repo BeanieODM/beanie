@@ -897,3 +897,13 @@ class Document(
         ) -> None:
             for field_name in model._hidden_fields:
                 schema.get("properties", {}).pop(field_name, None)
+
+    @classmethod
+    async def distinct(
+            cls,
+            key: str,
+            filter: Optional[Mapping[str, Any]] = None,
+            session: Optional[ClientSession] = None,
+            **kwargs: Any
+    ) -> list:
+        return await cls.get_motor_collection().distinct(key, filter, session, **kwargs)
