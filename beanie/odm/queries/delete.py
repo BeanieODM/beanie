@@ -1,4 +1,4 @@
-from typing import Generator, Type, TYPE_CHECKING, Any, Mapping, Optional, Dict
+from typing import Type, TYPE_CHECKING, Any, Mapping, Optional, Dict, Generator
 
 from pymongo.results import DeleteResult
 
@@ -31,15 +31,15 @@ class DeleteQuery(SessionMethods):
 
 
 class DeleteMany(DeleteQuery):
-    def __await__(self) -> Generator[DeleteResult, None, None]:
+    def __await__(self) -> Generator[DeleteResult, None, Optional[DeleteResult]]:
         """
         Run the query
         :return:
         """
         if self.bulk_writer is None:
-            yield from self.document_model.get_motor_collection().delete_many(
+            return (yield from self.document_model.get_motor_collection().delete_many(
                 self.find_query, session=self.session, **self.pymongo_kwargs
-            )
+            ).__await__())
         else:
             self.bulk_writer.add_operation(
                 Operation(
@@ -48,18 +48,19 @@ class DeleteMany(DeleteQuery):
                     object_class=self.document_model,
                 )
             )
+            return None
 
 
 class DeleteOne(DeleteQuery):
-    def __await__(self) -> Generator[DeleteResult, None, None]:
+    def __await__(self) -> Generator[DeleteResult, None, Optional[DeleteResult]]:
         """
         Run the query
         :return:
         """
         if self.bulk_writer is None:
-            yield from self.document_model.get_motor_collection().delete_one(
+            return (yield from self.document_model.get_motor_collection().delete_one(
                 self.find_query, session=self.session, **self.pymongo_kwargs
-            )
+            ).__await__())
         else:
             self.bulk_writer.add_operation(
                 Operation(
@@ -68,3 +69,4 @@ class DeleteOne(DeleteQuery):
                     object_class=self.document_model,
                 )
             )
+            return None
