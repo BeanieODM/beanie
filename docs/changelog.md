@@ -2,6 +2,20 @@
 
 Beanie project
 
+## [1.11.1] - 2022-05-31
+
+### Features
+
+- Allow extra
+- Distinct
+
+### Implementation
+
+- Author - [Robert Rosca](https://github.com/RobertRosca)
+- PR <https://github.com/roman-right/beanie/pull/263>
+- Author - [Никита](https://github.com/gruianichita)
+- PR <https://github.com/roman-right/beanie/pull/268>
+
 ## [1.11.0] - 2022-05-06
 
 ### Features
@@ -839,6 +853,8 @@ how specific type should be presented in the database
 
 [1.10.8]: https://pypi.org/project/beanie/1.10.8
 
+[1.10.9]: https://pypi.org/project/beanie/1.10.9
+
 [1.11.0]: https://pypi.org/project/beanie/1.11.0
 
-[1.10.9]: https://pypi.org/project/beanie/1.10.9
+[1.11.1]: https://pypi.org/project/beanie/1.11.1
