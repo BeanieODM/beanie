@@ -13,7 +13,7 @@ from pydantic import BaseModel
 
 from motor.core import AgnosticCommandCursor
 
-from beanie.odm.cache import LRUCache
+from beanie.odm.cache import Cache
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.queries.cursor import BaseCursorQuery
 from beanie.odm.utils.projection import get_projection
@@ -59,7 +59,7 @@ class AggregationQuery(
 
     @property
     def _cache_key(self) -> str:
-        return LRUCache.create_key(
+        return Cache.create_key(
             {
                 "type": "Aggregation",
                 "filter": self.find_query,

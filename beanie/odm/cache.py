@@ -1,3 +1,4 @@
+import abc
 import collections
 import datetime
 from datetime import timedelta
@@ -13,7 +14,21 @@ class CachedItem(BaseModel):
     value: Any
 
 
-class LRUCache:
+class Cache(abc.ABC):
+    @abc.abstractmethod
+    def set(self, key: str, value: Any) -> None:
+        ...
+
+    @abc.abstractmethod
+    def get(self, key: str) -> Optional[CachedItem]:
+        ...
+
+    @staticmethod
+    def create_key(*args):
+        return str(args)  # TODO think about this
+
+
+class LRUCache(Cache):
     def __init__(self, capacity: int, expiration_time: timedelta):
         self.capacity: int = capacity
         self.expiration_time: timedelta = expiration_time
@@ -40,6 +55,3 @@ class LRUCache:
                 self.cache.popitem(last=False)
         self.cache[key] = CachedItem(value=value)
 
-    @staticmethod
-    def create_key(*args):
-        return str(args)  # TODO think about this

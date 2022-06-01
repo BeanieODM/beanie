@@ -46,7 +46,7 @@ from beanie.odm.actions import (
     ActionDirections,
 )
 from beanie.odm.bulk import BulkWriter, Operation
-from beanie.odm.cache import LRUCache
+from beanie.odm.cache import Cache
 from beanie.odm.fields import (
     PydanticObjectId,
     ExpressionField,
@@ -121,7 +121,7 @@ class Document(
     _link_fields: ClassVar[Optional[Dict[str, LinkInfo]]] = None
 
     # Cache
-    _cache: ClassVar[Optional[LRUCache]] = None
+    _cache: ClassVar[Optional[Cache]] = None
 
     # Settings
     _document_settings: ClassVar[Optional[DocumentSettings]] = None
@@ -690,10 +690,7 @@ class Document(
         :return: None
         """
         if cls.get_settings().use_cache:
-            cls._cache = LRUCache(
-                capacity=cls.get_settings().cache_capacity,
-                expiration_time=cls.get_settings().cache_expiration_time,
-            )
+            cls._cache = cls.get_settings().cache_system
 
     @classmethod
     def init_fields(cls) -> None:

@@ -24,7 +24,7 @@ from pymongo.results import UpdateResult
 from pymongo import ReplaceOne
 
 from beanie.exceptions import DocumentNotFound
-from beanie.odm.cache import LRUCache
+from beanie.odm.cache import Cache
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.aggregation_methods import AggregateMethods
@@ -557,7 +557,7 @@ class FindMany(
 
     @property
     def _cache_key(self) -> str:
-        return LRUCache.create_key(
+        return Cache.create_key(
             {
                 "type": "FindMany",
                 "filter": self.get_filter_query(),
@@ -865,7 +865,7 @@ class FindOne(FindQuery[FindQueryResultType]):
             self.document_model.get_settings().use_cache
             and self.ignore_cache is False
         ):
-            cache_key = LRUCache.create_key(
+            cache_key = Cache.create_key(
                 "FindOne",
                 self.get_filter_query(),
                 self.projection_model,

@@ -20,6 +20,7 @@ from pymongo import IndexModel
 
 from beanie import Document, Indexed, Insert, Replace, ValidateOnSave
 from beanie.odm.actions import before_event, after_event, Delete
+from beanie.odm.cache import LRUCache
 from beanie.odm.fields import Link
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
@@ -70,8 +71,7 @@ class DocumentTestModel(Document):
 
     class Settings:
         use_cache = True
-        cache_expiration_time = datetime.timedelta(seconds=10)
-        cache_capacity = 5
+        cache_system = LRUCache(capacity=5, expiration_time=datetime.timedelta(seconds=10))
         use_state_management = True
 
 
