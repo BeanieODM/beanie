@@ -20,6 +20,8 @@ motor = "^2.5"
 click = ">=7"
 toml = "*"
 yarl = ">=1.6"
+redis = "^4.3.1"
+msgpack = "^1.0.3"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.3.0"
