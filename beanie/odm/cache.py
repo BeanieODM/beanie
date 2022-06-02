@@ -127,8 +127,6 @@ class RedisCache(Cache):
         return data if data else None
 
     def set(self, key, value) -> None:
-        if not value:
-            return
         value = self._serialize(value)
         key = self._get_key(key)
         self.redis_client.set(key, value, ex=self.ttl)
