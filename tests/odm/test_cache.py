@@ -107,6 +107,17 @@ async def test_capacity(documents):
     assert docs[9] == new_doc
 
 
+async def test_invalidate(documents):
+    await documents(5)
+    doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 1)
+    await DocumentTestModel.find_one(DocumentTestModel.test_int == 1).set(
+        {DocumentTestModel.test_str: "NEW_VALUE"}
+    )
+    DocumentTestModel.invalidate_cache()
+    new_doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 1)
+    assert doc != new_doc
+
+
 def get_redis_client():
     return redis.Redis(host="localhost", port=6379, db=random.randint(0, 15))
 
@@ -311,3 +322,17 @@ async def test_aggregation_with_redis_cache_and_json_serializer(documents):
         [{"$group": {"_id": "$test_str", "total": {"$sum": "$test_int"}}}]
     ).to_list()
     assert docs != new_docs
+
+
+async def test_invalidate_redis_cache(documents):
+    # Direct overwrite cache system
+    DocumentTestModel._cache = RedisCache(get_redis_client())
+
+    await documents(5)
+    doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 1)
+    await DocumentTestModel.find_one(DocumentTestModel.test_int == 1).set(
+        {DocumentTestModel.test_str: "NEW_VALUE"}
+    )
+    DocumentTestModel.invalidate_cache()
+    new_doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 1)
+    assert doc != new_doc
