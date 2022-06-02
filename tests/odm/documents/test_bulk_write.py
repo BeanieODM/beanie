@@ -22,6 +22,7 @@ async def test_insert(documents_not_inserted):
 
 async def test_update(documents, document_not_inserted):
     await documents(5)
+    DocumentTestModel.invalidate_cache()
     doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 0)
     doc.test_int = 100
     async with BulkWriter() as bulk_writer:
@@ -64,6 +65,7 @@ async def test_update(documents, document_not_inserted):
 
 async def test_delete(documents, document_not_inserted):
     await documents(5)
+    DocumentTestModel.invalidate_cache()
     doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 0)
     async with BulkWriter() as bulk_writer:
         await doc.delete(bulk_writer=bulk_writer)
@@ -79,6 +81,7 @@ async def test_delete(documents, document_not_inserted):
 
 async def test_replace(documents, document_not_inserted):
     await documents(5)
+    DocumentTestModel.invalidate_cache()
     doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 0)
     doc.test_int = 100
     async with BulkWriter() as bulk_writer:
@@ -103,6 +106,7 @@ async def test_replace(documents, document_not_inserted):
 
 async def test_upsert_find_many_not_found(documents, document_not_inserted):
     await documents(5)
+    DocumentTestModel.invalidate_cache()
     document_not_inserted.test_int = -10000
     async with BulkWriter() as bulk_writer:
         await DocumentTestModel.find(
@@ -127,6 +131,7 @@ async def test_upsert_find_many_not_found(documents, document_not_inserted):
 
 async def test_upsert_find_one_not_found(documents, document_not_inserted):
     await documents(5)
+    DocumentTestModel.invalidate_cache()
     document_not_inserted.test_int = -10000
     async with BulkWriter() as bulk_writer:
         await DocumentTestModel.find_one(
@@ -151,6 +156,7 @@ async def test_upsert_find_one_not_found(documents, document_not_inserted):
 
 async def test_upsert_find_many_found(documents, document_not_inserted):
     await documents(5)
+    DocumentTestModel.invalidate_cache()
     async with BulkWriter() as bulk_writer:
         await DocumentTestModel.find(DocumentTestModel.test_int == 1).upsert(
             {"$set": {DocumentTestModel.test_int: -10000}},
@@ -172,6 +178,7 @@ async def test_upsert_find_many_found(documents, document_not_inserted):
 
 async def test_upsert_find_one_found(documents, document_not_inserted):
     await documents(5)
+    DocumentTestModel.invalidate_cache()
     async with BulkWriter() as bulk_writer:
         await DocumentTestModel.find_one(
             DocumentTestModel.test_int == 1

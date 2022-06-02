@@ -130,6 +130,7 @@ async def test_update_many(documents):
 
 
 async def test_update_all(documents):
+    DocumentTestModel.invalidate_cache()
     await documents(10, "foo")
     await documents(7, "bar")
     await DocumentTestModel.update_all(

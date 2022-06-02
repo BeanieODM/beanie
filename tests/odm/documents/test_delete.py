@@ -2,6 +2,7 @@ from tests.odm.models import DocumentTestModel
 
 
 async def test_delete_one(documents):
+    DocumentTestModel.invalidate_cache()
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
@@ -11,6 +12,7 @@ async def test_delete_one(documents):
 
 
 async def test_delete_one_not_found(documents):
+    DocumentTestModel.invalidate_cache()
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
@@ -20,6 +22,7 @@ async def test_delete_one_not_found(documents):
 
 
 async def test_delete_many(documents):
+    DocumentTestModel.invalidate_cache()
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
@@ -29,6 +32,7 @@ async def test_delete_many(documents):
 
 
 async def test_delete_many_not_found(documents):
+    DocumentTestModel.invalidate_cache()
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
@@ -38,6 +42,7 @@ async def test_delete_many_not_found(documents):
 
 
 async def test_delete_all(documents):
+    DocumentTestModel.invalidate_cache()
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
@@ -47,6 +52,7 @@ async def test_delete_all(documents):
 
 
 async def test_delete(document):
+    DocumentTestModel.invalidate_cache()
     doc_id = document.id
     await document.delete()
     new_document = await DocumentTestModel.get(doc_id)

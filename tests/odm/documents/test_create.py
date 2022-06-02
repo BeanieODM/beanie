@@ -15,6 +15,7 @@ async def test_insert_one(document_not_inserted):
 
 
 async def test_insert_many(documents_not_inserted):
+    DocumentTestModel.invalidate_cache()
     await DocumentTestModel.insert_many(documents_not_inserted(10))
     documents = await DocumentTestModel.find_all().to_list()
     assert len(documents) == 10
@@ -43,6 +44,7 @@ async def test_insert_one_with_session(document_not_inserted, session):
 
 
 async def test_insert_many_with_session(documents_not_inserted, session):
+    DocumentTestModel.invalidate_cache()
     await DocumentTestModel.insert_many(
         documents_not_inserted(10), session=session
     )
