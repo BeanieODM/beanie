@@ -10,6 +10,7 @@ jobs:
         poetry-version: [ 1.1.4 ]
         mongodb-version: [ 4.4, 5.0 ]
         pydantic-version: [1.9.0]
+        redis-version: [6.2]
         os: [ ubuntu-18.04 ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -22,6 +23,10 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: test-rs
+      - name: Setup Redis
+        uses: zhulik/redis-action@1.1.0
+        with:
+          redis version:  ${{ matrix.redis-version }}
       - name: Run image
         uses: abatilo/actions-poetry@v2.0.0
         with:
@@ -32,3 +37,4 @@ jobs:
         run: poetry add pydantic==${{ matrix.pydantic-version }}
       - name: run tests
         run: poetry run pytest
+      
