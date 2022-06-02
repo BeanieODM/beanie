@@ -689,7 +689,9 @@ class Document(
         Init model's cache
         :return: None
         """
-        if cls.get_settings().use_cache:
+        if cls.get_settings().use_cache and isinstance(
+            cls.get_settings().cache_system, Cache
+        ):
             cls._cache = cls.get_settings().cache_system
 
     @classmethod
