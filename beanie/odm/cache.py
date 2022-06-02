@@ -25,6 +25,10 @@ class Cache(abc.ABC):
     def get(self, key: str) -> Optional[CachedItem]:
         ...
 
+    @abc.abstractmethod
+    def invalidate(self) -> None:
+        ...
+
     @staticmethod
     def create_key(*args):
         return str(args)  # TODO think about this
@@ -56,6 +60,9 @@ class LRUCache(Cache):
             if len(self.cache) >= self.capacity:
                 self.cache.popitem(last=False)
         self.cache[key] = CachedItem(value=value)
+
+    def invalidate(self) -> None:
+        self.cache.clear()
 
 
 class RedisCache(Cache):
@@ -125,3 +132,6 @@ class RedisCache(Cache):
         value = self._serialize(value)
         key = self._get_key(key)
         self.redis_client.set(key, value, ex=self.ttl)
+
+    def invalidate(self) -> None:
+        self.redis_client.flushdb()
