@@ -693,6 +693,17 @@ class Document(
             cls._cache = cls.get_settings().cache_system
 
     @classmethod
+    def invalidate_cache(cls) -> None:
+        """
+        Invalidate model's cache
+        :return: None
+        """
+        if cls.get_settings().use_cache and isinstance(
+            cls.get_settings().cache_system, Cache
+        ):
+            cls._cache.invalidate()  # type: ignore
+
+    @classmethod
     def init_fields(cls) -> None:
         """
         Init class fields
@@ -897,10 +908,12 @@ class Document(
 
     @classmethod
     async def distinct(
-            cls,
-            key: str,
-            filter: Optional[Mapping[str, Any]] = None,
-            session: Optional[ClientSession] = None,
-            **kwargs: Any
+        cls,
+        key: str,
+        filter: Optional[Mapping[str, Any]] = None,
+        session: Optional[ClientSession] = None,
+        **kwargs: Any,
     ) -> list:
-        return await cls.get_motor_collection().distinct(key, filter, session, **kwargs)
+        return await cls.get_motor_collection().distinct(
+            key, filter, session, **kwargs
+        )
