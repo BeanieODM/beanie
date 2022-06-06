@@ -79,7 +79,6 @@ class Encoder:
         Beanie Document class case
         """
         encoder = Encoder(
-            exclude=self.exclude,
             custom_encoders=obj.get_settings().bson_encoders,
             by_alias=self.by_alias,
             to_db=self.to_db,

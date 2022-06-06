@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.11.2] - 2022-06-06
+
+### Fix
+
+- Dnt inherit excludes
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/279>
+
 ## [1.11.1] - 2022-05-31
 
 ### Features
@@ -858,3 +868,5 @@ how specific type should be presented in the database
 [1.11.0]: https://pypi.org/project/beanie/1.11.0
 
 [1.11.1]: https://pypi.org/project/beanie/1.11.1
+
+[1.11.2]: https://pypi.org/project/beanie/1.11.2
