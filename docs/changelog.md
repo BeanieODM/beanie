@@ -8,6 +8,10 @@ Beanie project
 
 - Dnt inherit excludes
 
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/279>
+
 ## [1.11.1] - 2022-05-31
 
 ### Features
