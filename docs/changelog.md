@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.11.3] - 2022-10-06
+
+### Improvement
+
+- Motor3 support
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/262>
+
 ## [1.11.2] - 2022-06-06
 
 ### Fix
@@ -870,3 +880,5 @@ how specific type should be presented in the database
 [1.11.1]: https://pypi.org/project/beanie/1.11.1
 
 [1.11.2]: https://pypi.org/project/beanie/1.11.2
+
+[1.11.3]: https://pypi.org/project/beanie/1.11.3

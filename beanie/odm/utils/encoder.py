@@ -21,6 +21,7 @@ from typing import (
 from typing import Any, Callable, Dict, Type
 from uuid import UUID
 
+import bson
 from bson import ObjectId, DBRef, Binary
 from pydantic import BaseModel
 from pydantic import SecretBytes, SecretStr
@@ -46,6 +47,7 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     PurePath: str,
     Link: lambda l: l.ref,
     bytes: lambda b: b if isinstance(b, Binary) else Binary(b),
+    UUID: lambda u: bson.Binary.from_uuid(u),
 }
 
 
@@ -158,7 +160,7 @@ class Encoder:
             return self.encode_iterable(obj)
 
         if isinstance(
-            obj, (str, int, float, ObjectId, UUID, datetime, type(None), DBRef)
+            obj, (str, int, float, ObjectId, datetime, type(None), DBRef)
         ):
             return obj
 

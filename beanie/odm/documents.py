@@ -218,7 +218,8 @@ class Document(
         )
         new_id = result.inserted_id
         if not isinstance(new_id, self.__fields__["id"].type_):
-            new_id = self.__fields__["id"].type_(new_id)
+            print(new_id, type(new_id))
+            new_id = parse_obj_as(self.__fields__["id"].type_, new_id)
         self.id = new_id
         return self
 
@@ -900,10 +901,12 @@ class Document(
 
     @classmethod
     async def distinct(
-            cls,
-            key: str,
-            filter: Optional[Mapping[str, Any]] = None,
-            session: Optional[ClientSession] = None,
-            **kwargs: Any
+        cls,
+        key: str,
+        filter: Optional[Mapping[str, Any]] = None,
+        session: Optional[ClientSession] = None,
+        **kwargs: Any,
     ) -> list:
-        return await cls.get_motor_collection().distinct(key, filter, session, **kwargs)
+        return await cls.get_motor_collection().distinct(
+            key, filter, session, **kwargs
+        )
