@@ -186,7 +186,15 @@ class Link(Generic[T]):
         model_class = field.sub_fields[0].type_  # type: ignore
         if isinstance(v, DBRef):
             return cls(ref=v, model_class=model_class)
+        if isinstance(v, Link):
+            return v
         return model_class.validate(v)
 
     def to_ref(self):
         return self.ref
+
+    def to_dict(self):
+        return {"id": str(self.ref.id), "collection": self.ref.collection}
+
+
+ENCODERS_BY_TYPE[Link] = lambda o: o.to_dict()

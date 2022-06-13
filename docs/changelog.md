@@ -2,6 +2,12 @@
 
 Beanie project
 
+## [1.11.4] - 2022-13-06
+
+### Improvement
+
+- Link as FastAPI output
+
 ## [1.11.3] - 2022-10-06
 
 ### Improvement
@@ -882,3 +888,5 @@ how specific type should be presented in the database
 [1.11.2]: https://pypi.org/project/beanie/1.11.2
 
 [1.11.3]: https://pypi.org/project/beanie/1.11.3
+
+[1.11.4]: https://pypi.org/project/beanie/1.11.4

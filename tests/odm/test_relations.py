@@ -57,6 +57,16 @@ class TestInsert:
         houses = await House.all().to_list()
         assert len(houses) == 1
 
+    async def test_insert_with_link(
+        self, house_not_inserted, door_not_inserted
+    ):
+        door = await door_not_inserted.insert()
+        link = Door.link_from_id(door.id)
+        house_not_inserted.door = link
+        house = House.parse_obj(house_not_inserted)
+        await house.insert(link_rule=WriteRules.WRITE)
+        house.json()
+
 
 class TestFind:
     async def test_prefetch_find_many(self, houses):
