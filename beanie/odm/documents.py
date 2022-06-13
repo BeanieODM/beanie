@@ -218,7 +218,6 @@ class Document(
         )
         new_id = result.inserted_id
         if not isinstance(new_id, self.__fields__["id"].type_):
-            print(new_id, type(new_id))
             new_id = parse_obj_as(self.__fields__["id"].type_, new_id)
         self.id = new_id
         return self
@@ -885,6 +884,23 @@ class Document(
     def get_model_type(cls) -> ModelType:
         return ModelType.Document
 
+    @classmethod
+    async def distinct(
+        cls,
+        key: str,
+        filter: Optional[Mapping[str, Any]] = None,
+        session: Optional[ClientSession] = None,
+        **kwargs: Any,
+    ) -> list:
+        return await cls.get_motor_collection().distinct(
+            key, filter, session, **kwargs
+        )
+
+    @classmethod
+    def link_from_id(cls, id: Any):
+        ref = DBRef(id=id, collection=cls.get_collection_name())
+        return Link(ref, model_class=cls)
+
     class Config:
         json_encoders = {
             ObjectId: lambda v: str(v),
@@ -898,15 +914,3 @@ class Document(
         ) -> None:
             for field_name in model._hidden_fields:
                 schema.get("properties", {}).pop(field_name, None)
-
-    @classmethod
-    async def distinct(
-        cls,
-        key: str,
-        filter: Optional[Mapping[str, Any]] = None,
-        session: Optional[ClientSession] = None,
-        **kwargs: Any,
-    ) -> list:
-        return await cls.get_motor_collection().distinct(
-            key, filter, session, **kwargs
-        )
