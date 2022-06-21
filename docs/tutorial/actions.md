@@ -7,16 +7,19 @@ Currently supported events:
 - Replace
 - SaveChanges
 - ValidateOnSave
+- Update
 
 Currently supported directions:
 - Before
 - After
 
 Current operations creating events:
-- `insert()` and `save()` for Insert
-- `replace()` and `save()` for Replace
+- `insert()` for Insert
+- `replace()` Replace
+- `save()` triggers Insert if it is creating a new document, triggers Replace it replaces existing document.
 - `save_changes()` for SaveChanges
 - `insert()`, `replace()`, `save_changes()`, and `save()` for ValidateOnSave
+- `set()`, `update()` for Update
 
 To register an action you can use `@before_event` and `@after_event` decorators respectively.
 

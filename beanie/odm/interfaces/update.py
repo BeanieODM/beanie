@@ -3,6 +3,7 @@ from typing import Dict, Mapping, Union, Any, Optional
 
 from pymongo.client_session import ClientSession
 
+from beanie.odm.actions import wrap_with_actions, EventTypes
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import ExpressionField
 from beanie.odm.operators.update.general import (
@@ -18,6 +19,7 @@ class UpdateMethods:
     """
 
     @abstractmethod
+    @wrap_with_actions(EventTypes.UPDATE)
     def update(
         self,
         *args: Mapping[str, Any],
