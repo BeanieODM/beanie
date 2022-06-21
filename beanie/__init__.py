@@ -10,6 +10,7 @@ from beanie.odm.actions import (
     Before,
     After,
     Delete,
+    Update,
 )
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import (
@@ -46,6 +47,7 @@ __all__ = [
     "Delete",
     "Before",
     "After",
+    "Update",
     # Bulk Write
     "BulkWriter",
     # Migrations
