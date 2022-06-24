@@ -2,6 +2,12 @@
 
 Beanie project
 
+## [1.11.5] - 2022-24-06
+
+### Fix
+
+- Projection fix for aggregations
+
 ## [1.11.4] - 2022-13-06
 
 ### Improvement
@@ -890,3 +896,5 @@ how specific type should be presented in the database
 [1.11.3]: https://pypi.org/project/beanie/1.11.3
 
 [1.11.4]: https://pypi.org/project/beanie/1.11.4
+
+[1.11.5]: https://pypi.org/project/beanie/1.11.5
