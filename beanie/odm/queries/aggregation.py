@@ -92,11 +92,11 @@ class AggregationQuery(
         match_pipeline: List[Mapping[str, Any]] = (
             [{"$match": self.find_query}] if self.find_query else []
         )
-        projection_pipeline: List[Mapping[str, Any]] = (
-            [{"$project": get_projection(self.projection_model)}]
-            if self.projection_model
-            else []
-        )
+        projection_pipeline: List[Mapping[str, Any]] = []
+        if self.projection_model:
+            projection = get_projection(self.projection_model)
+            if projection is not None:
+                projection_pipeline = [{"$project": projection}]
         return match_pipeline + self.aggregation_pipeline + projection_pipeline
 
     @property

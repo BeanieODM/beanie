@@ -17,7 +17,10 @@ def get_projection(
         return None
     if hasattr(model, "Settings"):  # MyPy checks
         settings = getattr(model, "Settings")
-        if hasattr(settings, "projection"):
+        if (
+            hasattr(settings, "projection")
+            and getattr(settings, "projection") is not None
+        ):
             return getattr(settings, "projection")
 
     if getattr(model.Config, "extra", None) == "allow":
