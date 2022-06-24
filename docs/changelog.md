@@ -2,6 +2,12 @@
 
 Beanie project
 
+## [1.11.6] - 2022-24-06
+
+### Fix
+
+- Roll back projections fix, as it was valid
+
 ## [1.11.5] - 2022-24-06
 
 ### Fix
@@ -898,3 +904,5 @@ how specific type should be presented in the database
 [1.11.4]: https://pypi.org/project/beanie/1.11.4
 
 [1.11.5]: https://pypi.org/project/beanie/1.11.5
+
+[1.11.6]: https://pypi.org/project/beanie/1.11.6
