@@ -227,9 +227,10 @@ async def test_projection():
     projection = get_projection(DocumentTestModel)
     assert projection == {
         "_id": 1,
+        "revision_id": 1,
         "test_int": 1,
         "test_list": 1,
-        "test_str": 1,
         "test_doc": 1,
-        "revision_id": 1,
+        "test_str": 1,
+        "test_link": 1,
     }

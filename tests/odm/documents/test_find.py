@@ -61,9 +61,9 @@ async def test_find_all_skip(documents):
 
 
 async def test_find_all_sort(documents):
-    await documents(4, "uno", True)
-    await documents(2, "dos", True)
-    await documents(1, "cuatro", True)
+    await documents(4, "uno", random=True)
+    await documents(2, "dos", random=True)
+    await documents(1, "cuatro", random=True)
     result = await DocumentTestModel.find_all(
         sort=[
             ("test_str", pymongo.ASCENDING),
@@ -120,9 +120,9 @@ async def test_find_many_skip(documents):
 
 
 async def test_find_many_sort(documents):
-    await documents(4, "uno", True)
-    await documents(2, "dos", True)
-    await documents(1, "cuatro", True)
+    await documents(4, "uno", random=True)
+    await documents(2, "dos", random=True)
+    await documents(1, "cuatro", random=True)
     result = await DocumentTestModel.find_many(
         {"test_str": "uno"}, sort="test_int"
     ).to_list()

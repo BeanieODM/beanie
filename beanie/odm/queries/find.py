@@ -1,3 +1,4 @@
+from operator import attrgetter
 from typing import (
     Callable,
     TYPE_CHECKING,
@@ -194,10 +195,29 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         Number of found documents
         :return: int
         """
-        return (
-            await self.document_model.get_motor_collection().count_documents(
+        if not self.fetch_links:
+            return await self.document_model.get_motor_collection().count_documents(
                 self.get_filter_query()
             )
+
+        key = "count"
+        default_value = 0
+
+        try:
+            cursor_args = attrgetter("motor_cursor.args")(self)
+        except AttributeError:
+            return default_value
+
+        aggregation_pipeline = cursor_args[0][:]
+        aggregation_pipeline.append({"$count": key})
+        docs = await self.document_model.aggregate(
+            aggregation_pipeline
+        ).to_list()
+
+        return (
+            max(doc.get(key, default_value) for doc in docs)
+            if docs
+            else default_value
         )
 
     async def exists(self) -> bool:

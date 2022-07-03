@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from random import randint
-from typing import List
+from typing import List, Optional
 
 import pytest
 
@@ -189,7 +189,10 @@ def document_not_inserted():
 @pytest.fixture
 def documents_not_inserted():
     def generate_documents(
-        number: int, test_str: str = None, random: bool = False
+        number: int,
+        test_str: str = None,
+        test_link: Optional[DocumentTestModel] = None,
+        random: bool = False,
     ) -> List[DocumentTestModel]:
         return [
             DocumentTestModel(
@@ -200,6 +203,7 @@ def documents_not_inserted():
                 ],
                 test_doc=SubDocument(test_str="foobar"),
                 test_str="kipasa" if test_str is None else test_str,
+                test_link=test_link,
             )
             for i in range(number)
         ]
@@ -215,10 +219,13 @@ async def document(document_not_inserted, loop) -> DocumentTestModel:
 @pytest.fixture
 def documents(documents_not_inserted):
     async def generate_documents(
-        number: int, test_str: str = None, random: bool = False
+        number: int,
+        test_str: Optional[str] = None,
+        test_link: Optional[DocumentTestModel] = None,
+        random: bool = False,
     ):
         result = await DocumentTestModel.insert_many(
-            documents_not_inserted(number, test_str, random)
+            documents_not_inserted(number, test_str, test_link, random)
         )
         return result.inserted_ids
 

@@ -67,6 +67,7 @@ class DocumentTestModel(Document):
     test_list: List[SubDocument] = Field(hidden=True)
     test_doc: SubDocument
     test_str: str
+    test_link: Optional[Link[Document]] = None
 
     class Settings:
         use_cache = True
