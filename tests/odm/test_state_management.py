@@ -46,8 +46,25 @@ def test_save_state():
         num_1=1, num_2=2, internal=InternalDoc(num=1, string="s")
     )
     assert doc.get_saved_state() is None
+    assert doc.get_previous_saved_state() is None
+
     doc._save_state()
     assert doc.get_saved_state() == {
+        "num_1": 1,
+        "num_2": 2,
+        "internal": {"num": 1, "string": "s", "lst": [1, 2, 3, 4, 5]},
+    }
+    assert doc.get_previous_saved_state() is None
+
+    doc.num_1 = 2
+    doc.num_2 = 3
+    doc._save_state()
+    assert doc.get_saved_state() == {
+        "num_1": 2,
+        "num_2": 3,
+        "internal": {"num": 1, "string": "s", "lst": [1, 2, 3, 4, 5]},
+    }
+    assert doc.get_previous_saved_state() == {
         "num_1": 1,
         "num_2": 2,
         "internal": {"num": 1, "string": "s", "lst": [1, 2, 3, 4, 5]},
@@ -63,6 +80,7 @@ def test_parse_object_with_saving_state():
     }
     doc = DocumentWithTurnedOnStateManagement._parse_obj_saving_state(obj)
     assert doc.get_saved_state() == obj
+    assert doc.get_previous_saved_state() is None
 
 
 def test_saved_state_needed():
@@ -70,17 +88,32 @@ def test_saved_state_needed():
     with pytest.raises(StateManagementIsTurnedOff):
         doc_1.is_changed
 
+    with pytest.raises(StateManagementIsTurnedOff):
+        doc_1.has_changed
+
     doc_2 = DocumentWithTurnedOnStateManagement(
         num_1=1, num_2=2, internal=InternalDoc()
     )
     with pytest.raises(StateNotSaved):
         doc_2.is_changed
 
+    with pytest.raises(StateNotSaved):
+        doc_2.has_changed
 
-def test_if_changed(doc_default):
+
+def test_is_changed(doc_default):
     assert doc_default.is_changed is False
     doc_default.num_1 = 10
     assert doc_default.is_changed is True
+
+
+def test_has_changed(doc_default):
+    assert doc_default.has_changed is False
+
+    doc_default.num_1 = 10
+    doc_default._save_state()
+
+    assert doc_default.has_changed is True
 
 
 def test_get_changes_default(doc_default):
@@ -88,6 +121,25 @@ def test_get_changes_default(doc_default):
     doc_default.internal.string = "new_value"
     doc_default.internal.lst.append(100)
     assert doc_default.get_changes() == {
+        "internal.num": 1000,
+        "internal.string": "new_value",
+        "internal.lst": [1, 2, 3, 4, 5, 100],
+    }
+
+    doc_default._save_state()
+
+    assert doc_default.get_changes() == {}
+
+
+def test_get_previous_changes_default(doc_default):
+    doc_default.internal.num = 1000
+    doc_default.internal.string = "new_value"
+    doc_default.internal.lst.append(100)
+    assert doc_default.get_previous_changes() == {}
+
+    doc_default._save_state()
+
+    assert doc_default.get_previous_changes() == {
         "internal.num": 1000,
         "internal.string": "new_value",
         "internal.lst": [1, 2, 3, 4, 5, 100],
@@ -125,14 +177,17 @@ def test_get_changes_replace_whole(doc_replace):
 
 
 async def test_save_changes(saved_doc_default):
-    saved_doc_default.internal.num = 10000
+    assert saved_doc_default.get_saved_state()["num_1"] == 1
+
+    saved_doc_default.num_1 = 10000
     await saved_doc_default.save_changes()
-    assert saved_doc_default.get_saved_state()["internal"]["num"] == 10000
+    assert saved_doc_default.get_saved_state()["num_1"] == 10000
+    assert saved_doc_default.get_previous_saved_state()["num_1"] == 1
 
     new_doc = await DocumentWithTurnedOnStateManagement.get(
         saved_doc_default.id
     )
-    assert new_doc.internal.num == 10000
+    assert new_doc.num_1 == 10000
 
 
 async def test_find_one(saved_doc_default, state):
@@ -140,11 +195,13 @@ async def test_find_one(saved_doc_default, state):
         saved_doc_default.id
     )
     assert new_doc.get_saved_state() == state
+    assert new_doc.get_previous_saved_state() is None
 
     new_doc = await DocumentWithTurnedOnStateManagement.find_one(
         DocumentWithTurnedOnStateManagement.id == saved_doc_default.id
     )
     assert new_doc.get_saved_state() == state
+    assert new_doc.get_previous_saved_state() is None
 
 
 async def test_find_many():
@@ -163,6 +220,7 @@ async def test_find_many():
 
     for doc in found_docs:
         assert doc.get_saved_state() is not None
+        assert doc.get_previous_saved_state() is None
 
 
 async def test_insert(state):
@@ -176,12 +234,7 @@ async def test_replace(saved_doc_default):
     saved_doc_default.num_1 = 100
     await saved_doc_default.replace()
     assert saved_doc_default.get_saved_state()["num_1"] == 100
-
-
-async def test_save_chages(saved_doc_default):
-    saved_doc_default.num_1 = 100
-    await saved_doc_default.save_changes()
-    assert saved_doc_default.get_saved_state()["num_1"] == 100
+    assert saved_doc_default.get_previous_saved_state()["num_1"] == 1
 
 
 async def test_rollback(doc_default, state):
