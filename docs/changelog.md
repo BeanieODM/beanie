@@ -2,6 +2,17 @@
 
 Beanie project
 
+## [1.11.7] - 2022-02-08
+
+### Improvement
+
+- Decimal128 encoding
+
+### Implementation
+
+- Author - [Teslim Olunlade](https://github.com/ogtega)
+- PR <https://github.com/roman-right/beanie/pull/321>
+
 ## [1.11.6] - 2022-24-06
 
 ### Fix
