@@ -126,8 +126,12 @@ def test_get_changes_replace_whole(doc_replace):
 
 async def test_save_changes(saved_doc_default):
     saved_doc_default.internal.num = 10000
+    saved_doc_default.internal.change_private()
+    assert saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
+
     await saved_doc_default.save_changes()
     assert saved_doc_default.get_saved_state()["internal"]["num"] == 10000
+    assert saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
 
     new_doc = await DocumentWithTurnedOnStateManagement.get(
         saved_doc_default.id

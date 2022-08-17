@@ -60,15 +60,17 @@ from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
-from beanie.odm.interfaces.update import (
-    UpdateMethods,
-)
 from beanie.odm.models import (
     InspectionResult,
     InspectionStatuses,
     InspectionError,
 )
 from beanie.odm.operators.find.comparison import In
+from beanie.odm.operators.update.general import (
+    CurrentDate,
+    Inc,
+    Set as SetOperator,
+)
 from beanie.odm.queries.update import UpdateMany
 
 # from beanie.odm.settings.general import DocumentSettings
@@ -91,7 +93,6 @@ DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 class Document(
     BaseModel,
-    UpdateMethods,
     FindInterface,
     AggregateInterface,
     OtherGettersInterface,
@@ -430,6 +431,7 @@ class Document(
             ignore_revision=ignore_revision,
             session=session,
             bulk_writer=bulk_writer,
+            skip_sync=True,
         )
 
     @classmethod
@@ -460,6 +462,7 @@ class Document(
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: bool = False,
         **pymongo_kwargs,
     ) -> None:
         """
@@ -489,7 +492,8 @@ class Document(
             and result.matched_count == 0
         ):
             raise RevisionIdWasChanged
-        await self._sync()
+        if not skip_sync:
+            await self._sync()
 
     @classmethod
     def update_all(
@@ -510,6 +514,110 @@ class Document(
         """
         return cls.find_all().update_many(
             *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
+        )
+
+    def set(
+        self,
+        expression: Dict[Union[ExpressionField, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: bool = False,
+        **kwargs,
+    ):
+        """
+        Set values
+
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            one: int
+
+        await Document.find(Sample.one == 1).set({Sample.one: 100})
+
+        ```
+
+        Uses [Set operator](https://roman-right.github.io/beanie/api/operators/update/#set)
+
+        :param expression: Dict[Union[ExpressionField, str], Any] - keys and
+        values to set
+        :param session: Optional[ClientSession] - pymongo session
+        :param bulk_writer: Optional[BulkWriter] - bulk writer
+        :param skip_sync: bool - skip doc syncing. Available for the direct instances only
+        :return: self
+        """
+        return self.update(
+            SetOperator(expression),
+            session=session,
+            bulk_writer=bulk_writer,
+            skip_sync=skip_sync,
+            **kwargs,
+        )
+
+    def current_date(
+        self,
+        expression: Dict[Union[ExpressionField, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: bool = False,
+        **kwargs,
+    ):
+        """
+        Set current date
+
+        Uses [CurrentDate operator](https://roman-right.github.io/beanie/api/operators/update/#currentdate)
+
+        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param session: Optional[ClientSession] - pymongo session
+        :param bulk_writer: Optional[BulkWriter] - bulk writer
+        :param skip_sync: bool - skip doc syncing. Available for the direct instances only
+        :return: self
+        """
+        return self.update(
+            CurrentDate(expression),
+            session=session,
+            bulk_writer=bulk_writer,
+            skip_sync=skip_sync,
+            **kwargs,
+        )
+
+    def inc(
+        self,
+        expression: Dict[Union[ExpressionField, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: bool = False,
+        **kwargs,
+    ):
+        """
+        Increment
+
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            one: int
+
+        await Document.find(Sample.one == 1).inc({Sample.one: 100})
+
+        ```
+
+        Uses [Inc operator](https://roman-right.github.io/beanie/api/operators/update/#inc)
+
+        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param session: Optional[ClientSession] - pymongo session
+        :param bulk_writer: Optional[BulkWriter] - bulk writer
+        :param skip_sync: bool - skip doc syncing. Available for the direct instances only
+        :return: self
+        """
+        return self.update(
+            Inc(expression),
+            session=session,
+            bulk_writer=bulk_writer,
+            skip_sync=skip_sync,
+            **kwargs,
         )
 
     @wrap_with_actions(EventTypes.DELETE)
