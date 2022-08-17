@@ -2,7 +2,13 @@
 
 Beanie project
 
-## [1.11.7] - 2022-02-08
+## [1.11.8] - 2022-08-17
+
+### Improvement
+
+- Skip sync parameter for instance updates
+
+## [1.11.7] - 2022-08-02
 
 ### Improvement
 
@@ -13,25 +19,25 @@ Beanie project
 - Author - [Teslim Olunlade](https://github.com/ogtega)
 - PR <https://github.com/roman-right/beanie/pull/321>
 
-## [1.11.6] - 2022-24-06
+## [1.11.6] - 2022-06-24
 
 ### Fix
 
 - Roll back projections fix, as it was valid
 
-## [1.11.5] - 2022-24-06
+## [1.11.5] - 2022-06-24
 
 ### Fix
 
 - Projection fix for aggregations
 
-## [1.11.4] - 2022-13-06
+## [1.11.4] - 2022-06-13
 
 ### Improvement
 
 - Link as FastAPI output
 
-## [1.11.3] - 2022-10-06
+## [1.11.3] - 2022-06-10
 
 ### Improvement
 
@@ -917,3 +923,7 @@ how specific type should be presented in the database
 [1.11.5]: https://pypi.org/project/beanie/1.11.5
 
 [1.11.6]: https://pypi.org/project/beanie/1.11.6
+
+[1.11.7]: https://pypi.org/project/beanie/1.11.7
+
+[1.11.8]: https://pypi.org/project/beanie/1.11.8

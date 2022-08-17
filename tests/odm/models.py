@@ -13,7 +13,7 @@ from typing import List, Optional, Set, Tuple, Union
 from uuid import UUID, uuid4
 
 import pymongo
-from pydantic import SecretBytes, SecretStr, Extra
+from pydantic import SecretBytes, SecretStr, Extra, PrivateAttr
 from pydantic.color import Color
 from pydantic import BaseModel, Field
 from pymongo import IndexModel
@@ -249,9 +249,16 @@ class InheritedDocumentWithActions(DocumentWithActions):
 
 
 class InternalDoc(BaseModel):
+    _private_field: str = PrivateAttr(default="TEST_PRIVATE")
     num: int = 100
     string: str = "test"
     lst: List[int] = [1, 2, 3, 4, 5]
+
+    def change_private(self):
+        self._private_field = "PRIVATE_CHANGED"
+
+    def get_private(self):
+        return self._private_field
 
 
 class DocumentWithTurnedOnStateManagement(Document):
