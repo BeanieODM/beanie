@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.11.9] - 2022-08-19
+
+### Fix
+
+- Move set state and swap revision to init to avoid problems with subdocs
+- Issue <https://github.com/roman-right/beanie/issues/294>
+- Issue <https://github.com/roman-right/beanie/issues/310>
+
 ## [1.11.8] - 2022-08-17
 
 ### Improvement
@@ -927,3 +935,5 @@ how specific type should be presented in the database
 [1.11.7]: https://pypi.org/project/beanie/1.11.7
 
 [1.11.8]: https://pypi.org/project/beanie/1.11.8
+
+[1.11.9]: https://pypi.org/project/beanie/1.11.9
