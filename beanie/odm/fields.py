@@ -4,7 +4,7 @@ from typing import Generic, TypeVar, Union, Type, List
 
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
-from pydantic import BaseModel
+from pydantic import BaseModel, parse_obj_as
 from pydantic.fields import ModelField
 from pydantic.json import ENCODERS_BY_TYPE
 from pymongo import ASCENDING
@@ -188,7 +188,11 @@ class Link(Generic[T]):
             return cls(ref=v, model_class=model_class)
         if isinstance(v, Link):
             return v
-        return model_class.validate(v)
+        if isinstance(v, dict) or isinstance(v, BaseModel):
+            return model_class.validate(v)
+        new_id = parse_obj_as(model_class.__fields__["id"].type_, v)
+        ref = DBRef(collection=model_class.get_collection_name(), id=new_id)
+        return cls(ref=ref, model_class=model_class)
 
     def to_ref(self):
         return self.ref
