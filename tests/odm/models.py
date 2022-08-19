@@ -395,3 +395,20 @@ class DocumentMultiModelTwo(Document):
 
     class Settings:
         union_doc = DocumentUnion
+
+
+class WindowWithRevision(Document):
+    x: int
+    y: int
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
+
+
+class HouseWithRevision(Document):
+    windows: List[Link[WindowWithRevision]]
+
+    class Settings:
+        use_revision = True
+        use_state_management = True

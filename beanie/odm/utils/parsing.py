@@ -31,6 +31,6 @@ def parse_obj(
             raise DocWasNotRegisteredInUnionClass
         return parse_obj(model=model._document_models[class_name], data=data)
 
-    if hasattr(model, "_parse_obj_saving_state"):
-        return model._parse_obj_saving_state(data)  # type: ignore
+    # if hasattr(model, "_parse_obj_saving_state"):
+    #     return model._parse_obj_saving_state(data)  # type: ignore
     return model.parse_obj(data)

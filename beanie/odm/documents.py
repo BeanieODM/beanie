@@ -130,13 +130,16 @@ class Document(
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
 
-    def swap_revision(self):
-        self._previous_revision_id = self.revision_id
-        self.revision_id = uuid4()
+    def _swap_revision(self):
+        if self.get_settings().use_revision:
+            self._previous_revision_id = self.revision_id
+            self.revision_id = uuid4()
 
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
+        self._save_state()
+        self._swap_revision()
 
     async def _sync(self) -> None:
         """
@@ -707,7 +710,7 @@ class Document(
         Save current document state. Internal method
         :return: None
         """
-        if self.use_state_management():
+        if self.use_state_management() and self.id is not None:
             self._saved_state = get_dict(self)
 
     def get_saved_state(self) -> Optional[Dict[str, Any]]:
@@ -716,18 +719,6 @@ class Document(
         :return: Optional[Dict[str, Any]] - saved state
         """
         return self._saved_state
-
-    @classmethod
-    def _parse_obj_saving_state(cls: Type[DocType], obj: Any) -> DocType:
-        """
-        Parse object and save state then. Internal method.
-        :param obj: Any
-        :return: DocType
-        """
-        result: DocType = cls.parse_obj(obj)
-        result._save_state()
-        result.swap_revision()
-        return result
 
     @property  # type: ignore
     @saved_state_needed
