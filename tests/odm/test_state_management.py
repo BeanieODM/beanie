@@ -1,12 +1,15 @@
 import pytest
 from bson import ObjectId
 
+from beanie import WriteRules, PydanticObjectId
 from beanie.exceptions import StateManagementIsTurnedOff, StateNotSaved
 from tests.odm.models import (
     DocumentWithTurnedOnStateManagement,
     DocumentWithTurnedOnReplaceObjects,
     DocumentWithTurnedOffStateManagement,
     InternalDoc,
+    HouseWithRevision,
+    WindowWithRevision,
 )
 
 
@@ -21,13 +24,22 @@ def state():
 
 
 @pytest.fixture
+def state_without_id():
+    return {
+        "num_1": 1,
+        "num_2": 2,
+        "internal": InternalDoc(),
+    }
+
+
+@pytest.fixture
 def doc_default(state):
-    return DocumentWithTurnedOnStateManagement._parse_obj_saving_state(state)
+    return DocumentWithTurnedOnStateManagement.parse_obj(state)
 
 
 @pytest.fixture
 def doc_replace(state):
-    return DocumentWithTurnedOnReplaceObjects._parse_obj_saving_state(state)
+    return DocumentWithTurnedOnReplaceObjects.parse_obj(state)
 
 
 @pytest.fixture
@@ -46,11 +58,13 @@ def test_save_state():
         num_1=1, num_2=2, internal=InternalDoc(num=1, string="s")
     )
     assert doc.get_saved_state() is None
+    doc.id = PydanticObjectId()
     doc._save_state()
     assert doc.get_saved_state() == {
         "num_1": 1,
         "num_2": 2,
         "internal": {"num": 1, "string": "s", "lst": [1, 2, 3, 4, 5]},
+        "_id": doc.id,
     }
 
 
@@ -61,7 +75,7 @@ def test_parse_object_with_saving_state():
         "_id": ObjectId(),
         "internal": InternalDoc(),
     }
-    doc = DocumentWithTurnedOnStateManagement._parse_obj_saving_state(obj)
+    doc = DocumentWithTurnedOnStateManagement.parse_obj(obj)
     assert doc.get_saved_state() == obj
 
 
@@ -169,11 +183,14 @@ async def test_find_many():
         assert doc.get_saved_state() is not None
 
 
-async def test_insert(state):
-    doc = DocumentWithTurnedOnStateManagement.parse_obj(state)
+async def test_insert(state_without_id):
+    doc = DocumentWithTurnedOnStateManagement.parse_obj(state_without_id)
     assert doc.get_saved_state() is None
     await doc.insert()
-    assert doc.get_saved_state() == state
+    new_state = doc.get_saved_state()
+    assert new_state["_id"] is not None
+    del new_state["_id"]
+    assert new_state == state_without_id
 
 
 async def test_replace(saved_doc_default):
@@ -192,3 +209,26 @@ async def test_rollback(doc_default, state):
     doc_default.num_1 = 100
     doc_default.rollback()
     assert doc_default.num_1 == state["num_1"]
+
+
+@pytest.fixture
+def windows_not_inserted():
+    return [WindowWithRevision(x=10, y=10), WindowWithRevision(x=11, y=11)]
+
+
+@pytest.fixture
+def house_not_inserted(windows_not_inserted):
+    return HouseWithRevision(windows=windows_not_inserted)
+
+
+@pytest.fixture
+async def house(house_not_inserted):
+    return await house_not_inserted.insert(link_rule=WriteRules.WRITE)
+
+
+async def test_fetch_save_changes(house):
+    data = await HouseWithRevision.all(fetch_links=True).to_list()
+    house = data[0]
+    window_0 = house.windows[0]
+    window_0.x = 10000
+    await window_0.save_changes()
