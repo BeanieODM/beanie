@@ -15,6 +15,7 @@ Direct link to the document:
 ```python
 from beanie import Document, Link
 
+
 class Door(Document):
     height: int = 2
     width: int = 1
@@ -31,6 +32,7 @@ Optional direct link to the document:
 from typing import Optional
 
 from beanie import Document, Link
+
 
 class Door(Document):
     height: int = 2
@@ -49,6 +51,7 @@ from typing import List
 
 from beanie import Document, Link
 
+
 class Window(Document):
     x: int = 10
     y: int = 10
@@ -60,11 +63,12 @@ class House(Document):
     windows: List[Link[Window]]
 ```
 
-Other link patterns are not supported for now. If you need something more specific for your use-case, please leave an issue on the GitHub page - <https://github.com/roman-right/beanie>
+Other link patterns are not supported for at this moment. If you need something more specific for your use-case, 
+please open an issue on the GitHub page - <https://github.com/roman-right/beanie>
 
 ## Write
 
-The next write methods support relations:
+The following write methods support relations:
 
 - `insert(...)`
 - `replace(...)`
@@ -108,9 +112,10 @@ houses = await House.find(
 ```
 
 All the find methods supported:
-- find
-- find_one
-- get
+
+- `find`
+- `find_one`
+- `get`
 
 Beanie uses a single aggregation query under the hood to fetch all the linked documents. This operation is very effective.
 
@@ -118,11 +123,12 @@ If a direct link is referred to a non-existent document, after the fetching it w
 
 Fetching will ignore non-existent documents for the list of links fields.
 
-####Search by linked documents fields:
+#### Search by linked documents fields
 
 If the `fetch_links` parameter is set to `True` searching by linked documents fields is available.
 
 By field of the direct link:
+
 ```python
 houses = await House.find(
     House.door.height == 2,
@@ -131,6 +137,7 @@ houses = await House.find(
 ```
 
 List of links:
+
 ```python
 houses = await House.find(
     House.windows.x > 10,
@@ -138,7 +145,7 @@ houses = await House.find(
 ).to_list()
 ```
 
-Search by id of the linked documents works using syntax:
+Search by `id` of the linked documents works using syntax:
 
 ```python
 houses = await House.find(
@@ -146,7 +153,7 @@ houses = await House.find(
 ).to_list()
 ```
 
-It works the same way with `fetch_links` True and False and for `find_many` and `find_one` methods
+It works the same way with `fetch_links` True and False and for `find_many` and `find_one` methods.
 
 ### On-demand fetch
 
@@ -169,15 +176,15 @@ This will fetch the Door object and put it in the `door` field of the `house` ob
 
 ## Delete
 
-Delete method works the same way as write operations, but it uses other rules:
+Delete method works the same way as write operations, but it uses other rules.
 
-To delete all the links on the document deletion you should use the `DeleteRules.DELETE_LINKS` value for the `link_rule` parameter
+To delete all the links on the document deletion you should use the `DeleteRules.DELETE_LINKS` value for the `link_rule` parameter:
 
 ```python
 await house.delete(link_rule=DeleteRules.DELETE_LINKS)
 ```
 
-To keep linked documents you can use the `DO_NOTHING` rule
+To keep linked documents you can use the `DO_NOTHING` rule:
 
 ```python
 await house.delete(link_rule=DeleteRules.DO_NOTHING)

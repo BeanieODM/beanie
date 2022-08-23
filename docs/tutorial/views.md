@@ -1,15 +1,16 @@
 # Views
 
 Virtual views are aggregation pipelines, stored in MongoDB, that act as collections for reading operations.
-You can use the View class the same way as Document for find and aggregate operations.
+You can use the `View` class the same way as `Document` for `find` and `aggregate` operations.
 
 ## Here are some examples.
 
 Create a view:
 
 ```python
-from beanie import Document, View
 from pydantic import Field
+
+from beanie import Document, View
 
 
 class Bike(Document):
@@ -37,23 +38,24 @@ class Metrics(View):
 
 ```
 
-Init beanie:
+Initialize Beanie:
 
 ```python
-
-
-import motor.motor_asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from beanie import init_beanie
 
 
 async def main():
     uri = "mongodb://beanie:beanie@localhost:27017"
-    cli = motor.motor_asyncio.AsyncIOMotorClient(uri)
-    db = cli.bikes
+    client = AsyncIOMotorClient(uri)
+    db = client.bikes
 
-    await init_beanie(database=db, document_models=[Bike, Metrics],
-                      recreate_views=True)
+    await init_beanie(
+        database=db, 
+        document_models=[Bike, Metrics],
+        recreate_views=True,
+    )
 ```
 
 Create bikes:
