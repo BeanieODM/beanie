@@ -39,6 +39,10 @@ def Indexed(typ, index_type=ASCENDING, **kwargs):
     return NewType
 
 
+
+
+
+
 class PydanticObjectId(ObjectId):
     """
     Object Id field. Compatible with Pydantic.
@@ -140,6 +144,33 @@ class LinkInfo(BaseModel):
 
 
 T = TypeVar("T")
+
+class Timestamp(bson.Timestamp):
+    @classmethod
+    def __get_validators__(cls):  # type: ignore
+        yield cls.validate
+
+    @classmethod
+    def __modify_schema__(cls, field_schema: Dict) -> None:
+        field_schema.update(
+            examples=["1662424221", "1662424111"],
+            example="1662424221",
+            type="timestamp",
+        )
+
+    @classmethod
+    def validate(cls, v: Any) -> bson.Timestamp:
+        if isinstance(v, (bson.Timestamp, cls)):
+            return v
+        if isinstance(v, int):
+            return bson.Timestamp(v, 1)
+        elif isinstance(v, float):
+            return Timestamp(int(v), 1)
+        elif isinstance(v, datetime.datetime):
+            return Timestamp(int(datetime.datetime.utcnow().timestamp()), 1)
+        elif isinstance(v, Timestamp):
+            return v
+        raise TypeError("invalid Timestamp specified")
 
 
 class Link(Generic[T]):
