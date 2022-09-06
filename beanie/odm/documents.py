@@ -15,7 +15,7 @@ from typing import (
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from bson import ObjectId, DBRef
+from bson import ObjectId, DBRef, Timestamp
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import (
     ValidationError,
@@ -1003,6 +1003,7 @@ class Document(
     class Config:
         json_encoders = {
             ObjectId: lambda v: str(v),
+            Timestamp: lambda v: v.time,
         }
         allow_population_by_field_name = True
         fields = {"id": "_id"}
