@@ -160,7 +160,7 @@ class Encoder:
             return self.encode_iterable(obj)
 
         if isinstance(
-            obj, (str, int, float, ObjectId, datetime, type(None), DBRef)
+            obj, (str, int, float, ObjectId, datetime,bson.Timestamp, type(None), DBRef)
         ):
             return obj
 
