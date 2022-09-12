@@ -38,8 +38,12 @@ def detect_link(field: ModelField) -> Optional[LinkInfo]:
     ):
         internal_field = field.sub_fields[0]  # type: ignore
         if internal_field.type_ == Link:
-            if internal_field.allow_none is True:
-                return None
+            if field.allow_none is True:
+                return LinkInfo(
+                field=field.name,
+                model_class=internal_field.sub_fields[0].type_,  # type: ignore
+                link_type=LinkTypes.OPTIONAL_LIST,
+            )
             return LinkInfo(
                 field=field.name,
                 model_class=internal_field.sub_fields[0].type_,  # type: ignore

@@ -131,6 +131,7 @@ class LinkTypes(str, Enum):
     DIRECT = "DIRECT"
     OPTIONAL_DIRECT = "OPTIONAL_DIRECT"
     LIST = "LIST"
+    OPTIONAL_LIST = "OPTIONAL_LIST"
 
 
 class LinkInfo(BaseModel):

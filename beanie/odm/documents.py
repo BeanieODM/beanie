@@ -212,7 +212,10 @@ class Document(
                     ]:
                         if isinstance(value, Document):
                             await value.insert(link_rule=WriteRules.WRITE)
-                    if field_info.link_type == LinkTypes.LIST:
+                    if field_info.link_type in [
+                        LinkTypes.LIST,
+                        LinkTypes.OPTIONAL_LIST
+                    ]:
                         for obj in value:
                             if isinstance(obj, Document):
                                 await obj.insert(link_rule=WriteRules.WRITE)
@@ -343,7 +346,10 @@ class Document(
                                 ignore_revision=ignore_revision,
                                 session=session,
                             )
-                    if field_info.link_type == LinkTypes.LIST:
+                    if field_info.link_type in [
+                        LinkTypes.LIST,
+                        LinkTypes.OPTIONAL_LIST
+                    ]:
                         for obj in value:
                             if isinstance(obj, Document):
                                 await obj.replace(
@@ -396,7 +402,10 @@ class Document(
                             await value.save(
                                 link_rule=link_rule, session=session
                             )
-                    if field_info.link_type == LinkTypes.LIST:
+                    if field_info.link_type in [
+                        LinkTypes.LIST,
+                        LinkTypes.OPTIONAL_LIST
+                    ]:
                         for obj in value:
                             if isinstance(obj, Document):
                                 await obj.save(
@@ -656,7 +665,10 @@ class Document(
                                 link_rule=DeleteRules.DELETE_LINKS,
                                 **pymongo_kwargs,
                             )
-                    if field_info.link_type == LinkTypes.LIST:
+                    if field_info.link_type in [
+                        LinkTypes.LIST,
+                        LinkTypes.OPTIONAL_LIST
+                    ]:
                         for obj in value:
                             if isinstance(obj, Document):
                                 await obj.delete(

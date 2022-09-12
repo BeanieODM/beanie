@@ -324,6 +324,9 @@ class DocumentWithExtras(Document):
 class DocumentWithExtrasKw(Document, extra=Extra.allow):
     num_1: int
 
+class Painting(Document):
+    v: int
+    w: int
 
 class Window(Document):
     x: int
@@ -342,6 +345,7 @@ class House(Document):
     windows: List[Link[Window]]
     door: Link[Door]
     roof: Optional[Link[Roof]]
+    paintings: Optional[List[Link[Painting]]]
     name: Indexed(str) = Field(hidden=True)
     height: Indexed(int) = 2
 
