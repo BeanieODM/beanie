@@ -31,7 +31,10 @@ async def house(house_not_inserted):
 async def houses():
     for i in range(10):
         roof = Roof() if i % 2 == 0 else None
-        yards = [Yard(v=10, w=10 + i), Yard(v=11, w=10 + i)] if i % 2 == 0 else None
+        if i % 2 == 0:
+            yards = [Yard(v=10, w=10 + i), Yard(v=11, w=10 + i)]  
+        else:
+            yards = None
         house = await House(
             door=Door(t=i),
             windows=[Window(x=10, y=10 + i), Window(x=11, y=11 + i)],
