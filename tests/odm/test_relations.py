@@ -2,7 +2,7 @@ import pytest
 
 from beanie.exceptions import DocumentWasNotSaved
 from beanie.odm.fields import WriteRules, Link, DeleteRules
-from tests.odm.models import Window, Door, House, Roof
+from tests.odm.models import Window, Door, House, Roof, Yard
 
 
 @pytest.fixture
@@ -31,9 +31,11 @@ async def house(house_not_inserted):
 async def houses():
     for i in range(10):
         roof = Roof() if i % 2 == 0 else None
+        yards = [Yard(v=10, w=10 + i), Yard(v=11, w=10 + i)] if i % 2 == 0 else None
         house = await House(
             door=Door(t=i),
             windows=[Window(x=10, y=10 + i), Window(x=11, y=11 + i)],
+            yards=yards,
             roof=roof,
             name="test",
             height=i,
@@ -74,6 +76,9 @@ class TestFind:
         assert len(items) == 7
         for window in items[0].windows:
             assert isinstance(window, Link)
+        assert items[0].yards is None
+        for yard in items[1].yards:
+            assert isinstance(yard, Link)
         assert isinstance(items[0].door, Link)
         assert items[0].roof is None
         assert isinstance(items[1].roof, Link)
@@ -86,6 +91,9 @@ class TestFind:
         assert len(items) == 7
         for window in items[0].windows:
             assert isinstance(window, Window)
+        assert items[0].yards is None
+        for yard in items[1].yards:
+            assert isinstance(yard, Yard)
         assert isinstance(items[0].door, Door)
         assert items[0].roof is None
         assert isinstance(items[1].roof, Roof)
