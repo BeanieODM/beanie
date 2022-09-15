@@ -94,7 +94,7 @@ class TestFind:
         assert len(items) == 7
         for window in items[0].windows:
             assert isinstance(window, Window)
-        assert items[0].yards is None
+        assert items[0].yards == []
         for yard in items[1].yards:
             assert isinstance(yard, Yard)
         assert isinstance(items[0].door, Door)
