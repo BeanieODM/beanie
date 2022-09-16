@@ -38,7 +38,7 @@ jinja2 = "3.0.3"
 fastapi = "^0.78.0"
 asgi-lifespan = "^1.0.1"
 httpx = "^0.23.0"
-
+bump2version = "^1.0.1"
 
 [build-system]
 requires = ["poetry>=0.12"]
