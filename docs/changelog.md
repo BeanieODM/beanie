@@ -2,6 +2,17 @@
 
 Beanie project
 
+## [1.11.10] - 2022-09-20
+
+### Improvement
+
+- Adding Update Action
+
+### Implementation
+
+- Author - [schwannden](https://github.com/schwannden)
+- PR <https://github.com/roman-right/beanie/pull/291/>
+
 ## [1.11.9] - 2022-08-19
 
 ### Fix
