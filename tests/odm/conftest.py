@@ -36,6 +36,8 @@ from tests.odm.models import (
     DocumentMultiModelOne,
     DocumentMultiModelTwo,
     DocumentUnion,
+    HouseWithRevision,
+    WindowWithRevision,
 )
 from tests.odm.views import TestView
 from tests.odm.models import (
@@ -164,6 +166,8 @@ async def init(loop, db):
         DocumentMultiModelOne,
         DocumentMultiModelTwo,
         DocumentUnion,
+        HouseWithRevision,
+        WindowWithRevision,
     ]
     await init_beanie(
         database=db,

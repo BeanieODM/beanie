@@ -37,8 +37,7 @@ def save_state_after(f: Callable):
     @wraps(f)
     async def wrapper(self: "DocType", *args, **kwargs):
         result = await f(self, *args, **kwargs)
-        if self.use_state_management():
-            self._save_state()
+        self._save_state()
         return result
 
     return wrapper
@@ -48,8 +47,7 @@ def swap_revision_after(f: Callable):
     @wraps(f)
     async def wrapper(self: "DocType", *args, **kwargs):
         result = await f(self, *args, **kwargs)
-        if self.get_settings().use_revision:
-            self.swap_revision()
+        self._swap_revision()
         return result
 
     return wrapper
