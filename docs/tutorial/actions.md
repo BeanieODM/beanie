@@ -3,25 +3,29 @@
 You can register methods as pre- or post- actions for document events.
 
 Currently supported events:
-- Insert
-- Replace
-- SaveChanges
-- ValidateOnSave
+
+- `Insert`
+- `Replace`
+- `SaveChanges`
+- `ValidateOnSave`
 
 Currently supported directions:
-- Before
-- After
+
+- `Before`
+- `After`
 
 Current operations creating events:
-- `insert()` and `save()` for Insert
-- `replace()` and `save()` for Replace
-- `save_changes()` for SaveChanges
-- `insert()`, `replace()`, `save_changes()`, and `save()` for ValidateOnSave
 
-To register an action you can use `@before_event` and `@after_event` decorators respectively.
+- `insert()` and `save()` for Insert.
+- `replace()` and `save()` for Replace.
+- `save_changes()` for SaveChanges.
+- `insert()`, `replace()`, `save_changes()`, and `save()` for ValidateOnSave.
+
+To register an action, you can use `@before_event` and `@after_event` decorators respectively:
 
 ```python
 from beanie import Insert, Replace
+
 
 class Sample(Document):
     num: int
@@ -41,6 +45,7 @@ It is possible to register action for a list of events:
 ```python
 from beanie import Insert, Replace
 
+
 class Sample(Document):
     num: int
     name: str
@@ -57,6 +62,7 @@ And sync and async methods could work as actions.
 ```python
 from beanie import Insert, Replace
 
+
 class Sample(Document):
     num: int
     name: str
@@ -70,7 +76,8 @@ Actions can be selectively skipped by passing the parameter `skip_actions` when 
 the operations that trigger events. `skip_actions` accepts a list of directions and action names.
 
 ```python
-from beanie import Insert, Replace, Before, After
+from beanie import After, Before, Insert, Replace
+
 
 class Sample(Document):
     num: int
@@ -87,6 +94,7 @@ class Sample(Document):
     @after_event(Replace)
     def num_change(self):
         self.num -= 1
+
 
 sample = Sample()
 

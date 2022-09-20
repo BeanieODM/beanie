@@ -1,16 +1,16 @@
 # Defining a document
+
 The `Document` class in Beanie is responsible for mapping and handling the data
 from the collection. It is inherited from the `BaseModel` Pydantic class, so it
 follows the same data typing and parsing behavior.
 
 ```python
-import pymongo
 from typing import Optional
 
+import pymongo
 from pydantic import BaseModel
 
-from beanie import Document
-from beanie import Indexed
+from beanie import Document, Indexed
 
 
 class Category(BaseModel):
@@ -37,7 +37,7 @@ class Product(Document):  # This is the model
 
 ## Fields
 
-As it is mentioned before, the `Document` class is inherited from the Pydantic `BaseModel` class. It uses all the same patterns of `BaseModel`. But also it has special fields and fields types:
+As it is mentioned before, the `Document` class is inherited from the Pydantic `BaseModel` class. It uses all the same patterns of `BaseModel`. But also it has special types of fields:
 
 - id
 - Indexed
@@ -61,8 +61,10 @@ bar = await Sample.get(foo.id)  # get by id
 If you prefer another type, you can set it up too. For example, UUID:
 
 ```python
-from pydantic import Field
 from uuid import UUID, uuid4
+
+from pydantic import Field
+
 
 class Sample(Document):
     id: UUID = Field(default_factory=uuid4)
@@ -72,10 +74,11 @@ class Sample(Document):
 
 ### Indexed
 
-To setup an index over a single field the `Indexed` function can be used to wrap the type:
+To set up an index over a single field, the `Indexed` function can be used to wrap the type:
 
 ```python
 from beanie import Indexed
+
 
 class Sample(Document):
     num: Indexed(int)
@@ -83,13 +86,15 @@ class Sample(Document):
 ```
 
 The `Indexed` function takes an optional argument `index_type`, which may be set to a pymongo index type:
+
 ```python
 class Sample(Document):
-    description: Indexed(str, index_type = pymongo.TEXT)
+    description: Indexed(str, index_type=pymongo.TEXT)
 ```
- The `Indexed` function supports pymongo `IndexModel` kwargs arguments ([PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)). 
+
+The `Indexed` function also supports pymongo `IndexModel` kwargs arguments ([PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)). 
  
-For example to create `unique` index:
+For example to create a `unique` index:
 
 ```python
 class Sample(Document):
@@ -118,10 +123,10 @@ class Sample(Document):
 
 ### Indexes
 
-The `indexes` field of the inner `Collection` class is responsible for the indexes setup. It is a list where items could be:
+The `indexes` field of the inner `Settings` class is responsible for the indexes setup. It is a list where items could be:
 
-- single key. Name of the document's field (this is equivalent to using the Indexed function described above)
-- list of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
+- Single key. Name of the document's field (this is equivalent to using the Indexed function described above)
+- List of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
   example: `pymongo.ASCENDING`)
 - `pymongo.IndexModel` instance - the most flexible
   option. [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)
@@ -165,15 +170,17 @@ The `ip` field in the following example would be converted to String by default:
 ```python
 from ipaddress import IPv4Address
 
+
 class Sample(Document):
     ip: IPv4Address
 ```
 > **Note:** Default conversions are defined in `beanie.odm.utils.bson.ENCODERS_BY_TYPE`.
 
-However if you wanted the `ip` field to be represented as Integer in the database you need to override default encoders like this:
+However, if you wanted the `ip` field to be represented as Integer in the database you need to override default encoders like this:
 
 ```python
 from ipaddress import IPv4Address
+
 
 class Sample(Document):
     ip: IPv4Address
@@ -188,6 +195,7 @@ You can also define your own function for the encoding:
 
 ```python
 from ipaddress import IPv4Address
+
 
 def ipv4address_to_int(v: IPv4Address):
     return int(v)
