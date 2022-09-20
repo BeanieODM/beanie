@@ -10,6 +10,7 @@ from beanie.odm.actions import (
     Before,
     After,
     Delete,
+    Update,
 )
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import (
@@ -25,7 +26,7 @@ from beanie.odm.documents import Document
 from beanie.odm.views import View
 from beanie.odm.union_doc import UnionDoc
 
-__version__ = "1.11.9"
+__version__ = "1.11.10"
 __all__ = [
     # ODM
     "Document",
@@ -46,6 +47,7 @@ __all__ = [
     "Delete",
     "Before",
     "After",
+    "Update",
     # Bulk Write
     "BulkWriter",
     # Migrations

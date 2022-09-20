@@ -18,7 +18,7 @@ from pydantic.color import Color
 from pydantic import BaseModel, Field
 from pymongo import IndexModel
 
-from beanie import Document, Indexed, Insert, Replace, ValidateOnSave
+from beanie import Document, Indexed, Insert, Replace, ValidateOnSave, Update
 from beanie.odm.actions import before_event, after_event, Delete
 from beanie.odm.fields import Link
 from beanie.odm.settings.timeseries import TimeSeriesConfig
@@ -242,6 +242,15 @@ class DocumentWithActions(Document):
     @after_event(Delete)
     def inner_num_to_two(self):
         self.Inner.inner_num_2 = 2
+
+    @before_event(Update)
+    def inner_num_to_one_2(self):
+        print("HERE")
+        self.num_1 += 1
+
+    @after_event(Update)
+    def inner_num_to_two_2(self):
+        self.num_2 -= 1
 
 
 class InheritedDocumentWithActions(DocumentWithActions):
