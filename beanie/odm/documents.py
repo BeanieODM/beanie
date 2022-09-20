@@ -458,6 +458,7 @@ class Document(
         await cls.find(In(cls.id, ids_list), session=session).delete()
         await cls.insert_many(documents, session=session)
 
+    @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
     async def update(
         self,
@@ -466,6 +467,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: bool = False,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs,
     ) -> None:
         """
@@ -478,6 +480,7 @@ class Document(
         :param **pymongo_kwargs: pymongo native parameters for update operation
         :return: None
         """
+        print("UPDATE CALL")
         use_revision_id = self.get_settings().use_revision
 
         find_query: Dict[str, Any] = {"_id": self.id}
@@ -550,6 +553,7 @@ class Document(
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
         :return: self
         """
+        print("SET CALL")
         return self.update(
             SetOperator(expression),
             session=session,

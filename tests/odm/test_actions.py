@@ -79,13 +79,17 @@ class TestActions:
     async def test_actions_update(self, doc_class):
         test_name = f"test_actions_update_{doc_class}"
         sample = doc_class(name=test_name)
+        await sample.save()
 
         await sample.update({"$set": {"name": "new_name"}})
         assert sample.name == "new_name"
-        assert sample.Inner.inner_num_1 == 1
-        assert sample.Inner.inner_num_2 == 9
+        assert sample.num_1 == 2
+        assert sample.num_2 == 9
 
-        await sample.set({"name": "awesome_name"})
+        await sample.set({"name": "awesome_name"}, skip_sync=True)
+
+        assert sample.num_1 == 3
+        assert sample.num_2 == 8
+
+        await sample._sync()
         assert sample.name == "awesome_name"
-        assert sample.Inner.inner_num_1 == 2
-        assert sample.Inner.inner_num_2 == 8
