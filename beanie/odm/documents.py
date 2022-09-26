@@ -480,7 +480,6 @@ class Document(
         :param **pymongo_kwargs: pymongo native parameters for update operation
         :return: None
         """
-        print("UPDATE CALL")
         use_revision_id = self.get_settings().use_revision
 
         find_query: Dict[str, Any] = {"_id": self.id}
@@ -553,7 +552,6 @@ class Document(
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
         :return: self
         """
-        print("SET CALL")
         return self.update(
             SetOperator(expression),
             session=session,
