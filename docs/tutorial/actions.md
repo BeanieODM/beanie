@@ -6,10 +6,10 @@ Currently supported events:
 
 - Insert
 - Replace
+- Update
 - SaveChanges
 - Delete
 - ValidateOnSave
-- Update
 
 Currently supported directions:
 
@@ -24,6 +24,7 @@ Current operations creating events:
 - `save_changes()` for SaveChanges
 - `insert()`, `replace()`, `save_changes()`, and `save()` for ValidateOnSave
 - `set()`, `update()` for Update
+- `delete()` for Delete
 
 To register an action, you can use `@before_event` and `@after_event` decorators respectively:
 
