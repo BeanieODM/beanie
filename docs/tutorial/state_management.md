@@ -2,7 +2,7 @@
 
 Beanie can keep the document state, that synced with the database, to find local changes and save only them.
 
-This feature must be turned on in the `Settings` inner class explicitly.
+This feature must be turned on in the `Settings` inner class explicitly:
 
 ```python
 class Sample(Document):
@@ -73,6 +73,7 @@ as it is non-destructive, and does not re-assign the whole object is only one of
 ```python
 from typing import Dict
 
+
 class Item(Document):
     name: str
     attributes: Dict[str, float]
@@ -96,6 +97,7 @@ You can enable the `state_management_replace_objects` attribute in your model's 
 ```python
 from typing import Dict
 
+
 class Item(Document):
     name: str
     attributes: Dict[str, float]
@@ -105,7 +107,7 @@ class Item(Document):
         state_management_replace_objects = True
 ```
 
-With this setting activated, when one attribute of the nested object is changed, the whole object will be overriden:
+With this setting activated, when one attribute of the nested object is changed, the whole object will be overridden:
 
 ```python
 i = Item(name="Test", attributes={"attribute_1": 1.0, "attribute_2": 2.0})
@@ -116,7 +118,7 @@ await i.save_changes()
 # Keeping attribute_2
 ```
 
-When the whole object is assigned, the whole nested object will be overriden:
+When the whole object is assigned, the whole nested object will be overridden:
 
 ```python
 i = Item(name="Test", attributes={"attribute_1": 1.0, "attribute_2": 2.0})
