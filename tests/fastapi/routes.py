@@ -31,3 +31,9 @@ async def create_houses_with_window_link(window: WindowInput):
     )
     await house.insert(link_rule=WriteRules.WRITE)
     return house
+
+
+@house_router.post("/houses_2/", response_model=HouseAPI)
+async def create_houses_2(house: HouseAPI):
+    await house.insert(link_rule=WriteRules.WRITE)
+    return house

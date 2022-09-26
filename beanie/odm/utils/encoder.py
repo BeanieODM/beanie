@@ -22,7 +22,7 @@ from typing import Any, Callable, Dict, Type
 from uuid import UUID
 
 import bson
-from bson import ObjectId, DBRef, Binary
+from bson import ObjectId, DBRef, Binary, Decimal128
 from pydantic import BaseModel
 from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
@@ -33,7 +33,7 @@ from beanie.odm import documents
 ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     Color: str,
     timedelta: lambda td: td.total_seconds(),
-    Decimal: float,
+    Decimal: Decimal128,
     deque: list,
     IPv4Address: str,
     IPv4Interface: str,

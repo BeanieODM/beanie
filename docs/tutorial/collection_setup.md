@@ -1,6 +1,7 @@
 # Collection setup (name, indexes, timeseries)
 
-Although the basic pydantic syntax allows you to set all aspects of individual fields, there is also some need to configure collections as a whole. In particular you might want to:
+Although the basic pydantic syntax allows you to set all aspects of individual fields, there is also some need to configure 
+collections as a whole. In particular, you might want to:
 
 - Set the MongoDB collection name
 - Configure indexes
@@ -27,7 +28,7 @@ class Sample(Document):
 
 ### Indexed function
 
-To setup an index over a single field the `Indexed` function can be used to wrap the type and does not require a `Settings` class:
+To set up an index over a single field the `Indexed` function can be used to wrap the type and does not require a `Settings` class:
 
 ```python
 from beanie import Document, Indexed
@@ -39,6 +40,7 @@ class Sample(Document):
 ```
 
 The `Indexed` function takes an optional argument `index_type`, which may be set to a pymongo index type:
+
 ```python
 import pymongo
 
@@ -46,12 +48,12 @@ from beanie import Document, Indexed
 
 
 class Sample(Document):
-    description: Indexed(str, index_type = pymongo.TEXT)
+    description: Indexed(str, index_type=pymongo.TEXT)
 ```
 
- The `Indexed` function also supports pymogo's `IndexModel` kwargs arguments (see the [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel) for details). 
+The `Indexed` function also supports PyMongo's `IndexModel` kwargs arguments (see the [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel) for details). 
  
-For example to create `unique` index:
+For example to create a `unique` index:
 
 ```python
 from beanie import Document, Indexed
@@ -98,7 +100,7 @@ class Sample(Document):
 
 ## Time series
 
-You can setup a timeseries collection using inner class `Settings`.
+You can set up a timeseries collection using inner class `Settings`.
 
 **Be aware, timeseries collections a supported by MongoDB 5.0 and higher only.**
 

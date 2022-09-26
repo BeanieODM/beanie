@@ -1,23 +1,27 @@
 To populate the database, please run the examples from the [previous section of the tutorial](inserting-into-the-database.md) as we will be using the same setup here.
 
-
 ## Finding documents
 
 The basic syntax for finding multiple documents in the database is to call the classmethod `find()` or it's synonym `find_many()` with some search criteria (see next section): 
+
 ```python
 findresult = Product.find(search_criteria)
 ```
-This returns a `FindMany` object which can be used to access the results in multiple ways. To loop through the results, use a `async for` loop"
+
+This returns a `FindMany` object which can be used to access the results in different ways. To loop through the results, use a `async for` loop:
+
 ```python
 async for result in Product.find(search_criteria):
     print(result)
 ```
-If you prefer a list of the results then you can call `to_list()`:
+
+If you prefer a list of the results, then you can call `to_list()` method:
+
 ```python
 result = await Product.find(search_criteria).to_list()
 ```
 
-To get the first document you can use `.first_or_none()` method. It returns the first found document or None, if no documents were found.
+To get the first document you can use `.first_or_none()` method. It returns the first found document or `None`, if no documents were found.
 
 ```python
 result = await Product.find(search_criteria).first_or_none()
@@ -25,9 +29,10 @@ result = await Product.find(search_criteria).first_or_none()
 
 ### Search criteria
 
-As search criteria, Beanie supports python-based syntax.
+As search criteria, Beanie supports Python-based syntax.
 For comparisons Python comparison operators can be used on the class fields (and nested
 fields):
+
 ```python
 products = await Product.find(Product.price < 10).to_list()
 ```
@@ -39,7 +44,8 @@ Other MongoDB query operators can be used with the included wrappers. For exampl
 from beanie.operators import In
 
 products = await Product.find(
-    In(Product.category.name, ["Chocolate", "Fruits"])).to_list()
+    In(Product.category.name, ["Chocolate", "Fruits"])
+).to_list()
 ```
 
 The whole list of the find query operators can be found [here](/beanie/api-documentation/operators/find).
@@ -58,7 +64,7 @@ Sometimes you will only need to find a single document. If you are searching by 
 bar = await Product.get("608da169eb9e17281f0ab2ff")
 ```
 
-To find a single document via a searching criteria you can use the [find_one](/beanie/api-documentation/document/#documentfind_one) method:
+To find a single document via a searching criteria, you can use the [find_one](/beanie/api-documentation/document/#documentfind_one) method:
 
 ```python
 bar = await Product.find_one(Product.name == "Peanut Bar")
@@ -125,14 +131,14 @@ chocolates = await Product.find(
 
 ### Projections
 
-When only part of a document is required projections can save a lot of database bandwidth and processing.
-For simple projections we can just define a pydantic model with the required fields and pass it to `project()`:
-
+When only part of a document is required, projections can save a lot of database bandwidth and processing.
+For simple projections we can just define a pydantic model with the required fields and pass it to `project()` method:
 
 ```python
 class ProductShortView(BaseModel):
     name: str
     price: float
+
 
 chocolates = await Product.find(
     Product.category.name == "Chocolate").project(ProductShortView).to_list()
@@ -147,6 +153,7 @@ class ProductView(BaseModel):
 
     class Settings:
         projection = {"name": 1, "category": "$category.name"}
+
 
 chocolates = await Product.find(
     Product.category.name == "Chocolate").project(ProductView).to_list()

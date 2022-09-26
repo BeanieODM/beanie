@@ -2,21 +2,23 @@
 
 Documents with different schemes could be stored in a single collection and managed correctly. `UnionDoc` class is used for this.
 
-It supports find and aggregate methods. For find it will fetch all the found documents into the respective `Document` classes.
+It supports find and aggregate methods. For find, it will fetch all the found documents into the respective `Document` classes.
 
-Documents that have `union_doc` in the settings still can be used in find and other queries. Queries of one such class will not see data of others.
+Documents that have `union_doc` in their settings still can be used in find and other queries. Queries of one such class will not see data of others.
 
 ## Example
 
-Create documents
+Create documents:
 
 ```python
 from beanie import Document, UnionDoc
+
 
 class Parent(UnionDoc):  # Union
     class Settings:
         name = "union_doc_collection"  # Collection name
 
+        
 class One(Document):
     int_field: int = 0
     shared: int = 0        

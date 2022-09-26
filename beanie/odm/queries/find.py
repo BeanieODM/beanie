@@ -84,12 +84,22 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         self.fetch_links: bool = False
         self.pymongo_kwargs: Dict[str, Any] = {}
 
+    def prepare_find_expressions(self):
+        if self.document_model.get_link_fields() is not None:
+            for i, query in enumerate(self.find_expressions):
+                self.find_expressions[i] = convert_ids(
+                    query,
+                    doc=self.document_model,
+                    fetch_links=self.fetch_links,
+                )
+
     def get_filter_query(self) -> Mapping[str, Any]:
         """
 
         Returns: MongoDB filter query
 
         """
+        self.prepare_find_expressions()
         if self.find_expressions:
             return Encoder(custom_encoders=self.encoders).encode(
                 And(*self.find_expressions).query
@@ -590,14 +600,6 @@ class FindMany(
 
     @property
     def motor_cursor(self):
-        if self.document_model.get_link_fields() is not None:
-            for i, query in enumerate(self.find_expressions):
-                self.find_expressions[i] = convert_ids(
-                    query,
-                    doc=self.document_model,
-                    fetch_links=self.fetch_links,
-                )
-
         if self.fetch_links:
             aggregation_pipeline: List[
                 Dict[str, Any]
@@ -827,14 +829,6 @@ class FindOne(FindQuery[FindQueryResultType]):
             return None
 
     async def _find_one(self):
-        if self.document_model.get_link_fields() is not None:
-            for i, query in enumerate(self.find_expressions):
-                self.find_expressions[i] = convert_ids(
-                    query,
-                    doc=self.document_model,
-                    fetch_links=self.fetch_links,
-                )
-
         if self.fetch_links:
             result = await self.document_model.find(
                 *self.find_expressions,

@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 from pathlib import Path
 from typing import Mapping, AbstractSet
 import pytest
@@ -64,7 +65,7 @@ async def test_custom_filed_types():
     )
     custom2 = DocumentWithCustomFiledsTypes(
         color="magenta",
-        decimal=500.213,
+        decimal=Decimal("3.14") + Decimal(10) ** Decimal(-18),
         secret_bytes=b"secret_bytes",
         secret_string="super_secret_password",
         ipv4address="127.0.0.1",
@@ -87,8 +88,18 @@ async def test_custom_filed_types():
     c1_fromdb.set_type = c2_fromdb.set_type = c1.set_type = c2.set_type = None
     c1_fromdb.revision_id = None
     c2_fromdb.revision_id = None
-    assert Encoder().encode(c1_fromdb) == Encoder().encode(c1)
-    assert Encoder().encode(c2_fromdb) == Encoder().encode(c2)
+    c1_encoded = Encoder().encode(c1)
+    c1_fromdb_encoded = Encoder().encode(c1_fromdb)
+    c2_encoded = Encoder().encode(c2)
+    c2_fromdb_encoded = Encoder().encode(c2_fromdb)
+    assert c1_fromdb_encoded == c1_encoded
+    assert c2_fromdb_encoded == c2_encoded
+    assert Decimal(str(custom1.decimal)) == Decimal(
+        str(c1_encoded.get("decimal"))
+    )
+    assert Decimal(str(custom2.decimal)) == Decimal(
+        str(c2_encoded.get("decimal"))
+    )
 
 
 async def test_hidden(document):

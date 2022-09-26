@@ -13,12 +13,12 @@ from typing import List, Optional, Set, Tuple, Union
 from uuid import UUID, uuid4
 
 import pymongo
-from pydantic import SecretBytes, SecretStr, Extra
+from pydantic import SecretBytes, SecretStr, Extra, PrivateAttr
 from pydantic.color import Color
 from pydantic import BaseModel, Field
 from pymongo import IndexModel
 
-from beanie import Document, Indexed, Insert, Replace, ValidateOnSave
+from beanie import Document, Indexed, Insert, Replace, ValidateOnSave, Update
 from beanie.odm.actions import before_event, after_event, Delete
 from beanie.odm.fields import Link
 from beanie.odm.settings.timeseries import TimeSeriesConfig
@@ -243,15 +243,30 @@ class DocumentWithActions(Document):
     def inner_num_to_two(self):
         self.Inner.inner_num_2 = 2
 
+    @before_event(Update)
+    def inner_num_to_one_2(self):
+        self.num_1 += 1
+
+    @after_event(Update)
+    def inner_num_to_two_2(self):
+        self.num_2 -= 1
+
 
 class InheritedDocumentWithActions(DocumentWithActions):
     ...
 
 
 class InternalDoc(BaseModel):
+    _private_field: str = PrivateAttr(default="TEST_PRIVATE")
     num: int = 100
     string: str = "test"
     lst: List[int] = [1, 2, 3, 4, 5]
+
+    def change_private(self):
+        self._private_field = "PRIVATE_CHANGED"
+
+    def get_private(self):
+        return self._private_field
 
 
 class DocumentWithTurnedOnStateManagement(Document):
@@ -388,3 +403,20 @@ class DocumentMultiModelTwo(Document):
 
     class Settings:
         union_doc = DocumentUnion
+
+
+class WindowWithRevision(Document):
+    x: int
+    y: int
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
+
+
+class HouseWithRevision(Document):
+    windows: List[Link[WindowWithRevision]]
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
