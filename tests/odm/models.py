@@ -245,7 +245,6 @@ class DocumentWithActions(Document):
 
     @before_event(Update)
     def inner_num_to_one_2(self):
-        print("HERE")
         self.num_1 += 1
 
     @after_event(Update)

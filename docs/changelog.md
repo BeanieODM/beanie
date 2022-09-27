@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.11.11] - 2022-09-26
+
+### Fix
+
+- Remove prints
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/355/>
+
 ## [1.11.10] - 2022-09-20
 
 ### Improvement
@@ -948,3 +958,7 @@ how specific type should be presented in the database
 [1.11.8]: https://pypi.org/project/beanie/1.11.8
 
 [1.11.9]: https://pypi.org/project/beanie/1.11.9
+
+[1.11.10]: https://pypi.org/project/beanie/1.11.10
+
+[1.11.11]: https://pypi.org/project/beanie/1.11.11
