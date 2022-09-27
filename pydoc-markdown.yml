@@ -17,11 +17,21 @@ renderer:
     site_name: Beanie Documentation
     site_url: https://roman-right.github.io/beanie/
     theme:
-       name: material
-       palette:
-           primary: white
-       logo: assets/logo.svg
-       favicon: assets/favicon.png
+      name: material
+      palette:
+        - scheme: default
+          primary: white
+          toggle:
+            icon: material/toggle-switch
+            name: Switch to dark mode
+        - scheme: slate
+          toggle:
+            icon: material/toggle-switch-off-outline
+            name: Switch to light mode
+      logo: assets/logo.svg
+      favicon: assets/favicon.png
+    extra_css:
+      - assets/color_scheme.css
     markdown_extensions:
       - pymdownx.highlight
       - pymdownx.superfences
