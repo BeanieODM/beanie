@@ -9,6 +9,7 @@ hooks:
   pre-render:
     - mkdir -p docs/build/content
     - cp -r docs/assets docs/build/content
+    - cp docs/CNAME docs/build/content
     
 renderer:  
   type: mkdocs
