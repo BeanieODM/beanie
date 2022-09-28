@@ -80,7 +80,6 @@ class ActionRegistry:
                 for action_type in EventTypes
             }
         for event_type in event_types:
-            print(document_class, event_type, action_direction)
             cls._actions[document_class][event_type][action_direction].append(
                 funct
             )
@@ -150,12 +149,10 @@ def register_action(
     """
     final_event_types = []
     for event_type in event_types:
-        print(event_type, type(event_type))
         if isinstance(event_type, list):
             final_event_types.extend(event_type)
         else:
             final_event_types.append(event_type)
-    print(final_event_types)
 
     def decorator(f):
         f.has_action = True
