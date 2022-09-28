@@ -41,7 +41,7 @@ class Sample(Document):
         self.num -= 1
 ```
 
-It is possible to register action for a list of events:
+It is possible to register action for several events:
 
 ```python
 from beanie import Insert, Replace
@@ -51,7 +51,7 @@ class Sample(Document):
     num: int
     name: str
 
-    @before_event([Insert, Replace])
+    @before_event(Insert, Replace)
     def capitalize_name(self):
         self.name = self.name.capitalize()
 ```
@@ -68,7 +68,7 @@ class Sample(Document):
     num: int
     name: str
 
-    @after_event([Insert, Replace])
+    @after_event(Insert, Replace)
     async def send_callback(self):
         await client.send(self.id)
 ```

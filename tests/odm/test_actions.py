@@ -2,12 +2,21 @@ import pytest
 
 from beanie import Before, After
 
-from tests.odm.models import DocumentWithActions, InheritedDocumentWithActions
+from tests.odm.models import (
+    DocumentWithActions,
+    InheritedDocumentWithActions,
+    DocumentWithActions2,
+)
 
 
 class TestActions:
     @pytest.mark.parametrize(
-        "doc_class", [DocumentWithActions, InheritedDocumentWithActions]
+        "doc_class",
+        [
+            DocumentWithActions,
+            DocumentWithActions2,
+            InheritedDocumentWithActions,
+        ],
     )
     async def test_actions_insert(self, doc_class):
         test_name = f"test_actions_insert_{doc_class}"
@@ -20,7 +29,12 @@ class TestActions:
         assert sample.num_2 == 9
 
     @pytest.mark.parametrize(
-        "doc_class", [DocumentWithActions, InheritedDocumentWithActions]
+        "doc_class",
+        [
+            DocumentWithActions,
+            DocumentWithActions2,
+            InheritedDocumentWithActions,
+        ],
     )
     async def test_actions_replace(self, doc_class):
         test_name = f"test_actions_replace_{doc_class}"
@@ -33,7 +47,12 @@ class TestActions:
         assert sample.num_3 == 99
 
     @pytest.mark.parametrize(
-        "doc_class", [DocumentWithActions, InheritedDocumentWithActions]
+        "doc_class",
+        [
+            DocumentWithActions,
+            DocumentWithActions2,
+            InheritedDocumentWithActions,
+        ],
     )
     async def test_skip_actions_insert(self, doc_class):
         test_name = f"test_skip_actions_insert_{doc_class}"
@@ -48,7 +67,12 @@ class TestActions:
         assert sample.num_2 == 10
 
     @pytest.mark.parametrize(
-        "doc_class", [DocumentWithActions, InheritedDocumentWithActions]
+        "doc_class",
+        [
+            DocumentWithActions,
+            DocumentWithActions2,
+            InheritedDocumentWithActions,
+        ],
     )
     async def test_skip_actions_replace(self, doc_class):
         test_name = f"test_skip_actions_replace{doc_class}"
@@ -63,7 +87,12 @@ class TestActions:
         assert sample.num_3 == 100
 
     @pytest.mark.parametrize(
-        "doc_class", [DocumentWithActions, InheritedDocumentWithActions]
+        "doc_class",
+        [
+            DocumentWithActions,
+            DocumentWithActions2,
+            InheritedDocumentWithActions,
+        ],
     )
     async def test_actions_delete(self, doc_class):
         test_name = f"test_actions_delete_{doc_class}"
@@ -74,7 +103,12 @@ class TestActions:
         assert sample.Inner.inner_num_2 == 2
 
     @pytest.mark.parametrize(
-        "doc_class", [DocumentWithActions, InheritedDocumentWithActions]
+        "doc_class",
+        [
+            DocumentWithActions,
+            DocumentWithActions2,
+            InheritedDocumentWithActions,
+        ],
     )
     async def test_actions_update(self, doc_class):
         test_name = f"test_actions_update_{doc_class}"

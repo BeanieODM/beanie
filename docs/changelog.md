@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.11.12] - 2022-09-28
+
+### Improvement
+
+- Change before_event, after_event signature to be more pythonic
+
+### Implementation
+
+- DISCUSSION <https://github.com/roman-right/beanie/discussions/354>
+
 ## [1.11.11] - 2022-09-26
 
 ### Fix
@@ -962,3 +972,5 @@ how specific type should be presented in the database
 [1.11.10]: https://pypi.org/project/beanie/1.11.10
 
 [1.11.11]: https://pypi.org/project/beanie/1.11.11
+
+[1.11.12]: https://pypi.org/project/beanie/1.11.12
