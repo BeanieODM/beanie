@@ -39,7 +39,8 @@ from tests.odm.models import (
     DocumentUnion,
     HouseWithRevision,
     WindowWithRevision,
-    YardWithRevision
+    YardWithRevision,
+    DocumentWithActions2
 )
 from tests.odm.views import TestView
 from tests.odm.models import (
@@ -171,7 +172,8 @@ async def init(loop, db):
         DocumentUnion,
         HouseWithRevision,
         WindowWithRevision,
-        YardWithRevision
+        YardWithRevision,
+        DocumentWithActions2
     ]
     await init_beanie(
         database=db,

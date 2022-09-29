@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beanie"
-version = "1.11.9"
+version = "1.11.12"
 description = "Asynchronous Python ODM for MongoDB"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
@@ -38,6 +38,8 @@ jinja2 = "3.0.3"
 fastapi = "^0.78.0"
 asgi-lifespan = "^1.0.1"
 httpx = "^0.23.0"
+Markdown = "3.3.5"
+importlib-metadata = "^4.12.0"
 
 
 [build-system]

@@ -15,7 +15,7 @@ is used to interact with that collection. In addition to retrieving data,
 Beanie allows you to add, update, or delete documents from the collection as
 well.
 
-Beanie saves you time by removing boiler-plate code and it helps you focus on
+Beanie saves you time by removing boilerplate code, and it helps you focus on
 the parts of your app that actually matter.
 
 Data and schema migrations are supported by Beanie out of the box.
@@ -36,14 +36,19 @@ poetry add beanie
 ## Example
 
 ```python
+import asyncio
 from typing import Optional
+
+from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
+
 from beanie import Document, Indexed, init_beanie
-import asyncio, motor
+
 
 class Category(BaseModel):
     name: str
     description: str
+
 
 class Product(Document):
     name: str                          # You can use normal types just like in pydantic
@@ -51,12 +56,13 @@ class Product(Document):
     price: Indexed(float)              # You can also specify that a field should correspond to an index
     category: Category                 # You can include pydantic models as well
 
+
 # Beanie is fully asynchronous, so we will access it from an async function
 async def example():
-    # Beanie uses Motor under the hood 
-    client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://user:pass@host:27017")
+    # Beanie uses Motor async client under the hood 
+    client = AsyncIOMotorClient("mongodb://user:pass@host:27017")
 
-    # Init beanie with the Product document class
+    # Initialize beanie with the Product document class
     await init_beanie(database=client.db_name, document_models=[Product])
 
     chocolate = Category(name="Chocolate", description="A preparation of roasted and ground cacao seeds.")
@@ -70,15 +76,17 @@ async def example():
     
     # And update them
     await product.set({Product.name:"Gold bar"})
-    
-asyncio.run(example())
+
+
+if __name__ == "__main__":
+    asyncio.run(example())
 ```
 
 ## Links
 
 ### Documentation
 
-- **[Doc](https://roman-right.github.io/beanie/)** - Tutorial, API docmentation, and development guidlines.
+- **[Doc](https://roman-right.github.io/beanie/)** - Tutorial, API documentation, and development guidelines.
 
 ### Example Projects
 
@@ -103,11 +111,6 @@ asyncio.run(example())
   the valuable changes
 - **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share
   ideas or just say `Hello!!`
-
-## Sponsor the project
-
-- Bitcoin `bc1qz8z0uhftdcra7u8hjyft6nqn30uhktlcgsg0tq`
-- Doge `DPKs32RSEVwPiKuGAAmQHZ8VQ8BQK5Qg4L`
 
 ----
 Supported by [JetBrains](https://jb.gg/OpenSource)

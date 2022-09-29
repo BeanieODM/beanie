@@ -470,6 +470,7 @@ class Document(
         await cls.find(In(cls.id, ids_list), session=session).delete()
         await cls.insert_many(documents, session=session)
 
+    @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
     async def update(
         self,
@@ -478,6 +479,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: bool = False,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs,
     ) -> None:
         """

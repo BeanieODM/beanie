@@ -11,6 +11,7 @@ from typing import (
     Any,
     Type,
     Optional,
+    Tuple,
 )
 
 if TYPE_CHECKING:
@@ -23,6 +24,7 @@ class EventTypes(str, Enum):
     SAVE_CHANGES = "SAVE_CHANGES"
     VALIDATE_ON_SAVE = "VALIDATE_ON_SAVE"
     DELETE = "DELETE"
+    UPDATE = "UPDATE"
 
 
 Insert = EventTypes.INSERT
@@ -30,6 +32,7 @@ Replace = EventTypes.REPLACE
 SaveChanges = EventTypes.SAVE_CHANGES
 ValidateOnSave = EventTypes.VALIDATE_ON_SAVE
 Delete = EventTypes.DELETE
+Update = EventTypes.UPDATE
 
 
 class ActionDirections(str, Enum):  # TODO think about this name
@@ -134,7 +137,7 @@ class ActionRegistry:
 
 
 def register_action(
-    event_types: Union[List[EventTypes], EventTypes],
+    event_types: Tuple[Union[List[EventTypes], EventTypes]],
     action_direction: ActionDirections,
 ):
     """
@@ -144,41 +147,47 @@ def register_action(
     :param action_direction: ActionDirections - before or after
     :return:
     """
-    if isinstance(event_types, EventTypes):
-        event_types = [event_types]
+    final_event_types = []
+    for event_type in event_types:
+        if isinstance(event_type, list):
+            final_event_types.extend(event_type)
+        else:
+            final_event_types.append(event_type)
 
     def decorator(f):
         f.has_action = True
-        f.event_types = event_types
+        f.event_types = final_event_types
         f.action_direction = action_direction
         return f
 
     return decorator
 
 
-def before_event(event_types: Union[List[EventTypes], EventTypes]):
+def before_event(*args: Union[List[EventTypes], EventTypes]):
     """
     Decorator. It adds action, which should run before mentioned one
     or many events happen
 
-    :param event_types: Union[List[EventTypes], EventTypes] - event types
+    :param args: Union[List[EventTypes], EventTypes] - event types
     :return: None
     """
+
     return register_action(
-        action_direction=ActionDirections.BEFORE, event_types=event_types
+        action_direction=ActionDirections.BEFORE, event_types=args  # type: ignore
     )
 
 
-def after_event(event_types: Union[List[EventTypes], EventTypes]):
+def after_event(*args: Union[List[EventTypes], EventTypes]):
     """
     Decorator. It adds action, which should run after mentioned one
     or many events happen
 
-    :param event_types: Union[List[EventTypes], EventTypes] - event types
+    :param args: Union[List[EventTypes], EventTypes] - event types
     :return: None
     """
+
     return register_action(
-        action_direction=ActionDirections.AFTER, event_types=event_types
+        action_direction=ActionDirections.AFTER, event_types=args  # type: ignore
     )
 
 
