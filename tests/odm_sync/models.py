@@ -1,0 +1,473 @@
+import datetime
+from decimal import Decimal
+from ipaddress import (
+    IPv4Address,
+    IPv4Interface,
+    IPv4Network,
+    IPv6Address,
+    IPv6Interface,
+    IPv6Network,
+)
+from pathlib import Path
+from typing import List, Optional, Set, Tuple, Union
+from uuid import UUID, uuid4
+
+import pymongo
+from pydantic import SecretBytes, SecretStr, Extra, PrivateAttr
+from pydantic.color import Color
+from pydantic import BaseModel, Field
+from pymongo import IndexModel
+
+from beanie.odm_sync.documents import SyncDocument
+from beanie.odm_sync.actions import (
+    before_event,
+    after_event,
+    Delete,
+    Insert,
+    Replace,
+    Update,
+    ValidateOnSave,
+)
+from beanie.odm_sync.fields import Link, Indexed
+from beanie.odm_sync.settings.timeseries import TimeSeriesConfig
+from beanie.odm_sync.union_doc import UnionDoc
+
+
+class Option2(BaseModel):
+    f: float
+
+
+class Option1(BaseModel):
+    s: str
+
+
+class Nested(BaseModel):
+    integer: int
+    option_1: Option1
+    union: Union[Option1, Option2]
+    optional: Optional[Option2]
+
+
+class GeoObject(BaseModel):
+    type: str = "Point"
+    coordinates: Tuple[float, float]
+
+
+class Sample(SyncDocument):
+    timestamp: datetime.datetime
+    increment: Indexed(int)
+    integer: Indexed(int)
+    float_num: float
+    string: str
+    nested: Nested
+    optional: Optional[Option2]
+    union: Union[Option1, Option2]
+    geo: GeoObject
+
+
+class SubDocument(BaseModel):
+    test_str: str
+    test_int: int = 42
+
+
+class SyncDocumentTestModel(SyncDocument):
+    test_int: int
+    test_list: List[SubDocument] = Field(hidden=True)
+    test_doc: SubDocument
+    test_str: str
+
+    class Settings:
+        use_cache = True
+        cache_expiration_time = datetime.timedelta(seconds=10)
+        cache_capacity = 5
+        use_state_management = True
+
+
+class SyncDocumentTestModelWithCustomCollectionName(SyncDocument):
+    test_int: int
+    test_list: List[SubDocument]
+    test_str: str
+
+    class Collection:
+        name = "custom"
+
+    # class Settings:
+    #     name = "custom"
+
+
+class SyncDocumentTestModelWithSimpleIndex(SyncDocument):
+    test_int: Indexed(int)
+    test_list: List[SubDocument]
+    test_str: Indexed(str, index_type=pymongo.TEXT)
+
+
+class SyncDocumentTestModelWithIndexFlags(SyncDocument):
+    test_int: Indexed(int, sparse=True)
+    test_str: Indexed(str, index_type=pymongo.DESCENDING, unique=True)
+
+
+class SyncDocumentTestModelWithIndexFlagsAliases(SyncDocument):
+    test_int: Indexed(int, sparse=True) = Field(alias="testInt")
+    test_str: Indexed(str, index_type=pymongo.DESCENDING, unique=True) = Field(
+        alias="testStr"
+    )
+
+
+class SyncDocumentTestModelWithComplexIndex(SyncDocument):
+    test_int: int
+    test_list: List[SubDocument]
+    test_str: str
+
+    class Collection:
+        name = "docs_with_index"
+        indexes = [
+            "test_int",
+            [
+                ("test_int", pymongo.ASCENDING),
+                ("test_str", pymongo.DESCENDING),
+            ],
+            IndexModel(
+                [("test_str", pymongo.DESCENDING)],
+                name="test_string_index_DESCENDING",
+            ),
+        ]
+
+    # class Settings:
+    #     name = "docs_with_index"
+    #     indexes = [
+    #         "test_int",
+    #         [
+    #             ("test_int", pymongo.ASCENDING),
+    #             ("test_str", pymongo.DESCENDING),
+    #         ],
+    #         IndexModel(
+    #             [("test_str", pymongo.DESCENDING)],
+    #             name="test_string_index_DESCENDING",
+    #         ),
+    #     ]
+
+
+class SyncDocumentTestModelWithDroppedIndex(SyncDocument):
+    test_int: int
+    test_list: List[SubDocument]
+    test_str: str
+
+    class Collection:
+        name = "docs_with_index"
+        indexes = [
+            "test_int",
+        ]
+
+    class Settings:
+        name = "docs_with_index"
+        indexes = [
+            "test_int",
+        ]
+
+
+class SyncDocumentTestModelStringImport(SyncDocument):
+    test_int: int
+
+
+class SyncDocumentTestModelFailInspection(SyncDocument):
+    test_int_2: int
+
+    class Collection:
+        name = "SyncDocumentTestModel"
+
+    class Settings:
+        name = "SyncDocumentTestModel"
+
+
+class SyncDocumentWithCustomIdUUID(SyncDocument):
+    id: UUID = Field(default_factory=uuid4)
+    name: str
+
+
+class SyncDocumentWithCustomIdInt(SyncDocument):
+    id: int
+    name: str
+
+
+class SyncDocumentWithCustomFiledsTypes(SyncDocument):
+    color: Color
+    decimal: Decimal
+    secret_bytes: SecretBytes
+    secret_string: SecretStr
+    ipv4address: IPv4Address
+    ipv4interface: IPv4Interface
+    ipv4network: IPv4Network
+    ipv6address: IPv6Address
+    ipv6interface: IPv6Interface
+    ipv6network: IPv6Network
+    timedelta: datetime.timedelta
+    set_type: Set[str]
+    tuple_type: Tuple[int, str]
+    path: Path
+
+
+class SyncDocumentWithBsonEncodersFiledsTypes(SyncDocument):
+    color: Color
+    timestamp: datetime.datetime
+
+    class Settings:
+        bson_encoders = {
+            Color: lambda c: c.as_rgb(),
+            datetime.datetime: lambda o: o.isoformat(timespec="microseconds"),
+        }
+
+
+class SyncDocumentWithActions(SyncDocument):
+    name: str
+    num_1: int = 0
+    num_2: int = 10
+    num_3: int = 100
+
+    class Inner:
+        inner_num_1 = 0
+        inner_num_2 = 0
+
+    @before_event(Insert)
+    def capitalize_name(self):
+        self.name = self.name.capitalize()
+
+    @before_event([Insert, Replace])
+    def add_one(self):
+        self.num_1 += 1
+
+    @after_event(Insert)
+    def num_2_change(self):
+        self.num_2 -= 1
+
+    @after_event(Replace)
+    def num_3_change(self):
+        self.num_3 -= 1
+
+    @before_event(Delete)
+    def inner_num_to_one(self):
+        self.Inner.inner_num_1 = 1
+
+    @after_event(Delete)
+    def inner_num_to_two(self):
+        self.Inner.inner_num_2 = 2
+
+    @before_event(Update)
+    def inner_num_to_one_2(self):
+        self.num_1 += 1
+
+    @after_event(Update)
+    def inner_num_to_two_2(self):
+        self.num_2 -= 1
+
+
+class SyncDocumentWithActions2(SyncDocument):
+    name: str
+    num_1: int = 0
+    num_2: int = 10
+    num_3: int = 100
+
+    class Inner:
+        inner_num_1 = 0
+        inner_num_2 = 0
+
+    @before_event(Insert)
+    def capitalize_name(self):
+        self.name = self.name.capitalize()
+
+    @before_event(Insert, Replace)
+    def add_one(self):
+        self.num_1 += 1
+
+    @after_event(Insert)
+    def num_2_change(self):
+        self.num_2 -= 1
+
+    @after_event(Replace)
+    def num_3_change(self):
+        self.num_3 -= 1
+
+    @before_event(Delete)
+    def inner_num_to_one(self):
+        self.Inner.inner_num_1 = 1
+
+    @after_event(Delete)
+    def inner_num_to_two(self):
+        self.Inner.inner_num_2 = 2
+
+    @before_event(Update)
+    def inner_num_to_one_2(self):
+        self.num_1 += 1
+
+    @after_event(Update)
+    def inner_num_to_two_2(self):
+        self.num_2 -= 1
+
+
+class InheritedDocumentWithActions(SyncDocumentWithActions):
+    ...
+
+
+class InternalDoc(BaseModel):
+    _private_field: str = PrivateAttr(default="TEST_PRIVATE")
+    num: int = 100
+    string: str = "test"
+    lst: List[int] = [1, 2, 3, 4, 5]
+
+    def change_private(self):
+        self._private_field = "PRIVATE_CHANGED"
+
+    def get_private(self):
+        return self._private_field
+
+
+class SyncDocumentWithTurnedOnStateManagement(SyncDocument):
+    num_1: int
+    num_2: int
+    internal: InternalDoc
+
+    class Settings:
+        use_state_management = True
+
+
+class SyncDocumentWithTurnedOnReplaceObjects(SyncDocument):
+    num_1: int
+    num_2: int
+    internal: InternalDoc
+
+    class Settings:
+        use_state_management = True
+        state_management_replace_objects = True
+
+
+class SyncDocumentWithTurnedOffStateManagement(SyncDocument):
+    num_1: int
+    num_2: int
+
+
+class SyncDocumentWithValidationOnSave(SyncDocument):
+    num_1: int
+    num_2: int
+
+    @after_event(ValidateOnSave)
+    def num_2_plus_1(self):
+        self.num_2 += 1
+
+    class Settings:
+        validate_on_save = True
+        use_state_management = True
+
+
+class SyncDocumentWithRevisionTurnedOn(SyncDocument):
+    num_1: int
+    num_2: int
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
+
+
+class SyncDocumentWithPydanticConfig(SyncDocument):
+    num_1: int
+
+    class Config(SyncDocument.Config):
+        validate_assignment = True
+
+
+class SyncDocumentWithExtras(SyncDocument):
+    num_1: int
+
+    class Config(SyncDocument.Config):
+        extra = Extra.allow
+
+
+class SyncDocumentWithExtrasKw(SyncDocument, extra=Extra.allow):
+    num_1: int
+
+
+class Window(SyncDocument):
+    x: int
+    y: int
+
+
+class Door(SyncDocument):
+    t: int = 10
+
+
+class Roof(SyncDocument):
+    r: int = 100
+
+
+class House(SyncDocument):
+    windows: List[Link[Window]]
+    door: Link[Door]
+    roof: Optional[Link[Roof]]
+    name: Indexed(str) = Field(hidden=True)
+    height: Indexed(int) = 2
+
+
+class SyncDocumentForEncodingTest(SyncDocument):
+    bytes_field: Optional[bytes]
+    datetime_field: Optional[datetime.datetime]
+
+
+class SyncDocumentWithTimeseries(SyncDocument):
+    ts: datetime.datetime = Field(default_factory=datetime.datetime.now)
+
+    class Settings:
+        timeseries = TimeSeriesConfig(time_field="ts", expire_after_seconds=2)
+
+
+class SyncDocumentForEncodingTestDate(SyncDocument):
+    date_field: datetime.date = Field(default_factory=datetime.date.today)
+
+    class Settings:
+        name = "test_date"
+        bson_encoders = {
+            datetime.date: lambda dt: datetime.datetime(
+                year=dt.year,
+                month=dt.month,
+                day=dt.day,
+                hour=0,
+                minute=0,
+                second=0,
+            )
+        }
+
+
+class DocumentUnion(UnionDoc):
+    class Settings:
+        name = "multi_model"
+
+
+class SyncDocumentMultiModelOne(SyncDocument):
+    int_filed: int = 0
+    shared: int = 0
+
+    class Settings:
+        union_doc = DocumentUnion
+
+
+class SyncDocumentMultiModelTwo(SyncDocument):
+    str_filed: str = "test"
+    shared: int = 0
+    linked_doc: Optional[Link[SyncDocumentMultiModelOne]] = None
+
+    class Settings:
+        union_doc = DocumentUnion
+
+
+class WindowWithRevision(SyncDocument):
+    x: int
+    y: int
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
+
+
+class HouseWithRevision(SyncDocument):
+    windows: List[Link[WindowWithRevision]]
+
+    class Settings:
+        use_revision = True
+        use_state_management = True

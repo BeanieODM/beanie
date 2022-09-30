@@ -24,32 +24,32 @@ from pymongo.results import UpdateResult
 from pymongo import ReplaceOne
 
 from beanie.exceptions import DocumentNotFound
-from beanie.odm.cache import LRUCache
-from beanie.odm.bulk import BulkWriter, Operation
-from beanie.odm.enums import SortDirection
-from beanie.odm.interfaces.aggregation_methods import AggregateMethods
-from beanie.odm.interfaces.session import SessionMethods
-from beanie.odm.interfaces.update import UpdateMethods
-from beanie.odm.operators.find.logical import And
-from beanie.odm.queries.aggregation import AggregationQuery
-from beanie.odm.queries.cursor import BaseCursorQuery
-from beanie.odm.queries.delete import (
+from beanie.odm_sync.cache import LRUCache
+from beanie.odm_sync.bulk import BulkWriter, Operation
+from beanie.odm_sync.enums import SortDirection
+from beanie.odm_sync.interfaces.aggregation_methods import AggregateMethods
+from beanie.odm_sync.interfaces.session import SessionMethods
+from beanie.odm_sync.interfaces.update import UpdateMethods
+from beanie.odm_sync.operators.find.logical import And
+from beanie.odm_sync.queries.aggregation import AggregationQuery
+from beanie.odm_sync.queries.cursor import BaseCursorQuery
+from beanie.odm_sync.queries.delete import (
     DeleteMany,
     DeleteOne,
 )
-from beanie.odm.queries.update import (
+from beanie.odm_sync.queries.update import (
     UpdateQuery,
     UpdateMany,
     UpdateOne,
 )
-from beanie.odm.utils.encoder import Encoder
-from beanie.odm.utils.find import construct_lookup_queries
-from beanie.odm.utils.parsing import parse_obj
-from beanie.odm.utils.projection import get_projection
-from beanie.odm.utils.relations import convert_ids
+from beanie.odm_sync.utils.encoder import Encoder
+from beanie.odm_sync.utils.find import construct_lookup_queries
+from beanie.odm_sync.utils.parsing import parse_obj
+from beanie.odm_sync.utils.projection import get_projection
+from beanie.odm_sync.utils.relations import convert_ids
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import DocType
+    from beanie.odm_sync.documents import DocType
 
 FindQueryProjectionType = TypeVar("FindQueryProjectionType", bound=BaseModel)
 FindQueryResultType = TypeVar("FindQueryResultType", bound=BaseModel)
@@ -179,12 +179,15 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         :return: Union[DeleteOne, DeleteMany]
         """
         self.set_session(session=session)
-        return self.DeleteQueryType(
-            document_model=self.document_model,
-            find_query=self.get_filter_query(),
-            bulk_writer=bulk_writer,
-            **pymongo_kwargs,
-        ).set_session(session=session)
+        return (
+            self.DeleteQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+                bulk_writer=bulk_writer,
+                **pymongo_kwargs,
+            )
+            .set_session(session=session)
+        )
 
     def project(self, projection_model):
         """
@@ -199,24 +202,22 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
     def get_projection_model(self) -> Type[FindQueryResultType]:
         return self.projection_model
 
-    async def count(self) -> int:
+    def count(self) -> int:
         """
         Number of found documents
         :return: int
         """
-        return (
-            await self.document_model.get_motor_collection().count_documents(
-                self.get_filter_query()
-            )
+        return self.document_model.get_motor_collection().count_documents(
+            self.get_filter_query()
         )
 
-    async def exists(self) -> bool:
+    def exists(self) -> bool:
         """
         If find query will return anything
 
         :return: bool
         """
-        return await self.count() > 0
+        return self.count() > 0
 
 
 class FindMany(
@@ -230,7 +231,7 @@ class FindMany(
     Inherited from:
 
     - [FindQuery](https://roman-right.github.io/beanie/api/queries/#findquery)
-    - [BaseCursorQuery](https://roman-right.github.io/beanie/api/queries/#basecursorquery) - async generator
+    - [BaseCursorQuery](https://roman-right.github.io/beanie/api/queries/#basecursorquery) - generator
     - [AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
 
     """
@@ -638,11 +639,11 @@ class FindMany(
             **self.pymongo_kwargs,
         )
 
-    async def first_or_none(self) -> Optional[FindQueryResultType]:
+    def first_or_none(self) -> Optional[FindQueryResultType]:
         """
         Returns the first found element or None if no elements were found
         """
-        res = await self.limit(1).to_list()
+        res = self.limit(1).to_list()
         if not res:
             return None
         return res[0]
@@ -789,7 +790,7 @@ class FindOne(FindQuery[FindQueryResultType]):
             ),
         )
 
-    async def replace_one(
+    def replace_one(
         self,
         document: "DocType",
         session: Optional[ClientSession] = None,
@@ -805,7 +806,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self.set_session(session=session)
         if bulk_writer is None:
             result: UpdateResult = (
-                await self.document_model.get_motor_collection().replace_one(
+                self.document_model.get_motor_collection().replace_one(
                     self.get_filter_query(),
                     Encoder(by_alias=True, exclude={"_id"}).encode(document),
                     session=self.session,
@@ -828,9 +829,9 @@ class FindOne(FindQuery[FindQueryResultType]):
             )
             return None
 
-    async def _find_one(self):
+    def _find_one(self):
         if self.fetch_links:
-            result = await self.document_model.find(
+            result = self.document_model.find(
                 *self.find_expressions,
                 session=self.session,
                 fetch_links=self.fetch_links,
@@ -840,23 +841,21 @@ class FindOne(FindQuery[FindQueryResultType]):
                 return result[0]
             else:
                 return None
-        print(type(self.get_filter_query()["color"]))
-        print(self.get_filter_query()["color"])
-        return await self.document_model.get_motor_collection().find_one(
+        return self.document_model.get_motor_collection().find_one(
             filter=self.get_filter_query(),
             projection=get_projection(self.projection_model),
             session=self.session,
             **self.pymongo_kwargs,
         )
 
-    def __await__(
+    def run(
         self,
     ) -> Generator[Coroutine, Any, Optional[FindQueryResultType]]:
         """
         Run the query
         :return: BaseModel
         """
-        # projection = get_projection(self.projection_model)
+        print(self.ignore_cache)
         if (
             self.document_model.get_settings().use_cache
             and self.ignore_cache is False
@@ -872,12 +871,12 @@ class FindOne(FindQuery[FindQueryResultType]):
                 cache_key
             )
             if document is None:
-                document = yield from self._find_one().__await__()  # type: ignore
+                document = self._find_one()  # type: ignore
                 self.document_model._cache.set(  # type: ignore
                     cache_key, document
                 )
         else:
-            document = yield from self._find_one().__await__()  # type: ignore
+            document = self._find_one()  # type: ignore
         if document is None:
             return None
         return cast(

@@ -3,51 +3,73 @@ from random import randint
 from typing import List
 
 import pytest
+from pydantic import BaseSettings
+from pymongo import MongoClient
 
-from beanie.odm.utils.general import init_beanie
-from tests.odm.models import (
-    DocumentTestModel,
-    DocumentTestModelWithIndexFlagsAliases,
+from beanie.odm_sync.utils.general import init_beanie
+from tests.odm_sync.models import (
+    SyncDocumentTestModel,
+    SyncDocumentTestModelWithIndexFlagsAliases,
     SubDocument,
-    DocumentTestModelWithCustomCollectionName,
-    DocumentTestModelWithSimpleIndex,
-    DocumentTestModelWithIndexFlags,
-    DocumentTestModelWithComplexIndex,
-    DocumentTestModelFailInspection,
-    DocumentWithCustomIdUUID,
-    DocumentWithCustomIdInt,
-    DocumentWithCustomFiledsTypes,
-    DocumentWithBsonEncodersFiledsTypes,
-    DocumentWithActions,
-    DocumentWithTurnedOnStateManagement,
-    DocumentWithTurnedOnReplaceObjects,
-    DocumentWithTurnedOffStateManagement,
-    DocumentWithValidationOnSave,
-    DocumentWithRevisionTurnedOn,
-    DocumentWithPydanticConfig,
-    DocumentWithExtras,
+    SyncDocumentTestModelWithCustomCollectionName,
+    SyncDocumentTestModelWithSimpleIndex,
+    SyncDocumentTestModelWithIndexFlags,
+    SyncDocumentTestModelWithComplexIndex,
+    SyncDocumentTestModelFailInspection,
+    SyncDocumentWithCustomIdUUID,
+    SyncDocumentWithCustomIdInt,
+    SyncDocumentWithCustomFiledsTypes,
+    SyncDocumentWithBsonEncodersFiledsTypes,
+    SyncDocumentWithActions,
+    SyncDocumentWithTurnedOnStateManagement,
+    SyncDocumentWithTurnedOnReplaceObjects,
+    SyncDocumentWithTurnedOffStateManagement,
+    SyncDocumentWithValidationOnSave,
+    SyncDocumentWithRevisionTurnedOn,
+    SyncDocumentWithPydanticConfig,
+    SyncDocumentWithExtras,
     House,
     Window,
     Door,
     Roof,
     InheritedDocumentWithActions,
-    DocumentForEncodingTest,
-    DocumentForEncodingTestDate,
-    DocumentMultiModelOne,
-    DocumentMultiModelTwo,
+    SyncDocumentForEncodingTest,
+    SyncDocumentForEncodingTestDate,
+    SyncDocumentMultiModelOne,
+    SyncDocumentMultiModelTwo,
     DocumentUnion,
     HouseWithRevision,
     WindowWithRevision,
-    DocumentWithActions2,
+    SyncDocumentWithActions2,
 )
-from tests.odm.views import TestView
-from tests.odm.models import (
+from tests.odm_sync.models import (
     Sample,
     Nested,
     Option2,
     Option1,
     GeoObject,
 )
+from tests.odm_sync.views import TestView
+
+
+class Settings(BaseSettings):
+    mongodb_dsn: str = "mongodb://localhost:27017/beanie_db"
+    mongodb_db_name: str = "beanie_db"
+
+
+@pytest.fixture
+def settings():
+    return Settings()
+
+
+@pytest.fixture()
+def cli(settings, loop):
+    return MongoClient(settings.mongodb_dsn)
+
+
+@pytest.fixture()
+def db(cli, settings, loop):
+    return cli[settings.mongodb_db_name]
 
 
 @pytest.fixture
@@ -59,7 +81,7 @@ def point():
 
 
 @pytest.fixture
-async def preset_documents(point):
+def preset_documents(point):
     docs = []
     for i in range(10):
         timestamp = datetime.utcnow() - timedelta(days=i)
@@ -96,7 +118,7 @@ async def preset_documents(point):
             geo=geo,
         )
         docs.append(sample)
-    await Sample.insert_many(documents=docs)
+    Sample.insert_many(documents=docs)
 
 
 @pytest.fixture()
@@ -127,64 +149,64 @@ def sample_doc_not_saved(point):
 
 
 @pytest.fixture()
-async def session(cli, loop):
-    s = await cli.start_session()
+def session(cli, loop):
+    s = cli.start_session()
     yield s
-    await s.end_session()
+    s.end_session()
 
 
 @pytest.fixture(autouse=True)
-async def init(loop, db):
+def init(loop, db):
     models = [
-        DocumentWithExtras,
-        DocumentWithPydanticConfig,
-        DocumentTestModel,
-        DocumentTestModelWithCustomCollectionName,
-        DocumentTestModelWithSimpleIndex,
-        DocumentTestModelWithIndexFlags,
-        DocumentTestModelWithIndexFlagsAliases,
-        DocumentTestModelWithComplexIndex,
-        DocumentTestModelFailInspection,
-        DocumentWithBsonEncodersFiledsTypes,
-        DocumentWithCustomFiledsTypes,
-        DocumentWithCustomIdUUID,
-        DocumentWithCustomIdInt,
+        SyncDocumentWithExtras,
+        SyncDocumentWithPydanticConfig,
+        SyncDocumentTestModel,
+        SyncDocumentTestModelWithCustomCollectionName,
+        SyncDocumentTestModelWithSimpleIndex,
+        SyncDocumentTestModelWithIndexFlags,
+        SyncDocumentTestModelWithIndexFlagsAliases,
+        SyncDocumentTestModelWithComplexIndex,
+        SyncDocumentTestModelFailInspection,
+        SyncDocumentWithBsonEncodersFiledsTypes,
+        SyncDocumentWithCustomFiledsTypes,
+        SyncDocumentWithCustomIdUUID,
+        SyncDocumentWithCustomIdInt,
         Sample,
-        DocumentWithActions,
-        DocumentWithTurnedOnStateManagement,
-        DocumentWithTurnedOnReplaceObjects,
-        DocumentWithTurnedOffStateManagement,
-        DocumentWithValidationOnSave,
-        DocumentWithRevisionTurnedOn,
+        SyncDocumentWithActions,
+        SyncDocumentWithTurnedOnStateManagement,
+        SyncDocumentWithTurnedOnReplaceObjects,
+        SyncDocumentWithTurnedOffStateManagement,
+        SyncDocumentWithValidationOnSave,
+        SyncDocumentWithRevisionTurnedOn,
         House,
         Window,
         Door,
         Roof,
         InheritedDocumentWithActions,
-        DocumentForEncodingTest,
-        DocumentForEncodingTestDate,
+        SyncDocumentForEncodingTest,
+        SyncDocumentForEncodingTestDate,
         TestView,
-        DocumentMultiModelOne,
-        DocumentMultiModelTwo,
+        SyncDocumentMultiModelOne,
+        SyncDocumentMultiModelTwo,
         DocumentUnion,
         HouseWithRevision,
         WindowWithRevision,
-        DocumentWithActions2,
+        SyncDocumentWithActions2,
     ]
-    await init_beanie(
+    init_beanie(
         database=db,
         document_models=models,
     )
     yield None
 
-    # for model in models:
-    #     await model.get_motor_collection().drop()
-    #     await model.get_motor_collection().drop_indexes()
+    for model in models:
+        model.get_motor_collection().drop()
+        model.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture
 def document_not_inserted():
-    return DocumentTestModel(
+    return SyncDocumentTestModel(
         test_int=42,
         test_list=[SubDocument(test_str="foo"), SubDocument(test_str="bar")],
         test_doc=SubDocument(test_str="foobar"),
@@ -196,9 +218,9 @@ def document_not_inserted():
 def documents_not_inserted():
     def generate_documents(
         number: int, test_str: str = None, random: bool = False
-    ) -> List[DocumentTestModel]:
+    ) -> List[SyncDocumentTestModel]:
         return [
-            DocumentTestModel(
+            SyncDocumentTestModel(
                 test_int=randint(0, 1000000) if random else i,
                 test_list=[
                     SubDocument(test_str="foo"),
@@ -214,16 +236,16 @@ def documents_not_inserted():
 
 
 @pytest.fixture
-async def document(document_not_inserted, loop) -> DocumentTestModel:
-    return await document_not_inserted.insert()
+def document(document_not_inserted, loop) -> SyncDocumentTestModel:
+    return document_not_inserted.insert()
 
 
 @pytest.fixture
 def documents(documents_not_inserted):
-    async def generate_documents(
+    def generate_documents(
         number: int, test_str: str = None, random: bool = False
     ):
-        result = await DocumentTestModel.insert_many(
+        result = SyncDocumentTestModel.insert_many(
             documents_not_inserted(number, test_str, random)
         )
         return result.inserted_ids
