@@ -12,7 +12,7 @@ def test_pydantic_extras():
     doc.extra_value = "foo"
     doc.save()
 
-    loaded_doc = SyncDocumentWithExtras.get(doc.id)
+    loaded_doc = SyncDocumentWithExtras.get(doc.id).run()
 
     assert loaded_doc.extra_value == "foo"
 
@@ -23,7 +23,7 @@ def test_pydantic_extras_kw():
     doc.extra_value = "foo"
     doc.save()
 
-    loaded_doc = SyncDocumentWithExtras.get(doc.id)
+    loaded_doc = SyncDocumentWithExtras.get(doc.id).run()
 
     assert loaded_doc.extra_value == "foo"
 

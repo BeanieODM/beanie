@@ -7,7 +7,7 @@ from tests.odm_sync.models import SyncDocumentTestModel
 
 def test_insert_one(document_not_inserted):
     result = SyncDocumentTestModel.insert_one(document_not_inserted)
-    document = SyncDocumentTestModel.get(result.id)
+    document = SyncDocumentTestModel.get(result.id).run()
     assert document is not None
     assert document.test_int == document_not_inserted.test_int
     assert document.test_list == document_not_inserted.test_list
@@ -35,7 +35,7 @@ def test_insert_one_with_session(document_not_inserted, session):
     result = SyncDocumentTestModel.insert_one(
         document_not_inserted, session=session
     )
-    document = SyncDocumentTestModel.get(result.id, session=session)
+    document = SyncDocumentTestModel.get(result.id, session=session).run()
     assert document is not None
     assert document.test_int == document_not_inserted.test_int
     assert document.test_list == document_not_inserted.test_list

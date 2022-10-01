@@ -3,6 +3,7 @@ from typing import Type, TYPE_CHECKING, Any, Mapping, Optional, Dict, Generator
 from pymongo.results import DeleteResult
 
 from beanie.odm_sync.bulk import BulkWriter, Operation
+from beanie.odm_sync.interfaces.run import RunInterface
 from beanie.odm_sync.interfaces.session import SessionMethods
 from pymongo import DeleteOne as DeleteOnePyMongo
 from pymongo import DeleteMany as DeleteManyPyMongo
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
     from beanie.odm_sync.documents import DocType
 
 
-class DeleteQuery(SessionMethods):
+class DeleteQuery(SessionMethods, RunInterface):
     """
     Deletion Query
     """

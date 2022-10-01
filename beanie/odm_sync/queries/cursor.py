@@ -12,12 +12,13 @@ from typing import (
 
 from pydantic.main import BaseModel
 
+from beanie.odm_sync.interfaces.run import RunInterface
 from beanie.odm_sync.utils.parsing import parse_obj
 
 CursorResultType = TypeVar("CursorResultType")
 
 
-class BaseCursorQuery(Generic[CursorResultType]):
+class BaseCursorQuery(Generic[CursorResultType], RunInterface):
     """
     BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
     which parse result with model

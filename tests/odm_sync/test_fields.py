@@ -40,7 +40,7 @@ def test_bson_encoders_filed_types():
     encoded = get_dict(custom)
     assert isinstance(encoded["timestamp"], str)
     c = custom.insert()
-    c_fromdb = SyncDocumentWithBsonEncodersFiledsTypes.get(c.id)
+    c_fromdb = SyncDocumentWithBsonEncodersFiledsTypes.get(c.id).run()
     assert c_fromdb.color.as_hex() == c.color.as_hex()
     assert isinstance(c_fromdb.timestamp, datetime.datetime)
     assert c_fromdb.timestamp, custom.timestamp
@@ -81,8 +81,8 @@ def test_custom_filed_types():
     )
     c1 = custom1.insert()
     c2 = custom2.insert()
-    c1_fromdb = SyncDocumentWithCustomFiledsTypes.get(c1.id)
-    c2_fromdb = SyncDocumentWithCustomFiledsTypes.get(c2.id)
+    c1_fromdb = SyncDocumentWithCustomFiledsTypes.get(c1.id).run()
+    c2_fromdb = SyncDocumentWithCustomFiledsTypes.get(c2.id).run()
     assert set(c1_fromdb.set_type) == set(c1.set_type)
     assert set(c2_fromdb.set_type) == set(c2.set_type)
     c1_fromdb.set_type = c2_fromdb.set_type = c1.set_type = c2.set_type = None

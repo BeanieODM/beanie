@@ -86,6 +86,7 @@ from beanie.odm_sync.utils.state import (
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
+    from beanie.odm_sync.queries.find import FindOne
 
 DocType = TypeVar("DocType", bound="SyncDocument")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
@@ -148,7 +149,7 @@ class SyncDocument(
         """
         if self.id is None:
             raise ValueError("Document has no id")
-        new_instance: Optional[SyncDocument] = self.get(self.id)
+        new_instance: Optional[SyncDocument] = self.get(self.id).run()
         if new_instance is None:
             raise DocumentNotFound(
                 "Can not sync. The document is not in the database anymore."
@@ -166,7 +167,7 @@ class SyncDocument(
         ignore_cache: bool = False,
         fetch_links: bool = False,
         **pymongo_kwargs,
-    ) -> Optional["DocType"]:
+    ) -> "FindOne[DocType]":
         """
         Get document by id, returns None if document does not exist
 
@@ -450,7 +451,7 @@ class SyncDocument(
             raise ReplaceError(
                 "Some of the documents are not exist in the collection"
             )
-        cls.find(In(cls.id, ids_list), session=session).delete()
+        cls.find(In(cls.id, ids_list), session=session).delete().run()
         cls.insert_many(documents, session=session)
 
     @wrap_with_actions(EventTypes.UPDATE)
@@ -670,7 +671,7 @@ class SyncDocument(
 
         return self.find_one({"_id": self.id}).delete(
             session=session, bulk_writer=bulk_writer, **pymongo_kwargs
-        )
+        ).run()
 
     @classmethod
     def delete_all(

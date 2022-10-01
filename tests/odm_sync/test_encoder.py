@@ -14,7 +14,7 @@ def test_encode_datetime():
 
     doc = SyncDocumentForEncodingTest(datetime_field=datetime.now())
     doc.insert()
-    new_doc = SyncDocumentForEncodingTest.get(doc.id)
+    new_doc = SyncDocumentForEncodingTest.get(doc.id).run()
     assert isinstance(new_doc.datetime_field, datetime)
 
 
@@ -23,7 +23,7 @@ def test_encode_date():
 
     doc = SyncDocumentForEncodingTestDate()
     doc.insert()
-    new_doc = SyncDocumentForEncodingTestDate.get(doc.id)
+    new_doc = SyncDocumentForEncodingTestDate.get(doc.id).run()
     assert new_doc.date_field == doc.date_field
     assert isinstance(new_doc.date_field, date)
 
@@ -41,7 +41,7 @@ def test_bytes():
 
     doc = SyncDocumentForEncodingTest(bytes_field=b"test")
     doc.insert()
-    new_doc = SyncDocumentForEncodingTest.get(doc.id)
+    new_doc = SyncDocumentForEncodingTest.get(doc.id).run()
     assert isinstance(new_doc.bytes_field, bytes)
 
 

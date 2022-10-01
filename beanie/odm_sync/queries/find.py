@@ -28,6 +28,7 @@ from beanie.odm_sync.cache import LRUCache
 from beanie.odm_sync.bulk import BulkWriter, Operation
 from beanie.odm_sync.enums import SortDirection
 from beanie.odm_sync.interfaces.aggregation_methods import AggregateMethods
+from beanie.odm_sync.interfaces.run import RunInterface
 from beanie.odm_sync.interfaces.session import SessionMethods
 from beanie.odm_sync.interfaces.update import UpdateMethods
 from beanie.odm_sync.operators.find.logical import And
@@ -649,7 +650,7 @@ class FindMany(
         return res[0]
 
 
-class FindOne(FindQuery[FindQueryResultType]):
+class FindOne(FindQuery[FindQueryResultType], RunInterface):
     """
     Find One query class
 

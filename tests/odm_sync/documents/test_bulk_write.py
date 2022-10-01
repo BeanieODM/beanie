@@ -73,10 +73,10 @@ def test_delete(documents, document_not_inserted):
         doc.delete(bulk_writer=bulk_writer)
         SyncDocumentTestModel.find_one(
             SyncDocumentTestModel.test_int == 1
-        ).delete(bulk_writer=bulk_writer)
+        ).delete(bulk_writer=bulk_writer).run()
         SyncDocumentTestModel.find(SyncDocumentTestModel.test_int < 4).delete(
             bulk_writer=bulk_writer
-        )
+        ).run()
 
     assert len(SyncDocumentTestModel.find_all().to_list()) == 1
 

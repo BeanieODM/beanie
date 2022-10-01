@@ -10,14 +10,14 @@ class TestMultiModel:
         doc_1 = SyncDocumentMultiModelOne().insert()
         doc_2 = SyncDocumentMultiModelTwo().insert()
 
-        new_doc_1 = SyncDocumentMultiModelOne.get(doc_1.id)
-        new_doc_2 = SyncDocumentMultiModelTwo.get(doc_2.id)
+        new_doc_1 = SyncDocumentMultiModelOne.get(doc_1.id).run()
+        new_doc_2 = SyncDocumentMultiModelTwo.get(doc_2.id).run()
 
         assert new_doc_1 is not None
         assert new_doc_2 is not None
 
-        new_doc_1 = SyncDocumentMultiModelTwo.get(doc_1.id)
-        new_doc_2 = SyncDocumentMultiModelOne.get(doc_2.id)
+        new_doc_1 = SyncDocumentMultiModelTwo.get(doc_1.id).run()
+        new_doc_2 = SyncDocumentMultiModelOne.get(doc_2.id).run()
 
         assert new_doc_1 is None
         assert new_doc_2 is None
@@ -30,8 +30,8 @@ class TestMultiModel:
 
         SyncDocumentMultiModelOne.update_all({"$set": {"shared": 100}}).run()
 
-        new_doc_1 = SyncDocumentMultiModelOne.get(doc_1.id)
-        new_doc_2 = SyncDocumentMultiModelTwo.get(doc_2.id)
+        new_doc_1 = SyncDocumentMultiModelOne.get(doc_1.id).run()
+        new_doc_2 = SyncDocumentMultiModelTwo.get(doc_2.id).run()
 
         assert new_doc_1.shared == 100
         assert new_doc_2.shared == 0

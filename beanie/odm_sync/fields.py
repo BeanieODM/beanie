@@ -148,7 +148,7 @@ class Link(Generic[T]):
         self.model_class = model_class
 
     def fetch(self) -> Union[T, "Link"]:
-        result = self.model_class.get(self.ref.id)  # type: ignore
+        result = self.model_class.get(self.ref.id).run()  # type: ignore
         return result or self
 
     @classmethod

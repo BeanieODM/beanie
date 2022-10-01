@@ -2,6 +2,7 @@ from abc import abstractmethod
 
 
 from beanie.odm_sync.bulk import BulkWriter, Operation
+from beanie.odm_sync.interfaces.run import RunInterface
 from beanie.odm_sync.utils.encoder import Encoder
 from typing import (
     Callable,
@@ -31,7 +32,7 @@ if TYPE_CHECKING:
     from beanie.odm_sync.documents import DocType
 
 
-class UpdateQuery(UpdateMethods, SessionMethods):
+class UpdateQuery(UpdateMethods, SessionMethods, RunInterface):
     """
     Update Query base class
 

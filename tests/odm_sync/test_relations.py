@@ -121,7 +121,7 @@ class TestFind:
             assert isinstance(window, Window)
         assert isinstance(house.door, Door)
 
-        house = House.get(house.id, fetch_links=True)
+        house = House.get(house.id, fetch_links=True).run()
         for window in house.windows:
             assert isinstance(window, Window)
         assert isinstance(house.door, Door)
@@ -168,13 +168,13 @@ class TestReplace:
     def test_do_nothing(self, house):
         house.door.t = 100
         house.replace()
-        new_house = House.get(house.id, fetch_links=True)
+        new_house = House.get(house.id, fetch_links=True).run()
         assert new_house.door.t == 10
 
     def test_write(self, house):
         house.door.t = 100
         house.replace(link_rule=WriteRules.WRITE)
-        new_house = House.get(house.id, fetch_links=True)
+        new_house = House.get(house.id, fetch_links=True).run()
         assert new_house.door.t == 100
 
 
@@ -182,14 +182,14 @@ class TestSave:
     def test_do_nothing(self, house):
         house.door.t = 100
         house.save()
-        new_house = House.get(house.id, fetch_links=True)
+        new_house = House.get(house.id, fetch_links=True).run()
         assert new_house.door.t == 10
 
     def test_write(self, house):
         house.door.t = 100
         house.windows = [Window(x=100, y=100)]
         house.save(link_rule=WriteRules.WRITE)
-        new_house = House.get(house.id, fetch_links=True)
+        new_house = House.get(house.id, fetch_links=True).run()
         assert new_house.door.t == 100
         for window in new_house.windows:
             assert window.x == 100
@@ -199,7 +199,7 @@ class TestSave:
 class TestDelete:
     def test_do_nothing(self, house):
         house.delete()
-        door = Door.get(house.door.id)
+        door = Door.get(house.door.id).run()
         assert door is not None
 
         windows = Window.all().to_list()
@@ -207,7 +207,7 @@ class TestDelete:
 
     def test_delete_links(self, house):
         house.delete(link_rule=DeleteRules.DELETE_LINKS)
-        door = Door.get(house.door.id)
+        door = Door.get(house.door.id).run()
         assert door is None
 
         windows = Window.all().to_list()

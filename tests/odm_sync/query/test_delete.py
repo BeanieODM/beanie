@@ -13,7 +13,7 @@ def test_delete_many(preset_documents):
     delete_result = (
         Sample.find_many(Sample.integer > 1)
         .find_many(Sample.nested.optional == None)
-        .delete()
+        .delete().run()
     )  # noqa
     count_deleted = delete_result.deleted_count
     count_after = Sample.count()
@@ -29,7 +29,7 @@ def test_delete_many(preset_documents):
 
 def test_delete_all(preset_documents):
     count_before = Sample.count()
-    delete_result = Sample.delete_all()
+    delete_result = Sample.delete_all().run()
     count_deleted = delete_result.deleted_count
     count_after = Sample.count()
     assert count_after == 0
@@ -56,7 +56,7 @@ def test_delete_one(preset_documents):
     delete_result = (
         Sample.find_one(Sample.integer > 1)
         .find_one(Sample.nested.optional == None)
-        .delete()
+        .delete().run()
     )  # noqa
     count_after = Sample.count()
     count_deleted = delete_result.deleted_count
@@ -67,7 +67,7 @@ def test_delete_one(preset_documents):
     delete_result = (
         Sample.find_one(Sample.integer > 1)
         .find_one(Sample.nested.optional == None)
-        .delete_one()
+        .delete_one().run()
     )  # noqa
     count_deleted = delete_result.deleted_count
     count_after = Sample.count()
@@ -86,7 +86,7 @@ def test_delete_many_with_session(preset_documents, session):
         Sample.find_many(Sample.integer > 1)
         .find_many(Sample.nested.optional == None)
         .set_session(session=session)
-        .delete()
+        .delete().run()
     )  # noqa
 
     # assert q.session == session
@@ -100,14 +100,14 @@ def test_delete_many_with_session(preset_documents, session):
 
 def test_delete_pymongo_kwargs(preset_documents):
     with pytest.raises(TypeError):
-        Sample.find_many(Sample.increment > 4).delete(wrong="integer_1")
+        Sample.find_many(Sample.increment > 4).delete(wrong="integer_1").run()
 
     delete_result = Sample.find_many(Sample.increment > 4).delete(
         hint="integer_1"
-    )
+    ).run()
     assert delete_result is not None
 
     delete_result = Sample.find_one(Sample.increment > 4).delete(
         hint="integer_1"
-    )
+    ).run()
     assert delete_result is not None

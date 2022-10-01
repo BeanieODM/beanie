@@ -15,7 +15,7 @@ def test_replace():
     doc.replace()
 
     for i in range(5):
-        found_doc = SyncDocumentWithRevisionTurnedOn.get(doc.id)
+        found_doc = SyncDocumentWithRevisionTurnedOn.get(doc.id).run()
         found_doc.num_1 += 1
         found_doc.replace()
 
@@ -38,7 +38,7 @@ def test_update():
     doc.save_changes()
 
     for i in range(5):
-        found_doc = SyncDocumentWithRevisionTurnedOn.get(doc.id)
+        found_doc = SyncDocumentWithRevisionTurnedOn.get(doc.id).run()
         found_doc.num_1 += 1
         found_doc.save_changes()
 

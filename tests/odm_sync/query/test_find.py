@@ -153,11 +153,11 @@ def test_get(preset_documents):
     assert a.integer > 1
     assert a.nested.optional is None
 
-    new_a = Sample.get(a.id)
+    new_a = Sample.get(a.id).run()
     assert new_a == a
 
     # check for another type
-    new_a = Sample.get(str(a.id))
+    new_a = Sample.get(str(a.id)).run()
     assert new_a == a
 
 

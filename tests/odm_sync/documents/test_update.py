@@ -56,7 +56,7 @@ def test_replace(document):
     new_doc = document.copy(update=update_data)
     # document.test_str = "REPLACED_VALUE"
     new_doc.replace()
-    new_document = SyncDocumentTestModel.get(document.id)
+    new_document = SyncDocumentTestModel.get(document.id).run()
     assert new_document.test_str == "REPLACED_VALUE"
 
 
@@ -77,7 +77,7 @@ def test_save(document):
     new_doc = document.copy(update=update_data)
     # document.test_str = "REPLACED_VALUE"
     new_doc.save()
-    new_document = SyncDocumentTestModel.get(document.id)
+    new_document = SyncDocumentTestModel.get(document.id).run()
     assert new_document.test_str == "REPLACED_VALUE"
 
 
@@ -87,7 +87,7 @@ def test_save_not_saved(document_not_inserted):
         hasattr(document_not_inserted, "id")
         and document_not_inserted.id is not None
     )
-    from_db = SyncDocumentTestModel.get(document_not_inserted.id)
+    from_db = SyncDocumentTestModel.get(document_not_inserted.id).run()
     assert from_db == document_not_inserted
 
 
@@ -98,7 +98,7 @@ def test_save_not_found(document_not_inserted):
         hasattr(document_not_inserted, "id")
         and document_not_inserted.id is not None
     )
-    from_db = SyncDocumentTestModel.get(document_not_inserted.id)
+    from_db = SyncDocumentTestModel.get(document_not_inserted.id).run()
     assert from_db == document_not_inserted
 
 
@@ -109,7 +109,7 @@ def test_update_one(document):
     SyncDocumentTestModel.find_one(
         {"_id": document.id, "test_list.test_str": "foo"}
     ).update({"$set": {"test_list.$.test_str": "foo_foo"}}).run()
-    new_document = SyncDocumentTestModel.get(document.id)
+    new_document = SyncDocumentTestModel.get(document.id).run()
     assert new_document.test_list[0].test_str == "foo_foo"
 
 

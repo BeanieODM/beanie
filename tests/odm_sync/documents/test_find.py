@@ -5,12 +5,12 @@ from tests.odm_sync.models import SyncDocumentTestModel
 
 
 def test_get(document):
-    new_document = SyncDocumentTestModel.get(document.id)
+    new_document = SyncDocumentTestModel.get(document.id).run()
     assert new_document == document
 
 
 def test_get_not_found(document):
-    new_document = SyncDocumentTestModel.get(PydanticObjectId())
+    new_document = SyncDocumentTestModel.get(PydanticObjectId()).run()
     assert new_document is None
 
 
@@ -153,7 +153,7 @@ def test_find_many_not_found(documents):
 
 
 def test_get_with_session(document, session):
-    new_document = SyncDocumentTestModel.get(document.id, session=session)
+    new_document = SyncDocumentTestModel.get(document.id, session=session).run()
     assert new_document == document
 
 

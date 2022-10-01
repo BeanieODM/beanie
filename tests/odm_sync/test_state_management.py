@@ -152,12 +152,12 @@ def test_save_changes(saved_doc_default):
     assert saved_doc_default.get_saved_state()["internal"]["num"] == 10000
     assert saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
 
-    new_doc = SyncDocumentWithTurnedOnStateManagement.get(saved_doc_default.id)
+    new_doc = SyncDocumentWithTurnedOnStateManagement.get(saved_doc_default.id).run()
     assert new_doc.internal.num == 10000
 
 
 def test_find_one(saved_doc_default, state):
-    new_doc = SyncDocumentWithTurnedOnStateManagement.get(saved_doc_default.id)
+    new_doc = SyncDocumentWithTurnedOnStateManagement.get(saved_doc_default.id).run()
     assert new_doc.get_saved_state() == state
 
     new_doc = SyncDocumentWithTurnedOnStateManagement.find_one(
