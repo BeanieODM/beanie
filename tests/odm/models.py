@@ -376,6 +376,11 @@ class DocumentWithExtrasKw(Document, extra=Extra.allow):
     num_1: int
 
 
+class Yard(Document):
+    v: int
+    w: int
+
+
 class Window(Document):
     x: int
     y: int
@@ -393,6 +398,7 @@ class House(Document):
     windows: List[Link[Window]]
     door: Link[Door]
     roof: Optional[Link[Roof]]
+    yards: Optional[List[Link[Yard]]]
     name: Indexed(str) = Field(hidden=True)
     height: Indexed(int) = 2
 
@@ -446,6 +452,15 @@ class DocumentMultiModelTwo(Document):
 
     class Settings:
         union_doc = DocumentUnion
+
+
+class YardWithRevision(Document):
+    v: int
+    w: int
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
 
 
 class WindowWithRevision(Document):

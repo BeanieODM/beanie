@@ -212,10 +212,14 @@ class Document(
                     ]:
                         if isinstance(value, Document):
                             await value.insert(link_rule=WriteRules.WRITE)
-                    if field_info.link_type == LinkTypes.LIST:
-                        for obj in value:
-                            if isinstance(obj, Document):
-                                await obj.insert(link_rule=WriteRules.WRITE)
+                    if field_info.link_type in [
+                        LinkTypes.LIST,
+                        LinkTypes.OPTIONAL_LIST
+                    ]:
+                        if isinstance(value, List):
+                            for obj in value:
+                                if isinstance(obj, Document):
+                                    await obj.insert(link_rule=WriteRules.WRITE)
 
         result = await self.get_motor_collection().insert_one(
             get_dict(self, to_db=True), session=session
@@ -343,15 +347,19 @@ class Document(
                                 ignore_revision=ignore_revision,
                                 session=session,
                             )
-                    if field_info.link_type == LinkTypes.LIST:
-                        for obj in value:
-                            if isinstance(obj, Document):
-                                await obj.replace(
-                                    link_rule=link_rule,
-                                    bulk_writer=bulk_writer,
-                                    ignore_revision=ignore_revision,
-                                    session=session,
-                                )
+                    if field_info.link_type in [
+                        LinkTypes.LIST,
+                        LinkTypes.OPTIONAL_LIST
+                    ]:
+                        if isinstance(value, List):
+                            for obj in value:
+                                if isinstance(obj, Document):
+                                    await obj.replace(
+                                        link_rule=link_rule,
+                                        bulk_writer=bulk_writer,
+                                        ignore_revision=ignore_revision,
+                                        session=session,
+                                    )
 
         use_revision_id = self.get_settings().use_revision
         find_query: Dict[str, Any] = {"_id": self.id}
@@ -396,12 +404,16 @@ class Document(
                             await value.save(
                                 link_rule=link_rule, session=session
                             )
-                    if field_info.link_type == LinkTypes.LIST:
-                        for obj in value:
-                            if isinstance(obj, Document):
-                                await obj.save(
-                                    link_rule=link_rule, session=session
-                                )
+                    if field_info.link_type in [
+                        LinkTypes.LIST,
+                        LinkTypes.OPTIONAL_LIST
+                    ]:
+                        if isinstance(value, List):
+                            for obj in value:
+                                if isinstance(obj, Document):
+                                    await obj.save(
+                                        link_rule=link_rule, session=session
+                                    )
 
         try:
             return await self.replace(session=session, **kwargs)
@@ -658,13 +670,17 @@ class Document(
                                 link_rule=DeleteRules.DELETE_LINKS,
                                 **pymongo_kwargs,
                             )
-                    if field_info.link_type == LinkTypes.LIST:
-                        for obj in value:
-                            if isinstance(obj, Document):
-                                await obj.delete(
-                                    link_rule=DeleteRules.DELETE_LINKS,
-                                    **pymongo_kwargs,
-                                )
+                    if field_info.link_type in [
+                        LinkTypes.LIST,
+                        LinkTypes.OPTIONAL_LIST
+                    ]:
+                        if isinstance(value, List):
+                            for obj in value:
+                                if isinstance(obj, Document):
+                                    await obj.delete(
+                                        link_rule=DeleteRules.DELETE_LINKS,
+                                        **pymongo_kwargs,
+                                    )
 
         return await self.find_one({"_id": self.id}).delete(
             session=session, bulk_writer=bulk_writer, **pymongo_kwargs

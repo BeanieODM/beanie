@@ -30,6 +30,7 @@ from tests.odm.models import (
     Window,
     Door,
     Roof,
+    Yard,
     InheritedDocumentWithActions,
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
@@ -38,7 +39,8 @@ from tests.odm.models import (
     DocumentUnion,
     HouseWithRevision,
     WindowWithRevision,
-    DocumentWithActions2,
+    YardWithRevision,
+    DocumentWithActions2
 )
 from tests.odm.views import TestView
 from tests.odm.models import (
@@ -160,6 +162,7 @@ async def init(loop, db):
         Window,
         Door,
         Roof,
+        Yard,
         InheritedDocumentWithActions,
         DocumentForEncodingTest,
         DocumentForEncodingTestDate,
@@ -169,7 +172,8 @@ async def init(loop, db):
         DocumentUnion,
         HouseWithRevision,
         WindowWithRevision,
-        DocumentWithActions2,
+        YardWithRevision,
+        DocumentWithActions2
     ]
     await init_beanie(
         database=db,

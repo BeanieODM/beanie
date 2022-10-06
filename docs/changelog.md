@@ -2,6 +2,17 @@
 
 Beanie project
 
+## [1.12.0] - 2022-10-06
+
+### Improvement
+
+- Optional list of links field
+
+### Implementation
+
+- Author - [Alex Deng](https://github.com/rga-alex-deng)
+- PR <https://github.com/roman-right/beanie/pull/358>
+
 ## [1.11.12] - 2022-09-28
 
 ### Improvement
@@ -974,3 +985,5 @@ how specific type should be presented in the database
 [1.11.11]: https://pypi.org/project/beanie/1.11.11
 
 [1.11.12]: https://pypi.org/project/beanie/1.11.12
+
+[1.12.0]: https://pypi.org/project/beanie/1.12.0
