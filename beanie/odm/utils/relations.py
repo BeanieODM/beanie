@@ -43,7 +43,7 @@ def detect_link(field: ModelField) -> Optional[LinkInfo]:
                     field=field.name,
                     model_class=internal_field.sub_fields[0].type_,  # type: ignore
                     link_type=LinkTypes.OPTIONAL_LIST,
-            )
+                )
             return LinkInfo(
                 field=field.name,
                 model_class=internal_field.sub_fields[0].type_,  # type: ignore
