@@ -9,6 +9,7 @@ The next field types are supported:
 - `Link[...]`
 - `Optional[Link[...]]`
 - `List[Link[...]]`
+- `Optional[List[Link[...]]]`
 
 Direct link to the document:
 
@@ -61,6 +62,28 @@ class House(Document):
     name: str
     door: Link[Door]
     windows: List[Link[Window]]
+```
+
+Optional List of the links:
+
+```python
+from typing import List, Optional
+ 
+from beanie import Document, Link
+ 
+class Window(Document):
+    x: int = 10
+    y: int = 10
+ 
+class Yard(Document):
+    v: int = 10
+    y: int = 10
+ 
+class House(Document):
+    name: str
+    door: Link[Door]
+    windows: List[Link[Window]]
+    yards: Optional[List[Link[Yard]]]
 ```
 
 Other link patterns are not supported for at this moment. If you need something more specific for your use-case, 
