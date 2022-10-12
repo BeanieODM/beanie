@@ -1,7 +1,8 @@
 # Collection setup (name, indexes, timeseries)
 
-Although the basic pydantic syntax allows you to set all aspects of individual fields, there is also some need to configure 
-collections as a whole. In particular, you might want to:
+Although basic pydantic syntax allows you to set all aspects of individual fields, 
+there is also some need to configure collections as a whole. 
+In particular, you might want to:
 
 - Set the MongoDB collection name
 - Configure indexes
@@ -10,7 +11,7 @@ This is done by defining a `Settings` class within your `Document` class.
 
 ## Declaring the collection name
 
-To set MongoDB collection name you can use the `name` field of the `Settings` inner class.
+To set MongoDB collection name, you can use the `name` field of the `Settings` inner class.
 
 ```python
 from beanie import Document
@@ -28,7 +29,8 @@ class Sample(Document):
 
 ### Indexed function
 
-To set up an index over a single field the `Indexed` function can be used to wrap the type and does not require a `Settings` class:
+To set up an index over a single field, the `Indexed` function can be used to wrap the type 
+and does not require a `Settings` class:
 
 ```python
 from beanie import Document, Indexed
@@ -39,7 +41,7 @@ class Sample(Document):
     description: str
 ```
 
-The `Indexed` function takes an optional argument `index_type`, which may be set to a pymongo index type:
+The `Indexed` function takes an optional `index_type` argument, which may be set to a pymongo index type:
 
 ```python
 import pymongo
@@ -53,7 +55,7 @@ class Sample(Document):
 
 The `Indexed` function also supports PyMongo's `IndexModel` kwargs arguments (see the [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel) for details). 
  
-For example to create a `unique` index:
+For example, to create a `unique` index:
 
 ```python
 from beanie import Document, Indexed
@@ -63,12 +65,13 @@ class Sample(Document):
     name: Indexed(str, unique=True)
 ```
 
-### Multi-field indices
+### Multi-field indexes
 
-The `indexes` field of the inner `Settings` class is responsible for more complex indexes. It is a list where items could be:
+The `indexes` field of the inner `Settings` class is responsible for more complex indexes. 
+It is a list where items can be:
 
-- single key. Name of the document's field (this is equivalent to using the Indexed function described above without any additional arguments)
-- list of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
+- Single key. Name of the document's field (this is equivalent to using the Indexed function described above without any additional arguments)
+- List of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
   example: `pymongo.ASCENDING`)
 - `pymongo.IndexModel` instance - the most flexible
   option. [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)
@@ -100,7 +103,7 @@ class Sample(Document):
 
 ## Time series
 
-You can set up a timeseries collection using inner class `Settings`.
+You can set up a timeseries collection using the inner `Settings` class.
 
 **Be aware, timeseries collections a supported by MongoDB 5.0 and higher only.**
 
@@ -124,6 +127,6 @@ class Sample(Document):
         )
 ```
 
-TimeSeriesConfig fields are reflecting the respective parameters of the timeseries creation function of MongoDB.
+TimeSeriesConfig fields reflect the respective parameters of the MongoDB timeseries creation function.
 
 MongoDB documentation: https://docs.mongodb.com/manual/core/timeseries-collections/

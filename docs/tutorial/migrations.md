@@ -1,46 +1,47 @@
 ## Attention!
 
-Migrations use transactions inside. It works only with **MongoDB replica sets**
+Migrations use transactions inside. They work only with **MongoDB replica sets**
 
 ## Create
 
-To create a new migration run:
+To create a new migration, run:
 
 ```shell
 beanie new-migration -n migration_name -p relative/path/to/migrations/directory/
 ```
 
-It will create a file with the name `*_migration_name.py` in the directory `relative/path/to/migrations/directory/`
+It will create a file named `*_migration_name.py` in the directory `relative/path/to/migrations/directory/`
 
-Migration file contains two classes: `Forward` and `Backward`. Each one contains instructions to roll migration respectively forward and backward.
+Migration file contains two classes: `Forward` and `Backward`. 
+Each one contains instructions to roll migration respectively forward and backward.
 
 ## Run
 
-To roll one migration forward run:
+To roll one forward migration, run:
 
 ```shell
 beanie migrate -uri 'mongodb+srv://user:pass@host/db' -p relative/path/to/migrations/directory/ --distance 1
 ```
 
-To roll all the migrations forward run:
+To roll all forward migrations, run:
 
 ```shell
 beanie migrate -uri 'mongodb+srv://user:pass@host/db' -p relative/path/to/migrations/directory/
 ```
 
-To roll one migration backward run:
+To roll one backward migration, run:
 
 ```shell
 beanie migrate -uri 'mongodb+srv://user:pass@host/db' -p relative/path/to/migrations/directory/ --distance 1 --backward
 ```
 
-To roll all the migrations backward run:
+To roll all backward migrations, run:
 
 ```shell
 beanie migrate -uri 'mongodb+srv://user:pass@host/db' -p relative/path/to/migrations/directory/ --backward
 ```
 
-To show help message with all the parameters and descriptions run
+To show the help message with all the parameters and descriptions, run:
 
 ```shell
 beanie migrate --help
@@ -50,12 +51,13 @@ beanie migrate --help
 
 Migration class contains instructions - decorated async functions. There are two types of instructions:
 
-- Iterative migration - instruction, which iterates over all the documents of the input_document collection and updates it. Most comfortable to use. Can be used in 99% cases.
-- Free fall migrations - instruction, where user can write any logic. Most flexible, but verbose.
+- Iterative migration - instruction that iterates over all the documents of the input_document collection and updates it. Most convenient to use, should be used in 99% cases.
+- Free fall migrations - instruction where user can write any logic. Most flexible, but verbose.
 
 ### Iterative migrations
 
-To mark a function as iterative migration must be used decorator `@iterative_migration()`. The function itself as parameters must have `input_document` with type and `output_document` with type. Like here:
+To mark a function as iterative migration, `@iterative_migration()` decorator must be used. 
+The function itself must accept typed `input_document` and `output_document` arguments. Like here:
 
 ```python
 @iterative_migration()
@@ -93,7 +95,7 @@ class Note(Document):
 
 ```
 
-To migrate from `OldNote` to `Note` filed `name` has to be renamed to `title`.
+To migrate from `OldNote` to `Note`, file `name` has to be renamed to `title`.
 
 Forward migration:
 
@@ -167,14 +169,18 @@ class Backward:
     ):
         output_document.tag.name = input_document.tag.title
 ```
-
-All the migrations examples can be found by [link](https://github.com/roman-right/beanie/tree/main/tests/migrations/migrations_for_test)
+All the examples of migrations can be found by [link](https://github.com/roman-right/beanie/tree/main/tests/migrations/migrations_for_test)
 
 ### Free fall migrations
 
-It is a much more flexible migration type, which allows to implementation of any migration logic. But at the same time, it is more verbose.
+It is a much more flexible migration type, which allows the implementation of any migration logic. 
+But at the same time, it is more verbose.
 
-To mark function as a free fall migration, must be used decorator `@free_fall_migration()` with the list of Document classes, which will be used in this migration. Function itself receives `session` as a parameter. It is used to be able to roll back the migration, if something went wrong. To be able to roll back, please provide session into the Documents methods. Like here:
+To mark function as a free fall migration, 
+`@free_fall_migration()` decorator with the list of Document classes must be used. 
+Function itself accepts `session` as an argument. 
+It is used in order to roll back the migration in case something has gone wrong. 
+To be able to roll back, please pass session to the Documents methods. Like here:
 
 ```python
 @free_fall_migration(document_models=[OldNote, Note])
@@ -235,5 +241,4 @@ class Backward:
             await new_note.replace(session=session)
 
 ```
-
-All the migrations examples can be found by [link](https://github.com/roman-right/beanie/tree/main/tests/migrations/migrations_for_test)
+All the examples of migrations can be found by [link](https://github.com/roman-right/beanie/tree/main/tests/migrations/migrations_for_test)

@@ -37,14 +37,17 @@ class Product(Document):  # This is the model
 
 ## Fields
 
-As it is mentioned before, the `Document` class is inherited from the Pydantic `BaseModel` class. It uses all the same patterns of `BaseModel`. But also it has special types of fields:
+As it was mentioned before, the `Document` class is inherited from the Pydantic `BaseModel` class. 
+It uses all the same patterns of `BaseModel`. But also it has special types of fields:
 
 - id
 - Indexed
 
 ### id
 
-`id` field of the `Document` class reflects the unique `_id` field of the MongoDB document. Each object of the `Document` type has this field. The default type of this is [PydanticObjectId](https://roman-right.github.io/beanie/api/fields/#pydanticobjectid).
+`id` field of the `Document` class reflects the unique `_id` field of the MongoDB document. 
+Each object of the `Document` type has this field. 
+The default type of this is [PydanticObjectId](/api-documentation/fields/#pydanticobjectid).
 
 ```python
 class Sample(Document):
@@ -94,7 +97,7 @@ class Sample(Document):
 
 The `Indexed` function also supports pymongo `IndexModel` kwargs arguments ([PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)). 
  
-For example to create a `unique` index:
+For example, to create a `unique` index:
 
 ```python
 class Sample(Document):
@@ -110,7 +113,7 @@ The inner class `Settings` is used to configure:
 
 ### Collection name
 
-To set MongoDB collection name you can use the `name` field of the `Settings` inner class.
+To set MongoDB collection name, you can use the `name` field of the `Settings` inner class.
 
 ```python
 class Sample(Document):
@@ -123,7 +126,8 @@ class Sample(Document):
 
 ### Indexes
 
-The `indexes` field of the inner `Settings` class is responsible for the indexes setup. It is a list where items could be:
+The `indexes` field of the inner `Settings` class is responsible for the indexes' setup. 
+It is a list where items can be:
 
 - Single key. Name of the document's field (this is equivalent to using the Indexed function described above)
 - List of (key, direction) pairs. Key - string, name of the document's field. Direction - pymongo direction (
@@ -163,9 +167,10 @@ The inner class `Settings` is used to configure:
 
 ### Encoders
 
-The `bson_encoders` field of the inner `Settings` class defines how are the Python types going to be represented when saved in the database. The default conversions can be overridden with this.
+The `bson_encoders` field of the inner `Settings` class defines how the Python types are going to be represented 
+when saved in the database. The default conversions can be overridden with this.
 
-The `ip` field in the following example would be converted to String by default:
+The `ip` field in the following example is converted to String by default:
 
 ```python
 from ipaddress import IPv4Address
@@ -176,7 +181,8 @@ class Sample(Document):
 ```
 > **Note:** Default conversions are defined in `beanie.odm.utils.bson.ENCODERS_BY_TYPE`.
 
-However, if you wanted the `ip` field to be represented as Integer in the database you need to override default encoders like this:
+However, if you want the `ip` field to be represented as Integer in the database, 
+you need to override the default encoders like this:
 
 ```python
 from ipaddress import IPv4Address

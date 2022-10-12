@@ -60,7 +60,7 @@ class Sample(Document):
         self.name = self.name.capitalize()
 ```
 
-This will capitalize the `name` field value before each document insert and replace.
+This will capitalize the `name` field value before each document's Insert and Replace.
 
 And sync and async methods could work as actions.
 
@@ -77,7 +77,7 @@ class Sample(Document):
         await client.send(self.id)
 ```
 
-Actions can be selectively skipped by passing the parameter `skip_actions` when calling
+Actions can be selectively skipped by passing the `skip_actions` argument when calling
 the operations that trigger events. `skip_actions` accepts a list of directions and action names.
 
 ```python
