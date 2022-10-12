@@ -4,9 +4,9 @@ Now that we know how to find documents, how do we change them or delete them?
 
 ## Saving changes to existing documents
 
-The easiest way to change a document in the database is using either the `replace` or `save` methods on an altered document. 
-These methods both write the document to the database, but `replace` will raise an exception when the document does not exist yet, 
-while `save` will insert the document. 
+The easiest way to change a document in the database is to use either the `replace` or `save` method on an altered document. 
+These methods both write the document to the database, 
+but `replace` will raise an exception when the document does not exist yet, while `save` will insert the document. 
 
 Using `save()` method:
 
@@ -16,8 +16,9 @@ bar.price = 10
 await bar.save()
 ```
 
-Or similarly using `replace()` method, which throws a `ValueError` if the document does not have an `id` yet, 
-or a `beanie.exceptions.DocumentNotFound` if it does, but the `id` is not present in the collection:
+Otherwise, use the `replace()` method, which throws:
+- a `ValueError` if the document does not have an `id` yet, or
+- a `beanie.exceptions.DocumentNotFound` if it does, but the `id` is not present in the collection
 
 ```python
 bar.price = 10
@@ -27,12 +28,13 @@ except (ValueError, beanie.exceptions.DocumentNotFound):
     print("Can't replace a non existing document")
 ```
 
-Note however that these methods require multiple queries to the database and replace the entire document with the new version. 
+Note that these methods require multiple queries to the database and replace the entire document with the new version. 
 A more tailored solution can often be created by applying update queries directly on the database level.
 
 ## Update queries
 
-Update queries can be performed on the result of a `find` or `find_one` query, or on a document that was returned from an earlier query. 
+Update queries can be performed on the result of a `find` or `find_one` query, 
+or on a document that was returned from an earlier query. 
 Simpler updates can be performed using the `set`, `inc`, and `current_date` methods:
 
 ```python
@@ -47,7 +49,7 @@ More complex update operations can be performed by calling `update()` with an up
 await Product.find_one(Product.name == "Tony's").update(Set({Product.price: 3.33}))
 ```
 
-The whole list of the update query operators can be found [here](/beanie/api-documentation/operators/update).
+The whole list of the update query operators can be found [here](/api-documentation/operators/update).
 
 Native MongoDB syntax is also supported:
 
@@ -57,7 +59,7 @@ await Product.find_one(Product.name == "Tony's").update({"$set": {Product.price:
 
 ## Upsert
 
-To insert a document, where no documents were matched to the search criteria, the `upsert` method can be used:
+To insert a document when no documents are matched against the search criteria, the `upsert` method can be used:
 
 ```python
 await Product.find_one(Product.name == "Tony's").upsert(
@@ -68,7 +70,7 @@ await Product.find_one(Product.name == "Tony's").upsert(
 
 ## Deleting documents
 
-Deleting objects works just like updating them, you simply call `delete()` on the found document(s):
+Deleting objects works just like updating them, you simply call `delete()` on the found documents:
 
 ```python
 bar = await Product.find_one(Product.name == "Milka")
