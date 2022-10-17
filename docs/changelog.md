@@ -10,7 +10,7 @@ Beanie project
 
 ### Implementation
 
-- PR <https://github.com/roman-right/beanie/pull/X>
+- PR <https://github.com/roman-right/beanie/pull/378>
 
 ## [1.12.0] - 2022-10-06
 
