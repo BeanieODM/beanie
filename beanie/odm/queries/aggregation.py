@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from motor.core import AgnosticCommandCursor
 
 from beanie.odm.cache import LRUCache
+from beanie.odm.interfaces.clone import CloneInterface
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.queries.cursor import BaseCursorQuery
 from beanie.odm.utils.projection import get_projection
@@ -28,6 +29,7 @@ class AggregationQuery(
     Generic[AggregationProjectionType],
     BaseCursorQuery[AggregationProjectionType],
     SessionMethods,
+    CloneInterface,
 ):
     """
     Aggregation Query
