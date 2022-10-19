@@ -18,10 +18,10 @@ Depend on the business logic, parent `Document` can be like "abstract" class tha
 ## Examples
 
 ```python
-from typing import Optional
-from pydantic import BaseModel
+from typing import Optional, List
 from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import Document, init_beanie
+from pydantic import BaseModel
+from beanie import Document, Link, init_beanie
 
 
 class Vehicle(Document):
@@ -33,7 +33,6 @@ class Vehicle(Document):
     #                         \
     #                          \
     #                          Bus
-
     # shared attribute for all children
     color: str
     
@@ -63,6 +62,10 @@ class Car(Vehicle, Fuelled):
 class Bus(Car, Fuelled):
     """Inheritance chain is Vehicle -> Car -> Bus, it is also stored in Vehicle collection"""
     seats: int
+    
+    
+class Owner(Document):
+    vehicles: Optional[List[Link[Vehicle]]]
 
 # USAGE
 
@@ -76,6 +79,8 @@ car_2 = await Car(color='white', body='crossover', fuel='diesel').insert()
 
 bus_1 = await Bus(color='white', seats=80, body='bus', fuel='diesel').insert()
 bus_2 = await Bus(color='yellow', seats=26, body='minibus', fuel='diesel').insert()
+
+owner = await Owner(name='John', vehicles=[car_1, car_2, bus_1]).insert()
 
 # this query returns vehicles of all types that have white color
 white_vehicles = await Vehicle.find(Vehicle.color == 'white').to_list()
@@ -102,9 +107,20 @@ cars_and_buses = await Car.find(Car.fuel == 'diesel').to_list()
 
 # to get a single Document it is not necessary to known its type
 # you can query using parent class
-Vehicle.get(bus_2.id)
+await Vehicle.get(bus_2.id)
 # returns Bus instance:
 # Bus(fuel='diesel', ..., color='yellow', body='minibus', seats=26)
+
+# re-fetch from DB with resolved links (using aggregation under the hood)
+owner = await Owner.get(owner.id, fetch_links=True)
+print(owner.vehicles)
+# returns
+# [
+#    Car(fuel='diesel', ..., color='white', body='crossover'),
+#    Bus(fuel='diesel', ..., color='white', body='bus', seats=80),
+#    Car(fuel='gasoline', ..., color='grey', body='sedan')
+# ]
+# the same result will be if owner get without fetching link and they will be fetched manually later
 
 # all other operations works the same as simple Documents
 await Bike.find().update({"$set": {Bike.color: 'yellow'}})
@@ -174,71 +190,4 @@ class Child(Parent):
     ...
 ```
 
-3. `Documents` can contain `Links` to parents, which means that this link (or a list of links) can be different type, but currently proper class distinguishing works only when `fetch_link=False` in the `find()` query.
-Example:
-```python
-from typing import Optional, List
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import Document, Link, init_beanie
-
-class Vehicle(Document):
-    # shared attribute for all children
-    color: str
-    
-    class Settings:
-        single_root_inheritance = True
-
-
-class Bike(Vehicle):
-    ...
-
-
-class Car(Vehicle):
-    ...
-
-
-class Bus(Car):
-    ...
-
-
-class Owner(Document):
-    name: str
-    # this list field can contain Bikes, Cars and Buses
-    vehicles: Optional[List[Link[Vehicle]]]
-
-client = AsyncIOMotorClient()
-await init_beanie(client.test_db, document_models=[Vehicle, Bike, Car, Bus, Owner])
-
-car = await Car(color='red').insert()
-bike = await Bike(color='black').insert()
-bus = await Bus(color='yellow').insert()
-
-me = await Owner(name='John', vehicles=[car, bike, bus]).insert()
-
-me = await Owner.find_one(Owner.id == me.id, fetch_links=False)
-print(me.vehicles)
-# returns:
-# [<beanie.odm.fields.Link object at 0x105b6a830>,
-#  <beanie.odm.fields.Link object at 0x105b6bc70>,
-#  <beanie.odm.fields.Link object at 0x105b6bd00>]
-await me.fetch_all_links()
-print(me.vehicles)
-# returns:
-# [
-#     Car(..., color='red'),
-#     Bike(..., color='black'),
-#     Bus(..., color='yellow')
-# ]
-
-me = await Owner.find_one(Owner.id == me.id, fetch_links=True)
-print(me.vehicles)
-# returns:
-# [
-#     Vehicle(..., color='red'),
-#     Vehicle(..., color='black'),
-#     Vehicle(..., color='yellow')
-# ]
-```
-This feature should be implemented in future releases.
-
-4. Currently, it is not possible to change default collection name via `Settings` inner class, the collection name is forced to match the class name of the parent document.
+3.Currently, it is not possible to change default collection name via `Settings` inner class, the collection name is forced to match the class name of the parent document.

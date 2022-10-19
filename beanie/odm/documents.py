@@ -143,6 +143,47 @@ class Document(
         self._save_state()
         self._swap_revision()
 
+    @classmethod
+    def parse_obj(cls: Type['Document'], obj: Any) -> 'Document':
+        rv = super().parse_obj(obj)
+
+        if cls.get_settings().single_root_inheritance:
+            class_name = None
+            # if _class_id has been specified in the projection then there can be children subclasses in the result
+            if isinstance(obj, dict) and '_class_id' in obj:
+                class_name = obj["_class_id"]
+            elif hasattr(obj, '_class_id'):
+                class_name = obj._class_id
+
+            # if class_name is set and differs from queried model then we should parse data as child subclass
+            if class_name and class_name != cls.__name__:
+                for child in cls.get_children():
+                    if child.__name__ == class_name:
+                        return child.parse_obj(obj)
+
+        # check if the model has links to SRI classes, they should be refined
+        # because BaseModel.parse_obj casts all linked child classes to the parent one
+        link_fields = cls.get_link_fields()
+        if link_fields:
+            for name, info in link_fields.items():
+                if info.model_class.get_settings().single_root_inheritance:  # type: ignore
+                    if info.model_class.is_part_of_inheritance():  # type: ignore
+                        # get value of the link in passed data
+                        value = obj.get(name, None) if isinstance(obj, dict) else getattr(obj, name)
+                        if value:
+                            # if there are dicts then fetch_link was True while fetching
+                            # we should parse them as objects
+                            if not isinstance(value, list) and isinstance(value, dict):
+                                resolved_value = info.model_class.parse_obj(value)
+                            elif isinstance(value, list) and all((isinstance(v, dict) for v in value)):
+                                resolved_value = [info.model_class.parse_obj(v) for v in value]
+                            else:
+                                continue
+
+                            setattr(rv, name, resolved_value)
+
+        return rv
+
     async def _sync(self) -> None:
         """
         Update local document from the database

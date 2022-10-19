@@ -1,4 +1,5 @@
-from beanie import init_beanie
+from typing import Optional, List
+from beanie import init_beanie, Document, Link
 from tests.odm.models import (
     Vehicle, Bicycle, Bike, Car, Bus,
 )
@@ -57,4 +58,34 @@ class TestInheritance:
 
         for e in (bicycle_1, bicycle_2, bike_1, car_1, car_2, bus_1, bus_2):
             assert isinstance(e, Vehicle)
+            await e.delete()
+
+    async def test_links(self, db):
+        class Owner(Document):
+            name: str
+            vehicles: List[Link[Vehicle]] = []
+
+        await init_beanie(database=db, document_models=[Vehicle, Car, Bus, Owner])
+
+        car_1 = await Car(color='grey', body='sedan', fuel='gasoline').insert()
+        car_2 = await Car(color='white', body='crossover', fuel='diesel').insert()
+
+        bus_1 = await Bus(color='white', seats=80, body='bus', fuel='diesel').insert()
+
+        owner = await Owner(name='John').insert()
+        owner.vehicles = [car_1, car_2, bus_1]
+        await owner.save()
+
+        # re-fetch from DB w/o links
+        owner = await Owner.get(owner.id)
+        assert {Link} == set(i.__class__ for i in owner.vehicles)
+
+        await owner.fetch_all_links()
+        assert {Car, Bus} == set(i.__class__ for i in owner.vehicles)
+
+        # re-fetch from DB with resolved links
+        owner = await Owner.get(owner.id, fetch_links=True)
+        assert {Car, Bus} == set(i.__class__ for i in owner.vehicles)
+
+        for e in (owner, car_1, car_2, bus_1):
             await e.delete()

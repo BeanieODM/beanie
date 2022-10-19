@@ -493,8 +493,9 @@ class Vehicle(Document):
     color: str
 
     @after_event(Insert)
-    def echo_type(self):
-        print(f'Created new object of {self.__class__.__name__} type')
+    def on_object_create(self):
+        # this event will be triggered for all children too (self will have corresponding type)
+        ...
 
     class Settings:
         single_root_inheritance = True
