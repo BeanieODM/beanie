@@ -6,9 +6,12 @@ There are two ways of inheritance:
 1) Subclass `pydantic.BaseModel`. This way `BaseModel` is used as a mixin, resulting `Document` will reuse attributes of subclassed `BaseModel`.
 2) Subclass `beanie.Document` with enabled option `single_root_inheritance` in `Settings` inner class. This way resulting `Document` will be stored in __the same collection__ as the first parent `Document` class.
 
+### Difference with UnionDoc
+
 This behavior is similar to `UnionDoc`, but you don't need additional entity.
 Parent `Document` act like a "controller", that handle proper storing and fetching different type `Document`.
-Also, parent `Document` can also have some shared attributes which are propagated to all children.
+Also, parent `Document` can have some shared attributes which are propagated to all children.
+All classes in inheritance chain can be a used as `Link` in foreign `Documents`.
 
 Depend on the business logic, parent `Document` can be like "abstract" class that is not used to store objects of its type (like in example below), as well as can be a full-fledged entity, like its children (look multiple inheritance example below).
 
@@ -231,3 +234,5 @@ print(me.vehicles)
 # ]
 ```
 This feature should be implemented in future releases.
+
+4. Currently, it is not possible to change default collection name via `Settings` inner class, the collection name is forced to match the class name of the parent document.
