@@ -59,6 +59,7 @@ from beanie.odm.fields import (
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.interfaces.find import FindInterface
+from beanie.odm.interfaces.inheritance import InheritanceInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
 from beanie.odm.models import (
     InspectionResult,
@@ -95,6 +96,7 @@ class Document(
     BaseModel,
     FindInterface,
     AggregateInterface,
+    InheritanceInterface,
     OtherGettersInterface,
 ):
     """
@@ -866,6 +868,35 @@ class Document(
                     )
 
     @classmethod
+    def init_inheritance(cls):
+        parents = set(p for p in cls.__bases__ if p is not Document and issubclass(p, Document))
+
+        if len({p.get_parent() for p in parents}) > 1:
+            raise NotSupported(f'Child Document cannot be inherited from different parents '
+                               f'that stored in different collections. '
+                               f'Multiple inheritance supported only from one root parent Document.')
+
+        for base in parents:
+            base.children.setdefault(base.__name__, []).append(cls)
+
+    @classmethod
+    def get_parent(cls) -> Type['Document']:
+        """Returns the closest class to the Document, that name should be used as collection for all children"""
+        return cls if cls.__base__ is Document else cls.__base__.get_parent()  # type: ignore
+
+    @classmethod
+    def get_children(cls) -> list[Type['Document']]:
+        """Get a list of all child classes"""
+        rv = []
+
+        for c in cls.children.get(cls.__name__, []):
+            rv.append(c)
+            # build recursive flat list
+            rv += c.get_children()
+
+        return rv
+
+    @classmethod
     async def init_model(
         cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
     ) -> None:
@@ -875,6 +906,7 @@ class Document(
         :param allow_index_dropping: bool
         :return: None
         """
+        cls.init_inheritance()
         await cls.init_settings(
             database=database, allow_index_dropping=allow_index_dropping
         )
@@ -967,7 +999,7 @@ class Document(
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args, **kwargs):
-        # TODO it can be sync, but needs some actions controller improvements
+        # TODO: it can be sync, but needs some actions controller improvements
         if self.get_settings().validate_on_save:
             self.parse_obj(self)
 

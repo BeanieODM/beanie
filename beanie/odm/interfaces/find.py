@@ -10,7 +10,7 @@ from typing import (
     ClassVar,
     TypeVar,
 )
-
+from collections.abc import Iterable
 from pydantic import (
     BaseModel,
 )
@@ -349,6 +349,16 @@ class FindInterface:
 
     @classmethod
     def _add_class_id_filter(cls, args: Tuple):
+        # skip if _class_id is already added
+        if any((True for a in args if isinstance(a, Iterable) and '_class_id' in a)):
+            return args
+
+        if cls.get_settings().single_root_inheritance:
+            children = cls.get_children()  # type: ignore
+
+            if children:
+                args += ({"_class_id": {'$in': [cls.__name__] + [c.__name__ for c in children]}},)
+
         if cls.get_settings().union_doc:
             args += ({"_class_id": cls.__name__},)
         return args

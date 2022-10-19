@@ -28,6 +28,7 @@ class DocumentSettings(ItemSettings):
     state_management_replace_objects: bool = False
     validate_on_save: bool = False
     use_revision: bool = False
+    single_root_inheritance: bool = False
 
     indexes: List[IndexModelField] = Field(default_factory=list)
     timeseries: Optional[TimeSeriesConfig] = None
@@ -76,8 +77,26 @@ class DocumentSettings(ItemSettings):
 
         # set a name
 
-        if not document_settings.name:
-            document_settings.name = document_model.__name__
+        if document_settings.single_root_inheritance:
+            # get_parent returns either parent model or self
+            origin = document_model.get_parent()  # type: ignore
+
+            # FIXME: children should be stored in the same collection as parent
+            # collection name can be changed for the parent,
+            # thus we should get it from the settings but what if it was not yet initialized?
+            # As a workaround we just deny such a setting for all classes in the inheritance chain
+            if document_settings.name:
+
+                if document_model.is_part_of_inheritance():  # type: ignore
+                    if document_settings.name != origin.__name__:
+                        warnings.warn(f"Collection name should be the same for parent and all its children")
+                        document_settings.name = None
+
+            if not document_settings.name:
+                document_settings.name = origin.__name__
+        else:
+            if not document_settings.name:
+                document_settings.name = document_model.__name__
 
         # check mongodb version
         build_info = await database.command({"buildInfo": 1})

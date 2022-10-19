@@ -90,6 +90,10 @@ class Encoder:
         obj_dict: Dict[str, Any] = {}
         if obj.get_settings().union_doc is not None:
             obj_dict["_class_id"] = obj.__class__.__name__
+
+        if obj.get_settings().single_root_inheritance and obj.is_part_of_inheritance():
+            obj_dict["_class_id"] = obj.__class__.__name__
+
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
             if k not in self.exclude:
                 if link_fields and k in link_fields:

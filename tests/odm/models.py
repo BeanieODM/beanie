@@ -478,3 +478,42 @@ class HouseWithRevision(Document):
     class Settings:
         use_revision = True
         use_state_management = True
+
+
+# classes for inheritance test
+class Vehicle(Document):
+    """Root parent for testing flat inheritance
+                   Vehicle
+                  /       \
+                 /         \
+             Bicycle       Car
+               /             \
+              /               \
+            Bike              Bus
+    """
+    color: str
+
+    class Settings:
+        single_root_inheritance = True
+
+
+class Bicycle(Vehicle):
+    frame: int
+    wheels: int
+
+
+class Fuelled(BaseModel):
+    """Just a mixin"""
+    fuel: Optional[str]
+
+
+class Car(Vehicle, Fuelled):
+    body: str
+
+
+class Bike(Vehicle, Fuelled):
+    ...
+
+
+class Bus(Car, Fuelled):
+    seats: int
