@@ -89,7 +89,7 @@ class DocumentSettings(ItemSettings):
 
                 if document_model.is_part_of_inheritance():  # type: ignore
                     if document_settings.name != origin.__name__:
-                        warnings.warn(f"Collection name should be the same for parent and all its children")
+                        warnings.warn('Collection name should be the same for parent and all its children')
                         document_settings.name = None
 
             if not document_settings.name:

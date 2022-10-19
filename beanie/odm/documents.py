@@ -913,12 +913,12 @@ class Document(
         parents = set(p for p in cls.__bases__ if p is not Document and issubclass(p, Document))
 
         if len({p.get_parent() for p in parents}) > 1:
-            raise NotSupported(f'Child Document cannot be inherited from different parents '
-                               f'that stored in different collections. '
-                               f'Multiple inheritance supported only from one root parent Document.')
+            raise NotSupported('Child Document cannot be inherited from different parents '
+                               'that stored in different collections. '
+                               'Multiple inheritance supported only from one root parent Document.')
 
         for base in parents:
-            base.children.setdefault(base.__name__, []).append(cls)
+            base.children.setdefault(base.__name__, []).append(cls)  # type: ignore
 
     @classmethod
     def get_parent(cls) -> Type['Document']:
