@@ -100,6 +100,12 @@ cars_and_buses = await Car.find(Car.fuel == 'diesel').to_list()
 #     Bus(fuel='diesel', ..., color='yellow', body='minibus', seats=26)
 # ]
 
+# to get a single Document it is not necessary to known its type
+# you can query using parent class
+Vehicle.get(bus_2.id)
+# returns Bus instance:
+# Bus(fuel='diesel', ..., color='yellow', body='minibus', seats=26)
+
 # all other operations works the same as simple Documents
 await Bike.find().update({"$set": {Bike.color: 'yellow'}})
 await Car.find_one(Car.body == 'sedan')
