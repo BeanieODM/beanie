@@ -482,16 +482,19 @@ class HouseWithRevision(Document):
 
 # classes for inheritance test
 class Vehicle(Document):
-    """Root parent for testing flat inheritance
-                   Vehicle
-                  /       \
-                 /         \
-             Bicycle       Car
-               /             \
-              /               \
-            Bike              Bus
-    """
+    """Root parent for testing flat inheritance"""
+    #               Vehicle
+    #              /   |   \
+    #             /    |    \
+    #        Bicycle  Bike  Car
+    #                         \
+    #                          \
+    #                          Bus
     color: str
+
+    @after_event(Insert)
+    def echo_type(self):
+        print(f'Created new object of {self.__class__.__name__} type')
 
     class Settings:
         single_root_inheritance = True
