@@ -1,5 +1,4 @@
 from typing import Any, Type, Union, TYPE_CHECKING
-from bson import DBRef
 from pydantic import BaseModel
 
 from beanie.exceptions import (
