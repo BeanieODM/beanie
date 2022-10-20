@@ -94,6 +94,9 @@ class DocumentSettings(ItemSettings):
 
             if not document_settings.name:
                 document_settings.name = origin.__name__
+
+            # this is needed when ready child object is passed to parse_obj again (i.e. when fetch_links is True)
+            setattr(document_model, '_class_id', document_model.__name__)
         else:
             if not document_settings.name:
                 document_settings.name = document_model.__name__
