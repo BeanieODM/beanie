@@ -480,8 +480,19 @@ class HouseWithRevision(Document):
         use_state_management = True
 
 
+class TunedDocument(Document):
+    @classmethod
+    def get_root_document(cls):
+        return TunedDocument
+
+    # some common settings for all models in the file
+    class Settings:
+        single_root_inheritance = True
+        use_state_management = True
+
+
 # classes for inheritance test
-class Vehicle(Document):
+class Vehicle(TunedDocument):
     """Root parent for testing flat inheritance"""
     #               Vehicle
     #              /   |   \
@@ -496,9 +507,6 @@ class Vehicle(Document):
     def on_object_create(self):
         # this event will be triggered for all children too (self will have corresponding type)
         ...
-
-    class Settings:
-        single_root_inheritance = True
 
 
 class Bicycle(Vehicle):

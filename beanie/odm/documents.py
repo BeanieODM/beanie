@@ -921,8 +921,13 @@ class Document(
                     )
 
     @classmethod
+    def get_root_document(cls):
+        return Document
+
+    @classmethod
     def init_inheritance(cls):
-        parents = set(p for p in cls.__bases__ if p is not Document and issubclass(p, Document))
+        root = cls.get_root_document()
+        parents = set(p for p in cls.__bases__ if p is not root and issubclass(p, root))
 
         if len({p.get_parent() for p in parents}) > 1:
             raise NotSupported('Child Document cannot be inherited from different parents '
@@ -935,7 +940,7 @@ class Document(
     @classmethod
     def get_parent(cls) -> Type['Document']:
         """Returns the closest class to the Document, that name should be used as collection for all children"""
-        return cls if cls.__base__ is Document else cls.__base__.get_parent()  # type: ignore
+        return cls if cls.__base__ is cls.get_root_document() else cls.__base__.get_parent()  # type: ignore
 
     @classmethod
     def get_children(cls) -> list[Type['Document']]:

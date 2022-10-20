@@ -120,7 +120,7 @@ print(owner.vehicles)
 #    Bus(fuel='diesel', ..., color='white', body='bus', seats=80),
 #    Car(fuel='gasoline', ..., color='grey', body='sedan')
 # ]
-# the same result will be if owner get without fetching link and they will be fetched manually later
+# the same result will be if owner get without fetching link, and they will be fetched manually later
 
 # all other operations works the same as simple Documents
 await Bike.find().update({"$set": {Bike.color: 'yellow'}})
@@ -170,17 +170,30 @@ class TeachingAssistant(Student, Teacher):
 
 1. All children derive inner `Settings` class of the parent, so if you redefine it in some child, you also need to specify `single_root_inheritance` value, because it is `False` by default.
 
-2. Root parent classes must be derived from original `beanie.Document` class. So example below will not work:
+2. Root parent classes should be derived from original `beanie.Document` class. However, you can create root Document class, but it is necessary to redefine `get_root_document` `@classmethod` to return self class entity.
+Otherwise, single root inheritance will not work.
 ```python
 from beanie import Document as BaseDocument
 
 class Document(BaseDocument):
-    ...
+    @classmethod
+    def get_root_document(cls):
+        return Document
 
     # some common settings for all models in the file
     class Settings:
         single_root_inheritance = True
-   
+        # use_state_management = True
+        # ... etc
+        
+# or like this
+# from beanie import Document
+# 
+# class MyDocument(Document):
+#    @classmethod
+#    def get_root_document(cls):
+#        return MyDocument
+
         
 class Parent(Document):
     ...
