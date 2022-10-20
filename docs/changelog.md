@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.12.1] - 2022-10-17
+
+### Improvement
+
+- Clone interface for query objects
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/378>
+
 ## [1.12.0] - 2022-10-06
 
 ### Improvement
@@ -987,3 +997,5 @@ how specific type should be presented in the database
 [1.11.12]: https://pypi.org/project/beanie/1.11.12
 
 [1.12.0]: https://pypi.org/project/beanie/1.12.0
+
+[1.12.1]: https://pypi.org/project/beanie/1.12.1

@@ -28,6 +28,7 @@ from beanie.odm.cache import LRUCache
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.aggregation_methods import AggregateMethods
+from beanie.odm.interfaces.clone import CloneInterface
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import UpdateMethods
 from beanie.odm.operators.find.logical import And
@@ -55,7 +56,9 @@ FindQueryProjectionType = TypeVar("FindQueryProjectionType", bound=BaseModel)
 FindQueryResultType = TypeVar("FindQueryResultType", bound=BaseModel)
 
 
-class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
+class FindQuery(
+    Generic[FindQueryResultType], UpdateMethods, SessionMethods, CloneInterface
+):
     """
     Find Query base class
 
