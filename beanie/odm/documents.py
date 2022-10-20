@@ -5,6 +5,7 @@ from typing import (
     Dict,
     Optional,
     List,
+    Tuple,
     Type,
     Union,
     Mapping,
@@ -148,12 +149,13 @@ class Document(
         rv = super().parse_obj(obj)
 
         if cls.get_settings().single_root_inheritance:
-            class_name = None
             # if _class_id has been specified in the projection then there can be children subclasses in the result
             if isinstance(obj, dict) and '_class_id' in obj:
                 class_name = obj["_class_id"]
             elif hasattr(obj, '_class_id'):
                 class_name = obj._class_id
+            else:
+                class_name = None
 
             # if class_name is set and differs from queried model then we should parse data as child subclass
             if class_name and class_name != cls.__name__:
@@ -161,26 +163,36 @@ class Document(
                     if child.__name__ == class_name:
                         return child.parse_obj(obj)
 
-        # check if the model has links to SRI classes, they should be refined
+        # if the model has links to SRI classes, they should be refined
         # because BaseModel.parse_obj casts all linked child classes to the parent one
-        link_fields = cls.get_link_fields()
-        if link_fields:
-            for name, info in link_fields.items():
-                if info.model_class.get_settings().single_root_inheritance:  # type: ignore
-                    if info.model_class.is_part_of_inheritance():  # type: ignore
-                        # get value of the link in passed data
-                        value = obj.get(name, None) if isinstance(obj, dict) else getattr(obj, name)
-                        if value:
-                            # if there are dicts then fetch_link was True while fetching
-                            # we should parse them as objects
-                            if not isinstance(value, list) and isinstance(value, dict):
-                                resolved_value = info.model_class.parse_obj(value)
-                            elif isinstance(value, list) and all((isinstance(v, dict) for v in value)):
-                                resolved_value = [info.model_class.parse_obj(v) for v in value]
-                            else:
-                                continue
+        for name, value in cls.resolve_links(obj):
+            setattr(rv, name, value)
 
-                            setattr(rv, name, resolved_value)
+        return rv
+
+    @classmethod
+    def resolve_links(cls: Type['Document'], obj: Any) -> List[Tuple[str, Union[List['Document'], 'Document']]]:
+        """Iterate over links in the object and properly parse them"""
+        rv = []
+
+        for name, info in (cls.get_link_fields() or {}).items():
+            model = info.model_class
+            if model.get_settings().single_root_inheritance:  # type: ignore
+                if model.is_part_of_inheritance():  # type: ignore
+                    # get value of the link in passed data
+                    value = obj.get(name, None) if isinstance(obj, dict) else getattr(obj, name, None)
+
+                    if value:
+                        # if there are dicts then fetch_link was True while fetching
+                        # we should parse them as objects, otherwise there will be DBRefs or Links
+                        if isinstance(value, dict):
+                            resolved_value = model.parse_obj(value)
+                        elif isinstance(value, list) and all((isinstance(v, dict) for v in value)):
+                            resolved_value = [model.parse_obj(v) for v in value]
+                        else:
+                            continue
+
+                        rv.append((name, resolved_value))
 
         return rv
 
