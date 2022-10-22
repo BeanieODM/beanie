@@ -23,6 +23,8 @@ from beanie.sync.odm.documents import Document
 from beanie.sync.odm.actions import (
     before_event,
     after_event,
+)
+from beanie.odm.actions import (
     Delete,
     Insert,
     Replace,
