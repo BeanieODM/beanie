@@ -1,6 +1,6 @@
 import pytest
 
-from beanie import init_beanie
+from beanie.sync import init_beanie
 from beanie.exceptions import MongoDBVersionError
 from tests.sync.models import DocumentWithTimeseries
 
