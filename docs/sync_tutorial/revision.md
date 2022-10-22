@@ -8,6 +8,9 @@ It helps to avoid data losses.
 This feature must be turned on in the `Settings` inner class explicitly:
 
 ```python
+from beanie.sync import Document
+
+
 class Sample(Document):
     num: int
     name: str

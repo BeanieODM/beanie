@@ -5,6 +5,8 @@ All the query results could be locally cached.
 This feature must be turned on in the `Settings` inner class explicitly.
 
 ```python
+from beanie.sync import Document
+
 class Sample(Document):
     num: int
     name: str
@@ -16,6 +18,8 @@ class Sample(Document):
 Beanie uses LRU cache with expiration time. You can set `capacity` (the maximum number of the cached queries) and expiration time in the `Settings` inner class.
 
 ```python
+from beanie.sync import Document
+
 class Sample(Document):
     num: int
     name: str

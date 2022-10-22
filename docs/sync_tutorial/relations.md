@@ -14,7 +14,7 @@ The next field types are supported:
 Direct link to the document:
 
 ```python
-from beanie import Document, Link
+from beanie.sync import Document, Link
 
 
 class Door(Document):

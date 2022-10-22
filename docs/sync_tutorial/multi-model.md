@@ -11,7 +11,7 @@ Documents that have `union_doc` in their settings still can be used in find and 
 Create documents:
 
 ```python
-from beanie import Document, UnionDoc
+from beanie.sync import Document, UnionDoc
 
 
 class Parent(UnionDoc):  # Union

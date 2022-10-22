@@ -97,6 +97,8 @@ renderer:
               source: docs/async_tutorial/migrations.md
         - title: Sync
           children:
+            - title: Migrate from async
+              source: docs/sync_tutorial/sync.md
             - title: Defining a document
               source: docs/sync_tutorial/defining-a-document.md
             - title: Initialization

@@ -8,7 +8,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from beanie import Document, Indexed
+from beanie.sync import Document
+from beanie import Indexed
 
 
 class Category(BaseModel):

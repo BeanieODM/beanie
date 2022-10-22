@@ -29,7 +29,7 @@ Current operations creating events:
 To register an action, you can use `@before_event` and `@after_event` decorators respectively:
 
 ```python
-from beanie import Insert, Replace
+from beanie.sync import Document, before_event, after_event, Insert, Replace
 
 
 class Sample(Document):
@@ -48,7 +48,7 @@ class Sample(Document):
 It is possible to register action for several events:
 
 ```python
-from beanie import Insert, Replace
+from beanie.sync import Document, before_event, Insert, Replace
 
 
 class Sample(Document):
@@ -66,7 +66,7 @@ Actions can be selectively skipped by passing the parameter `skip_actions` when 
 the operations that trigger events. `skip_actions` accepts a list of directions and action names.
 
 ```python
-from beanie import After, Before, Insert, Replace
+from beanie.sync import Document, before_event, after_event, After, Before, Insert, Replace
 
 
 class Sample(Document):
@@ -89,11 +89,11 @@ class Sample(Document):
 sample = Sample()
 
 # capitalize_name will not be executed
-await sample.insert(skip_actions=['capitalize_name'])
+sample.insert(skip_actions=['capitalize_name'])
 
 # num_change will not be executed
-await sample.replace(skip_actions=[After])
+sample.replace(skip_actions=[After])
 
 # redact_name and num_change will not be executed
-await sample.replace(skip_actions[Before, 'num_change'])
+sample.replace(skip_actions=[Before, 'num_change'])
 ```

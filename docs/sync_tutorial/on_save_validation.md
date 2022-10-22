@@ -6,6 +6,9 @@ You can validate all the values before saving the document (insert, replace, sav
 This feature must be turned on in the `Settings` inner class explicitly:
 
 ```python
+from beanie.sync import Document
+
+
 class Sample(Document):
     num: int
     name: str

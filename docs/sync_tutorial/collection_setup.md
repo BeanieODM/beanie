@@ -13,7 +13,7 @@ This is done by defining a `Settings` class within your `Document` class.
 To set MongoDB collection name you can use the `name` field of the `Settings` inner class.
 
 ```python
-from beanie import Document
+from beanie.sync import Document
 
 
 class Sample(Document):
@@ -31,7 +31,8 @@ class Sample(Document):
 To set up an index over a single field the `Indexed` function can be used to wrap the type and does not require a `Settings` class:
 
 ```python
-from beanie import Document, Indexed
+from beanie.sync import Document
+from beanie import Indexed
 
 
 class Sample(Document):
@@ -44,7 +45,8 @@ The `Indexed` function takes an optional argument `index_type`, which may be set
 ```python
 import pymongo
 
-from beanie import Document, Indexed
+from beanie.sync import Document
+from beanie import Indexed
 
 
 class Sample(Document):
@@ -56,7 +58,8 @@ The `Indexed` function also supports PyMongo's `IndexModel` kwargs arguments (se
 For example to create a `unique` index:
 
 ```python
-from beanie import Document, Indexed
+from beanie.sync import Document
+from beanie import Indexed
 
 
 class Sample(Document):
@@ -77,7 +80,7 @@ The `indexes` field of the inner `Settings` class is responsible for more comple
 import pymongo
 from pymongo import IndexModel
 
-from beanie import Document
+from beanie.sync import Document
 
 
 class Sample(Document):
@@ -107,7 +110,7 @@ You can set up a timeseries collection using inner class `Settings`.
 ```python
 from datetime import datetime
 
-from beanie import Document, TimeSeriesConfig, Granularity
+from beanie.sync import Document, TimeSeriesConfig, Granularity
 from pydantic import Field
 
 

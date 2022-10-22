@@ -10,7 +10,8 @@ from typing import Optional
 import pymongo
 from pydantic import BaseModel
 
-from beanie import Document, Indexed
+from beanie.sync import Document
+from beanie import Indexed
 
 
 class Category(BaseModel):
@@ -47,6 +48,8 @@ As it is mentioned before, the `Document` class is inherited from the Pydantic `
 `id` field of the `Document` class reflects the unique `_id` field of the MongoDB document. Each object of the `Document` type has this field. The default type of this is [PydanticObjectId](https://roman-right.github.io/beanie/api/fields/#pydanticobjectid).
 
 ```python
+from beanie.sync import Document
+
 class Sample(Document):
     num: int
     description: str
@@ -65,6 +68,8 @@ from uuid import UUID, uuid4
 
 from pydantic import Field
 
+from beanie.sync import Document
+
 
 class Sample(Document):
     id: UUID = Field(default_factory=uuid4)
@@ -78,6 +83,7 @@ To set up an index over a single field, the `Indexed` function can be used to wr
 
 ```python
 from beanie import Indexed
+from beanie.sync import Document
 
 
 class Sample(Document):
@@ -88,6 +94,11 @@ class Sample(Document):
 The `Indexed` function takes an optional argument `index_type`, which may be set to a pymongo index type:
 
 ```python
+from beanie.sync import Document
+from beanie import Indexed
+
+import pymongo
+
 class Sample(Document):
     description: Indexed(str, index_type=pymongo.TEXT)
 ```
@@ -97,6 +108,9 @@ The `Indexed` function also supports pymongo `IndexModel` kwargs arguments ([PyM
 For example to create a `unique` index:
 
 ```python
+from beanie.sync import Document
+from beanie import Indexed
+
 class Sample(Document):
     name: Indexed(str, unique=True)
 ```
@@ -113,6 +127,8 @@ The inner class `Settings` is used to configure:
 To set MongoDB collection name you can use the `name` field of the `Settings` inner class.
 
 ```python
+from beanie.sync import Document
+
 class Sample(Document):
     num: int
     description: str
@@ -132,6 +148,8 @@ The `indexes` field of the inner `Settings` class is responsible for the indexes
   option. [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)
 
 ```python
+from beanie.sync import Document
+
 class DocumentTestModelWithIndex(Document):
     test_int: int
     test_list: List[SubDocument]
@@ -170,6 +188,8 @@ The `ip` field in the following example would be converted to String by default:
 ```python
 from ipaddress import IPv4Address
 
+from beanie.sync import Document
+
 
 class Sample(Document):
     ip: IPv4Address
@@ -181,6 +201,7 @@ However, if you wanted the `ip` field to be represented as Integer in the databa
 ```python
 from ipaddress import IPv4Address
 
+from beanie.sync import Document
 
 class Sample(Document):
     ip: IPv4Address
@@ -196,6 +217,7 @@ You can also define your own function for the encoding:
 ```python
 from ipaddress import IPv4Address
 
+from beanie.sync import Document
 
 def ipv4address_to_int(v: IPv4Address):
     return int(v)
