@@ -142,7 +142,6 @@ class Encoder:
         obj,
     ) -> Any:
         """"""
-
         if self.custom_encoders:
             if type(obj) in self.custom_encoders:
                 return self.custom_encoders[type(obj)](obj)

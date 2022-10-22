@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.13.0] - 2022-10-22
+
+### Improvement
+
+- Sync interface
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/386>
+
 ## [1.12.1] - 2022-10-17
 
 ### Improvement

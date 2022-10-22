@@ -61,38 +61,74 @@ renderer:
       source: docs/getting-started.md
     - title: Tutorial
       children:
-        - title: Defining a document
-          source: docs/tutorial/defining-a-document.md
-        - title: Initialization
-          source: docs/tutorial/init.md
-        - title: Inserting into the database
-          source: docs/tutorial/insert.md
-        - title: Finding documents
-          source: docs/tutorial/find.md
-        - title: Updating & Deleting
-          source: docs/tutorial/update.md
-        - title: Multi-model pattern
-          source: docs/tutorial/multi-model.md
-        - title: Indexes & collection names
-          source: docs/tutorial/collection_setup.md
-        - title: Aggregation
-          source: docs/tutorial/aggregate.md
-        - title: Relations
-          source: docs/tutorial/relations.md
-        - title: Views
-          source: docs/tutorial/views.md
-        - title: Event-based actions
-          source: docs/tutorial/actions.md
-        - title: Cache
-          source: docs/tutorial/cache.md
-        - title: Revision
-          source: docs/tutorial/revision.md
-        - title: State Management
-          source: docs/tutorial/state_management.md
-        - title: On save validation
-          source: docs/tutorial/on_save_validation.md
-        - title: Migrations
-          source: docs/tutorial/migrations.md
+        - title: Async
+          children:
+            - title: Defining a document
+              source: docs/async_tutorial/defining-a-document.md
+            - title: Initialization
+              source: docs/async_tutorial/init.md
+            - title: Inserting into the database
+              source: docs/async_tutorial/insert.md
+            - title: Finding documents
+              source: docs/async_tutorial/find.md
+            - title: Updating & Deleting
+              source: docs/async_tutorial/update.md
+            - title: Multi-model pattern
+              source: docs/async_tutorial/multi-model.md
+            - title: Indexes & collection names
+              source: docs/async_tutorial/collection_setup.md
+            - title: Aggregation
+              source: docs/async_tutorial/aggregate.md
+            - title: Relations
+              source: docs/async_tutorial/relations.md
+            - title: Views
+              source: docs/async_tutorial/views.md
+            - title: Event-based actions
+              source: docs/async_tutorial/actions.md
+            - title: Cache
+              source: docs/async_tutorial/cache.md
+            - title: Revision
+              source: docs/async_tutorial/revision.md
+            - title: State Management
+              source: docs/async_tutorial/state_management.md
+            - title: On save validation
+              source: docs/async_tutorial/on_save_validation.md
+            - title: Migrations
+              source: docs/async_tutorial/migrations.md
+        - title: Sync
+          children:
+            - title: Migrate from async
+              source: docs/sync_tutorial/sync.md
+            - title: Defining a document
+              source: docs/sync_tutorial/defining-a-document.md
+            - title: Initialization
+              source: docs/sync_tutorial/init.md
+            - title: Inserting into the database
+              source: docs/sync_tutorial/insert.md
+            - title: Finding documents
+              source: docs/sync_tutorial/find.md
+            - title: Updating & Deleting
+              source: docs/sync_tutorial/update.md
+            - title: Multi-model pattern
+              source: docs/sync_tutorial/multi-model.md
+            - title: Indexes & collection names
+              source: docs/sync_tutorial/collection_setup.md
+            - title: Aggregation
+              source: docs/sync_tutorial/aggregate.md
+            - title: Relations
+              source: docs/sync_tutorial/relations.md
+            - title: Views
+              source: docs/sync_tutorial/views.md
+            - title: Event-based actions
+              source: docs/sync_tutorial/actions.md
+            - title: Cache
+              source: docs/sync_tutorial/cache.md
+            - title: Revision
+              source: docs/sync_tutorial/revision.md
+            - title: State Management
+              source: docs/sync_tutorial/state_management.md
+            - title: On save validation
+              source: docs/sync_tutorial/on_save_validation.md
     - title: API Documentation
       children:
         - title: Document
