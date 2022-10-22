@@ -1,6 +1,6 @@
 # Delete documents
 
-Beanie supports, and single, and batch deletions:
+Beanie supports single and batch deletions:
 
 ## Single
 

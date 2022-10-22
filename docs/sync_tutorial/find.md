@@ -1,14 +1,17 @@
-To populate the database, please run the examples from the [previous section of the tutorial](inserting-into-the-database.md) as we will be using the same setup here.
+To populate the database, please run the examples from the [previous section of the tutorial](inserting-into-the-database.md) 
+as we will be using the same setup here.
 
 ## Finding documents
 
-The basic syntax for finding multiple documents in the database is to call the classmethod `find()` or it's synonym `find_many()` with some search criteria (see next section): 
+The basic syntax for finding multiple documents in the database is to call the class method `find()` 
+or it's synonym `find_many()` with some search criteria (see next section): 
 
 ```python
 findresult = Product.find(search_criteria)
 ```
 
-This returns a `FindMany` object which can be used to access the results in different ways. To loop through the results, use a `for` loop:
+This returns a `FindMany` object, which can be used to access the results in different ways. 
+To loop through the results, use a `for` loop:
 
 ```python
 for result in Product.find(search_criteria):
@@ -21,7 +24,8 @@ If you prefer a list of the results, then you can call `to_list()` method:
 result = Product.find(search_criteria).to_list()
 ```
 
-To get the first document you can use `.first_or_none()` method. It returns the first found document or `None`, if no documents were found.
+To get the first document, you can use `.first_or_none()` method. 
+It returns the first found document or `None`, if no documents were found.
 
 ```python
 result = Product.find(search_criteria).first_or_none()
@@ -37,8 +41,9 @@ fields):
 products = Product.find(Product.price < 10).to_list()
 ```
 
-This is supported for the operators: `==`, `>`, `>=`, `<`, `<=`, `!=`.
-Other MongoDB query operators can be used with the included wrappers. For example the `$in` operator can be used as follows:
+This is supported for the following operators: `==`, `>`, `>=`, `<`, `<=`, `!=`.
+Other MongoDB query operators can be used with the included wrappers. 
+For example, the `$in` operator can be used as follows:
 
 ```python
 from beanie.operators import In
@@ -48,7 +53,7 @@ products = Product.find(
 ).to_list()
 ```
 
-The whole list of the find query operators can be found [here](/beanie/api-documentation/operators/find).
+The whole list of the find query operators can be found [here](/api-documentation/operators/find).
 
 For more complex cases native PyMongo syntax is also supported:
 
@@ -58,13 +63,15 @@ products = Product.find({"price": 1000}).to_list()
 
 ## Finding single documents
 
-Sometimes you will only need to find a single document. If you are searching by `id` then you can use the [get](/beanie/api-documentation/document/#documentget) method:
+Sometimes you will only need to find a single document. 
+If you are searching by `id`, then you can use the [get](/api-documentation/document/#documentget) method:
 
 ```python
 bar = Product.get("608da169eb9e17281f0ab2ff").run()
 ```
 
-The `get` method returns `FindOne` query object. To run the query and fetch the document you can use `run()` method as in the example above or, alternatively, `~` prefix:
+To find a single document via a single search criterion,
+you can use the [find_one](/api-documentation/interfaces/#findinterfacefind_one) method:
 
 ```python
 bar = ~Product.get("608da169eb9e17281f0ab2ff")
@@ -82,7 +89,8 @@ bar = Product.find_one(Product.name == "Peanut Bar").run()
 
 ### Multiple search criteria
 
-If you have multiple search criteria to search for you can list them as separate arguments to any of the `find` functions:
+If you have multiple criteria to search against, 
+you can pass them as separate arguments to any of the `find` functions:
 
 ```python
 chocolates = Product.find(
@@ -104,7 +112,8 @@ chocolates = Product
 
 Sorting can be done with the [sort](/api-documentation/query#sort) method.
 
-You can pass it one or multiple fields to sort by. You may optionally specify a `+` or `-` (denoting ascending and descending respectively).
+You can pass it one or multiple fields to sort by. You may optionally specify a `+` or `-` 
+(denoting ascending and descending respectively).
 
 ```python
 chocolates = Product.find(
@@ -128,7 +137,8 @@ chocolates = Product.find(
 
 ### Skip and limit
 
-To skip a certain number of documents, or limit the total number of elements returned, the `skip`and `limit` methods can be used:
+To skip a certain number of documents, or limit the total number of elements returned, 
+the `skip` and `limit` methods can be used:
 ```python
 chocolates = Product.find(
     Product.category.name == "Chocolate").skip(2).to_list()
@@ -139,7 +149,7 @@ chocolates = Product.find(
 
 ### Projections
 
-When only part of a document is required, projections can save a lot of database bandwidth and processing.
+When only a part of a document is required, projections can save a lot of database bandwidth and processing.
 For simple projections we can just define a pydantic model with the required fields and pass it to `project()` method:
 
 ```python
@@ -169,4 +179,4 @@ chocolates = Product.find(
 
 ### Finding all documents
 
-If you every want to find all documents you can use the `find_all()` classmethod. This is equivalent to `find({})`.
+If you ever want to find all documents, you can use the `find_all()` class method. This is equivalent to `find({})`.

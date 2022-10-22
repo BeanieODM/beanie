@@ -1,6 +1,6 @@
 # Views
 
-Virtual views are aggregation pipelines, stored in MongoDB, that act as collections for reading operations.
+Virtual views are aggregation pipelines stored in MongoDB that act as collections for reading operations.
 You can use the `View` class the same way as `Document` for `find` and `aggregate` operations.
 
 ## Here are some examples.
@@ -42,7 +42,7 @@ Initialize Beanie:
 
 ```python
 from pymongo import MongoClient
-from beanie import init_beanie_sync
+from beanie.sync import init_beanie
 
 
 def main():
@@ -50,7 +50,7 @@ def main():
     client = MongoClient(uri)
     db = client.bikes
 
-    init_beanie_sync(
+    init_beanie(
         database=db, 
         document_models=[Bike, Metrics],
         recreate_views=True,
@@ -76,7 +76,7 @@ print(results)
 >> [Metrics(type='Road', number=3, new=2)]
 ```
 
-Aggregate over metrics to get the number of all the new bikes:
+Aggregate over metrics to get the count of all the new bikes:
 
 ```python
 results = Metrics.aggregate([{
@@ -91,7 +91,7 @@ print(results)
 >> [{'_id': None, 'new_total': 3}]
 ```
 
-A better result could be reached using find query aggregation syntax sugar:
+A better result can be achieved by using find query aggregation syntactic sugar:
 
 ```python
 results = Metrics.all().sum(Metrics.new)
