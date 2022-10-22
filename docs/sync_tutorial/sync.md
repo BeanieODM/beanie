@@ -1,13 +1,32 @@
 ## Migrate from async
 
-Beanie supports synchronous interfaces as well as async. Nearly all the syntax is the same. But there is a significant change.
-
+Since version `1.13.0` Beanie supports synchronous interfaces as well as async. Nearly all the syntax is the same. But there are a few significant changes.
 ## Import
 
 Most of the entities should be imported from `beanie.sync` instead of just `beanie`. For example, the Document class:
 
 ```python
 from beanie.sync import Document
+
+class Product(Document):
+    name: str
+    price: float
+```
+
+## Init
+
+As it is a synchronous version, a sync client should be used for the initialization.
+
+```python
+from pymongo import MongoClient
+
+from beanie.sync import init_beanie
+
+
+cli = MongoClient("mongodb://localhost:27017")
+db = cli.products_db
+
+init_beanie(database=db, document_models=[Product])
 ```
 
 ## Queries
