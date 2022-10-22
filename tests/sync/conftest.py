@@ -3,9 +3,11 @@ from random import randint
 from typing import List
 
 import pytest
+from pydantic import BaseSettings
+from pymongo import MongoClient
 
-from beanie.odm.utils.general import init_beanie
-from tests.odm.models import (
+from beanie.sync import init_beanie
+from tests.sync.models import (
     DocumentTestModel,
     DocumentTestModelWithIndexFlagsAliases,
     SubDocument,
@@ -30,7 +32,6 @@ from tests.odm.models import (
     Window,
     Door,
     Roof,
-    Yard,
     InheritedDocumentWithActions,
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
@@ -39,17 +40,36 @@ from tests.odm.models import (
     DocumentUnion,
     HouseWithRevision,
     WindowWithRevision,
-    YardWithRevision,
     DocumentWithActions2,
 )
-from tests.odm.views import TestView
-from tests.odm.models import (
+from tests.sync.models import (
     Sample,
     Nested,
     Option2,
     Option1,
     GeoObject,
 )
+from tests.sync.odm.views import TestView
+
+
+class Settings(BaseSettings):
+    mongodb_dsn: str = "mongodb://localhost:27017/beanie_db"
+    mongodb_db_name: str = "beanie_db"
+
+
+@pytest.fixture
+def settings():
+    return Settings()
+
+
+@pytest.fixture()
+def cli(settings, loop):
+    return MongoClient(settings.mongodb_dsn)
+
+
+@pytest.fixture()
+def db(cli, settings, loop):
+    return cli[settings.mongodb_db_name]
 
 
 @pytest.fixture
@@ -61,7 +81,7 @@ def point():
 
 
 @pytest.fixture
-async def preset_documents(point):
+def preset_documents(point):
     docs = []
     for i in range(10):
         timestamp = datetime.utcnow() - timedelta(days=i)
@@ -98,7 +118,7 @@ async def preset_documents(point):
             geo=geo,
         )
         docs.append(sample)
-    await Sample.insert_many(documents=docs)
+    Sample.insert_many(documents=docs)
 
 
 @pytest.fixture()
@@ -129,14 +149,14 @@ def sample_doc_not_saved(point):
 
 
 @pytest.fixture()
-async def session(cli, loop):
-    s = await cli.start_session()
+def session(cli, loop):
+    s = cli.start_session()
     yield s
-    await s.end_session()
+    s.end_session()
 
 
 @pytest.fixture(autouse=True)
-async def init(loop, db):
+def init(loop, db):
     models = [
         DocumentWithExtras,
         DocumentWithPydanticConfig,
@@ -162,7 +182,6 @@ async def init(loop, db):
         Window,
         Door,
         Roof,
-        Yard,
         InheritedDocumentWithActions,
         DocumentForEncodingTest,
         DocumentForEncodingTestDate,
@@ -172,18 +191,17 @@ async def init(loop, db):
         DocumentUnion,
         HouseWithRevision,
         WindowWithRevision,
-        YardWithRevision,
         DocumentWithActions2,
     ]
-    await init_beanie(
+    init_beanie(
         database=db,
         document_models=models,
     )
     yield None
 
     for model in models:
-        await model.get_motor_collection().drop()
-        await model.get_motor_collection().drop_indexes()
+        model.get_motor_collection().drop()
+        model.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture
@@ -218,16 +236,16 @@ def documents_not_inserted():
 
 
 @pytest.fixture
-async def document(document_not_inserted, loop) -> DocumentTestModel:
-    return await document_not_inserted.insert()
+def document(document_not_inserted, loop) -> DocumentTestModel:
+    return document_not_inserted.insert()
 
 
 @pytest.fixture
 def documents(documents_not_inserted):
-    async def generate_documents(
+    def generate_documents(
         number: int, test_str: str = None, random: bool = False
     ):
-        result = await DocumentTestModel.insert_many(
+        result = DocumentTestModel.insert_many(
             documents_not_inserted(number, test_str, random)
         )
         return result.inserted_ids
