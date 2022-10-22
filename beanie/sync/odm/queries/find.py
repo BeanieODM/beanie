@@ -851,7 +851,6 @@ class FindOne(FindQuery[FindQueryResultType], RunInterface):
         Run the query
         :return: BaseModel
         """
-        print(self.ignore_cache)
         if (
             self.document_model.get_settings().use_cache
             and self.ignore_cache is False

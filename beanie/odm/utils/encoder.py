@@ -142,8 +142,6 @@ class Encoder:
         obj,
     ) -> Any:
         """"""
-        print("OBJ TYPE", obj, type(obj))
-        print(type(obj) in ENCODERS_BY_TYPE)
         if self.custom_encoders:
             if type(obj) in self.custom_encoders:
                 return self.custom_encoders[type(obj)](obj)
@@ -151,7 +149,6 @@ class Encoder:
                 if isinstance(obj, encoder_type):
                     return encoder(obj)
         if type(obj) in ENCODERS_BY_TYPE:
-            print(obj, type(obj), ENCODERS_BY_TYPE[type(obj)](obj))
             return ENCODERS_BY_TYPE[type(obj)](obj)
         for cls, encoder in ENCODERS_BY_TYPE.items():
             if isinstance(obj, cls):
