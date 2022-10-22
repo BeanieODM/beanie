@@ -1,10 +1,13 @@
 # Multi-model pattern
 
-Documents with different schemes could be stored in a single collection and managed correctly. `UnionDoc` class is used for this.
+Documents with different schemas could be stored in a single collection and managed correctly. 
+`UnionDoc` class is used for this.
 
-It supports find and aggregate methods. For find, it will fetch all the found documents into the respective `Document` classes.
+It supports `find` and `aggregate` methods. 
+For `find`, it will fetch all the found documents into the respective `Document` classes.
 
-Documents that have `union_doc` in their settings still can be used in find and other queries. Queries of one such class will not see data of others.
+Documents that have `union_doc` in their settings can still be used in `find` and other queries. 
+Queries of one such class will not see the data of others.
 
 ## Example
 
@@ -47,7 +50,7 @@ await One().insert()
 await Two().insert()
 ```
 
-Find all the doc of the first type:
+Find all the documents of the first type:
 
 ```python
 docs = await One.all().to_list()

@@ -353,3 +353,33 @@ async def test_find_pymongo_kwargs(preset_documents):
     )
 
     await House.find_one(House.height > 1, fetch_links=True, hint="height_1")
+
+
+def test_find_clone():
+    q = (
+        Sample.find_many(Sample.integer == 1)
+        .find_many(Sample.nested.integer >= 2)
+        .sort(Sample.integer)
+        .limit(100)
+    )
+
+    new_q = q.clone()
+    new_q.find(Sample.nested.integer >= 100).sort(Sample.string).limit(10)
+
+    assert q.get_filter_query() == {
+        "$and": [{"integer": 1}, {"nested.integer": {"$gte": 2}}]
+    }
+    assert q.sort_expressions == [("integer", SortDirection.ASCENDING)]
+    assert q.limit_number == 100
+    assert new_q.get_filter_query() == {
+        "$and": [
+            {"integer": 1},
+            {"nested.integer": {"$gte": 2}},
+            {"nested.integer": {"$gte": 100}},
+        ]
+    }
+    assert new_q.sort_expressions == [
+        ("integer", SortDirection.ASCENDING),
+        ("string", SortDirection.ASCENDING),
+    ]
+    assert new_q.limit_number == 10

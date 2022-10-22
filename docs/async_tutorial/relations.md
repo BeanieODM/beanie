@@ -4,7 +4,7 @@ The document can contain links to other documents in their fields.
 
 *Only top-level fields are fully supported for now.*
 
-The next field types are supported:
+The following field types are supported:
 
 - `Link[...]`
 - `Optional[Link[...]]`
@@ -64,7 +64,7 @@ class House(Document):
     windows: List[Link[Window]]
 ```
 
-Optional List of the links:
+Optional list of the links:
 
 ```python
 from typing import List, Optional
@@ -86,7 +86,7 @@ class House(Document):
     yards: Optional[List[Link[Yard]]]
 ```
 
-Other link patterns are not supported for at this moment. If you need something more specific for your use-case, 
+Other link patterns are not supported at this moment. If you need something more specific for your use-case, 
 please open an issue on the GitHub page - <https://github.com/roman-right/beanie>
 
 ## Write
@@ -97,7 +97,7 @@ The following write methods support relations:
 - `replace(...)`
 - `save(...)`
 
-To apply the writing method to the linked documents, you should set the respective `link_rule` parameter
+To apply a write method to the linked documents, you should pass the respective `link_rule` argument
 
 ```python
 house.windows = [Window(x=100, y=100)]
@@ -109,7 +109,7 @@ await house.save(link_rule=WriteRules.WRITE)
 # `insert` and `replace` methods will work the same way
 ```
 
-Or Beanie can ignore internal links with the `link_rule` parameter `WriteRules.DO_NOTHING`
+Otherwise, Beanie can ignore internal links with the `link_rule` parameter `WriteRules.DO_NOTHING`
 
 ```python
 house.door.height = 3
@@ -125,7 +125,7 @@ await house.replace(link_rule=WriteRules.DO_NOTHING)
 
 ### Prefetch
 
-You can fetch linked documents on the find query step, using the parameter `fetch_links`
+You can fetch linked documents on the find query step using the `fetch_links` parameter 
 
 ```python
 houses = await House.find(
@@ -133,22 +133,22 @@ houses = await House.find(
     fetch_links=True
 ).to_list()
 ```
-
-All the find methods supported:
-
+Supported find methods:
 - `find`
 - `find_one`
 - `get`
 
-Beanie uses a single aggregation query under the hood to fetch all the linked documents. This operation is very effective.
+Beanie uses the single aggregation query under the hood to fetch all the linked documents. 
+This operation is very effective.
 
-If a direct link is referred to a non-existent document, after the fetching it will stay the object of the `Link` class.
+If a direct link is referred to a non-existent document, 
+after fetching it will remain the object of the `Link` class.
 
 Fetching will ignore non-existent documents for the list of links fields.
 
 #### Search by linked documents fields
 
-If the `fetch_links` parameter is set to `True` searching by linked documents fields is available.
+If the `fetch_links` parameter is set to `True`, search by linked documents fields is available.
 
 By field of the direct link:
 
@@ -159,7 +159,7 @@ houses = await House.find(
 ).to_list()
 ```
 
-List of links:
+By list of links:
 
 ```python
 houses = await House.find(
@@ -168,7 +168,7 @@ houses = await House.find(
 ).to_list()
 ```
 
-Search by `id` of the linked documents works using syntax:
+Search by `id` of the linked documents works using the following syntax:
 
 ```python
 houses = await House.find(
@@ -176,12 +176,13 @@ houses = await House.find(
 ).to_list()
 ```
 
-It works the same way with `fetch_links` True and False and for `find_many` and `find_one` methods.
+It works the same way with `fetch_links` equal to `True` and `False` and for `find_many` and `find_one` methods.
 
 ### On-demand fetch
 
-If you don't use prefetching, linked documents will be presented as objects of the `Link` class. You can fetch them manually then.
-To fetch all the linked documents you can use the `fetch_all_links` method
+If you don't use prefetching, linked documents will be presented as objects of the `Link` class. 
+You can fetch them manually afterwards.
+To fetch all the linked documents, you can use the `fetch_all_links` method
 
 ```python
 await house.fetch_all_links()
@@ -189,25 +190,26 @@ await house.fetch_all_links()
 
 It will fetch all the linked documents and replace `Link` objects with them.
 
-Or you can fetch a single field:
+Otherwise, you can fetch a single field:
 
 ```python
 await house.fetch_link(House.door)
 ```
 
-This will fetch the Door object and put it in the `door` field of the `house` object.
+This will fetch the Door object and put it into the `door` field of the `house` object.
 
 ## Delete
 
 Delete method works the same way as write operations, but it uses other rules.
 
-To delete all the links on the document deletion you should use the `DeleteRules.DELETE_LINKS` value for the `link_rule` parameter:
+To delete all the links on the document deletion, 
+you should use the `DeleteRules.DELETE_LINKS` value for the `link_rule` parameter:
 
 ```python
 await house.delete(link_rule=DeleteRules.DELETE_LINKS)
 ```
 
-To keep linked documents you can use the `DO_NOTHING` rule:
+To keep linked documents, you can use the `DO_NOTHING` rule:
 
 ```python
 await house.delete(link_rule=DeleteRules.DO_NOTHING)

@@ -116,6 +116,12 @@ class ExpressionField(str):
     def __neg__(self):
         return self, SortDirection.DESCENDING
 
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
+
 
 class DeleteRules(str, Enum):
     DO_NOTHING = "DO_NOTHING"
