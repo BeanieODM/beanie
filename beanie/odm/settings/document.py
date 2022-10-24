@@ -81,7 +81,7 @@ class DocumentSettings(ItemSettings):
             # get_parent returns either parent model or self
             origin = document_model.get_parent()  # type: ignore
 
-            # FIXME: children should be stored in the same collection as parent
+            # children should be stored in the same collection as parent
             # collection name can be changed for the parent,
             # thus we should get it from the settings but what if it was not yet initialized?
             # As a workaround we just deny such a setting for all classes in the inheritance chain

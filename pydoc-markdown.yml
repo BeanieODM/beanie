@@ -73,6 +73,8 @@ renderer:
           source: docs/tutorial/update.md
         - title: Multi-model pattern
           source: docs/tutorial/multi-model.md
+        - title: Inheritance
+          source: docs/tutorial/inheritance.md
         - title: Indexes & collection names
           source: docs/tutorial/collection_setup.md
         - title: Aggregation
