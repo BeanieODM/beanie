@@ -60,7 +60,6 @@ from beanie.odm.fields import (
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.interfaces.find import FindInterface
-from beanie.odm.interfaces.inheritance import InheritanceInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
 from beanie.odm.models import (
     InspectionResult,
@@ -97,7 +96,6 @@ class Document(
     BaseModel,
     FindInterface,
     AggregateInterface,
-    InheritanceInterface,
     OtherGettersInterface,
 ):
     """
@@ -132,6 +130,9 @@ class Document(
 
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
+
+    # Inheritance
+    children: ClassVar[dict[str, list[type['BaseModel']]]] = {}
 
     def _swap_revision(self):
         if self.get_settings().use_revision:
@@ -941,6 +942,14 @@ class Document(
     def get_parent(cls) -> Type['Document']:
         """Returns the closest class to the Document, that name should be used as collection for all children"""
         return cls if cls.__base__ is cls.get_root_document() else cls.__base__.get_parent()  # type: ignore
+
+    @classmethod
+    def has_parent(cls):
+        return cls.get_parent() is not cls
+
+    @classmethod
+    def is_part_of_inheritance(cls):
+        return len(cls.get_children()) > 0 or cls.has_parent()
 
     @classmethod
     def get_children(cls) -> list[Type['Document']]:
