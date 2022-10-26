@@ -1,8 +1,9 @@
 from datetime import timedelta
 from typing import Optional, Dict, Any, Type
 
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
 from pydantic import BaseModel, Field
+from pymongo.collection import Collection
+from pymongo.database import Database
 
 
 class ItemSettings(BaseModel):
@@ -14,8 +15,8 @@ class ItemSettings(BaseModel):
     bson_encoders: Dict[Any, Any] = Field(default_factory=dict)
     projection: Optional[Dict[str, Any]] = None
 
-    motor_db: Optional[AsyncIOMotorDatabase]
-    motor_collection: Optional[AsyncIOMotorCollection] = None
+    motor_db: Optional[Database]
+    motor_collection: Optional[Collection] = None
 
     union_doc: Optional[Type] = None
 

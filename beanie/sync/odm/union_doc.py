@@ -1,6 +1,6 @@
 from typing import ClassVar, Type, Dict, Optional
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from pymongo.database import Database
 
 from beanie.exceptions import UnionDocNotInited
 from beanie.sync.odm.interfaces.aggregate import AggregateInterface
@@ -25,7 +25,7 @@ class UnionDoc(
         return cls._settings
 
     @classmethod
-    def init(cls, database: AsyncIOMotorDatabase):
+    def init(cls, database: Database):
         cls._settings = UnionDocSettings.init(database=database, doc_class=cls)
         cls._is_inited = True
 

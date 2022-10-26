@@ -1,5 +1,3 @@
-import asyncio
-import inspect
 from functools import wraps
 from typing import (
     Callable,
@@ -98,17 +96,11 @@ class ActionRegistry:
         actions_list = cls.get_action_list(
             document_class, event_type, action_direction
         )
-        coros = []
         for action in actions_list:
             if action.__name__ in exclude:
                 continue
 
-            if inspect.iscoroutinefunction(action):
-                coros.append(action(instance))
-            elif inspect.isfunction(action):
-                action(instance)
-
-        asyncio.gather(*coros)
+            action(instance)
 
 
 def register_action(

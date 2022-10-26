@@ -1,7 +1,7 @@
 from inspect import isclass
 from typing import List, Dict, Any, Union, Type
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from pymongo.database import Database
 
 from beanie.exceptions import ViewHasNoSettings
 from beanie.sync.odm.settings.base import ItemSettings
@@ -12,9 +12,7 @@ class ViewSettings(ItemSettings):
     pipeline: List[Dict[str, Any]]
 
     @classmethod
-    def init(
-        cls, view_class: Type, database: AsyncIOMotorDatabase
-    ) -> "ViewSettings":
+    def init(cls, view_class: Type, database: Database) -> "ViewSettings":
         settings_class = getattr(view_class, "Settings", None)
         if settings_class is None:
             raise ViewHasNoSettings("View must have Settings inner class")

@@ -45,7 +45,7 @@ def init_beanie(
     """
     Beanie initialization
 
-    :param database: AsyncIOMotorDatabase - motor database instance
+    :param database: Database - pymongo database instance
     :param connection_string: str - MongoDB connection string
     :param document_models: List[Union[Type[DocType], str]] - model classes
     or strings with dot separated paths

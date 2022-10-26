@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.13.1] - 2022-10-26
+
+### Fix
+
+- Remove redundant async things from sync interface
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/390>
+
 ## [1.13.0] - 2022-10-22
 
 ### Improvement
@@ -1009,3 +1019,7 @@ how specific type should be presented in the database
 [1.12.0]: https://pypi.org/project/beanie/1.12.0
 
 [1.12.1]: https://pypi.org/project/beanie/1.12.1
+
+[1.13.0]: https://pypi.org/project/beanie/1.13.0
+
+[1.13.1]: https://pypi.org/project/beanie/1.13.1

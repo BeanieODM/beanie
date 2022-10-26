@@ -1,7 +1,7 @@
 from typing import ClassVar
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel
+from pymongo.database import Database
 
 from beanie.exceptions import ViewWasNotInitialized
 from beanie.odm.fields import ExpressionField
@@ -48,7 +48,7 @@ class View(
             )
 
     @classmethod
-    def init_settings(cls, database: AsyncIOMotorDatabase) -> None:
+    def init_settings(cls, database: Database) -> None:
         cls._settings = ViewSettings.init(database=database, view_class=cls)
 
     @classmethod
