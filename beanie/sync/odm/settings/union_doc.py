@@ -1,15 +1,13 @@
 from typing import Type
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from pymongo.database import Database
 
 from beanie.sync.odm.settings.base import ItemSettings
 
 
 class UnionDocSettings(ItemSettings):
     @classmethod
-    def init(
-        cls, doc_class: Type, database: AsyncIOMotorDatabase
-    ) -> "UnionDocSettings":
+    def init(cls, doc_class: Type, database: Database) -> "UnionDocSettings":
         settings_class = getattr(doc_class, "Settings", None)
 
         multi_doc_settings = cls.parse_obj(vars(settings_class))

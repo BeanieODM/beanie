@@ -15,7 +15,6 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from bson import ObjectId, DBRef
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import (
     ValidationError,
     PrivateAttr,
@@ -25,6 +24,7 @@ from pydantic import (
 from pydantic.main import BaseModel
 from pymongo import InsertOne
 from pymongo.client_session import ClientSession
+from pymongo.database import Database
 from pymongo.results import (
     DeleteResult,
     InsertManyResult,
@@ -841,12 +841,12 @@ class Document(
 
     @classmethod
     def init_settings(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+        cls, database: Database, allow_index_dropping: bool
     ) -> None:
         """
         Init document settings (collection and models)
 
-        :param database: AsyncIOMotorDatabase - motor database
+        :param database: Database - pymongo database
         :param allow_index_dropping: bool
         :return: None
         """
@@ -876,11 +876,11 @@ class Document(
 
     @classmethod
     def init_model(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
+        cls, database: Database, allow_index_dropping: bool
     ) -> None:
         """
         Init wrapper
-        :param database: AsyncIOMotorDatabase
+        :param database: Database
         :param allow_index_dropping: bool
         :return: None
         """

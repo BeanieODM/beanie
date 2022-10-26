@@ -1,4 +1,4 @@
-from motor.motor_asyncio import AsyncIOMotorCollection
+from pymongo.collection import Collection
 
 from beanie.sync.odm.settings.base import ItemSettings
 
@@ -9,7 +9,7 @@ class OtherGettersInterface:
         pass
 
     @classmethod
-    def get_motor_collection(cls) -> AsyncIOMotorCollection:
+    def get_motor_collection(cls) -> Collection:
         return cls.get_settings().motor_collection
 
     @classmethod

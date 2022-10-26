@@ -20,7 +20,7 @@ CursorResultType = TypeVar("CursorResultType")
 
 class BaseCursorQuery(Generic[CursorResultType], RunInterface):
     """
-    BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
+    BaseCursorQuery class. Wrapper over pymongo Cursor,
     which parse result with model
     """
 

@@ -1,9 +1,9 @@
 import warnings
 from typing import Optional, Type, List
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import Field
 from pymongo import IndexModel
+from pymongo.database import Database
 
 from beanie.exceptions import MongoDBVersionError
 from beanie.sync.odm.settings.base import ItemSettings
@@ -35,7 +35,7 @@ class DocumentSettings(ItemSettings):
     @classmethod
     def init(
         cls,
-        database: AsyncIOMotorDatabase,
+        database: Database,
         document_model: Type,
         allow_index_dropping: bool,
     ) -> "DocumentSettings":
