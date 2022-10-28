@@ -7,10 +7,12 @@ from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import DetectionInterface, ModelType
 from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
+from beanie.odm.interfaces.init import UnionDocInitInterface
 from beanie.odm.settings.union_doc import UnionDocSettings
 
 
 class UnionDoc(
+    UnionDocInitInterface,
     FindInterface,
     AggregateInterface,
     OtherGettersInterface,
@@ -23,11 +25,6 @@ class UnionDoc(
     @classmethod
     def get_settings(cls) -> UnionDocSettings:
         return cls._settings
-
-    @classmethod
-    def init(cls, database: AsyncIOMotorDatabase):
-        cls._settings = UnionDocSettings.init(database=database, doc_class=cls)
-        cls._is_inited = True
 
     @classmethod
     def register_doc(cls, doc_model: Type):

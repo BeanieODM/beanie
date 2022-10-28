@@ -13,12 +13,13 @@ class ItemSettings(BaseModel):
     cache_expiration_time: timedelta = timedelta(minutes=10)
     bson_encoders: Dict[Any, Any] = Field(default_factory=dict)
     projection: Optional[Dict[str, Any]] = None
-    single_root_inheritance: bool = False
 
     motor_db: Optional[AsyncIOMotorDatabase]
     motor_collection: Optional[AsyncIOMotorCollection] = None
 
     union_doc: Optional[Type] = None
+
+    is_root: bool = False
 
     class Config:
         arbitrary_types_allowed = True

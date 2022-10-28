@@ -5,10 +5,7 @@
 
 ## Overview
 
-[Beanie](https://github.com/roman-right/beanie) - is an Asynchronous Python
-object-document mapper (ODM) for MongoDB, based
-on [Motor](https://motor.readthedocs.io/en/stable/)
-and [Pydantic](https://pydantic-docs.helpmanual.io/).
+[Beanie](https://github.com/roman-right/beanie) - is a Python object-document mapper (ODM) for MongoDB that can be used, and in synchronous, and async contexts. Data models are based on [Pydantic](https://pydantic-docs.helpmanual.io/).
 
 When using Beanie each database collection has a corresponding `Document` that
 is used to interact with that collection. In addition to retrieving data,
@@ -57,7 +54,7 @@ class Product(Document):
     category: Category                 # You can include pydantic models as well
 
 
-# Beanie is fully asynchronous, so we will access it from an async function
+# This is an asynchronous example, so we will access it from an async function
 async def example():
     # Beanie uses Motor async client under the hood 
     client = AsyncIOMotorClient("mongodb://user:pass@host:27017")

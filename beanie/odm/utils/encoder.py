@@ -91,8 +91,9 @@ class Encoder:
         if obj.get_settings().union_doc is not None:
             obj_dict["_class_id"] = obj.__class__.__name__
 
-        if obj.get_settings().single_root_inheritance and obj.is_part_of_inheritance():
-            obj_dict["_class_id"] = obj.__class__.__name__
+        if obj._inheritance_inited:
+            obj_dict["_class_id"] = obj._class_name
+            print(obj._class_name)
 
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
             if k not in self.exclude:
@@ -146,7 +147,6 @@ class Encoder:
         obj,
     ) -> Any:
         """"""
-
         if self.custom_encoders:
             if type(obj) in self.custom_encoders:
                 return self.custom_encoders[type(obj)](obj)

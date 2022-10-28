@@ -481,19 +481,16 @@ class HouseWithRevision(Document):
 
 
 class TunedDocument(Document):
-    @classmethod
-    def get_root_document(cls):
-        return TunedDocument
-
     # some common settings for all models in the file
     class Settings:
-        single_root_inheritance = True
+        is_root = True
         use_state_management = True
 
 
 # classes for inheritance test
 class Vehicle(TunedDocument):
     """Root parent for testing flat inheritance"""
+
     #               Vehicle
     #              /   |   \
     #             /    |    \
@@ -516,6 +513,7 @@ class Bicycle(Vehicle):
 
 class Fuelled(BaseModel):
     """Just a mixin"""
+
     fuel: Optional[str]
 
 

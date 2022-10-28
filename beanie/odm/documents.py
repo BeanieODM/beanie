@@ -1,11 +1,9 @@
 import asyncio
-import inspect
 from typing import ClassVar, AbstractSet
 from typing import (
     Dict,
     Optional,
     List,
-    Tuple,
     Type,
     Union,
     Mapping,
@@ -17,7 +15,6 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from bson import ObjectId, DBRef
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import (
     ValidationError,
     PrivateAttr,
@@ -43,7 +40,6 @@ from beanie.exceptions import (
 from beanie.odm.actions import (
     EventTypes,
     wrap_with_actions,
-    ActionRegistry,
     ActionDirections,
 )
 from beanie.odm.bulk import BulkWriter, Operation
@@ -61,6 +57,8 @@ from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
+from beanie.odm.interfaces.inheritance import InheritanceInterface
+from beanie.odm.interfaces.init import DocumentInitInterface
 from beanie.odm.models import (
     InspectionResult,
     InspectionStatuses,
@@ -73,11 +71,8 @@ from beanie.odm.operators.update.general import (
     Set as SetOperator,
 )
 from beanie.odm.queries.update import UpdateMany
-
-# from beanie.odm.settings.general import DocumentSettings
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict
-from beanie.odm.utils.relations import detect_link
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
     saved_state_needed,
@@ -94,6 +89,8 @@ DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 class Document(
     BaseModel,
+    DocumentInitInterface,
+    InheritanceInterface,
     FindInterface,
     AggregateInterface,
     OtherGettersInterface,
@@ -131,9 +128,6 @@ class Document(
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
 
-    # Inheritance
-    children: ClassVar[dict[str, list[type['BaseModel']]]] = {}
-
     def _swap_revision(self):
         if self.get_settings().use_revision:
             self._previous_revision_id = self.revision_id
@@ -144,58 +138,6 @@ class Document(
         self.get_motor_collection()
         self._save_state()
         self._swap_revision()
-
-    @classmethod
-    def parse_obj(cls: Type['Document'], obj: Any) -> 'Document':
-        rv = super().parse_obj(obj)
-
-        if cls.get_settings().single_root_inheritance:
-            # if _class_id has been specified in the projection then there can be children subclasses in the result
-            if isinstance(obj, dict) and '_class_id' in obj:
-                class_name = obj["_class_id"]
-            elif hasattr(obj, '_class_id'):
-                class_name = obj._class_id
-            else:
-                class_name = None
-
-            # if class_name is set and differs from queried model then we should parse data as child subclass
-            if class_name and class_name != cls.__name__:
-                for child in cls.get_children():
-                    if child.__name__ == class_name:
-                        return child.parse_obj(obj)
-
-        # if the model has links to SRI classes, they should be refined
-        # because BaseModel.parse_obj casts all linked child classes to the parent one
-        for name, value in cls.resolve_links(obj):
-            setattr(rv, name, value)
-
-        return rv
-
-    @classmethod
-    def resolve_links(cls: Type['Document'], obj: Any) -> List[Tuple[str, Union[List['Document'], 'Document']]]:
-        """Iterate over links in the object and properly parse them"""
-        rv = []
-
-        for name, info in (cls.get_link_fields() or {}).items():
-            model = info.model_class
-            if model.get_settings().single_root_inheritance:  # type: ignore
-                if model.is_part_of_inheritance():  # type: ignore
-                    # get value of the link in passed data
-                    value = obj.get(name, None) if isinstance(obj, dict) else getattr(obj, name, None)
-
-                    if value:
-                        # if there are dicts then fetch_link was True while fetching
-                        # we should parse them as objects, otherwise there will be DBRefs or Links
-                        if isinstance(value, dict):
-                            resolved_value = model.parse_obj(value)
-                        elif isinstance(value, list) and all((isinstance(v, dict) for v in value)):
-                            resolved_value = [model.parse_obj(v) for v in value]
-                        else:
-                            continue
-
-                        rv.append((name, resolved_value))
-
-        return rv
 
     async def _sync(self) -> None:
         """
@@ -234,6 +176,15 @@ class Document(
         """
         if not isinstance(document_id, cls.__fields__["id"].type_):
             document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
+        print(
+            cls.find_one(
+                {"_id": document_id},
+                session=session,
+                ignore_cache=ignore_cache,
+                fetch_links=fetch_links,
+                **pymongo_kwargs,
+            ).get_filter_query()
+        )
         return await cls.find_one(
             {"_id": document_id},
             session=session,
@@ -270,12 +221,14 @@ class Document(
                             await value.insert(link_rule=WriteRules.WRITE)
                     if field_info.link_type in [
                         LinkTypes.LIST,
-                        LinkTypes.OPTIONAL_LIST
+                        LinkTypes.OPTIONAL_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
                                 if isinstance(obj, Document):
-                                    await obj.insert(link_rule=WriteRules.WRITE)
+                                    await obj.insert(
+                                        link_rule=WriteRules.WRITE
+                                    )
 
         result = await self.get_motor_collection().insert_one(
             get_dict(self, to_db=True), session=session
@@ -405,7 +358,7 @@ class Document(
                             )
                     if field_info.link_type in [
                         LinkTypes.LIST,
-                        LinkTypes.OPTIONAL_LIST
+                        LinkTypes.OPTIONAL_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -462,7 +415,7 @@ class Document(
                             )
                     if field_info.link_type in [
                         LinkTypes.LIST,
-                        LinkTypes.OPTIONAL_LIST
+                        LinkTypes.OPTIONAL_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -728,7 +681,7 @@ class Document(
                             )
                     if field_info.link_type in [
                         LinkTypes.LIST,
-                        LinkTypes.OPTIONAL_LIST
+                        LinkTypes.OPTIONAL_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -853,133 +806,6 @@ class Document(
                     setattr(self, "id", value)
                 else:
                     setattr(self, key, value)
-
-    # Initialization
-
-    @classmethod
-    def init_cache(cls) -> None:
-        """
-        Init model's cache
-        :return: None
-        """
-        if cls.get_settings().use_cache:
-            cls._cache = LRUCache(
-                capacity=cls.get_settings().cache_capacity,
-                expiration_time=cls.get_settings().cache_expiration_time,
-            )
-
-    @classmethod
-    def init_fields(cls) -> None:
-        """
-        Init class fields
-        :return: None
-        """
-        if cls._link_fields is None:
-            cls._link_fields = {}
-        for k, v in cls.__fields__.items():
-            path = v.alias or v.name
-            setattr(cls, k, ExpressionField(path))
-
-            link_info = detect_link(v)
-            if link_info is not None:
-                cls._link_fields[v.name] = link_info
-
-        cls._hidden_fields = cls.get_hidden_fields()
-
-    @classmethod
-    async def init_settings(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
-    ) -> None:
-        """
-        Init document settings (collection and models)
-
-        :param database: AsyncIOMotorDatabase - motor database
-        :param allow_index_dropping: bool
-        :return: None
-        """
-        # TODO looks ugly a little. Too many parameters transfers.
-        cls._document_settings = await DocumentSettings.init(
-            database=database,
-            document_model=cls,
-            allow_index_dropping=allow_index_dropping,
-        )
-
-    @classmethod
-    def init_actions(cls):
-        """
-        Init event-based actions
-        """
-        ActionRegistry.clean_actions(cls)
-        for attr in dir(cls):
-            f = getattr(cls, attr)
-            if inspect.isfunction(f):
-                if hasattr(f, "has_action"):
-                    ActionRegistry.add_action(
-                        document_class=cls,
-                        event_types=f.event_types,  # type: ignore
-                        action_direction=f.action_direction,  # type: ignore
-                        funct=f,
-                    )
-
-    @classmethod
-    def get_root_document(cls):
-        return Document
-
-    @classmethod
-    def init_inheritance(cls):
-        root = cls.get_root_document()
-        parents = set(p for p in cls.__bases__ if p is not root and issubclass(p, root))
-
-        if len({p.get_parent() for p in parents}) > 1:
-            raise NotSupported('Child Document cannot be inherited from different parents '
-                               'that stored in different collections. '
-                               'Multiple inheritance supported only from one root parent Document.')
-
-        for base in parents:
-            base.children.setdefault(base.__name__, []).append(cls)  # type: ignore
-
-    @classmethod
-    def get_parent(cls) -> Type['Document']:
-        """Returns the closest class to the Document, that name should be used as collection for all children"""
-        return cls if cls.__base__ is cls.get_root_document() else cls.__base__.get_parent()  # type: ignore
-
-    @classmethod
-    def has_parent(cls):
-        return cls.get_parent() is not cls
-
-    @classmethod
-    def is_part_of_inheritance(cls):
-        return len(cls.get_children()) > 0 or cls.has_parent()
-
-    @classmethod
-    def get_children(cls) -> list[Type['Document']]:
-        """Get a list of all child classes"""
-        rv = []
-
-        for c in cls.children.get(cls.__name__, []):
-            rv.append(c)
-            # build recursive flat list
-            rv += c.get_children()
-
-        return rv
-
-    @classmethod
-    async def init_model(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
-    ) -> None:
-        """
-        Init wrapper
-        :param database: AsyncIOMotorDatabase
-        :param allow_index_dropping: bool
-        :return: None
-        """
-        cls.init_inheritance()
-        await cls.init_settings(
-            database=database, allow_index_dropping=allow_index_dropping
-        )
-        cls.init_fields()
-        cls.init_cache()
-        cls.init_actions()
 
     # Other
 

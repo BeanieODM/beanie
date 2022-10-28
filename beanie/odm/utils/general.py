@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from yarl import URL
 
 from beanie.odm.interfaces.detector import ModelType
+from beanie.odm.utils.init import Initializer
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
@@ -33,6 +34,40 @@ def get_model(dot_path: str) -> Type["DocType"]:
         raise AttributeError(
             f"module '{module_name}' has no class called '{class_name}'"
         )
+
+
+def init_inheritance(
+    document_models: List[Union[Type["DocType"], Type["View"]]]
+):
+    """
+    Inheritance initialization
+
+    :param document_models: List[Union[Type[DocType], str]] - model classes
+    """
+    # TODO: make less iterations here
+    for model in document_models:
+        if model.get_model_type() == ModelType.Document:
+            model.set_inheritance_class_vars_defaults()
+
+    for model in document_models:
+        if model.get_model_type() == ModelType.Document:
+            model.init_inheritance()
+
+
+def init_settings(document_models: List[Union[Type["DocType"], Type["View"]]]):
+    for model in document_models:
+        model.init_settings()
+
+
+def convert_models(
+    document_models: List[Union[Type["DocType"], Type["View"], str]]
+) -> List[Union[Type["DocType"], Type["View"]]]:
+    result = []
+    for model in document_models:
+        if isinstance(model, str):
+            model = get_model(model)
+        result.append(model)
+    return result
 
 
 async def init_beanie(
@@ -67,23 +102,31 @@ async def init_beanie(
             URL(connection_string).path[1:]
         ]
 
-    collection_inits = []
-    for model in document_models:
-        if isinstance(model, str):
-            model = get_model(model)
+    document_models = convert_models(document_models)
 
-        if model.get_model_type() == ModelType.UnionDoc:
-            model.init(database)
+    await Initializer(
+        database, allow_index_dropping, recreate_views, document_models
+    )
 
-        if model.get_model_type() == ModelType.Document:
-            collection_inits.append(
-                model.init_model(
-                    database, allow_index_dropping=allow_index_dropping
-                )
-            )
-        if model.get_model_type() == ModelType.View:
-            collection_inits.append(
-                model.init_view(database, recreate_view=recreate_views)
-            )
-
-    await asyncio.gather(*collection_inits)
+    # init_settings(document_models)
+    #
+    # init_inheritance(document_models=document_models)
+    #
+    # collection_inits = []
+    # for model in document_models:
+    #
+    #     if model.get_model_type() == ModelType.UnionDoc:
+    #         model.init(database)
+    #
+    #     if model.get_model_type() == ModelType.Document:
+    #         collection_inits.append(
+    #             model.init_model(
+    #                 database, allow_index_dropping=allow_index_dropping
+    #             )
+    #         )
+    #     if model.get_model_type() == ModelType.View:
+    #         collection_inits.append(
+    #             model.init_view(database, recreate_view=recreate_views)
+    #         )
+    #
+    # await asyncio.gather(*collection_inits)
