@@ -5,18 +5,14 @@ from tests.odm.models import (
     Bicycle,
     Bike,
     Car,
-    Bus,
+    Bus, TunedDocument,
 )
 
 
 class TestInheritance:
     async def test_inheritance(self, db):
-        await init_beanie(
-            database=db, document_models=[Vehicle, Bicycle, Bike, Car, Bus]
-        )
-
-        print(Bike.get_collection_name())
-        print(Bike._parent)
+        print(Vehicle._inheritance_inited)
+        print(Vehicle._children)
 
         bicycle_1 = await Bicycle(color="white", frame=54, wheels=29).insert()
         bicycle_2 = await Bicycle(color="red", frame=52, wheels=28).insert()
@@ -35,7 +31,7 @@ class TestInheritance:
             color="yellow", seats=26, body="minibus", fuel="diesel"
         ).insert()
 
-        white_vehicles = await Vehicle.find(Vehicle.color == "white").to_list()
+        white_vehicles = await Vehicle.find(Vehicle.color == "white", strict=False).to_list()
 
         cars_only = await Car.find({"_class_id": "Car"}).to_list()
         cars_and_buses = await Car.find(Car.fuel == "diesel").to_list()
@@ -49,21 +45,22 @@ class TestInheritance:
         await sedan.save()
 
         # get using Vehicle should return Bike instance
-        updated_bike = await Vehicle.get(bike_1.id)
+        updated_bike = await Vehicle.get(bike_1.id, strict=False)
 
         assert isinstance(sedan, Car)
 
-        print(updated_bike)
+        print(updated_bike, type(updated_bike))
 
         assert isinstance(updated_bike, Bike)
         assert updated_bike.color == "yellow"
 
-        assert Vehicle.get_parent() is Vehicle
-        assert Bus.get_parent() is Vehicle
+        assert Vehicle._parent is TunedDocument
+        assert Bus._parent is Car
 
         assert len(big_bicycles) == 1
         assert big_bicycles[0].wheels > 28
 
+        print(white_vehicles)
         assert len(white_vehicles) == 3
         assert len(cars_only) == 2
 

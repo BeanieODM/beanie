@@ -102,10 +102,23 @@ async def init_beanie(
             URL(connection_string).path[1:]
         ]
 
-    document_models = convert_models(document_models)
+    sort_order = {
+        ModelType.UnionDoc: 0,
+        ModelType.Document: 1,
+        ModelType.View: 2,
+    }
+
+    document_models_unwrapped: List[Union[Type[DocType], Type[View]]] = [
+        get_model(model) if isinstance(model, str) else model
+        for model in document_models
+    ]
+
+    document_models_unwrapped.sort(
+        key=lambda val: sort_order[val.get_model_type()]
+    )
 
     await Initializer(
-        database, allow_index_dropping, recreate_views, document_models
+        database, allow_index_dropping, recreate_views, document_models_unwrapped
     )
 
     # init_settings(document_models)

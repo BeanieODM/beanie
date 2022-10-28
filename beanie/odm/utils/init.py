@@ -197,27 +197,28 @@ class Initializer:
             self.set_default_class_vars(cls)
             self.init_settings(cls)
 
-            bases = [b for b in cls.__bases__]
+            bases = [b for b in cls.__bases__ if issubclass(b, Document)]
             if len(bases) > 1:
                 return None
-            if cls.get_settings().is_root:
-                return Output(
+            parent = bases[0]
+            output = await self.init_document(parent)
+            if cls.get_settings().is_root and (parent is Document or not parent.get_settings().is_root):
+                if cls.get_collection_name() is None:
+                    cls.set_collection_name(cls.__name__)
+                output = Output(
                     class_name=cls.__name__,
                     collection_name=cls.get_collection_name(),
                 )
-            parent = bases[0]
-            output = await self.init_document(parent)
-            if output is None:
-                return None
-            output.class_name = f"{output.class_name}.{cls.__name__}"
-            cls._class_name = output.class_name
-            cls.set_collection_name(output.collection_name)
-            parent._children[cls._class_name] = cls
-            cls._parent = parent
-            cls._inheritance_inited = True
+            elif output is not None:
+                output.class_name = f"{output.class_name}.{cls.__name__}"
+                cls._class_name = output.class_name
+                cls.set_collection_name(output.collection_name)
+                parent._children[cls._class_name] = cls
+                cls._parent = parent
+                cls._inheritance_inited = True
 
             await self.init_collection(cls)
-            await self.init_async_indexes(cls)
+            await self.init_async_indexes(cls, self.allow_index_dropping)
             self.init_fields(cls)
             self.init_cache(cls)
             self.init_actions(cls)

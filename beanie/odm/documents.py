@@ -163,6 +163,7 @@ class Document(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        strict: bool = True,
         **pymongo_kwargs,
     ) -> Optional["DocType"]:
         """
@@ -176,20 +177,12 @@ class Document(
         """
         if not isinstance(document_id, cls.__fields__["id"].type_):
             document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
-        print(
-            cls.find_one(
-                {"_id": document_id},
-                session=session,
-                ignore_cache=ignore_cache,
-                fetch_links=fetch_links,
-                **pymongo_kwargs,
-            ).get_filter_query()
-        )
         return await cls.find_one(
             {"_id": document_id},
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
+            strict=strict,
             **pymongo_kwargs,
         )
 

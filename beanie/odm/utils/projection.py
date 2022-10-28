@@ -16,14 +16,18 @@ def get_projection(
     ):
         return None
 
+    if (
+        hasattr(model, "get_model_type")
+        and model.get_model_type() == ModelType.Document and
+        model._inheritance_inited
+    ):
+        return None
+
     if hasattr(model, "Settings"):  # MyPy checks
         settings = getattr(model, "Settings")
 
         if hasattr(settings, "projection"):
             return getattr(settings, "projection")
-
-        if getattr(settings, 'single_root_inheritance', False):
-            return None
 
     if getattr(model.Config, "extra", None) == "allow":
         return None

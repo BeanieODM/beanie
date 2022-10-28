@@ -2,23 +2,15 @@ import inspect
 from typing import TYPE_CHECKING
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from pymongo import IndexModel
 
 from beanie.exceptions import (
-    MongoDBVersionError,
     ViewHasNoSettings,
 )
-from beanie.odm.actions import (
-    ActionRegistry,
-)
-from beanie.odm.cache import LRUCache
 from beanie.odm.fields import (
     ExpressionField,
 )
-from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
-from beanie.odm.utils.relations import detect_link
 
 if TYPE_CHECKING:
     pass
