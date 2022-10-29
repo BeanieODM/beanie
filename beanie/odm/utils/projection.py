@@ -18,8 +18,8 @@ def get_projection(
 
     if (
         hasattr(model, "get_model_type")
-        and model.get_model_type() == ModelType.Document and
-        model._inheritance_inited
+        and model.get_model_type() == ModelType.Document
+        and model._inheritance_inited
     ):
         return None
 

@@ -29,13 +29,14 @@ class Output(BaseModel):
 
 class Initializer:
     def __init__(
-            self,
-            database: AsyncIOMotorDatabase = None,
-            connection_string: str = None,
-            document_models: List[
-                Union[Type["DocType"], Type["View"], str]] = None,
-            allow_index_dropping: bool = False,
-            recreate_views: bool = False,
+        self,
+        database: AsyncIOMotorDatabase = None,
+        connection_string: str = None,
+        document_models: List[
+            Union[Type["DocType"], Type["View"], str]
+        ] = None,
+        allow_index_dropping: bool = False,
+        recreate_views: bool = False,
     ):
         """
         Beanie initializer
@@ -53,7 +54,7 @@ class Initializer:
         self.recreate_views = recreate_views
 
         if (connection_string is None and database is None) or (
-                connection_string is not None and database is not None
+            connection_string is not None and database is not None
         ):
             raise ValueError(
                 "connection_string parameter or database parameter must be set"
@@ -113,7 +114,7 @@ class Initializer:
             )
 
     def init_settings(
-            self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
     ):
         """
         Init Settings
@@ -230,9 +231,9 @@ class Initializer:
 
         # create motor collection
         if (
-                document_settings.timeseries is not None
-                and document_settings.name
-                not in await self.database.list_collection_names()
+            document_settings.timeseries is not None
+            and document_settings.name
+            not in await self.database.list_collection_names()
         ):
 
             collection = await self.database.create_collection(
@@ -305,7 +306,8 @@ class Initializer:
             parent = bases[0]
             output = await self.init_document(parent)
             if cls.get_settings().is_root and (
-                    parent is Document or not parent.get_settings().is_root):
+                parent is Document or not parent.get_settings().is_root
+            ):
                 if cls.get_collection_name() is None:
                     cls.set_collection_name(cls.__name__)
                 output = Output(
@@ -410,7 +412,7 @@ class Initializer:
     # Final
 
     async def init_class(
-            self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
     ):
         """
         Init Document, View or UnionDoc based class.

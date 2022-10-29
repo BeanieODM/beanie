@@ -378,7 +378,10 @@ class FindInterface:
         ):
             return args
 
-        if cls.get_model_type() == ModelType.Document and cls._inheritance_inited:
+        if (
+            cls.get_model_type() == ModelType.Document
+            and cls._inheritance_inited
+        ):
             if not with_children:
                 args += ({"_class_id": cls._class_id},)
             else:

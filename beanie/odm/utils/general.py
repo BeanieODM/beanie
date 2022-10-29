@@ -10,12 +10,11 @@ if TYPE_CHECKING:
 
 
 async def init_beanie(
-        database: AsyncIOMotorDatabase = None,
-        connection_string: str = None,
-        document_models: List[
-            Union[Type["DocType"], Type["View"], str]] = None,
-        allow_index_dropping: bool = False,
-        recreate_views: bool = False,
+    database: AsyncIOMotorDatabase = None,
+    connection_string: str = None,
+    document_models: List[Union[Type["DocType"], Type["View"], str]] = None,
+    allow_index_dropping: bool = False,
+    recreate_views: bool = False,
 ):
     """
     Beanie initialization
