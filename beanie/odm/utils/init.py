@@ -1,18 +1,23 @@
+import importlib
 import inspect
-from typing import Optional, TYPE_CHECKING, List, Type, Union
+from typing import Optional, List, Type, Union
 
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from pydantic import BaseModel
 from pymongo import IndexModel
+from yarl import URL
 
-from beanie.odm.union_doc import UnionDoc
 from beanie.exceptions import MongoDBVersionError
 from beanie.odm.actions import ActionRegistry
 from beanie.odm.cache import LRUCache
+from beanie.odm.documents import DocType
 from beanie.odm.documents import Document
 from beanie.odm.fields import ExpressionField
+from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
+from beanie.odm.union_doc import UnionDoc
 from beanie.odm.utils.relations import detect_link
 from beanie.odm.views import View
 
@@ -23,19 +28,126 @@ class Output(BaseModel):
 
 
 class Initializer:
-    inited_classes: List[Type] = list()
-
     def __init__(
-        self, database, allow_index_dropping, recreate_view, document_models
+            self,
+            database: AsyncIOMotorDatabase = None,
+            connection_string: str = None,
+            document_models: List[
+                Union[Type["DocType"], Type["View"], str]] = None,
+            allow_index_dropping: bool = False,
+            recreate_views: bool = False,
     ):
-        self.database = database
+        """
+        Beanie initializer
+
+        :param database: AsyncIOMotorDatabase - motor database instance
+        :param connection_string: str - MongoDB connection string
+        :param document_models: List[Union[Type[DocType], str]] - model classes
+        or strings with dot separated paths
+        :param allow_index_dropping: bool - if index dropping is allowed.
+        Default False
+        :return: None
+        """
+        self.inited_classes: List[Type] = []
         self.allow_index_dropping = allow_index_dropping
-        self.recreate_view = recreate_view
-        self.document_models = document_models
+        self.recreate_views = recreate_views
+
+        if (connection_string is None and database is None) or (
+                connection_string is not None and database is not None
+        ):
+            raise ValueError(
+                "connection_string parameter or database parameter must be set"
+            )
+
+        if document_models is None:
+            raise ValueError("document_models parameter must be set")
+        if connection_string is not None:
+            database = AsyncIOMotorClient(connection_string)[
+                URL(connection_string).path[1:]
+            ]
+
+        self.database = database
+
+        sort_order = {
+            ModelType.UnionDoc: 0,
+            ModelType.Document: 1,
+            ModelType.View: 2,
+        }
+
+        self.document_models: List[Union[Type[DocType], Type[View]]] = [
+            self.get_model(model) if isinstance(model, str) else model
+            for model in document_models
+        ]
+
+        self.document_models.sort(
+            key=lambda val: sort_order[val.get_model_type()]
+        )
 
     def __await__(self):
         for model in self.document_models:
-            yield from self.init(model).__await__()
+            yield from self.init_class(model).__await__()
+
+    # General
+
+    @staticmethod
+    def get_model(dot_path: str) -> Type["DocType"]:
+        """
+        Get the model by the path in format bar.foo.Model
+
+        :param dot_path: str - dot seprated path to the model
+        :return: Type[DocType] - class of the model
+        """
+        module_name, class_name = None, None
+        try:
+            module_name, class_name = dot_path.rsplit(".", 1)
+            return getattr(importlib.import_module(module_name), class_name)
+
+        except ValueError:
+            raise ValueError(
+                f"'{dot_path}' doesn't have '.' path, eg. path.to.your.model.class"
+            )
+
+        except AttributeError:
+            raise AttributeError(
+                f"module '{module_name}' has no class called '{class_name}'"
+            )
+
+    def init_settings(
+            self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+    ):
+        """
+        Init Settings
+
+        :param cls: Union[Type[Document], Type[View], Type[UnionDoc]] - Class
+        to init settings
+        :return: None
+        """
+        settings_class = getattr(cls, "Settings", None)
+        settings_vars = (
+            {} if settings_class is None else dict(vars(settings_class))
+        )
+        if issubclass(cls, Document):
+            cls._document_settings = DocumentSettings.parse_obj(settings_vars)
+        if issubclass(cls, View):
+            cls._settings = ViewSettings.parse_obj(settings_vars)
+        if issubclass(cls, UnionDoc):
+            cls._settings = UnionDocSettings.parse_obj(settings_vars)
+
+    # Document
+
+    @staticmethod
+    def set_default_class_vars(cls: Type[Document]):
+        """
+        Set default class variables.
+
+        :param cls: Union[Type[Document], Type[View], Type[UnionDoc]] - Class
+        to init settings
+        :return:
+        """
+        cls._children = dict()
+        cls._parent = None
+        cls._inheritance_inited = False
+        cls._class_id = ""
 
     @staticmethod
     def init_cache(cls) -> None:
@@ -50,7 +162,7 @@ class Initializer:
             )
 
     @staticmethod
-    def init_fields(cls) -> None:
+    def init_document_fields(cls) -> None:
         """
         Init class fields
         :return: None
@@ -84,7 +196,12 @@ class Initializer:
                         funct=f,
                     )
 
-    async def init_collection(self, cls):
+    async def init_document_collection(self, cls):
+        """
+        Init collection for the Document-based class
+        :param cls:
+        :return:
+        """
         cls.set_database(self.database)
 
         document_settings = cls.get_settings()
@@ -113,9 +230,9 @@ class Initializer:
 
         # create motor collection
         if (
-            document_settings.timeseries is not None
-            and document_settings.name
-            not in await self.database.list_collection_names()
+                document_settings.timeseries is not None
+                and document_settings.name
+                not in await self.database.list_collection_names()
         ):
 
             collection = await self.database.create_collection(
@@ -168,28 +285,13 @@ class Initializer:
             for index in set(old_indexes) - set(new_indexes):
                 await collection.drop_index(index)
 
-    @staticmethod
-    def set_default_class_vars(cls: Type[Document]):
-        cls._children = dict()
-        cls._parent = None
-        cls._inheritance_inited = False
-        cls._class_id = ""
-
-    def init_settings(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
-    ):
-        settings_class = getattr(cls, "Settings", None)
-        settings_vars = (
-            {} if settings_class is None else dict(vars(settings_class))
-        )
-        if issubclass(cls, Document):
-            cls._document_settings = DocumentSettings.parse_obj(settings_vars)
-        if issubclass(cls, View):
-            cls._settings = ViewSettings.parse_obj(settings_vars)
-        if issubclass(cls, UnionDoc):
-            cls._settings = UnionDocSettings.parse_obj(settings_vars)
-
     async def init_document(self, cls: Type[Document]) -> Optional[Output]:
+        """
+        Init Document-based class
+
+        :param cls:
+        :return:
+        """
         if cls is Document:
             return None
 
@@ -202,7 +304,8 @@ class Initializer:
                 return None
             parent = bases[0]
             output = await self.init_document(parent)
-            if cls.get_settings().is_root and (parent is Document or not parent.get_settings().is_root):
+            if cls.get_settings().is_root and (
+                    parent is Document or not parent.get_settings().is_root):
                 if cls.get_collection_name() is None:
                     cls.set_collection_name(cls.__name__)
                 output = Output(
@@ -217,9 +320,9 @@ class Initializer:
                 cls._parent = parent
                 cls._inheritance_inited = True
 
-            await self.init_collection(cls)
+            await self.init_document_collection(cls)
             await self.init_async_indexes(cls, self.allow_index_dropping)
-            self.init_fields(cls)
+            self.init_document_fields(cls)
             self.init_cache(cls)
             self.init_actions(cls)
 
@@ -233,13 +336,49 @@ class Initializer:
                 collection_name=cls.get_collection_name(),
             )
 
+    # Views
+
+    @staticmethod
+    def init_view_fields(cls) -> None:
+        """
+        Init class fields
+        :return: None
+        """
+        for k, v in cls.__fields__.items():
+            path = v.alias or v.name
+            setattr(cls, k, ExpressionField(path))
+
+    def init_view_collection(self, cls):
+        """
+        Init collection for View
+
+        :param cls:
+        :return:
+        """
+        view_settings = cls.get_settings()
+
+        if view_settings.name is None:
+            view_settings.name = cls.__name__
+
+        if inspect.isclass(view_settings.source):
+            view_settings.source = view_settings.source.get_collection_name()
+
+        view_settings.motor_db = self.database
+        view_settings.motor_collection = self.database[view_settings.name]
+
     async def init_view(self, cls: Type[View]):
+        """
+        Init View-based class
+
+        :param cls:
+        :return:
+        """
         self.init_settings(cls)
-        cls.init_collection(self.database)
-        cls.init_fields()
+        self.init_view_collection(cls)
+        self.init_view_fields(cls)
 
         collection_names = await self.database.list_collection_names()
-        if self.recreate_view or cls._settings.name not in collection_names:
+        if self.recreate_views or cls._settings.name not in collection_names:
             if cls._settings.name in collection_names:
                 await cls.get_motor_collection().drop()
 
@@ -251,14 +390,34 @@ class Initializer:
                 }
             )
 
+    # Union Doc
+
     async def init_union_doc(self, cls: Type[UnionDoc]):
+        """
+        Init Union Doc based class
+
+        :param cls:
+        :return:
+        """
         self.init_settings(cls)
-        cls.init_collection(self.database)
+        if cls._settings.name is None:
+            cls._settings.name = cls.__name__
+
+        cls._settings.motor_db = self.database
+        cls._settings.motor_collection = self.database[cls._settings.name]
         cls._is_inited = True
 
-    async def init(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+    # Final
+
+    async def init_class(
+            self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
     ):
+        """
+        Init Document, View or UnionDoc based class.
+
+        :param cls:
+        :return:
+        """
         if issubclass(cls, Document):
             await self.init_document(cls)
 

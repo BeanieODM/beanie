@@ -7,12 +7,10 @@ from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import DetectionInterface, ModelType
 from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
-from beanie.odm.interfaces.init import UnionDocInitInterface
 from beanie.odm.settings.union_doc import UnionDocSettings
 
 
 class UnionDoc(
-    UnionDocInitInterface,
     FindInterface,
     AggregateInterface,
     OtherGettersInterface,

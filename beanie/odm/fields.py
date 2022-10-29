@@ -156,8 +156,7 @@ class Link(Generic[T]):
         self.model_class = model_class
 
     async def fetch(self) -> Union[T, "Link"]:
-        print("FETCH!!")
-        result = await self.model_class.get(self.ref.id, strict=False)  # type: ignore
+        result = await self.model_class.get(self.ref.id, with_children=True)  # type: ignore
         return result or self
 
     @classmethod
@@ -177,7 +176,7 @@ class Link(Generic[T]):
                         "All the links must have the same model class"
                     )
             ids.append(link.ref.id)
-        return await model_class.find(In("_id", ids), strict=False).to_list()  # type: ignore
+        return await model_class.find(In("_id", ids), with_children=True).to_list()  # type: ignore
 
     @classmethod
     async def fetch_many(cls, links: List["Link"]):

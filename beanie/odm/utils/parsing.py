@@ -34,7 +34,6 @@ def parse_obj(
             and model.get_model_type() == ModelType.Document
             and model._inheritance_inited
     ):
-        print("DATA_TO_PARSE_FROM", data, type(data))
         if isinstance(data, dict):
             class_name = data.get("_class_id")
         elif hasattr(data, "_class_id"):

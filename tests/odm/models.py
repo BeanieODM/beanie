@@ -80,11 +80,8 @@ class DocumentTestModelWithCustomCollectionName(Document):
     test_list: List[SubDocument]
     test_str: str
 
-    class Collection:
+    class Settings:
         name = "custom"
-
-    # class Settings:
-    #     name = "custom"
 
 
 class DocumentTestModelWithSimpleIndex(Document):
@@ -110,7 +107,7 @@ class DocumentTestModelWithComplexIndex(Document):
     test_list: List[SubDocument]
     test_str: str
 
-    class Collection:
+    class Settings:
         name = "docs_with_index"
         indexes = [
             "test_int",
@@ -123,20 +120,6 @@ class DocumentTestModelWithComplexIndex(Document):
                 name="test_string_index_DESCENDING",
             ),
         ]
-
-    # class Settings:
-    #     name = "docs_with_index"
-    #     indexes = [
-    #         "test_int",
-    #         [
-    #             ("test_int", pymongo.ASCENDING),
-    #             ("test_str", pymongo.DESCENDING),
-    #         ],
-    #         IndexModel(
-    #             [("test_str", pymongo.DESCENDING)],
-    #             name="test_string_index_DESCENDING",
-    #         ),
-    #     ]
 
 
 class DocumentTestModelWithDroppedIndex(Document):

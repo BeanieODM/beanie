@@ -11,9 +11,6 @@ from tests.odm.models import (
 
 class TestInheritance:
     async def test_inheritance(self, db):
-        print(Vehicle._inheritance_inited)
-        print(Vehicle._children)
-
         bicycle_1 = await Bicycle(color="white", frame=54, wheels=29).insert()
         bicycle_2 = await Bicycle(color="red", frame=52, wheels=28).insert()
 
@@ -31,10 +28,10 @@ class TestInheritance:
             color="yellow", seats=26, body="minibus", fuel="diesel"
         ).insert()
 
-        white_vehicles = await Vehicle.find(Vehicle.color == "white", strict=False).to_list()
+        white_vehicles = await Vehicle.find(Vehicle.color == "white", with_children=True).to_list()
 
         cars_only = await Car.find().to_list()
-        cars_and_buses = await Car.find(Car.fuel == "diesel", strict=False).to_list()
+        cars_and_buses = await Car.find(Car.fuel == "diesel", with_children=True).to_list()
 
         big_bicycles = await Bicycle.find(Bicycle.wheels > 28).to_list()
 
@@ -45,11 +42,9 @@ class TestInheritance:
         await sedan.save()
 
         # get using Vehicle should return Bike instance
-        updated_bike = await Vehicle.get(bike_1.id, strict=False)
+        updated_bike = await Vehicle.get(bike_1.id, with_children=True)
 
         assert isinstance(sedan, Car)
-
-        print(updated_bike, type(updated_bike))
 
         assert isinstance(updated_bike, Bike)
         assert updated_bike.color == "yellow"
@@ -60,7 +55,6 @@ class TestInheritance:
         assert len(big_bicycles) == 1
         assert big_bicycles[0].wheels > 28
 
-        print(white_vehicles)
         assert len(white_vehicles) == 3
         assert len(cars_only) == 2
 
