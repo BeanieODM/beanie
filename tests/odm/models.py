@@ -527,3 +527,8 @@ class Bike(Vehicle, Fuelled):
 
 class Bus(Car, Fuelled):
     seats: int
+
+
+class Owner(Document):
+    name: str
+    vehicles: List[Link[Vehicle]] = []

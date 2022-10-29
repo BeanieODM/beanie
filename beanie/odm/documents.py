@@ -177,6 +177,15 @@ class Document(
         """
         if not isinstance(document_id, cls.__fields__["id"].type_):
             document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
+
+        print(cls.find_one(
+            {"_id": document_id},
+            session=session,
+            ignore_cache=ignore_cache,
+            fetch_links=fetch_links,
+            strict=strict,
+            **pymongo_kwargs,
+        ).get_filter_query())
         return await cls.find_one(
             {"_id": document_id},
             session=session,
@@ -896,6 +905,7 @@ class Document(
 
     async def fetch_link(self, field: Union[str, Any]):
         ref_obj = getattr(self, field, None)
+        print("REF_OBJ", ref_obj)
         if isinstance(ref_obj, Link):
             value = await ref_obj.fetch()
             setattr(self, field, value)
@@ -906,6 +916,7 @@ class Document(
     async def fetch_all_links(self):
         coros = []
         link_fields = self.get_link_fields()
+        print(link_fields)
         if link_fields is not None:
             for ref in link_fields.values():
                 coros.append(self.fetch_link(ref.field))  # TODO lists

@@ -379,12 +379,12 @@ class FindInterface:
 
         if cls._inheritance_inited:
             if strict:
-                args += ({"_class_id": cls._class_name},)
+                args += ({"_class_id": cls._class_id},)
             else:
                 args += (
                     {
                         "_class_id": {
-                            "$in": [cls._class_name]
+                            "$in": [cls._class_id]
                             + [cname for cname in cls._children.keys()]
                         }
                     },

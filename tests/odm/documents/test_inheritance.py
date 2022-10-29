@@ -5,7 +5,7 @@ from tests.odm.models import (
     Bicycle,
     Bike,
     Car,
-    Bus, TunedDocument,
+    Bus, TunedDocument, Owner,
 )
 
 
@@ -33,8 +33,8 @@ class TestInheritance:
 
         white_vehicles = await Vehicle.find(Vehicle.color == "white", strict=False).to_list()
 
-        cars_only = await Car.find({"_class_id": "Car"}).to_list()
-        cars_and_buses = await Car.find(Car.fuel == "diesel").to_list()
+        cars_only = await Car.find().to_list()
+        cars_and_buses = await Car.find(Car.fuel == "diesel", strict=False).to_list()
 
         big_bicycles = await Bicycle.find(Bicycle.wheels > 28).to_list()
 
@@ -75,14 +75,6 @@ class TestInheritance:
             await e.delete()
 
     async def test_links(self, db):
-        class Owner(Document):
-            name: str
-            vehicles: List[Link[Vehicle]] = []
-
-        await init_beanie(
-            database=db, document_models=[Vehicle, Car, Bus, Owner]
-        )
-
         car_1 = await Car(color="grey", body="sedan", fuel="gasoline").insert()
         car_2 = await Car(
             color="white", body="crossover", fuel="diesel"
@@ -99,7 +91,6 @@ class TestInheritance:
         # re-fetch from DB w/o links
         owner = await Owner.get(owner.id)
         assert {Link} == set(i.__class__ for i in owner.vehicles)
-
         await owner.fetch_all_links()
         assert {Car, Bus} == set(i.__class__ for i in owner.vehicles)
 

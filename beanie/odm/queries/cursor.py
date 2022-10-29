@@ -72,8 +72,10 @@ class BaseCursorQuery(Generic[CursorResultType]):
         motor_list: List[Dict[str, Any]] = self._get_cache()
         if motor_list is None:
             motor_list = await cursor.to_list(length)
+            print(motor_list)
             self._set_cache(motor_list)
         projection = self.get_projection_model()
+        print(projection)
         if projection is not None:
             return cast(
                 List[CursorResultType],

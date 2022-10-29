@@ -173,7 +173,7 @@ class Initializer:
         cls._children = dict()
         cls._parent = None
         cls._inheritance_inited = False
-        cls._class_name = ""
+        cls._class_id = ""
 
     def init_settings(
         self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
@@ -211,9 +211,9 @@ class Initializer:
                 )
             elif output is not None:
                 output.class_name = f"{output.class_name}.{cls.__name__}"
-                cls._class_name = output.class_name
+                cls._class_id = output.class_name
                 cls.set_collection_name(output.collection_name)
-                parent._children[cls._class_name] = cls
+                parent.add_child(cls._class_id, cls)
                 cls._parent = parent
                 cls._inheritance_inited = True
 
@@ -229,7 +229,7 @@ class Initializer:
 
         else:
             return Output(
-                class_name=cls._class_name,
+                class_name=cls._class_id,
                 collection_name=cls.get_collection_name(),
             )
 

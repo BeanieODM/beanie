@@ -32,12 +32,15 @@ def parse_obj(
     if (
             hasattr(model, "get_model_type")
             and model.get_model_type() == ModelType.Document
+            and model._inheritance_inited
     ):
-        print(data)
+        print("DATA_TO_PARSE_FROM", data, type(data))
         if isinstance(data, dict):
-            class_name = data["_class_id"]
-        else:
+            class_name = data.get("_class_id")
+        elif hasattr(data, "_class_id"):
             class_name = data._class_id
+        else:
+            class_name = None
 
         if model._children and class_name in model._children:
             return parse_obj(model=model._children[class_name], data=data)
