@@ -7,7 +7,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [ 3.7, 3.8, 3.9, 3.10.5 ]
-        poetry-version: [ 1.1.4 ]
+        poetry-version: [ 1.2 ]
         mongodb-version: [ 4.4, 5.0 ]
         pydantic-version: [1.9.0]
         os: [ ubuntu-18.04 ]
@@ -23,7 +23,7 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: test-rs
       - name: Run image
-        uses: abatilo/actions-poetry@v2.0.0
+        uses: abatilo/actions-poetry@v2
         with:
           poetry-version: ${{ matrix.poetry-version }}
       - name: poetry install

@@ -2,6 +2,78 @@
 
 Beanie project
 
+## [1.13.1] - 2022-10-26
+
+### Fix
+
+- Remove redundant async things from sync interface
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/390>
+
+## [1.13.0] - 2022-10-22
+
+### Improvement
+
+- Sync interface
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/386>
+
+## [1.12.1] - 2022-10-17
+
+### Improvement
+
+- Clone interface for query objects
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/378>
+
+## [1.12.0] - 2022-10-06
+
+### Improvement
+
+- Optional list of links field
+
+### Implementation
+
+- Author - [Alex Deng](https://github.com/rga-alex-deng)
+- PR <https://github.com/roman-right/beanie/pull/358>
+
+## [1.11.12] - 2022-09-28
+
+### Improvement
+
+- Change before_event, after_event signature to be more pythonic
+
+### Implementation
+
+- DISCUSSION <https://github.com/roman-right/beanie/discussions/354>
+
+## [1.11.11] - 2022-09-26
+
+### Fix
+
+- Remove prints
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/355/>
+
+## [1.11.10] - 2022-09-20
+
+### Improvement
+
+- Adding Update Action
+
+### Implementation
+
+- Author - [schwannden](https://github.com/schwannden)
+- PR <https://github.com/roman-right/beanie/pull/291/>
+
 ## [1.11.9] - 2022-08-19
 
 ### Fix
@@ -937,3 +1009,17 @@ how specific type should be presented in the database
 [1.11.8]: https://pypi.org/project/beanie/1.11.8
 
 [1.11.9]: https://pypi.org/project/beanie/1.11.9
+
+[1.11.10]: https://pypi.org/project/beanie/1.11.10
+
+[1.11.11]: https://pypi.org/project/beanie/1.11.11
+
+[1.11.12]: https://pypi.org/project/beanie/1.11.12
+
+[1.12.0]: https://pypi.org/project/beanie/1.12.0
+
+[1.12.1]: https://pypi.org/project/beanie/1.12.1
+
+[1.13.0]: https://pypi.org/project/beanie/1.13.0
+
+[1.13.1]: https://pypi.org/project/beanie/1.13.1

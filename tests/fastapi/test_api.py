@@ -34,5 +34,4 @@ async def test_create_house_2(api_client):
     payload = {"name": "TEST", "windows": [str(window.id)]}
     resp = await api_client.post("/v1/houses_2/", json=payload)
     resp_json = resp.json()
-    print(resp_json)
     assert len(resp_json["windows"]) == 1

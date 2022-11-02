@@ -102,6 +102,11 @@ class Encoder:
                             obj_dict[k] = o.to_ref()
                         else:
                             obj_dict[k] = o
+                    if link_fields[k].link_type == LinkTypes.OPTIONAL_LIST:
+                        if o is not None:
+                            obj_dict[k] = [link.to_ref() for link in o]
+                        else:
+                            obj_dict[k] = o
                 else:
                     obj_dict[k] = o
                 obj_dict[k] = encoder.encode(obj_dict[k])
@@ -137,7 +142,6 @@ class Encoder:
         obj,
     ) -> Any:
         """"""
-
         if self.custom_encoders:
             if type(obj) in self.custom_encoders:
                 return self.custom_encoders[type(obj)](obj)

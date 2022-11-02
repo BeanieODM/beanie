@@ -116,6 +116,12 @@ class ExpressionField(str):
     def __neg__(self):
         return self, SortDirection.DESCENDING
 
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
+
 
 class DeleteRules(str, Enum):
     DO_NOTHING = "DO_NOTHING"
@@ -131,6 +137,7 @@ class LinkTypes(str, Enum):
     DIRECT = "DIRECT"
     OPTIONAL_DIRECT = "OPTIONAL_DIRECT"
     LIST = "LIST"
+    OPTIONAL_LIST = "OPTIONAL_LIST"
 
 
 class LinkInfo(BaseModel):
