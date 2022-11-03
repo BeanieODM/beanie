@@ -1,11 +1,8 @@
-import warnings
-from typing import Optional, Type, List
+from typing import Optional, List
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import Field
 from pymongo import IndexModel
 
-from beanie.exceptions import MongoDBVersionError
 from beanie.odm.settings.base import ItemSettings
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 

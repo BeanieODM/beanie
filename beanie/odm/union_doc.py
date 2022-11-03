@@ -1,7 +1,5 @@
 from typing import ClassVar, Type, Dict, Optional
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
-
 from beanie.exceptions import UnionDocNotInited
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import DetectionInterface, ModelType
