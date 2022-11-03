@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Type, Optional
 
 from beanie.odm.documents import Document
-from beanie.odm.utils.general import init_beanie
+from beanie.odm.utils.init import init_beanie
 from beanie.migrations.controllers.iterative import BaseMigrationController
 from beanie.migrations.database import DBHandler
 from beanie.migrations.models import (

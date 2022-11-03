@@ -8,7 +8,7 @@ from typing import (
     Any,
     overload,
     ClassVar,
-    TypeVar,
+    TypeVar, Dict,
 )
 from collections.abc import Iterable
 from pydantic import (
@@ -30,6 +30,14 @@ class FindInterface:
     # Query builders could be replaced in the inherited classes
     _find_one_query_class: ClassVar[Type] = FindOne
     _find_many_query_class: ClassVar[Type] = FindMany
+
+    _inheritance_inited: bool
+    _class_id: Optional[str]
+    __children: Dict[str, Type]
+
+    @classmethod
+    def get_model_type(cls) -> ModelType:
+        pass
 
     @classmethod
     def get_settings(cls) -> ItemSettings:

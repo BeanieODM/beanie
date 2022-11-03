@@ -67,7 +67,7 @@ class Initializer:
                 URL(connection_string).path[1:]
             ]
 
-        self.database = database
+        self.database: AsyncIOMotorDatabase = database
 
         sort_order = {
             ModelType.UnionDoc: 0,
@@ -247,7 +247,7 @@ class Initializer:
         cls.set_collection(collection)
 
     @staticmethod
-    async def init_indexes(cls, allow_index_dropping: False):
+    async def init_indexes(cls, allow_index_dropping: bool = False):
         """
         Async indexes initializer
         """

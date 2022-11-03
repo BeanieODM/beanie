@@ -25,4 +25,4 @@ class SettersInterface:
         """
         Collection name setter
         """
-        cls._document_settings.name = name
+        cls._document_settings.name = name  # type: ignore

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pymongo.collection import Collection
 
 from beanie.sync.odm.settings.base import ItemSettings
@@ -11,7 +9,7 @@ class OtherGettersInterface:
         pass
 
     @classmethod
-    def get_motor_collection(cls) -> Optional[Collection]:
+    def get_motor_collection(cls) -> Collection:
         return cls.get_settings().motor_collection
 
     @classmethod
