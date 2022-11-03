@@ -1,5 +1,5 @@
 import warnings
-from typing import Optional, Type, List, Dict
+from typing import Optional, Type, List
 
 from pydantic import Field
 from pymongo import IndexModel
