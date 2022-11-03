@@ -1,5 +1,5 @@
 import warnings
-from typing import Optional, Type, List
+from typing import Optional, Type, List, Dict
 
 from pydantic import Field
 from pymongo import IndexModel
@@ -80,7 +80,7 @@ class DocumentSettings(ItemSettings):
             document_settings.name = document_model.__name__
 
         # check mongodb version
-        build_info = database.command({"buildInfo": 1})
+        build_info: Dict[str, str] = database.command({"buildInfo": 1})
         mongo_version = build_info["version"]
         major_version = int(mongo_version.split(".")[0])
 

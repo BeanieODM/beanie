@@ -247,7 +247,7 @@ class Initializer:
         cls.set_collection(collection)
 
     @staticmethod
-    async def init_async_indexes(cls, allow_index_dropping: False):
+    async def init_indexes(cls, allow_index_dropping: False):
         """
         Async indexes initializer
         """
@@ -323,7 +323,7 @@ class Initializer:
                 cls._inheritance_inited = True
 
             await self.init_document_collection(cls)
-            await self.init_async_indexes(cls, self.allow_index_dropping)
+            await self.init_indexes(cls, self.allow_index_dropping)
             self.init_document_fields(cls)
             self.init_cache(cls)
             self.init_actions(cls)
@@ -428,3 +428,31 @@ class Initializer:
 
         if issubclass(cls, UnionDoc):
             await self.init_union_doc(cls)
+
+
+async def init_beanie(
+    database: AsyncIOMotorDatabase = None,
+    connection_string: str = None,
+    document_models: List[Union[Type["DocType"], Type["View"], str]] = None,
+    allow_index_dropping: bool = False,
+    recreate_views: bool = False,
+):
+    """
+    Beanie initialization
+
+    :param database: AsyncIOMotorDatabase - motor database instance
+    :param connection_string: str - MongoDB connection string
+    :param document_models: List[Union[Type[DocType], str]] - model classes
+    or strings with dot separated paths
+    :param allow_index_dropping: bool - if index dropping is allowed.
+    Default False
+    :return: None
+    """
+
+    await Initializer(
+        database=database,
+        connection_string=connection_string,
+        document_models=document_models,
+        allow_index_dropping=allow_index_dropping,
+        recreate_views=recreate_views,
+    )

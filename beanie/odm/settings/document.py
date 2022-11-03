@@ -33,20 +33,5 @@ class DocumentSettings(ItemSettings):
     indexes: List[IndexModelField] = Field(default_factory=list)
     timeseries: Optional[TimeSeriesConfig] = None
 
-    @classmethod
-    def init(
-        cls,
-        database: AsyncIOMotorDatabase,
-        document_model: Type,
-        allow_index_dropping: bool,
-    ) -> "DocumentSettings":
-
-        settings_class = getattr(document_model, "Settings", None)
-        settings_vars = (
-            {} if settings_class is None else dict(vars(settings_class))
-        )
-
-        # ------------------------------------ #
-
     class Config:
         arbitrary_types_allowed = True

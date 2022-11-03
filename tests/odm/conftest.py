@@ -4,7 +4,7 @@ from typing import List
 
 import pytest
 
-from beanie.odm.utils.general import init_beanie
+from beanie.odm.utils.init import init_beanie
 from tests.odm.models import (
     DocumentTestModel,
     DocumentTestModelWithIndexFlagsAliases,

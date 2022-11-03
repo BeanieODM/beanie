@@ -8,19 +8,11 @@ ProjectionModelType = TypeVar("ProjectionModelType", bound=BaseModel)
 
 
 def get_projection(
-    model: Type[ProjectionModelType],
+        model: Type[ProjectionModelType],
 ) -> Optional[Dict[str, int]]:
-    if (
-        hasattr(model, "get_model_type")
-        and model.get_model_type() == ModelType.UnionDoc
-    ):
-        return None
-
-    if (
-        hasattr(model, "get_model_type")
-        and model.get_model_type() == ModelType.Document
-        and model._inheritance_inited
-    ):
+    if hasattr(model, "get_model_type") and (
+            model.get_model_type() == ModelType.UnionDoc or (
+            model.get_model_type() == ModelType.Document and model._inheritance_inited)):
         return None
 
     if hasattr(model, "Settings"):  # MyPy checks

@@ -21,7 +21,7 @@ from beanie.odm.fields import (
     DeleteRules,
 )
 from beanie.odm.settings.timeseries import TimeSeriesConfig, Granularity
-from beanie.odm.utils.general import init_beanie
+from beanie.odm.utils.init import init_beanie
 from beanie.odm.documents import Document
 from beanie.odm.views import View
 from beanie.odm.union_doc import UnionDoc

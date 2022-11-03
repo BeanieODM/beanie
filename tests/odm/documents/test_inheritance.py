@@ -1,5 +1,4 @@
-from typing import Optional, List
-from beanie import init_beanie, Document, Link
+from beanie import Link
 from tests.odm.models import (
     Vehicle,
     Bicycle,
@@ -28,10 +27,12 @@ class TestInheritance:
             color="yellow", seats=26, body="minibus", fuel="diesel"
         ).insert()
 
-        white_vehicles = await Vehicle.find(Vehicle.color == "white", with_children=True).to_list()
+        white_vehicles = await Vehicle.find(Vehicle.color == "white",
+                                            with_children=True).to_list()
 
         cars_only = await Car.find().to_list()
-        cars_and_buses = await Car.find(Car.fuel == "diesel", with_children=True).to_list()
+        cars_and_buses = await Car.find(Car.fuel == "diesel",
+                                        with_children=True).to_list()
 
         big_bicycles = await Bicycle.find(Bicycle.wheels > 28).to_list()
 
@@ -60,6 +61,9 @@ class TestInheritance:
 
         assert {Car, Bus} == set(i.__class__ for i in cars_and_buses)
         assert {Bicycle, Car, Bus} == set(i.__class__ for i in white_vehicles)
+
+        white_vehicles_2 = await Car.find(Vehicle.color == "white").to_list()
+        assert len(white_vehicles_2) == 1
 
         for i in cars_and_buses:
             assert i.fuel == "diesel"

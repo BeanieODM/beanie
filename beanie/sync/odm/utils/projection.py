@@ -12,7 +12,7 @@ def get_projection(
 ) -> Optional[Dict[str, int]]:
     if (
         hasattr(model, "get_model_type")
-        and model.get_model_type() == ModelType.UnionDoc
+        and model.get_model_type() == ModelType.UnionDoc  # type: ignore
     ):
         return None
     if hasattr(model, "Settings"):  # MyPy checks
