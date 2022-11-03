@@ -8,7 +8,8 @@ from typing import (
     Any,
     overload,
     ClassVar,
-    TypeVar, Dict,
+    TypeVar,
+    Dict,
 )
 from collections.abc import Iterable
 from pydantic import (
@@ -32,8 +33,8 @@ class FindInterface:
     _find_many_query_class: ClassVar[Type] = FindMany
 
     _inheritance_inited: bool
-    _class_id: Optional[str]
-    __children: Dict[str, Type]
+    _class_id: ClassVar[str]
+    _children: ClassVar[Dict[str, Type]]
 
     @classmethod
     def get_model_type(cls) -> ModelType:
