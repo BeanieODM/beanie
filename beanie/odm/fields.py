@@ -19,6 +19,7 @@ from beanie.odm.operators.find.comparison import (
     NE,
     In,
 )
+from beanie.odm.utils.parsing import parse_obj
 
 
 def Indexed(typ, index_type=ASCENDING, **kwargs):
@@ -155,7 +156,7 @@ class Link(Generic[T]):
         self.model_class = model_class
 
     async def fetch(self) -> Union[T, "Link"]:
-        result = await self.model_class.get(self.ref.id)  # type: ignore
+        result = await self.model_class.get(self.ref.id, with_children=True)  # type: ignore
         return result or self
 
     @classmethod
@@ -175,7 +176,7 @@ class Link(Generic[T]):
                         "All the links must have the same model class"
                     )
             ids.append(link.ref.id)
-        return await model_class.find(In("_id", ids)).to_list()  # type: ignore
+        return await model_class.find(In("_id", ids), with_children=True).to_list()  # type: ignore
 
     @classmethod
     async def fetch_many(cls, links: List["Link"]):
@@ -196,7 +197,7 @@ class Link(Generic[T]):
         if isinstance(v, Link):
             return v
         if isinstance(v, dict) or isinstance(v, BaseModel):
-            return model_class.validate(v)
+            return parse_obj(model_class, v)
         new_id = parse_obj_as(model_class.__fields__["id"].type_, v)
         ref = DBRef(collection=model_class.get_collection_name(), id=new_id)
         return cls(ref=ref, model_class=model_class)

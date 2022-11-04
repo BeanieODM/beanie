@@ -4,7 +4,7 @@ from typing import List
 
 import pytest
 
-from beanie.odm.utils.general import init_beanie
+from beanie.odm.utils.init import init_beanie
 from tests.odm.models import (
     DocumentTestModel,
     DocumentTestModelWithIndexFlagsAliases,
@@ -40,7 +40,7 @@ from tests.odm.models import (
     HouseWithRevision,
     WindowWithRevision,
     YardWithRevision,
-    DocumentWithActions2,
+    DocumentWithActions2, Vehicle, Bicycle, Bike, Car, Bus, Owner,
 )
 from tests.odm.views import TestView
 from tests.odm.models import (
@@ -174,6 +174,7 @@ async def init(loop, db):
         WindowWithRevision,
         YardWithRevision,
         DocumentWithActions2,
+        Vehicle, Bicycle, Bike, Car, Bus, Owner
     ]
     await init_beanie(
         database=db,

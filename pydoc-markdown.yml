@@ -75,6 +75,8 @@ renderer:
               source: docs/async_tutorial/update.md
             - title: Multi-model pattern
               source: docs/async_tutorial/multi-model.md
+            - title: Inheritance
+              source: docs/async_tutorial/inheritance.md
             - title: Indexes & collection names
               source: docs/async_tutorial/collection_setup.md
             - title: Aggregation

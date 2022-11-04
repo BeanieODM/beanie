@@ -2,6 +2,21 @@
 
 Beanie project
 
+## [1.14.0] - 2022-11-04
+
+### Feature
+
+- Multi-model behavior for inherited documents
+
+### Breaking change
+
+- The inner class `Collection` is not supported more. Please, use `Settings` instead.
+
+### Implementation
+
+- Author - [Vitaliy Ivanov](https://github.com/Vitalium)
+- PR <https://github.com/roman-right/beanie/pull/395>
+
 ## [1.13.1] - 2022-10-26
 
 ### Fix
@@ -1023,3 +1038,5 @@ how specific type should be presented in the database
 [1.13.0]: https://pypi.org/project/beanie/1.13.0
 
 [1.13.1]: https://pypi.org/project/beanie/1.13.1
+
+[1.14.0]: https://pypi.org/project/beanie/1.14.0

@@ -1,7 +1,5 @@
 from typing import ClassVar, Type, Dict, Optional
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
-
 from beanie.exceptions import UnionDocNotInited
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import DetectionInterface, ModelType
@@ -23,11 +21,6 @@ class UnionDoc(
     @classmethod
     def get_settings(cls) -> UnionDocSettings:
         return cls._settings
-
-    @classmethod
-    def init(cls, database: AsyncIOMotorDatabase):
-        cls._settings = UnionDocSettings.init(database=database, doc_class=cls)
-        cls._is_inited = True
 
     @classmethod
     def register_doc(cls, doc_model: Type):

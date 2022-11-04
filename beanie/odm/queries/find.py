@@ -479,7 +479,7 @@ class FindMany(
         Provide search criteria to the
         [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
 
-        :param args: *Mappingp[str,Any] - the modifications to apply.
+        :param args: *Mapping[str,Any] - the modifications to apply.
         :param session: Optional[ClientSession]
         :return: [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
         """

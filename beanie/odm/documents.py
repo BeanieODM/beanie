@@ -1,5 +1,4 @@
 import asyncio
-import inspect
 from typing import ClassVar, AbstractSet
 from typing import (
     Dict,
@@ -16,7 +15,6 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from bson import ObjectId, DBRef
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import (
     ValidationError,
     PrivateAttr,
@@ -42,7 +40,6 @@ from beanie.exceptions import (
 from beanie.odm.actions import (
     EventTypes,
     wrap_with_actions,
-    ActionRegistry,
     ActionDirections,
 )
 from beanie.odm.bulk import BulkWriter, Operation
@@ -60,6 +57,8 @@ from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
+from beanie.odm.interfaces.inheritance import InheritanceInterface
+from beanie.odm.interfaces.setters import SettersInterface
 from beanie.odm.models import (
     InspectionResult,
     InspectionStatuses,
@@ -72,11 +71,8 @@ from beanie.odm.operators.update.general import (
     Set as SetOperator,
 )
 from beanie.odm.queries.update import UpdateMany
-
-# from beanie.odm.settings.general import DocumentSettings
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict
-from beanie.odm.utils.relations import detect_link
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
     saved_state_needed,
@@ -93,6 +89,8 @@ DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 class Document(
     BaseModel,
+    SettersInterface,
+    InheritanceInterface,
     FindInterface,
     AggregateInterface,
     OtherGettersInterface,
@@ -165,6 +163,7 @@ class Document(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        with_children: bool = False,
         **pymongo_kwargs,
     ) -> Optional["DocType"]:
         """
@@ -178,11 +177,13 @@ class Document(
         """
         if not isinstance(document_id, cls.__fields__["id"].type_):
             document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
+
         return await cls.find_one(
             {"_id": document_id},
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
+            with_children=with_children,
             **pymongo_kwargs,
         )
 
@@ -214,12 +215,14 @@ class Document(
                             await value.insert(link_rule=WriteRules.WRITE)
                     if field_info.link_type in [
                         LinkTypes.LIST,
-                        LinkTypes.OPTIONAL_LIST
+                        LinkTypes.OPTIONAL_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
                                 if isinstance(obj, Document):
-                                    await obj.insert(link_rule=WriteRules.WRITE)
+                                    await obj.insert(
+                                        link_rule=WriteRules.WRITE
+                                    )
 
         result = await self.get_motor_collection().insert_one(
             get_dict(self, to_db=True), session=session
@@ -349,7 +352,7 @@ class Document(
                             )
                     if field_info.link_type in [
                         LinkTypes.LIST,
-                        LinkTypes.OPTIONAL_LIST
+                        LinkTypes.OPTIONAL_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -406,7 +409,7 @@ class Document(
                             )
                     if field_info.link_type in [
                         LinkTypes.LIST,
-                        LinkTypes.OPTIONAL_LIST
+                        LinkTypes.OPTIONAL_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -672,7 +675,7 @@ class Document(
                             )
                     if field_info.link_type in [
                         LinkTypes.LIST,
-                        LinkTypes.OPTIONAL_LIST
+                        LinkTypes.OPTIONAL_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -798,90 +801,6 @@ class Document(
                 else:
                     setattr(self, key, value)
 
-    # Initialization
-
-    @classmethod
-    def init_cache(cls) -> None:
-        """
-        Init model's cache
-        :return: None
-        """
-        if cls.get_settings().use_cache:
-            cls._cache = LRUCache(
-                capacity=cls.get_settings().cache_capacity,
-                expiration_time=cls.get_settings().cache_expiration_time,
-            )
-
-    @classmethod
-    def init_fields(cls) -> None:
-        """
-        Init class fields
-        :return: None
-        """
-        if cls._link_fields is None:
-            cls._link_fields = {}
-        for k, v in cls.__fields__.items():
-            path = v.alias or v.name
-            setattr(cls, k, ExpressionField(path))
-
-            link_info = detect_link(v)
-            if link_info is not None:
-                cls._link_fields[v.name] = link_info
-
-        cls._hidden_fields = cls.get_hidden_fields()
-
-    @classmethod
-    async def init_settings(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
-    ) -> None:
-        """
-        Init document settings (collection and models)
-
-        :param database: AsyncIOMotorDatabase - motor database
-        :param allow_index_dropping: bool
-        :return: None
-        """
-        # TODO looks ugly a little. Too many parameters transfers.
-        cls._document_settings = await DocumentSettings.init(
-            database=database,
-            document_model=cls,
-            allow_index_dropping=allow_index_dropping,
-        )
-
-    @classmethod
-    def init_actions(cls):
-        """
-        Init event-based actions
-        """
-        ActionRegistry.clean_actions(cls)
-        for attr in dir(cls):
-            f = getattr(cls, attr)
-            if inspect.isfunction(f):
-                if hasattr(f, "has_action"):
-                    ActionRegistry.add_action(
-                        document_class=cls,
-                        event_types=f.event_types,  # type: ignore
-                        action_direction=f.action_direction,  # type: ignore
-                        funct=f,
-                    )
-
-    @classmethod
-    async def init_model(
-        cls, database: AsyncIOMotorDatabase, allow_index_dropping: bool
-    ) -> None:
-        """
-        Init wrapper
-        :param database: AsyncIOMotorDatabase
-        :param allow_index_dropping: bool
-        :return: None
-        """
-        await cls.init_settings(
-            database=database, allow_index_dropping=allow_index_dropping
-        )
-        cls.init_fields()
-        cls.init_cache()
-        cls.init_actions()
-
     # Other
 
     @classmethod
@@ -967,7 +886,7 @@ class Document(
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args, **kwargs):
-        # TODO it can be sync, but needs some actions controller improvements
+        # TODO: it can be sync, but needs some actions controller improvements
         if self.get_settings().validate_on_save:
             self.parse_obj(self)
 
