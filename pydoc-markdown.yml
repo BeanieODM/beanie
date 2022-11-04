@@ -113,8 +113,6 @@ renderer:
               source: docs/sync_tutorial/update.md
             - title: Multi-model pattern
               source: docs/sync_tutorial/multi-model.md
-            - title: Inheritance
-              source: docs/sync_tutorial/inheritance.md
             - title: Indexes & collection names
               source: docs/sync_tutorial/collection_setup.md
             - title: Aggregation
