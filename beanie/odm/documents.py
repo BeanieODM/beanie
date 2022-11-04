@@ -466,8 +466,6 @@ class Document(
         :return: None
         """
         ids_list = [document.id for document in documents]
-        print(In(cls.id, ids_list))
-        print(await cls.find(In(cls.id, ids_list)).count())
         if await cls.find(In(cls.id, ids_list)).count() != len(ids_list):
             raise ReplaceError(
                 "Some of the documents are not exist in the collection"
