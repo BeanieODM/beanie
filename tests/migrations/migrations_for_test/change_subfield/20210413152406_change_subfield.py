@@ -17,7 +17,7 @@ class OldNote(Document):
     title: str
     tag: OldTag
 
-    class Collection:
+    class Settings:
         name = "notes"
 
 
@@ -25,7 +25,7 @@ class Note(Document):
     title: str
     tag: Tag
 
-    class Collection:
+    class Settings:
         name = "notes"
 
 
