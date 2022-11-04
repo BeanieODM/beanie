@@ -8,6 +8,10 @@ Beanie project
 
 - Multi-model behavior for inherited documents
 
+### Breaking change
+
+- The inner class `Collection` is not supported more. Please, use `Settings` instead.
+
 ### Implementation
 
 - Author - [Vitaliy Ivanov](https://github.com/Vitalium)
