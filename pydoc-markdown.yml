@@ -62,41 +62,41 @@ renderer:
     - title: Tutorial
       children:
         - title: Defining a document
-          source: docs/async_tutorial/defining-a-document.md
+          source: docs/tutorial/defining-a-document.md
         - title: Initialization
-          source: docs/async_tutorial/init.md
+          source: docs/tutorial/init.md
         - title: Inserting into the database
-          source: docs/async_tutorial/insert.md
+          source: docs/tutorial/insert.md
         - title: Finding documents
-          source: docs/async_tutorial/find.md
+          source: docs/tutorial/find.md
         - title: Updating & Deleting
-          source: docs/async_tutorial/update.md
+          source: docs/tutorial/update.md
         - title: Indexes
-          source: docs/async_tutorial/indexes.md
+          source: docs/tutorial/indexes.md
         - title: Multi-model pattern
-          source: docs/async_tutorial/multi-model.md
+          source: docs/tutorial/multi-model.md
         - title: Inheritance
-          source: docs/async_tutorial/inheritance.md
+          source: docs/tutorial/inheritance.md
         - title: Aggregation
-          source: docs/async_tutorial/aggregate.md
+          source: docs/tutorial/aggregate.md
         - title: Relations
-          source: docs/async_tutorial/relations.md
+          source: docs/tutorial/relations.md
         - title: Views
-          source: docs/async_tutorial/views.md
+          source: docs/tutorial/views.md
         - title: Time Series
-          source: docs/async_tutorial/time_series.md
+          source: docs/tutorial/time_series.md
         - title: Event-based actions
-          source: docs/async_tutorial/actions.md
+          source: docs/tutorial/actions.md
         - title: Cache
-          source: docs/async_tutorial/cache.md
+          source: docs/tutorial/cache.md
         - title: Revision
-          source: docs/async_tutorial/revision.md
+          source: docs/tutorial/revision.md
         - title: State Management
-          source: docs/async_tutorial/state_management.md
+          source: docs/tutorial/state_management.md
         - title: On save validation
-          source: docs/async_tutorial/on_save_validation.md
+          source: docs/tutorial/on_save_validation.md
         - title: Migrations
-          source: docs/async_tutorial/migrations.md
+          source: docs/tutorial/migrations.md
     - title: API Documentation
       children:
         - title: Document
