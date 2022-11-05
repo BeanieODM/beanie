@@ -104,12 +104,17 @@ class Sample(Document):
     name: Indexed(str, unique=True)
 ```
 
-## Collection
+## Settings
 
 The inner class `Settings` is used to configure:
 
 - MongoDB collection name
 - Indexes
+- Encoders
+- Use of `revision_id`
+- Use of cache
+- Use of state management
+- Validation on save
 
 ### Collection name
 
@@ -154,16 +159,6 @@ class DocumentTestModelWithIndex(Document):
             ),
         ]
 ```
-
-## Settings
-
-The inner class `Settings` is used to configure:
-
-- Encoders
-- Use of `revision_id`
-- Use of cache
-- Use of state management
-- Validation on save
 
 ### Encoders
 
