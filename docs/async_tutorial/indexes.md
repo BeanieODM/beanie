@@ -1,4 +1,4 @@
-# Indexes setup
+## Indexes setup
 
 There are more than one way to set up indexes using Beanie
 
