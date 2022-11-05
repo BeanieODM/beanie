@@ -2,6 +2,20 @@
 
 Beanie project
 
+## [1.15.0] - 2022-11-05
+
+### Feature
+
+- The sync version was moved to a separate project
+
+### Breaking change
+
+- There is no sync version here more. Please use [Bunnet](https://github.com/roman-right/bunnet) instead
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/395>
+
 ## [1.14.0] - 2022-11-04
 
 ### Feature
