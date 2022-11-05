@@ -1,31 +1,6 @@
-# Collection setup (name, indexes, timeseries)
+## Indexes setup
 
-Although basic pydantic syntax allows you to set all aspects of individual fields, 
-there is also some need to configure collections as a whole. 
-In particular, you might want to:
-
-- Set the MongoDB collection name
-- Configure indexes
-
-This is done by defining a `Settings` class within your `Document` class.
-
-## Declaring the collection name
-
-To set MongoDB collection name, you can use the `name` field of the `Settings` inner class.
-
-```python
-from beanie import Document
-
-
-class Sample(Document):
-    num: int
-    description: str
-
-    class Settings:
-        name = "samples"
-```
-
-## Indexes
+There are more than one way to set up indexes using Beanie
 
 ### Indexed function
 
@@ -100,33 +75,3 @@ class Sample(Document):
             ),
         ]
 ```
-
-## Time series
-
-You can set up a timeseries collection using the inner `Settings` class.
-
-**Be aware, timeseries collections a supported by MongoDB 5.0 and higher only.**
-
-```python
-from datetime import datetime
-
-from beanie import Document, TimeSeriesConfig, Granularity
-from pydantic import Field
-
-
-class Sample(Document):
-    ts: datetime = Field(default_factory=datetime.now)
-    meta: str
-
-    class Settings:
-        timeseries = TimeSeriesConfig(
-            time_field="ts", #  Required
-            meta_field="meta", #  Optional
-            granularity=Granularity.hours, #  Optional
-            expire_after_seconds=2  #  Optional
-        )
-```
-
-TimeSeriesConfig fields reflect the respective parameters of the MongoDB timeseries creation function.
-
-MongoDB documentation: https://docs.mongodb.com/manual/core/timeseries-collections/

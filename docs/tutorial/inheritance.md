@@ -1,4 +1,4 @@
-## Inheritance
+## Inheritance for multi-model use case
 
 Beanie `Documents` support inheritance as any other Python classes. But there are additional features available, if you mark the root model with parameter `is_root = True` in the inner Settings class.
 
