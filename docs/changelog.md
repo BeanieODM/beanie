@@ -1054,3 +1054,5 @@ how specific type should be presented in the database
 [1.13.1]: https://pypi.org/project/beanie/1.13.1
 
 [1.14.0]: https://pypi.org/project/beanie/1.14.0
+
+[1.15.0]: https://pypi.org/project/beanie/1.15.0
