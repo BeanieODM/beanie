@@ -1,17 +1,17 @@
 ## Inheritance for multi-model use case
 
-Beanie `Documents` support inheritance as any other Python classes. But there are additional features available, if you mark the root model with parameter `is_root = True` in the inner Settings class.
+Beanie `Documents` support inheritance as any other Python classes. But there are additional features available if you mark the root model with the parameter `is_root = True` in the inner Settings class.
 
-This behavior is similar to `UnionDoc`, but you don't need additional entity.
-Parent `Document` act like a "controller", that handle proper storing and fetching different type `Document`.
+This behavior is similar to `UnionDoc`, but you don't need an additional entity.
+Parent `Document` act like a "controller", that handles proper storing and fetches different `Document` types.
 Also, parent `Document` can have some shared attributes which are propagated to all children.
-All classes in inheritance chain can be a used as `Link` in foreign `Documents`.
+All classes in the inheritance chain can be used as `Link` in foreign `Documents`.
 
-Depend on the business logic, parent `Document` can be like "abstract" class that is not used to store objects of its type (like in example below), as well as can be a full-fledged entity, like its children.
+Depending on the business logic, parent `Document` can be like an "abstract" class that is not used to store objects of its type (like in the example below), as well as can be a full-fledged entity, like its children.
 
-## Examples
+### Defining models
 
-Define models
+To set the root model you have to set `is_root = True` in the inner Settings class. All the inherited documents (on any level) will be stored in the same collection.
 
 ```py hl_lines="20 20"
 from typing import Optional, List
@@ -64,7 +64,9 @@ class Owner(Document):
     vehicles: Optional[List[Link[Vehicle]]]
 ```
 
-Insert data
+### Inserts
+
+Inserts work the same way as usual
 
 ```python
 client = AsyncIOMotorClient()
@@ -81,7 +83,9 @@ bus_2 = await Bus(color='yellow', seats=26, body='minibus', fuel='diesel').inser
 owner = await Owner(name='John', vehicles=[car_1, car_2, bus_1]).insert()
 ```
 
-Query data
+### Find operations
+
+With parameter `with_children = True` the find query results will contain all the children classes' objects.
 
 ```python
 # this query returns vehicles of all types that have white color, becuase `with_children` is True
@@ -91,40 +95,60 @@ white_vehicles = await Vehicle.find(Vehicle.color == 'white', with_children=True
 #    Car(fuel='diesel', ..., color='white', body='crossover'),
 #    Bus(fuel='diesel', ..., color='white', body='bus', seats=80)
 # ]
+```
 
-# however it is possible to limit by Vehicle type
-cars_only = await Car.find().to_list()
-# [
-#     Car(fuel='gasoline', ..., color='grey', body='sedan'),
-#     Car(fuel='diesel', ..., color='white', body='crossover')
-# ]
+If the search is based on a child, the query returns this child type and all sub-children (with parameter `with_children=True`)
 
-# if search is based on child, query returns this child type and all sub-children
+```python
 cars_and_buses = await Car.find(Car.fuel == 'diesel', with_children=True).to_list()
 # [
 #     Car(fuel='diesel', ..., color='white', body='crossover'),
 #     Bus(fuel='diesel', ..., color='white', body='bus', seats=80),
 #     Bus(fuel='diesel', ..., color='yellow', body='minibus', seats=26)
 # ]
+```
 
-# to get a single Document it is not necessary to known its type
-# you can query using parent class
+If you need to return objects of the specific class only, you can use this class for finding:
+
+```python
+# however it is possible to limit by Vehicle type
+cars_only = await Car.find().to_list()
+# [
+#     Car(fuel='gasoline', ..., color='grey', body='sedan'),
+#     Car(fuel='diesel', ..., color='white', body='crossover')
+# ]
+```
+
+To get a single Document it is not necessary to know the type. You can query using the parent class
+
+```python
 await Vehicle.get(bus_2.id, with_children=True)
 # returns Bus instance:
 # Bus(fuel='diesel', ..., color='yellow', body='minibus', seats=26)
+```
 
-# re-fetch from DB with resolved links (using aggregation under the hood)
+### Relations
+
+Linked documents will be resolved into the respective classes
+
+```python
 owner = await Owner.get(owner.id, fetch_links=True)
+
 print(owner.vehicles)
-# returns
 # [
 #    Car(fuel='diesel', ..., color='white', body='crossover'),
 #    Bus(fuel='diesel', ..., color='white', body='bus', seats=80),
 #    Car(fuel='gasoline', ..., color='grey', body='sedan')
 # ]
-# the same result will be if owner get without fetching link, and they will be fetched manually later
+```
 
-# all other operations works the same as simple Documents
+The same result will be if the owner gets objects without fetching the links, and they will be fetched manually later
+
+### Other
+
+All other operations work the same way as for simple Documents
+
+```python
 await Bike.find().update({"$set": {Bike.color: 'yellow'}})
 await Car.find_one(Car.body == 'sedan')
 ```
