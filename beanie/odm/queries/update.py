@@ -98,7 +98,6 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
         *args: Mapping[str, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
     ) -> "UpdateQuery":
         """
@@ -112,9 +111,7 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
         :return: UpdateMany query
         """
         self.upsert_insert_doc = on_insert  # type: ignore
-        self.update(
-            *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
-        )
+        self.update(*args, session=session, **pymongo_kwargs)
         return self
 
     @abstractmethod
@@ -191,6 +188,7 @@ class UpdateMany(UpdateQuery):
                     first_query=self.find_query,
                     second_query=self.update_query,
                     object_class=self.document_model,
+                    pymongo_kwargs=self.pymongo_kwargs,
                 )
             )
 
@@ -239,5 +237,6 @@ class UpdateOne(UpdateQuery):
                     first_query=self.find_query,
                     second_query=self.update_query,
                     object_class=self.document_model,
+                    pymongo_kwargs=self.pymongo_kwargs,
                 )
             )

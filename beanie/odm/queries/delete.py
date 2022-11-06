@@ -55,6 +55,7 @@ class DeleteMany(DeleteQuery):
                     operation=DeleteManyPyMongo,
                     first_query=self.find_query,
                     object_class=self.document_model,
+                    pymongo_kwargs=self.pymongo_kwargs,
                 )
             )
             return None
@@ -84,6 +85,7 @@ class DeleteOne(DeleteQuery):
                     operation=DeleteOnePyMongo,
                     first_query=self.find_query,
                     object_class=self.document_model,
+                    pymongo_kwargs=self.pymongo_kwargs,
                 )
             )
             return None
