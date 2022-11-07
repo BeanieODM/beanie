@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.15.1] - 2022-11-07
+
+### Fix
+
+- Pass pymongo kwargs to the bulk writer
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/406>
+
 ## [1.15.0] - 2022-11-05
 
 ### Feature
@@ -1056,3 +1066,5 @@ how specific type should be presented in the database
 [1.14.0]: https://pypi.org/project/beanie/1.14.0
 
 [1.15.0]: https://pypi.org/project/beanie/1.15.0
+
+[1.15.1]: https://pypi.org/project/beanie/1.15.1
