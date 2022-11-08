@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import (
     Optional,
     List,
@@ -40,10 +41,12 @@ class FindInterface:
     _children: ClassVar[Dict[str, Type]]
 
     @classmethod
+    @abstractmethod
     def get_model_type(cls) -> ModelType:
         pass
 
     @classmethod
+    @abstractmethod
     def get_settings(cls) -> ItemSettings:
         pass
 
@@ -130,7 +133,7 @@ class FindInterface:
     def find_many(  # type: ignore
         cls: Type["DocType"],
         *args: Union[Mapping[str, Any], bool],
-        projection_model: Type["DocumentProjectionType"] = None,
+        projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,

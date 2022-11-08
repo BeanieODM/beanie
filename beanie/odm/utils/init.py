@@ -31,9 +31,9 @@ class Initializer:
     def __init__(
         self,
         database: AsyncIOMotorDatabase = None,
-        connection_string: str = None,
-        document_models: List[
-            Union[Type["DocType"], Type["View"], str]
+        connection_string: Optional[str] = None,
+        document_models: Optional[
+            List[Union[Type["DocType"], Type["View"], str]]
         ] = None,
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
@@ -432,8 +432,10 @@ class Initializer:
 
 async def init_beanie(
     database: AsyncIOMotorDatabase = None,
-    connection_string: str = None,
-    document_models: List[Union[Type["DocType"], Type["View"], str]] = None,
+    connection_string: Optional[str] = None,
+    document_models: Optional[
+        List[Union[Type["DocType"], Type["View"], str]]
+    ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
 ):

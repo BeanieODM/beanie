@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import TypeVar, Type, Optional, Union, Dict, Any, overload
 
 from pydantic import BaseModel
@@ -12,6 +13,7 @@ DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 class AggregateInterface:
     @classmethod
+    @abstractmethod
     def find_all(cls) -> FindMany:
         pass
 

@@ -248,7 +248,7 @@ class Document(
         cls: Type[DocType],
         document: DocType,
         session: Optional[ClientSession] = None,
-        bulk_writer: "BulkWriter" = None,
+        bulk_writer: Optional["BulkWriter"] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> Optional[DocType]:
         """
@@ -855,7 +855,7 @@ class Document(
         include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
         exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
         by_alias: bool = False,
-        skip_defaults: bool = None,
+        skip_defaults: bool = False,
         exclude_hidden: bool = True,
         exclude_unset: bool = False,
         exclude_defaults: bool = False,

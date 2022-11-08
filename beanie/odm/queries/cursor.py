@@ -51,9 +51,11 @@ class BaseCursorQuery(Generic[CursorResultType]):
             return next_item
         return parse_obj(projection, next_item)  # type: ignore
 
+    @abstractmethod
     def _get_cache(self) -> List[Dict[str, Any]]:
         ...
 
+    @abstractmethod
     def _set_cache(self, data):
         ...
 
