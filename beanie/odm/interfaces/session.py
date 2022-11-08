@@ -15,5 +15,5 @@ class SessionMethods:
         :return:
         """
         if session is not None:
-            self.session = session
+            self.session: Optional[ClientSession] = session
         return self

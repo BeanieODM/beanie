@@ -10,6 +10,7 @@ from typing import (
     ClassVar,
     TypeVar,
     Dict,
+    TYPE_CHECKING,
 )
 from collections.abc import Iterable
 from pydantic import (
@@ -22,7 +23,9 @@ from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.settings.base import ItemSettings
 
-DocType = TypeVar("DocType", bound="FindInterface")
+if TYPE_CHECKING:
+    from beanie.odm.documents import DocType
+
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
@@ -46,7 +49,7 @@ class FindInterface:
 
     @overload
     @classmethod
-    def find_one(
+    def find_one(  # type: ignore
         cls: Type["DocType"],
         *args: Union[Mapping[str, Any], bool],
         projection_model: None = None,
@@ -60,7 +63,7 @@ class FindInterface:
 
     @overload
     @classmethod
-    def find_one(
+    def find_one(  # type: ignore
         cls: Type["DocType"],
         *args: Union[Mapping[str, Any], bool],
         projection_model: Type["DocumentProjectionType"],
@@ -73,7 +76,7 @@ class FindInterface:
         ...
 
     @classmethod
-    def find_one(
+    def find_one(  # type: ignore
         cls: Type["DocType"],
         *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
@@ -107,7 +110,7 @@ class FindInterface:
 
     @overload
     @classmethod
-    def find_many(
+    def find_many(  # type: ignore
         cls: Type["DocType"],
         *args: Union[Mapping[str, Any], bool],
         projection_model: None = None,
@@ -124,7 +127,7 @@ class FindInterface:
 
     @overload
     @classmethod
-    def find_many(
+    def find_many(  # type: ignore
         cls: Type["DocType"],
         *args: Union[Mapping[str, Any], bool],
         projection_model: Type["DocumentProjectionType"] = None,
@@ -140,7 +143,7 @@ class FindInterface:
         ...
 
     @classmethod
-    def find_many(
+    def find_many(  # type: ignore
         cls: Type["DocType"],
         *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
@@ -182,7 +185,7 @@ class FindInterface:
 
     @overload
     @classmethod
-    def find(
+    def find(  # type: ignore
         cls: Type["DocType"],
         *args: Union[Mapping[str, Any], bool],
         projection_model: None = None,
@@ -199,7 +202,7 @@ class FindInterface:
 
     @overload
     @classmethod
-    def find(
+    def find(  # type: ignore
         cls: Type["DocType"],
         *args: Union[Mapping[str, Any], bool],
         projection_model: Type["DocumentProjectionType"],
@@ -215,7 +218,7 @@ class FindInterface:
         ...
 
     @classmethod
-    def find(
+    def find(  # type: ignore
         cls: Type["DocType"],
         *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
@@ -246,7 +249,7 @@ class FindInterface:
 
     @overload
     @classmethod
-    def find_all(
+    def find_all(  # type: ignore
         cls: Type["DocType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -261,7 +264,7 @@ class FindInterface:
 
     @overload
     @classmethod
-    def find_all(
+    def find_all(  # type: ignore
         cls: Type["DocType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -275,7 +278,7 @@ class FindInterface:
         ...
 
     @classmethod
-    def find_all(
+    def find_all(  # type: ignore
         cls: Type["DocType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -311,7 +314,7 @@ class FindInterface:
 
     @overload
     @classmethod
-    def all(
+    def all(  # type: ignore
         cls: Type["DocType"],
         projection_model: None = None,
         skip: Optional[int] = None,
@@ -326,7 +329,7 @@ class FindInterface:
 
     @overload
     @classmethod
-    def all(
+    def all(  # type: ignore
         cls: Type["DocType"],
         projection_model: Type["DocumentProjectionType"],
         skip: Optional[int] = None,
@@ -340,7 +343,7 @@ class FindInterface:
         ...
 
     @classmethod
-    def all(
+    def all(  # type: ignore
         cls: Type["DocType"],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
@@ -373,7 +376,7 @@ class FindInterface:
 
         :return: int
         """
-        return await cls.find_all().count()
+        return await cls.find_all().count()  # type: ignore
 
     @classmethod
     def _add_class_id_filter(cls, args: Tuple, with_children: bool = False):
