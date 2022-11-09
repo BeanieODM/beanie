@@ -314,6 +314,8 @@ class Initializer:
                     class_name=cls.__name__,
                     collection_name=cls.get_collection_name(),
                 )
+                if cls.get_settings().is_root:
+                    cls._inheritance_inited = True  # TODO refactor. Looks ugly
             elif output is not None:
                 output.class_name = f"{output.class_name}.{cls.__name__}"
                 cls._class_id = output.class_name
