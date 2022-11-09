@@ -2,6 +2,17 @@
 
 Beanie project
 
+## [1.15.2] - 2022-11-09
+
+### Fix
+
+- Use Settings inner class in migrations internals
+- Fix inheritance: mark root docs with `_inheritance_inited = True`
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/409>
+
 ## [1.15.1] - 2022-11-07
 
 ### Fix
@@ -1068,3 +1079,5 @@ how specific type should be presented in the database
 [1.15.0]: https://pypi.org/project/beanie/1.15.0
 
 [1.15.1]: https://pypi.org/project/beanie/1.15.1
+
+[1.15.2]: https://pypi.org/project/beanie/1.15.2
