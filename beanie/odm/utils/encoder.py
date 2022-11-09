@@ -17,6 +17,7 @@ from typing import (
     List,
     Mapping,
     Union,
+    Optional,
 )
 from typing import Any, Callable, Dict, Type
 from uuid import UUID
@@ -61,7 +62,7 @@ class Encoder:
         exclude: Union[
             AbstractSet[Union[str, int]], Mapping[Union[str, int], Any], None
         ] = None,
-        custom_encoders: Dict[Type, Callable] = None,
+        custom_encoders: Optional[Dict[Type, Callable]] = None,
         by_alias: bool = True,
         to_db: bool = False,
     ):

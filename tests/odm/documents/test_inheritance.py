@@ -4,7 +4,8 @@ from tests.odm.models import (
     Bicycle,
     Bike,
     Car,
-    Bus, TunedDocument, Owner,
+    Bus,
+    Owner,
 )
 
 
@@ -27,12 +28,14 @@ class TestInheritance:
             color="yellow", seats=26, body="minibus", fuel="diesel"
         ).insert()
 
-        white_vehicles = await Vehicle.find(Vehicle.color == "white",
-                                            with_children=True).to_list()
+        white_vehicles = await Vehicle.find(
+            Vehicle.color == "white", with_children=True
+        ).to_list()
 
         cars_only = await Car.find().to_list()
-        cars_and_buses = await Car.find(Car.fuel == "diesel",
-                                        with_children=True).to_list()
+        cars_and_buses = await Car.find(
+            Car.fuel == "diesel", with_children=True
+        ).to_list()
 
         big_bicycles = await Bicycle.find(Bicycle.wheels > 28).to_list()
 
@@ -50,7 +53,6 @@ class TestInheritance:
         assert isinstance(updated_bike, Bike)
         assert updated_bike.color == "yellow"
 
-        assert Vehicle._parent is TunedDocument
         assert Bus._parent is Car
 
         assert len(big_bicycles) == 1

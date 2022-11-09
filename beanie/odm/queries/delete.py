@@ -1,5 +1,6 @@
 from typing import Type, TYPE_CHECKING, Any, Mapping, Optional, Dict, Generator
 
+from pymongo.client_session import ClientSession
 from pymongo.results import DeleteResult
 
 from beanie.odm.bulk import BulkWriter, Operation
@@ -26,7 +27,7 @@ class DeleteQuery(SessionMethods, CloneInterface):
     ):
         self.document_model = document_model
         self.find_query = find_query
-        self.session = None
+        self.session: Optional[ClientSession] = None
         self.bulk_writer = bulk_writer
         self.pymongo_kwargs: Dict[str, Any] = pymongo_kwargs
 

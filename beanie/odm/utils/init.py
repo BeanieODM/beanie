@@ -31,9 +31,9 @@ class Initializer:
     def __init__(
         self,
         database: AsyncIOMotorDatabase = None,
-        connection_string: str = None,
-        document_models: List[
-            Union[Type["DocType"], Type["View"], str]
+        connection_string: Optional[str] = None,
+        document_models: Optional[
+            List[Union[Type["DocType"], Type["View"], str]]
         ] = None,
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
@@ -314,6 +314,8 @@ class Initializer:
                     class_name=cls.__name__,
                     collection_name=cls.get_collection_name(),
                 )
+                if cls.get_settings().is_root:
+                    cls._inheritance_inited = True  # TODO refactor. Looks ugly
             elif output is not None:
                 output.class_name = f"{output.class_name}.{cls.__name__}"
                 cls._class_id = output.class_name
@@ -432,8 +434,10 @@ class Initializer:
 
 async def init_beanie(
     database: AsyncIOMotorDatabase = None,
-    connection_string: str = None,
-    document_models: List[Union[Type["DocType"], Type["View"], str]] = None,
+    connection_string: Optional[str] = None,
+    document_models: Optional[
+        List[Union[Type["DocType"], Type["View"], str]]
+    ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
 ):

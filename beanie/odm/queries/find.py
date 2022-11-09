@@ -264,7 +264,7 @@ class FindMany(
     def find_many(
         self: "FindMany[FindQueryResultType]",
         *args: Union[Mapping[str, Any], bool],
-        projection_model: Type[FindQueryProjectionType] = None,
+        projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
@@ -366,7 +366,7 @@ class FindMany(
     def find(
         self: "FindMany[FindQueryResultType]",
         *args: Union[Mapping[str, Any], bool],
-        projection_model: Type[FindQueryProjectionType] = None,
+        projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,

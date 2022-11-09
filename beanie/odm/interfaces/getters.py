@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from motor.motor_asyncio import AsyncIOMotorCollection
 
 from beanie.odm.settings.base import ItemSettings
@@ -5,6 +7,7 @@ from beanie.odm.settings.base import ItemSettings
 
 class OtherGettersInterface:
     @classmethod
+    @abstractmethod
     def get_settings(cls) -> ItemSettings:
         pass
 

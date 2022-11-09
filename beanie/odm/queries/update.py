@@ -120,7 +120,9 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
 
     def __await__(
         self,
-    ) -> Generator[Any, None, Union[UpdateResult, InsertOneResult]]:
+    ) -> Generator[
+        Any, None, Union[UpdateResult, InsertOneResult, Optional["DocType"]]
+    ]:
         """
         Run the query
         :return:
