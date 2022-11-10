@@ -1,4 +1,5 @@
 from collections import deque
+from copy import deepcopy
 from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
@@ -131,9 +132,10 @@ class Encoder:
         """
         Dictionary case
         """
-        for key, value in obj.items():
-            obj[key] = self._encode(value)
-        return obj
+        new_obj = deepcopy(obj)
+        for key, value in new_obj.items():
+            new_obj[key] = self._encode(value)
+        return new_obj
 
     def encode_iterable(self, obj):
         """
@@ -163,6 +165,7 @@ class Encoder:
         if isinstance(obj, BaseModel):
             return self.encode_base_model(obj)
         if isinstance(obj, dict):
+            print(obj)
             return self.encode_dict(obj)
         if isinstance(obj, (list, set, frozenset, GeneratorType, tuple)):
             return self.encode_iterable(obj)
