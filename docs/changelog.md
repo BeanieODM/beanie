@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.15.3] - 2022-11-10
+
+### Fix
+
+- Deepcopy dict before encode it to save the original
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/412>
+
 ## [1.15.2] - 2022-11-09
 
 ### Fix
@@ -1081,3 +1091,5 @@ how specific type should be presented in the database
 [1.15.1]: https://pypi.org/project/beanie/1.15.1
 
 [1.15.2]: https://pypi.org/project/beanie/1.15.2
+
+[1.15.3]: https://pypi.org/project/beanie/1.15.3

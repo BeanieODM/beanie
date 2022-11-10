@@ -9,7 +9,7 @@ from ipaddress import (
     IPv6Network,
 )
 from pathlib import Path
-from typing import List, Optional, Set, Tuple, Union
+from typing import List, Optional, Set, Tuple, Union, Dict
 from uuid import UUID, uuid4
 
 import pymongo
@@ -511,3 +511,12 @@ class Bus(Car, Fuelled):
 class Owner(Document):
     name: str
     vehicles: List[Link[Vehicle]] = []
+
+
+class Child(BaseModel):
+    child_field: str
+
+
+class SampleWithMutableObjects(Document):
+    d: Dict[str, Child]
+    l: List[Child]

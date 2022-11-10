@@ -6,6 +6,8 @@ from beanie.odm.utils.encoder import Encoder
 from tests.odm.models import (
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
+    SampleWithMutableObjects,
+    Child,
 )
 
 
@@ -50,3 +52,12 @@ async def test_bytes_already_binary():
     encoded_b = Encoder().encode(b)
     assert isinstance(encoded_b, Binary)
     assert encoded_b.subtype == 3
+
+
+async def test_mutable_objects_on_save():
+    instance = SampleWithMutableObjects(
+        d={"Bar": Child(child_field="Foo")}, l=[Child(child_field="Bar")]
+    )
+    await instance.save()
+    assert isinstance(instance.d["Bar"], Child)
+    assert isinstance(instance.l[0], Child)
