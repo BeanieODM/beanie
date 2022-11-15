@@ -12,7 +12,7 @@ from beanie.odm.actions import ActionRegistry
 from beanie.odm.cache import LRUCache
 from beanie.odm.documents import DocType
 from beanie.odm.documents import Document
-from beanie.odm.fields import ExpressionField
+from beanie.odm.fields import ExpressionField, LinkInfo
 from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.settings.union_doc import UnionDocSettings
@@ -168,6 +168,17 @@ class Initializer:
         Init class fields
         :return: None
         """
+        def check_nested_links(link_info: LinkInfo):
+            for k, v in link_info.model_class.__fields__.items():
+                nested_link_info = detect_link(v)
+                if nested_link_info is None:
+                    continue
+                
+                if link_info.nested_links is None:
+                    link_info.nested_links = {}
+                link_info.nested_links[v.name] = nested_link_info
+                check_nested_links(nested_link_info)
+
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in cls.__fields__.items():
@@ -177,6 +188,7 @@ class Initializer:
             link_info = detect_link(v)
             if link_info is not None:
                 cls._link_fields[v.name] = link_info
+                check_nested_links(link_info)
 
         cls._hidden_fields = cls.get_hidden_fields()
 
