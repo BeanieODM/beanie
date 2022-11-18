@@ -48,6 +48,8 @@ from tests.odm.models import (
     Bus,
     Owner,
     SampleWithMutableObjects,
+    TestNonRoot,
+    Test2NonRoot,
 )
 from tests.odm.views import TestView
 from tests.odm.models import (
@@ -188,6 +190,8 @@ async def init(loop, db):
         Bus,
         Owner,
         SampleWithMutableObjects,
+        TestNonRoot,
+        Test2NonRoot,
     ]
     await init_beanie(
         database=db,
