@@ -148,7 +148,7 @@ class Initializer:
         cls._children = dict()
         cls._parent = None
         cls._inheritance_inited = False
-        cls._class_id = ""
+        cls._class_id = None
 
     @staticmethod
     def init_cache(cls) -> None:
@@ -314,8 +314,8 @@ class Initializer:
                     class_name=cls.__name__,
                     collection_name=cls.get_collection_name(),
                 )
-                if cls.get_settings().is_root:
-                    cls._inheritance_inited = True  # TODO refactor. Looks ugly
+                cls._class_id = cls.__name__
+                cls._inheritance_inited = True
             elif output is not None:
                 output.class_name = f"{output.class_name}.{cls.__name__}"
                 cls._class_id = output.class_name
@@ -335,10 +335,13 @@ class Initializer:
             return output
 
         else:
-            return Output(
-                class_name=cls._class_id,
-                collection_name=cls.get_collection_name(),
-            )
+            if cls._inheritance_inited is True:
+                return Output(
+                    class_name=cls._class_id,
+                    collection_name=cls.get_collection_name(),
+                )
+            else:
+                return None
 
     # Views
 
