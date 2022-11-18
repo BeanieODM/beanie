@@ -351,9 +351,15 @@ class Initializer:
         Init class fields
         :return: None
         """
+        if cls._link_fields is None:
+            cls._link_fields = {}
         for k, v in cls.__fields__.items():
             path = v.alias or v.name
             setattr(cls, k, ExpressionField(path))
+
+            link_info = detect_link(v)
+            if link_info is not None:
+                cls._link_fields[v.name] = link_info
 
     def init_view_collection(self, cls):
         """
