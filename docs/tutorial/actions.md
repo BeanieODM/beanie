@@ -112,3 +112,30 @@ await sample.replace(skip_actions=[After])
 # redact_name and num_change will not be executed
 await sample.replace(skip_actions[Before, 'num_change'])
 ```
+
+It is also possible to get which exactly event was triggered in case when listener function is configured to multiple ones.
+
+```python
+from beanie import Document, before_event, Insert, Replace, Update
+from beanie.odm.actions import EventTypes
+
+
+class Sample(Document):
+    num: int
+    name: str
+    last_event: str = ''
+
+    @before_event(Insert, Replace, Update)
+    def log_event(self, event: EventTypes):
+        if event is Insert:
+            print('Sample document created!')
+        elif event in (Replace, Update):
+            print('Sample document changed!')
+
+        self.last_event = str(event.value)
+
+sample = Sample()
+
+# capitalize_name will not be executed
+await sample.insert(skip_actions=['capitalize_name'])
+```

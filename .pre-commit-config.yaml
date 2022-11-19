@@ -3,8 +3,8 @@ repos:
     rev: 22.3.0
     hooks:
     - id: black
-      language_version: python3.10
-  - repo: https://gitlab.com/pycqa/flake8
+      language_version: python3.11
+  - repo: https://github.com/pycqa/flake8
     rev: 3.9.2
     hooks:
     - id: flake8
@@ -16,4 +16,3 @@ repos:
           - types-click
           - types-toml
         exclude: ^tests/
-      

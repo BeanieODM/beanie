@@ -115,6 +115,7 @@ class ActionRegistry:
         :param instance: Document - object of the Document subclass
         :param event_type: EventTypes - event types
         :param action_direction: ActionDirections - before or after
+        :param exclude: list[ActionDirections | str] - list of ActionDirections or action names to skip
         """
         if action_direction in exclude:
             return
@@ -128,10 +129,13 @@ class ActionRegistry:
             if action.__name__ in exclude:
                 continue
 
+            args = (instance, event_type)
+            count = action.__code__.co_argcount  # type: ignore
+
             if inspect.iscoroutinefunction(action):
-                coros.append(action(instance))
+                coros.append(action(*args[:count]))
             elif inspect.isfunction(action):
-                action(instance)
+                action(*args[:count])
 
         await asyncio.gather(*coros)
 

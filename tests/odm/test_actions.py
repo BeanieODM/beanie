@@ -46,6 +46,9 @@ class TestActions:
         assert sample.num_1 == 2
         assert sample.num_3 == 99
 
+        # last_event was set in @before_event(Insert, Replace)
+        assert sample.last_event == "REPLACE"
+
     @pytest.mark.parametrize(
         "doc_class",
         [
@@ -65,6 +68,8 @@ class TestActions:
         assert sample.num_1 == 1
         # num_2_change has been skipped
         assert sample.num_2 == 10
+        # last_event was set in before_event(Insert, Replace)
+        assert sample.last_event == "INSERT"
 
     @pytest.mark.parametrize(
         "doc_class",
@@ -79,12 +84,15 @@ class TestActions:
         sample = doc_class(name=test_name)
 
         await sample.insert()
+        assert sample.last_event == "INSERT"
 
         await sample.replace(skip_actions=[Before, "num_3_change"])
         # add_one has been skipped
         assert sample.num_1 == 1
         # num_3_change has been skipped
         assert sample.num_3 == 100
+        # last_event should not be set at replace step, so it was not overridden from prev value
+        assert sample.last_event == "INSERT"
 
     @pytest.mark.parametrize(
         "doc_class",
@@ -127,3 +135,22 @@ class TestActions:
 
         await sample._sync()
         assert sample.name == "awesome_name"
+
+    @pytest.mark.parametrize(
+        "doc_class",
+        [
+            DocumentWithActions,
+            DocumentWithActions2,
+            InheritedDocumentWithActions,
+        ],
+    )
+    async def test_actions_with_provided_event_type(self, doc_class):
+        test_name = f"test_actions_update_{doc_class.__name__}"
+        sample = doc_class(name=test_name)
+        await sample.insert()
+
+        assert sample.last_event == "INSERT"
+
+        await sample.replace()
+
+        assert sample.last_event == "REPLACE"
