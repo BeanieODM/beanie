@@ -30,14 +30,14 @@ class Sample(Document):
 
 The `Indexed` function also supports PyMongo's `IndexModel` kwargs arguments (see the [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel) for details). 
  
-For example, to create a `unique` index:
+For example, to create a `sparse` index:
 
 ```python
 from beanie import Document, Indexed
 
 
 class Sample(Document):
-    name: Indexed(str, unique=True)
+    name: Indexed(str, sparse=True)
 ```
 
 ### Multi-field indexes
@@ -75,3 +75,34 @@ class Sample(Document):
             ),
         ]
 ```
+
+### Unique indexes
+Unique indexes can be specified in different ways:
+1) By specifying `unique=True` kwarg either in `Indexed` function or IndexModel definition inside `Settings` inner class.
+2) By using `Unique` function which is a wrapper of `Indexed` one with predefined `unique=True` kwarg.
+
+```python
+from beanie import Document, Indexed, Unique
+
+
+class Sample(Document):
+    name: Unique(str)
+    title: Indexed(str)
+```
+
+Beanie can also handle unique indexes for `Optional` fields, despite this being really tricky in mongoDB.
+
+```python
+from typing import Optional
+from beanie import Document, Indexed, Unique
+
+
+class Sample(Document):
+    name: Unique(str)
+    title: Indexed(str)
+    tag: Unique(Optional[str])
+```
+
+In python 3.11+ it can be declared like `tag: Unique(str) | None`.
+
+As well as using corresponding pydantic `Field` param: `tag: str = Field(allow_none=True)`.

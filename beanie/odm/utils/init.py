@@ -21,6 +21,29 @@ from beanie.odm.union_doc import UnionDoc
 from beanie.odm.utils.relations import detect_link
 from beanie.odm.views import View
 
+ALL_TYPES_EXCEPT_NULL = [
+    -1,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    127,
+]
+
 
 class Output(BaseModel):
     class_name: str
@@ -258,19 +281,31 @@ class Initializer:
         new_indexes = ["_id_"]
 
         # Indexed field wrapped with Indexed()
-        found_indexes = [
-            IndexModel(
-                [
-                    (
-                        fvalue.alias,
-                        fvalue.type_._indexed[0],
+        found_indexes = []
+        for fvalue in cls.__fields__.values():
+            if getattr(fvalue.type_, "_indexed", False):
+                kwargs = fvalue.type_._indexed[1]
+
+                # if indexed field is Optional, index creation should be filtered
+                print(
+                    f"Create index for {cls.__name__}: {fvalue.name} "
+                    f'(alias {fvalue.alias}, None {fvalue.allow_none and "possible" or "not permitted"}): {kwargs}'
+                )
+                if kwargs.get("unique", False) and fvalue.allow_none:
+                    # this is looks ugly but partialFilterExpression has very truncated options to use
+                    # it is impossible to just use {'field': {'$type': {'$ne': None}}}
+                    # so we filter type to any of following where null is excluded
+                    kwargs["partialFilterExpression"] = {
+                        fvalue.alias: {"$type": ALL_TYPES_EXCEPT_NULL}
+                    }
+                    # also, index with filter expression cannot be sparse
+                    kwargs.pop("sparse", None)
+
+                found_indexes.append(
+                    IndexModel(
+                        [(fvalue.alias, fvalue.type_._indexed[0])], **kwargs
                     )
-                ],
-                **fvalue.type_._indexed[1],
-            )
-            for _, fvalue in cls.__fields__.items()
-            if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
-        ]
+                )
 
         # get indexes from the Collection class
         if document_settings.indexes:

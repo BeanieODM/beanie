@@ -16,6 +16,7 @@ from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import (
     PydanticObjectId,
     Indexed,
+    Unique,
     Link,
     WriteRules,
     DeleteRules,
@@ -35,6 +36,7 @@ __all__ = [
     "init_beanie",
     "PydanticObjectId",
     "Indexed",
+    "Unique",
     "TimeSeriesConfig",
     "Granularity",
     # Actions

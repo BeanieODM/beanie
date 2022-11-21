@@ -18,7 +18,15 @@ from pydantic.color import Color
 from pydantic import BaseModel, Field
 from pymongo import IndexModel
 
-from beanie import Document, Indexed, Insert, Replace, ValidateOnSave, Update
+from beanie import (
+    Document,
+    Indexed,
+    Insert,
+    Replace,
+    ValidateOnSave,
+    Update,
+    Unique,
+)
 from beanie.odm.actions import before_event, after_event, Delete, EventTypes
 from beanie.odm.fields import Link
 from beanie.odm.settings.timeseries import TimeSeriesConfig
@@ -88,6 +96,18 @@ class DocumentTestModelWithSimpleIndex(Document):
     test_int: Indexed(int)
     test_list: List[SubDocument]
     test_str: Indexed(str, index_type=pymongo.TEXT)
+
+
+class DocumentTestModelWithUniqueIndex(Document):
+    test_int: Unique(int)
+    test_list: List[SubDocument]
+    test_str: Indexed(str, index_type=pymongo.TEXT)
+
+
+class DocumentTestModelWithOptionalUniqueIndex(Document):
+    test_int: Unique(Optional[int])
+    test_list: List[SubDocument]
+    test_str: Unique(Optional[str], index_type=pymongo.TEXT) = None
 
 
 class DocumentTestModelWithIndexFlags(Document):

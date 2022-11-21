@@ -40,6 +40,28 @@ def Indexed(typ, index_type=ASCENDING, **kwargs):
     return NewType
 
 
+def Unique(typ, index_type=ASCENDING, **kwargs):
+    optional = False
+
+    # check is type Optional and replace it with original
+    if (
+        getattr(typ, "__origin__", False) is Union
+        and type(None) in typ.__args__
+    ):
+        assert len(typ.__args__) == 2, "Index for Union is not implemented"
+        typ = typ.__args__[0]
+        optional = True
+
+    rv = Indexed(
+        typ,
+        index_type=index_type,
+        unique=True,
+        **{x: y for x, y in kwargs.items() if x != "unique"},
+    )
+
+    return Union[rv, None] if optional else rv
+
+
 class PydanticObjectId(ObjectId):
     """
     Object Id field. Compatible with Pydantic.

@@ -14,6 +14,8 @@ from tests.odm.models import (
     DocumentTestModelWithComplexIndex,
     DocumentTestModelStringImport,
     DocumentTestModelWithDroppedIndex,
+    DocumentTestModelWithUniqueIndex,
+    DocumentTestModelWithOptionalUniqueIndex,
 )
 
 
@@ -233,3 +235,41 @@ async def test_projection():
         "test_doc": 1,
         "revision_id": 1,
     }
+
+
+async def test_unique_index(db):
+    await init_beanie(
+        database=db, document_models=[DocumentTestModelWithUniqueIndex]
+    )
+
+    collection: AsyncIOMotorCollection = (
+        DocumentTestModelWithUniqueIndex.get_motor_collection()
+    )
+    index_info = await collection.index_information()
+
+    assert index_info["test_int_1"] == {
+        "key": [("test_int", 1)],
+        "unique": True,
+        "v": 2,
+    }
+
+
+async def test_optional_unique_index(db):
+    await init_beanie(
+        database=db,
+        document_models=[DocumentTestModelWithOptionalUniqueIndex],
+        allow_index_dropping=True,
+    )
+
+    collection: AsyncIOMotorCollection = (
+        DocumentTestModelWithOptionalUniqueIndex.get_motor_collection()
+    )
+    index_info = await collection.index_information()
+
+    assert DocumentTestModelWithOptionalUniqueIndex.__fields__[
+        "test_int"
+    ].allow_none
+    assert DocumentTestModelWithOptionalUniqueIndex.__fields__[
+        "test_str"
+    ].allow_none
+    assert "partialFilterExpression" in index_info["test_int_1"]
