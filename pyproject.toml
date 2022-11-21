@@ -38,7 +38,7 @@ jinja2 = "3.0.3"
 fastapi = "^0.78.0"
 asgi-lifespan = "^1.0.1"
 httpx = "^0.23.0"
-Markdown = "3.3.5"
+Markdown = "3.3.6"
 importlib-metadata = "^4.12.0"
 
 
