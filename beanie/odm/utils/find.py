@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 def construct_lookup_queries(cls: Type["Document"]) -> List[Dict[str, Any]]:
     if cls.get_model_type() == ModelType.UnionDoc:
         raise NotSupported("UnionDoc doesn't support link fetching")
-    queries = []
+    queries: List = []
     link_fields = cls.get_link_fields()
     if link_fields is not None:
         for link_info in link_fields.values():
@@ -19,7 +19,9 @@ def construct_lookup_queries(cls: Type["Document"]) -> List[Dict[str, Any]]:
     return queries
 
 
-def construct_query(link_info: LinkInfo, queries: List, parent_prefix: str = None):
+def construct_query(
+    link_info: LinkInfo, queries: List, parent_prefix: str = ""
+):
     field_path = ".".join(filter(None, (parent_prefix, link_info.field)))
 
     if link_info.link_type in [
@@ -72,6 +74,8 @@ def construct_query(link_info: LinkInfo, queries: List, parent_prefix: str = Non
 
     if link_info.nested_links is not None:
         for nested_link in link_info.nested_links:
-            construct_query(link_info.nested_links[nested_link], queries, field_path)
-            
+            construct_query(
+                link_info.nested_links[nested_link], queries, field_path
+            )
+
     return queries

@@ -1,6 +1,6 @@
 import asyncio
 from enum import Enum
-from typing import Generic, TypeVar, Union, Type, List, Optional
+from typing import Dict, Generic, TypeVar, Union, Type, List, Optional
 
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
@@ -145,7 +145,7 @@ class LinkInfo(BaseModel):
     field: str
     model_class: Type[BaseModel]  # Document class
     link_type: LinkTypes
-    nested_links: Optional[List]
+    nested_links: Optional[Dict]
 
 
 T = TypeVar("T")

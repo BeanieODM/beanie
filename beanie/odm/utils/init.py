@@ -173,7 +173,7 @@ class Initializer:
                 nested_link_info = detect_link(v)
                 if nested_link_info is None:
                     continue
-                
+
                 if link_info.nested_links is None:
                     link_info.nested_links = {}
                 link_info.nested_links[v.name] = nested_link_info
