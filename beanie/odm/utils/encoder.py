@@ -81,6 +81,8 @@ class Encoder:
         """
         Beanie Document class case
         """
+        obj.fetch_from_store()
+
         encoder = Encoder(
             custom_encoders=obj.get_settings().bson_encoders,
             by_alias=self.by_alias,

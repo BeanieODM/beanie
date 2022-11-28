@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.16.0b0] - 2022-11-28
+
+### Feature
+
+- Lazy parsing for find many
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/436>
+
 ## [1.15.4] - 2022-11-18
 
 ### Fix
@@ -1105,3 +1115,5 @@ how specific type should be presented in the database
 [1.15.3]: https://pypi.org/project/beanie/1.15.3
 
 [1.15.4]: https://pypi.org/project/beanie/1.15.4
+
+[1.16.0b0]: https://pypi.org/project/beanie/1.16.0b0

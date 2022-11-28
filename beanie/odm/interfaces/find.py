@@ -124,6 +124,7 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> FindMany["DocType"]:
         ...
@@ -141,6 +142,7 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
@@ -157,6 +159,7 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
@@ -170,6 +173,7 @@ class FindInterface:
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
+        :param lazy_parse: bool
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
@@ -183,6 +187,7 @@ class FindInterface:
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
+            lazy_parse=lazy_parse,
             **pymongo_kwargs,
         )
 
@@ -199,6 +204,7 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> FindMany["DocType"]:
         ...
@@ -216,6 +222,7 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
@@ -232,6 +239,7 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
@@ -247,6 +255,7 @@ class FindInterface:
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
             with_children=with_children,
+            lazy_parse=lazy_parse,
             **pymongo_kwargs,
         )
 
@@ -261,6 +270,7 @@ class FindInterface:
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> FindMany["DocType"]:
         ...
@@ -276,6 +286,7 @@ class FindInterface:
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
@@ -290,6 +301,7 @@ class FindInterface:
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
@@ -312,6 +324,7 @@ class FindInterface:
             session=session,
             ignore_cache=ignore_cache,
             with_children=with_children,
+            lazy_parse=lazy_parse,
             **pymongo_kwargs,
         )
 
@@ -326,6 +339,7 @@ class FindInterface:
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> FindMany["DocType"]:
         ...
@@ -341,6 +355,7 @@ class FindInterface:
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
@@ -355,6 +370,7 @@ class FindInterface:
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
@@ -368,6 +384,7 @@ class FindInterface:
             session=session,
             ignore_cache=ignore_cache,
             with_children=with_children,
+            lazy_parse=lazy_parse,
             **pymongo_kwargs,
         )
 

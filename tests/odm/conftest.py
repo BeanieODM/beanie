@@ -50,6 +50,7 @@ from tests.odm.models import (
     SampleWithMutableObjects,
     TestNonRoot,
     Test2NonRoot,
+    SampleLazyParsing,
 )
 from tests.odm.views import TestView
 from tests.odm.models import (
@@ -192,6 +193,7 @@ async def init(loop, db):
         SampleWithMutableObjects,
         TestNonRoot,
         Test2NonRoot,
+        SampleLazyParsing,
     ]
     await init_beanie(
         database=db,
