@@ -257,7 +257,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
-            lazy_parse: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryResultType]":
         ...
@@ -273,7 +273,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
-            lazy_parse: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
@@ -288,7 +288,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
-            lazy_parse: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
@@ -364,7 +364,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
-            lazy_parse: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryResultType]":
         ...
@@ -380,7 +380,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
-            lazy_parse: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
@@ -395,7 +395,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
-            lazy_parse: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"

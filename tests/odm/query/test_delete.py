@@ -10,9 +10,11 @@ async def test_delete_many(preset_documents):
         .find_many(Sample.nested.optional == None)
         .count()
     )  # noqa
-    delete_result = await Sample.find_many(Sample.integer > 1).find_many(
-        Sample.nested.optional == None
-    ).delete()  # noqa
+    delete_result = (
+        await Sample.find_many(Sample.integer > 1)
+        .find_many(Sample.nested.optional == None)
+        .delete()
+    )  # noqa
     count_deleted = delete_result.deleted_count
     count_after = await Sample.count()
     assert count_before - count_find == count_after
@@ -22,7 +24,7 @@ async def test_delete_many(preset_documents):
         .find_many(Sample.nested.optional == None)
         .delete_many(),
         DeleteMany,
-    )# noqa
+    )  # noqa
 
 
 async def test_delete_all(preset_documents):
@@ -51,18 +53,22 @@ async def test_delete_self(preset_documents):
 
 async def test_delete_one(preset_documents):
     count_before = await Sample.count()
-    delete_result = await Sample.find_one(Sample.integer > 1).find_one(
-        Sample.nested.optional == None
-    ).delete()  # noqa
+    delete_result = (
+        await Sample.find_one(Sample.integer > 1)
+        .find_one(Sample.nested.optional == None)
+        .delete()
+    )  # noqa
     count_after = await Sample.count()
     count_deleted = delete_result.deleted_count
     assert count_before == count_after + 1
     assert count_deleted == 1
 
     count_before = await Sample.count()
-    delete_result = await Sample.find_one(Sample.integer > 1).find_one(
-        Sample.nested.optional == None
-    ).delete_one()  # noqa
+    delete_result = (
+        await Sample.find_one(Sample.integer > 1)
+        .find_one(Sample.nested.optional == None)
+        .delete_one()
+    )  # noqa
     count_deleted = delete_result.deleted_count
     count_after = await Sample.count()
     assert count_before == count_after + 1
@@ -88,7 +94,7 @@ async def test_delete_many_with_session(preset_documents, session):
         .find_many(Sample.nested.optional == None)
         .delete()
         .set_session(session=session)
-    ) # noqa
+    )  # noqa
 
     assert q.session == session
 
@@ -103,8 +109,12 @@ async def test_delete_pymongo_kwargs(preset_documents):
     with pytest.raises(TypeError):
         await Sample.find_many(Sample.increment > 4).delete(wrong="integer_1")
 
-    delete_result = await Sample.find_many(Sample.increment > 4).delete(hint="integer_1")
+    delete_result = await Sample.find_many(Sample.increment > 4).delete(
+        hint="integer_1"
+    )
     assert delete_result is not None
 
-    delete_result = await Sample.find_one(Sample.increment > 4).delete(hint="integer_1")
+    delete_result = await Sample.find_one(Sample.increment > 4).delete(
+        hint="integer_1"
+    )
     assert delete_result is not None

@@ -58,14 +58,13 @@ class Encoder:
     """
 
     def __init__(
-            self,
-            exclude: Union[
-                AbstractSet[Union[str, int]], Mapping[
-                    Union[str, int], Any], None
-            ] = None,
-            custom_encoders: Optional[Dict[Type, Callable]] = None,
-            by_alias: bool = True,
-            to_db: bool = False,
+        self,
+        exclude: Union[
+            AbstractSet[Union[str, int]], Mapping[Union[str, int], Any], None
+        ] = None,
+        custom_encoders: Optional[Dict[Type, Callable]] = None,
+        by_alias: bool = True,
+        to_db: bool = False,
     ):
         self.exclude = exclude or {}
         self.by_alias = by_alias
@@ -143,8 +142,8 @@ class Encoder:
         return [self._encode(item) for item in obj]
 
     def _encode(
-            self,
-            obj,
+        self,
+        obj,
     ) -> Any:
         """"""
         if self.custom_encoders:
@@ -169,7 +168,7 @@ class Encoder:
             return self.encode_iterable(obj)
 
         if isinstance(
-                obj, (str, int, float, ObjectId, datetime, type(None), DBRef)
+            obj, (str, int, float, ObjectId, datetime, type(None), DBRef)
         ):
             return obj
 

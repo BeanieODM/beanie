@@ -80,6 +80,9 @@ class BaseCursorQuery(Generic[CursorResultType]):
         if projection is not None:
             return cast(
                 List[CursorResultType],
-                [parse_obj(projection, i, lazy_parse=self.lazy_parse) for i in motor_list],
+                [
+                    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+                    for i in motor_list
+                ],
             )
         return cast(List[CursorResultType], motor_list)

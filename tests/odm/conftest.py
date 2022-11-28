@@ -49,7 +49,8 @@ from tests.odm.models import (
     Owner,
     SampleWithMutableObjects,
     TestNonRoot,
-    Test2NonRoot, SampleLazyParsing,
+    Test2NonRoot,
+    SampleLazyParsing,
 )
 from tests.odm.views import TestView
 from tests.odm.models import (
