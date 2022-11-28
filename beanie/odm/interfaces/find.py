@@ -53,41 +53,41 @@ class FindInterface:
     @overload
     @classmethod
     def find_one(  # type: ignore
-        cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            *args: Union[Mapping[str, Any], bool],
+            projection_model: None = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            fetch_links: bool = False,
+            with_children: bool = False,
+            **pymongo_kwargs,
     ) -> FindOne["DocType"]:
         ...
 
     @overload
     @classmethod
     def find_one(  # type: ignore
-        cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Type["DocumentProjectionType"],
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            *args: Union[Mapping[str, Any], bool],
+            projection_model: Type["DocumentProjectionType"],
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            fetch_links: bool = False,
+            with_children: bool = False,
+            **pymongo_kwargs,
     ) -> FindOne["DocumentProjectionType"]:
         ...
 
     @classmethod
     def find_one(  # type: ignore
-        cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            *args: Union[Mapping[str, Any], bool],
+            projection_model: Optional[Type["DocumentProjectionType"]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            fetch_links: bool = False,
+            with_children: bool = False,
+            **pymongo_kwargs,
     ) -> Union[FindOne["DocType"], FindOne["DocumentProjectionType"]]:
         """
         Find one document by criteria.
@@ -114,50 +114,53 @@ class FindInterface:
     @overload
     @classmethod
     def find_many(  # type: ignore
-        cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            *args: Union[Mapping[str, Any], bool],
+            projection_model: None = None,
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            fetch_links: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> FindMany["DocType"]:
         ...
 
     @overload
     @classmethod
     def find_many(  # type: ignore
-        cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            *args: Union[Mapping[str, Any], bool],
+            projection_model: Optional[Type["DocumentProjectionType"]] = None,
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            fetch_links: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
 
     @classmethod
     def find_many(  # type: ignore
-        cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            *args: Union[Mapping[str, Any], bool],
+            projection_model: Optional[Type["DocumentProjectionType"]] = None,
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            fetch_links: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
         Find many documents by criteria.
@@ -170,6 +173,7 @@ class FindInterface:
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
+        :param lazy_parse: bool
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
         """
@@ -183,56 +187,60 @@ class FindInterface:
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
+            lazy_parse=lazy_parse,
             **pymongo_kwargs,
         )
 
     @overload
     @classmethod
     def find(  # type: ignore
-        cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            *args: Union[Mapping[str, Any], bool],
+            projection_model: None = None,
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            fetch_links: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> FindMany["DocType"]:
         ...
 
     @overload
     @classmethod
     def find(  # type: ignore
-        cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Type["DocumentProjectionType"],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            *args: Union[Mapping[str, Any], bool],
+            projection_model: Type["DocumentProjectionType"],
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            fetch_links: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
 
     @classmethod
     def find(  # type: ignore
-        cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
-        projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            *args: Union[Mapping[str, Any], bool],
+            projection_model: Optional[Type["DocumentProjectionType"]] = None,
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            fetch_links: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
         The same as find_many
@@ -247,50 +255,54 @@ class FindInterface:
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
             with_children=with_children,
+            lazy_parse=lazy_parse,
             **pymongo_kwargs,
         )
 
     @overload
     @classmethod
     def find_all(  # type: ignore
-        cls: Type["DocType"],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: None = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            projection_model: None = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> FindMany["DocType"]:
         ...
 
     @overload
     @classmethod
     def find_all(  # type: ignore
-        cls: Type["DocType"],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            projection_model: Optional[Type["DocumentProjectionType"]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
 
     @classmethod
     def find_all(  # type: ignore
-        cls: Type["DocType"],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            projection_model: Optional[Type["DocumentProjectionType"]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
         Get all the documents
@@ -312,50 +324,54 @@ class FindInterface:
             session=session,
             ignore_cache=ignore_cache,
             with_children=with_children,
+            lazy_parse=lazy_parse,
             **pymongo_kwargs,
         )
 
     @overload
     @classmethod
     def all(  # type: ignore
-        cls: Type["DocType"],
-        projection_model: None = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            projection_model: None = None,
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> FindMany["DocType"]:
         ...
 
     @overload
     @classmethod
     def all(  # type: ignore
-        cls: Type["DocType"],
-        projection_model: Type["DocumentProjectionType"],
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            projection_model: Type["DocumentProjectionType"],
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
 
     @classmethod
     def all(  # type: ignore
-        cls: Type["DocType"],
-        projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        skip: Optional[int] = None,
-        limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            projection_model: Optional[Type["DocumentProjectionType"]] = None,
+            skip: Optional[int] = None,
+            limit: Optional[int] = None,
+            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            with_children: bool = False,
+            lazy_parse: bool = False,
+            **pymongo_kwargs,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
         the same as find_all
@@ -368,6 +384,7 @@ class FindInterface:
             session=session,
             ignore_cache=ignore_cache,
             with_children=with_children,
+            lazy_parse=lazy_parse,
             **pymongo_kwargs,
         )
 
@@ -385,17 +402,17 @@ class FindInterface:
     def _add_class_id_filter(cls, args: Tuple, with_children: bool = False):
         # skip if _class_id is already added
         if any(
-            (
-                True
-                for a in args
-                if isinstance(a, Iterable) and "_class_id" in a
-            )
+                (
+                        True
+                        for a in args
+                        if isinstance(a, Iterable) and "_class_id" in a
+                )
         ):
             return args
 
         if (
-            cls.get_model_type() == ModelType.Document
-            and cls._inheritance_inited
+                cls.get_model_type() == ModelType.Document
+                and cls._inheritance_inited
         ):
             if not with_children:
                 args += ({"_class_id": cls._class_id},)
@@ -404,7 +421,7 @@ class FindInterface:
                     {
                         "_class_id": {
                             "$in": [cls._class_id]
-                            + [cname for cname in cls._children.keys()]
+                                   + [cname for cname in cls._children.keys()]
                         }
                     },
                 )

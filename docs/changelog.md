@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.16.0b0] - 2022-11-28
+
+### Feature
+
+- Lazy parsing for find many
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/395>
+
 ## [1.15.4] - 2022-11-18
 
 ### Fix

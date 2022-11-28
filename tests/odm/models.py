@@ -537,3 +537,15 @@ class Child(BaseModel):
 class SampleWithMutableObjects(Document):
     d: Dict[str, Child]
     l: List[Child]
+
+
+class SampleLazyParsing(Document):
+    i: int
+    s: str
+
+    class Settings:
+        lazy_parsing = True
+        use_state_management = True
+
+    class Config:
+        validate_assignment = True

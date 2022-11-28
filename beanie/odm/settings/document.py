@@ -30,5 +30,7 @@ class DocumentSettings(ItemSettings):
     indexes: List[IndexModelField] = Field(default_factory=list)
     timeseries: Optional[TimeSeriesConfig] = None
 
+    lazy_parsing: bool = False
+
     class Config:
         arbitrary_types_allowed = True
