@@ -542,6 +542,9 @@ class SampleWithMutableObjects(Document):
 class SampleLazyParsing(Document):
     i: int
     s: str
+    lst: List[int] = Field(
+        [],
+    )
 
     class Settings:
         lazy_parsing = True

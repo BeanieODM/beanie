@@ -9,7 +9,7 @@ jobs:
         python-version: [ 3.7, 3.8, 3.9, 3.10.5 ]
         poetry-version: [ 1.2 ]
         mongodb-version: [ 4.4, 5.0 ]
-        pydantic-version: [1.9.0]
+        pydantic-version: [1.10.0]
         os: [ ubuntu-18.04 ]
     runs-on: ${{ matrix.os }}
     steps:

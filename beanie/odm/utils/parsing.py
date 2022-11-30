@@ -61,15 +61,7 @@ def parse_obj(
         and hasattr(model, "get_model_type")
         and model.get_model_type() == ModelType.Document
     ):
-        o = model.construct(
-            **{
-                "_store": {},
-            }
-        )
-        o.id = data.get("_id")
-        if model.get_settings().use_state_management:
-            o._save_state()
-        o.set_store(data)
-        o._lazily_parsed = True
+        o = model.lazy_parse(data, {"_id"})
+        o._saved_state = {"_id": o.id}
         return o
     return model.parse_obj(data)

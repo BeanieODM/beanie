@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from bson import ObjectId, DBRef
+from lazy_model import LazyModel
 from pydantic import (
     ValidationError,
     PrivateAttr,
@@ -88,7 +89,7 @@ DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
 class Document(
-    BaseModel,
+    LazyModel,
     SettersInterface,
     InheritanceInterface,
     FindInterface,
