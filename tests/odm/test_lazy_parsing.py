@@ -1,6 +1,7 @@
 import pytest
 
 from beanie.odm.utils.dump import get_dict
+from beanie.odm.utils.parsing import parse_obj
 from tests.odm.models import SampleLazyParsing
 
 
@@ -16,7 +17,6 @@ class TestLazyParsing:
         saved_state = found_docs[0].get_saved_state()
         assert "_id" in saved_state
         del saved_state["_id"]
-        del saved_state["_store"]
         assert found_docs[0].get_saved_state() == {}
         assert found_docs[0].i == 0
         assert found_docs[0].s == "0"
@@ -32,7 +32,6 @@ class TestLazyParsing:
         saved_state = found_docs[0].get_saved_state()
         assert "_id" in saved_state
         del saved_state["_id"]
-        del saved_state["_store"]
         assert found_docs[0].get_saved_state() == {}
         assert found_docs[0].i == 0
         assert found_docs[0].s == "0"
@@ -48,3 +47,7 @@ class TestLazyParsing:
         await doc.save_changes()
         new_doc = await SampleLazyParsing.find_one(SampleLazyParsing.s == "0")
         assert new_doc.i == 1000
+
+    async def test_default_list(self):
+        res = parse_obj(SampleLazyParsing, {"i": 1, "s": 1})
+        assert res.lst == []
