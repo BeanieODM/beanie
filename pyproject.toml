@@ -15,7 +15,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-pydantic = ">=1.9.0"
+pydantic = ">=1.10.0"
 motor = ">=2.5,<4.0"
 click = ">=7"
 toml = "*"
