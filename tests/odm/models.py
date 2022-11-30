@@ -364,13 +364,20 @@ class Yard(Document):
     w: int
 
 
+class Lock(Document):
+    l: int
+
+
 class Window(Document):
     x: int
     y: int
+    lock: Optional[Link[Lock]]
 
 
 class Door(Document):
     t: int = 10
+    window: Optional[Link[Window]]
+    locks: Optional[List[Link[Lock]]]
 
 
 class Roof(Document):
@@ -446,9 +453,18 @@ class YardWithRevision(Document):
         use_state_management = True
 
 
+class LockWithRevision(Document):
+    l: int
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
+
+
 class WindowWithRevision(Document):
     x: int
     y: int
+    lock: Link[LockWithRevision]
 
     class Settings:
         use_revision = True

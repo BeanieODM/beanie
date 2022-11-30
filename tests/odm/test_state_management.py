@@ -10,6 +10,7 @@ from tests.odm.models import (
     InternalDoc,
     HouseWithRevision,
     WindowWithRevision,
+    LockWithRevision
 )
 
 
@@ -213,7 +214,7 @@ async def test_rollback(doc_default, state):
 
 @pytest.fixture
 def windows_not_inserted():
-    return [WindowWithRevision(x=10, y=10), WindowWithRevision(x=11, y=11)]
+    return [WindowWithRevision(x=10, y=10, lock=LockWithRevision(l=10)), WindowWithRevision(x=11, y=11, lock=LockWithRevision(l=11))]
 
 
 @pytest.fixture
@@ -231,4 +232,5 @@ async def test_fetch_save_changes(house):
     house = data[0]
     window_0 = house.windows[0]
     window_0.x = 10000
+    window_0.lock.l = 10000
     await window_0.save_changes()

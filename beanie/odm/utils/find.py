@@ -60,6 +60,12 @@ def construct_query(
                 }
             },
         ]  # type: ignore
+
+        if link_info.nested_links is not None:
+            for nested_link in link_info.nested_links:
+                construct_query(
+                    link_info.nested_links[nested_link], queries, field_path
+                )
     else:
         queries.append(
             {
@@ -72,10 +78,13 @@ def construct_query(
             }
         )
 
-    if link_info.nested_links is not None:
-        for nested_link in link_info.nested_links:
-            construct_query(
-                link_info.nested_links[nested_link], queries, field_path
-            )
+        if link_info.nested_links is not None:
+            queries[-1]["$lookup"]["pipeline"] = []
+            for nested_link in link_info.nested_links:
+                construct_query(
+                    link_info=link_info.nested_links[nested_link],
+                    queries=queries[-1]["$lookup"]["pipeline"],
+                    parent_prefix="",
+                )
 
     return queries
