@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from bson import ObjectId, DBRef
+from lazy_model import LazyModel
 from pydantic import (
     ValidationError,
     PrivateAttr,
@@ -88,7 +89,7 @@ DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
 class Document(
-    BaseModel,
+    LazyModel,
     SettersInterface,
     InheritanceInterface,
     FindInterface,
@@ -127,6 +128,10 @@ class Document(
 
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
+
+    # Lazy getter
+    _store: Dict[str, Any] = PrivateAttr(default_factory=dict)
+    _lazily_parsed: bool = PrivateAttr(default=False)
 
     def _swap_revision(self):
         if self.get_settings().use_revision:
@@ -936,6 +941,26 @@ class Document(
     def link_from_id(cls, id: Any):
         ref = DBRef(id=id, collection=cls.get_collection_name())
         return Link(ref, model_class=cls)
+
+    # Lazy getters
+
+    def set_store(self, d):
+        self._store = d
+
+    def __getattribute__(self, item):
+        res = super(Document, self).__getattribute__(item)
+        if isinstance(res, ExpressionField):
+            field_info = self.__fields__.get(item)
+            value = self._store[field_info.alias]
+            self.__setattr__(item, value)
+            return super(Document, self).__getattribute__(item)
+        return res
+
+    def fetch_from_store(self):
+        if self._lazily_parsed:
+            for k, v in self.__fields__.items():
+                self.__getattribute__(v.name)
+            self._lazily_parsed = False
 
     class Config:
         json_encoders = {

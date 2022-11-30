@@ -48,8 +48,11 @@ from tests.odm.models import (
     Owner,
     Roof,
     Sample,
+    SampleLazyParsing,
     SampleWithMutableObjects,
     SubDocument,
+    Test2NonRoot,
+    TestNonRoot,
     Vehicle,
     Window,
     WindowWithRevision,
@@ -190,6 +193,9 @@ async def init(loop, db):
         Bus,
         Owner,
         SampleWithMutableObjects,
+        TestNonRoot,
+        Test2NonRoot,
+        SampleLazyParsing,
     ]
     await init_beanie(
         database=db,

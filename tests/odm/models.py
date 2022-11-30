@@ -535,6 +535,23 @@ class Owner(Document):
     vehicles: List[Link[Vehicle]] = []
 
 
+class MixinNonRoot(BaseModel):
+    id: int = Field(..., ge=1, le=254)
+
+
+class MyDocNonRoot(Document):
+    class Settings:
+        use_state_management = True
+
+
+class TestNonRoot(MixinNonRoot, MyDocNonRoot):
+    name: str
+
+
+class Test2NonRoot(MyDocNonRoot):
+    name: str
+
+
 class Child(BaseModel):
     child_field: str
 
@@ -542,3 +559,18 @@ class Child(BaseModel):
 class SampleWithMutableObjects(Document):
     d: Dict[str, Child]
     l: List[Child]
+
+
+class SampleLazyParsing(Document):
+    i: int
+    s: str
+    lst: List[int] = Field(
+        [],
+    )
+
+    class Settings:
+        lazy_parsing = True
+        use_state_management = True
+
+    class Config:
+        validate_assignment = True

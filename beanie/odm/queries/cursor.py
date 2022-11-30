@@ -24,6 +24,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
     """
 
     cursor = None
+    lazy_parse = False
 
     @abstractmethod
     def get_projection_model(self) -> Optional[Type[BaseModel]]:
@@ -49,7 +50,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
         projection = self.get_projection_model()
         if projection is None:
             return next_item
-        return parse_obj(projection, next_item)  # type: ignore
+        return parse_obj(projection, next_item, lazy_parse=self.lazy_parse)  # type: ignore
 
     @abstractmethod
     def _get_cache(self) -> List[Dict[str, Any]]:
@@ -79,6 +80,9 @@ class BaseCursorQuery(Generic[CursorResultType]):
         if projection is not None:
             return cast(
                 List[CursorResultType],
-                [parse_obj(projection, i) for i in motor_list],
+                [
+                    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+                    for i in motor_list
+                ],
             )
         return cast(List[CursorResultType], motor_list)
