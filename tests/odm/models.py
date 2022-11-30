@@ -371,7 +371,7 @@ class Yard(Document):
 
 
 class Lock(Document):
-    l: int
+    k: int
 
 
 class Window(Document):
@@ -460,7 +460,7 @@ class YardWithRevision(Document):
 
 
 class LockWithRevision(Document):
-    l: int
+    k: int
 
     class Settings:
         use_revision = True

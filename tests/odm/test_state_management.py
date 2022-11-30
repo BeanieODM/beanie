@@ -235,5 +235,5 @@ async def test_fetch_save_changes(house):
     house = data[0]
     window_0 = house.windows[0]
     window_0.x = 10000
-    window_0.lock.l = 10000
+    window_0.lock.k = 10000
     await window_0.save_changes()

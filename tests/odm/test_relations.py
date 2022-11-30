@@ -7,12 +7,12 @@ from tests.odm.models import Door, House, Lock, Roof, Window, Yard
 
 @pytest.fixture
 def lock_not_inserted():
-    return Lock(l=10)
+    return Lock(k=10)
 
 
 @pytest.fixture
 def locks_not_inserted():
-    return [Lock(l=10), Lock(l=11)]
+    return [Lock(k=10), Lock(k=11)]
 
 
 @pytest.fixture
@@ -68,12 +68,12 @@ async def houses():
         house = await House(
             door=Door(
                 t=i,
-                window=Window(x=20, y=21 + i, lock=Lock(l=20 + i)),
-                locks=[Lock(l=20 + i)],
+                window=Window(x=20, y=21 + i, lock=Lock(k=20 + i)),
+                locks=[Lock(k=20 + i)],
             ),
             windows=[
-                Window(x=10, y=10 + i, lock=Lock(l=10 + i)),
-                Window(x=11, y=11 + i, lock=Lock(l=11 + i)),
+                Window(x=10, y=10 + i, lock=Lock(k=10 + i)),
+                Window(x=11, y=11 + i, lock=Lock(k=11 + i)),
             ],
             yards=yards,
             roof=roof,
@@ -281,7 +281,7 @@ class TestSave:
 
     async def test_write(self, house):
         house.door.t = 100
-        house.windows = [Window(x=100, y=100, lock=Lock(l=100))]
+        house.windows = [Window(x=100, y=100, lock=Lock(k=100))]
         await house.save(link_rule=WriteRules.WRITE)
         new_house = await House.get(house.id, fetch_links=True)
         assert new_house.door.t == 100
@@ -289,7 +289,7 @@ class TestSave:
             assert window.x == 100
             assert window.y == 100
             assert isinstance(window.lock, Lock)
-            assert window.lock.l == 100
+            assert window.lock.k == 100
 
 
 class TestDelete:
