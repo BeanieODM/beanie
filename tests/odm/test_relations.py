@@ -1,8 +1,8 @@
 import pytest
 
 from beanie.exceptions import DocumentWasNotSaved
-from beanie.odm.fields import WriteRules, Link, DeleteRules
-from tests.odm.models import Window, Door, House, Roof, Yard, Lock
+from beanie.odm.fields import DeleteRules, Link, WriteRules
+from tests.odm.models import Door, House, Lock, Roof, Window, Yard
 
 
 @pytest.fixture
@@ -66,7 +66,11 @@ async def houses():
         else:
             yards = None
         house = await House(
-            door=Door(t=i, window=Window(x=20, y=21 + i, lock=Lock(l=20 + i)), locks=[Lock(l=20 + i)]),
+            door=Door(
+                t=i,
+                window=Window(x=20, y=21 + i, lock=Lock(l=20 + i)),
+                locks=[Lock(l=20 + i)],
+            ),
             windows=[
                 Window(x=10, y=10 + i, lock=Lock(l=10 + i)),
                 Window(x=11, y=11 + i, lock=Lock(l=11 + i)),

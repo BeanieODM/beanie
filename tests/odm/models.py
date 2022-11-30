@@ -9,17 +9,23 @@ from ipaddress import (
     IPv6Network,
 )
 from pathlib import Path
-from typing import List, Optional, Set, Tuple, Union, Dict
+from typing import Dict, List, Optional, Set, Tuple, Union
 from uuid import UUID, uuid4
 
 import pymongo
-from pydantic import SecretBytes, SecretStr, Extra, PrivateAttr
+from pydantic import (
+    BaseModel,
+    Extra,
+    Field,
+    PrivateAttr,
+    SecretBytes,
+    SecretStr,
+)
 from pydantic.color import Color
-from pydantic import BaseModel, Field
 from pymongo import IndexModel
 
-from beanie import Document, Indexed, Insert, Replace, ValidateOnSave, Update
-from beanie.odm.actions import before_event, after_event, Delete
+from beanie import Document, Indexed, Insert, Replace, Update, ValidateOnSave
+from beanie.odm.actions import Delete, after_event, before_event
 from beanie.odm.fields import Link
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc

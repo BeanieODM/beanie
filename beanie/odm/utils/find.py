@@ -1,7 +1,7 @@
+from typing import TYPE_CHECKING, Any, Dict, List, Type
+
 from beanie.exceptions import NotSupported
 from beanie.odm.fields import LinkInfo, LinkTypes
-from typing import TYPE_CHECKING, List, Dict, Any, Type
-
 from beanie.odm.interfaces.detector import ModelType
 
 if TYPE_CHECKING:
