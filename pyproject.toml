@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beanie"
-version = "1.16.0b2"
+version = "1.16.0b3"
 description = "Asynchronous Python ODM for MongoDB"
 authors = ["Roman <roman-right@protonmail.com>"]
 license = "Apache-2.0"
@@ -20,7 +20,7 @@ motor = ">=2.5,<4.0"
 click = ">=7"
 toml = "*"
 yarl = ">=1.6"
-lazy-model = "^0.0.2"
+lazy-model = ">=0.0.3"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.3.0"
