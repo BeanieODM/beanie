@@ -215,8 +215,8 @@ async def test_rollback(doc_default, state):
 @pytest.fixture
 def windows_not_inserted():
     return [
-        WindowWithRevision(x=10, y=10, lock=LockWithRevision(l=10)),
-        WindowWithRevision(x=11, y=11, lock=LockWithRevision(l=11)),
+        WindowWithRevision(x=10, y=10, lock=LockWithRevision(k=10)),
+        WindowWithRevision(x=11, y=11, lock=LockWithRevision(k=11)),
     ]
 
 

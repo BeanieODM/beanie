@@ -46,7 +46,7 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     SecretStr: SecretStr.get_secret_value,
     Enum: lambda o: o.value,
     PurePath: str,
-    Link: lambda l: l.ref,
+    Link: lambda l: l.ref,  # noqa: E741
     bytes: lambda b: b if isinstance(b, Binary) else Binary(b),
     UUID: lambda u: bson.Binary.from_uuid(u),
 }
