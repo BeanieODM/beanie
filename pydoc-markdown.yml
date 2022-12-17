@@ -69,6 +69,8 @@ renderer:
           source: docs/tutorial/insert.md
         - title: Finding documents
           source: docs/tutorial/find.md
+        - title: Lazy parsing
+          source: docs/tutorial/lazy_parse.md
         - title: Updating & Deleting
           source: docs/tutorial/update.md
         - title: Indexes
