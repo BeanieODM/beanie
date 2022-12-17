@@ -5,7 +5,6 @@ from typing import Optional, List, Type, Union
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from pydantic import BaseModel
 from pymongo import IndexModel
-from yarl import URL
 
 from beanie.exceptions import MongoDBVersionError
 from beanie.odm.actions import ActionRegistry
@@ -63,9 +62,9 @@ class Initializer:
         if document_models is None:
             raise ValueError("document_models parameter must be set")
         if connection_string is not None:
-            database = AsyncIOMotorClient(connection_string)[
-                URL(connection_string).path[1:]
-            ]
+            database = AsyncIOMotorClient(
+                connection_string
+            ).get_default_database()
 
         self.database: AsyncIOMotorDatabase = database
 
