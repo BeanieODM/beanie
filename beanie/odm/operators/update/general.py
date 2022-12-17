@@ -22,7 +22,7 @@ class Set(BaseUpdateGeneralOperator):
     class Sample(Document):
         one: int
 
-    Set({Sample.one, 2})
+    Set({Sample.one: 2})
     ```
 
     Will return query object like
