@@ -168,6 +168,7 @@ class Initializer:
         Init class fields
         :return: None
         """
+
         def check_nested_links(link_info: LinkInfo):
             for k, v in link_info.model_class.__fields__.items():
                 nested_link_info = detect_link(v)
@@ -231,12 +232,11 @@ class Initializer:
         if not document_settings.name:
             document_settings.name = cls.__name__
 
-        # check mongodb version
-        build_info = await self.database.command({"buildInfo": 1})
-        mongo_version = build_info["version"]
-        major_version = int(mongo_version.split(".")[0])
-
-        if document_settings.timeseries is not None and major_version < 5:
+        # check mongodb version fits
+        if (
+            document_settings.timeseries is not None
+            and cls._database_major_version < 5
+        ):
             raise MongoDBVersionError(
                 "Timeseries are supported by MongoDB version 5 and higher"
             )
@@ -307,6 +307,11 @@ class Initializer:
         """
         if cls is Document:
             return None
+
+        # get db version
+        build_info = await self.database.command({"buildInfo": 1})
+        mongo_version = build_info["version"]
+        cls._database_major_version = int(mongo_version.split(".")[0])
 
         if cls not in self.inited_classes:
             self.set_default_class_vars(cls)

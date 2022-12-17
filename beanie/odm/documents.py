@@ -126,6 +126,9 @@ class Document(
     # Settings
     _document_settings: ClassVar[Optional[DocumentSettings]] = None
 
+    # Database
+    _database_major_version: ClassVar[int] = 4
+
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()
 
