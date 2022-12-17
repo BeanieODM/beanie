@@ -1,6 +1,5 @@
 import pytest
 from motor.motor_asyncio import AsyncIOMotorCollection
-from yarl import URL
 
 from beanie import Document, init_beanie
 from beanie.exceptions import CollectionWasNotInitialized
@@ -34,7 +33,7 @@ async def test_init_connection_string(settings):
     )
     assert (
         NewDocumentCS.get_motor_collection().database.name
-        == URL(settings.mongodb_dsn).path[1:]
+        == settings.mongodb_dsn.split("/")[-1]
     )
 
 
