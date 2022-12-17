@@ -2,7 +2,18 @@
 
 Beanie project
 
-## [1.16.0b0] - 2022-11-28
+## [1.16.0] - 2022-12-17
+
+### Feature
+
+- Support for fetching deep-nested Links
+
+### Implementation
+
+- Author - [Courtney Sanders](https://github.com/csanders-rga)
+- PR <https://github.com/roman-right/beanie/pull/419>
+
+## [1.16.0b3] - 2022-11-28
 
 ### Feature
 
@@ -1116,4 +1127,6 @@ how specific type should be presented in the database
 
 [1.15.4]: https://pypi.org/project/beanie/1.15.4
 
-[1.16.0b0]: https://pypi.org/project/beanie/1.16.0b0
+[1.16.0b3]: https://pypi.org/project/beanie/1.16.0b3
+
+[1.16.0]: https://pypi.org/project/beanie/1.16.0

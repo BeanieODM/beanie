@@ -1,14 +1,15 @@
 import pytest
 from bson import ObjectId
 
-from beanie import WriteRules, PydanticObjectId
+from beanie import PydanticObjectId, WriteRules
 from beanie.exceptions import StateManagementIsTurnedOff, StateNotSaved
 from tests.odm.models import (
-    DocumentWithTurnedOnStateManagement,
-    DocumentWithTurnedOnReplaceObjects,
     DocumentWithTurnedOffStateManagement,
-    InternalDoc,
+    DocumentWithTurnedOnReplaceObjects,
+    DocumentWithTurnedOnStateManagement,
     HouseWithRevision,
+    InternalDoc,
+    LockWithRevision,
     WindowWithRevision,
 )
 
@@ -213,7 +214,10 @@ async def test_rollback(doc_default, state):
 
 @pytest.fixture
 def windows_not_inserted():
-    return [WindowWithRevision(x=10, y=10), WindowWithRevision(x=11, y=11)]
+    return [
+        WindowWithRevision(x=10, y=10, lock=LockWithRevision(k=10)),
+        WindowWithRevision(x=11, y=11, lock=LockWithRevision(k=11)),
+    ]
 
 
 @pytest.fixture
@@ -231,4 +235,5 @@ async def test_fetch_save_changes(house):
     house = data[0]
     window_0 = house.windows[0]
     window_0.x = 10000
+    window_0.lock.k = 10000
     await window_0.save_changes()

@@ -1,6 +1,6 @@
 import asyncio
 from enum import Enum
-from typing import Generic, TypeVar, Union, Type, List
+from typing import Dict, Generic, TypeVar, Union, Type, List, Optional
 
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
@@ -145,6 +145,7 @@ class LinkInfo(BaseModel):
     field: str
     model_class: Type[BaseModel]  # Document class
     link_type: LinkTypes
+    nested_links: Optional[Dict]
 
 
 T = TypeVar("T")
@@ -155,8 +156,8 @@ class Link(Generic[T]):
         self.ref = ref
         self.model_class = model_class
 
-    async def fetch(self) -> Union[T, "Link"]:
-        result = await self.model_class.get(self.ref.id, with_children=True)  # type: ignore
+    async def fetch(self, fetch_links: bool = False) -> Union[T, "Link"]:
+        result = await self.model_class.get(self.ref.id, with_children=True, fetch_links=fetch_links)  # type: ignore
         return result or self
 
     @classmethod
@@ -164,7 +165,7 @@ class Link(Generic[T]):
         return await link.fetch()
 
     @classmethod
-    async def fetch_list(cls, links: List["Link"]):
+    async def fetch_list(cls, links: List["Link"], fetch_links: bool = False):
         ids = []
         model_class = None
         for link in links:
@@ -176,7 +177,7 @@ class Link(Generic[T]):
                         "All the links must have the same model class"
                     )
             ids.append(link.ref.id)
-        return await model_class.find(In("_id", ids), with_children=True).to_list()  # type: ignore
+        return await model_class.find(In("_id", ids), with_children=True, fetch_links=fetch_links).to_list()  # type: ignore
 
     @classmethod
     async def fetch_many(cls, links: List["Link"]):

@@ -1,18 +1,48 @@
 import pytest
 
 from beanie.exceptions import DocumentWasNotSaved
-from beanie.odm.fields import WriteRules, Link, DeleteRules
-from tests.odm.models import Window, Door, House, Roof, Yard
+from beanie.odm.fields import DeleteRules, Link, WriteRules
+from tests.odm.models import Door, House, Lock, Roof, Window, Yard
 
 
 @pytest.fixture
-def windows_not_inserted():
-    return [Window(x=10, y=10), Window(x=11, y=11)]
+def lock_not_inserted():
+    return Lock(k=10)
 
 
 @pytest.fixture
-def door_not_inserted():
-    return Door(t=10)
+def locks_not_inserted():
+    return [Lock(k=10), Lock(k=11)]
+
+
+@pytest.fixture
+def window_not_inserted(lock_not_inserted):
+    return Window(x=10, y=10, lock=lock_not_inserted)
+
+
+@pytest.fixture
+def windows_not_inserted(lock_not_inserted):
+    return [
+        Window(
+            x=10,
+            y=10,
+            lock=lock_not_inserted,
+        ),
+        Window(
+            x=11,
+            y=11,
+            lock=lock_not_inserted,
+        ),
+    ]
+
+
+@pytest.fixture
+def door_not_inserted(locks_not_inserted, window_not_inserted):
+    return Door(
+        t=10,
+        window=window_not_inserted,
+        locks=locks_not_inserted,
+    )
 
 
 @pytest.fixture
@@ -36,8 +66,15 @@ async def houses():
         else:
             yards = None
         house = await House(
-            door=Door(t=i),
-            windows=[Window(x=10, y=10 + i), Window(x=11, y=11 + i)],
+            door=Door(
+                t=i,
+                window=Window(x=20, y=21 + i, lock=Lock(k=20 + i)),
+                locks=[Lock(k=20 + i)],
+            ),
+            windows=[
+                Window(x=10, y=10 + i, lock=Lock(k=10 + i)),
+                Window(x=11, y=11 + i, lock=Lock(k=11 + i)),
+            ],
             yards=yards,
             roof=roof,
             name="test",
@@ -45,6 +82,7 @@ async def houses():
         ).insert(link_rule=WriteRules.WRITE)
         if i == 9:
             await house.windows[0].delete()
+            await house.windows[1].lock.delete()
             await house.door.delete()
 
 
@@ -55,19 +93,42 @@ class TestInsert:
 
     async def test_rule_write(self, house_not_inserted):
         await house_not_inserted.insert(link_rule=WriteRules.WRITE)
+        locks = await Lock.all().to_list()
+        assert len(locks) == 5
         windows = await Window.all().to_list()
-        assert len(windows) == 2
+        assert len(windows) == 3
         doors = await Door.all().to_list()
         assert len(doors) == 1
         houses = await House.all().to_list()
         assert len(houses) == 1
 
     async def test_insert_with_link(
-        self, house_not_inserted, door_not_inserted
+        self,
+        house_not_inserted,
+        door_not_inserted,
+        window_not_inserted,
+        lock_not_inserted,
+        locks_not_inserted,
     ):
+        lock_links = []
+        for lock in locks_not_inserted:
+            lock = await lock.insert()
+            link = Lock.link_from_id(lock.id)
+            lock_links.append(link)
+        door_not_inserted.locks = lock_links
+
+        door_window_lock = await lock_not_inserted.insert()
+        door_window_lock_link = Lock.link_from_id(door_window_lock.id)
+        window_not_inserted.lock = door_window_lock_link
+
+        door_window = await window_not_inserted.insert()
+        door_window_link = Window.link_from_id(door_window.id)
+        door_not_inserted.window = door_window_link
+
         door = await door_not_inserted.insert()
-        link = Door.link_from_id(door.id)
-        house_not_inserted.door = link
+        door_link = Door.link_from_id(door.id)
+        house_not_inserted.door = door_link
+
         house = House.parse_obj(house_not_inserted)
         await house.insert(link_rule=WriteRules.WRITE)
         house.json()
@@ -94,10 +155,15 @@ class TestFind:
         assert len(items) == 7
         for window in items[0].windows:
             assert isinstance(window, Window)
+            assert isinstance(window.lock, Lock)
         assert items[0].yards == []
         for yard in items[1].yards:
             assert isinstance(yard, Yard)
         assert isinstance(items[0].door, Door)
+        assert isinstance(items[0].door.window, Window)
+        assert isinstance(items[0].door.window.lock, Lock)
+        for lock in items[0].door.locks:
+            assert isinstance(lock, Lock)
         assert items[0].roof is None
         assert isinstance(items[1].roof, Roof)
 
@@ -105,6 +171,7 @@ class TestFind:
             House.height == 9, fetch_links=True
         ).to_list()
         assert len(houses[0].windows) == 1
+        assert isinstance(houses[0].windows[0].lock, Link)
         assert isinstance(houses[0].door, Link)
         await houses[0].fetch_link(House.door)
         assert isinstance(houses[0].door, Link)
@@ -152,18 +219,26 @@ class TestFind:
         await house.fetch_all_links()
         for window in house.windows:
             assert isinstance(window, Window)
+            assert isinstance(window.lock, Lock)
         assert isinstance(house.door, Door)
+        assert isinstance(house.door.window, Window)
+        for lock in house.door.locks:
+            assert isinstance(lock, Lock)
 
         house = await House.find_one(House.name == "test")
         assert isinstance(house.door, Link)
         await house.fetch_link(House.door)
         assert isinstance(house.door, Door)
+        assert isinstance(house.door.window, Window)
+        for lock in house.door.locks:
+            assert isinstance(lock, Lock)
 
         for window in house.windows:
             assert isinstance(window, Link)
         await house.fetch_link(House.windows)
         for window in house.windows:
             assert isinstance(window, Window)
+            assert isinstance(window.lock, Lock)
 
     async def test_find_by_id_of_the_linked_docs(self, house):
         house_lst_1 = await House.find(
@@ -206,13 +281,15 @@ class TestSave:
 
     async def test_write(self, house):
         house.door.t = 100
-        house.windows = [Window(x=100, y=100)]
+        house.windows = [Window(x=100, y=100, lock=Lock(k=100))]
         await house.save(link_rule=WriteRules.WRITE)
         new_house = await House.get(house.id, fetch_links=True)
         assert new_house.door.t == 100
         for window in new_house.windows:
             assert window.x == 100
             assert window.y == 100
+            assert isinstance(window.lock, Lock)
+            assert window.lock.k == 100
 
 
 class TestDelete:
@@ -224,6 +301,9 @@ class TestDelete:
         windows = await Window.all().to_list()
         assert windows is not None
 
+        locks = await Lock.all().to_list()
+        assert locks is not None
+
     async def test_delete_links(self, house):
         await house.delete(link_rule=DeleteRules.DELETE_LINKS)
         door = await Door.get(house.door.id)
@@ -231,3 +311,6 @@ class TestDelete:
 
         windows = await Window.all().to_list()
         assert windows == []
+
+        locks = await Lock.all().to_list()
+        assert locks == []
