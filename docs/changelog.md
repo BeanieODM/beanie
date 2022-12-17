@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.16.1] - 2022-12-17
+
+### Feature
+
+- Remove yarl dependency
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/448>
+
 ## [1.16.0] - 2022-12-17
 
 ### Feature
@@ -1130,3 +1140,5 @@ how specific type should be presented in the database
 [1.16.0b3]: https://pypi.org/project/beanie/1.16.0b3
 
 [1.16.0]: https://pypi.org/project/beanie/1.16.0
+
+[1.16.1]: https://pypi.org/project/beanie/1.16.1
