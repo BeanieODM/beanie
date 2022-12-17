@@ -18,4 +18,4 @@ jobs:
       - name: install dependencies
         run: poetry install
       - name: publish project
-        run: poetry publish --build --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_PASSWORD }}
+        run: poetry publish --build --username __token__ --password ${{ secrets.PYPI_TOKEN }}
