@@ -878,15 +878,21 @@ class Document(
                 )  # type: ignore
             elif exclude is None:
                 exclude = self._hidden_fields
-        return super().dict(
-            include=include,
-            exclude=exclude,
-            by_alias=by_alias,
-            skip_defaults=skip_defaults,
-            exclude_unset=exclude_unset,
-            exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none,
-        )
+
+        kwargs = {
+            "include": include,
+            "exclude": exclude,
+            "by_alias": by_alias,
+            "exclude_unset": exclude_unset,
+            "exclude_defaults": exclude_defaults,
+            "exclude_none": exclude_none,
+        }
+
+        # TODO: Remove this check when skip_defaults are no longer supported
+        if skip_defaults:
+            kwargs["skip_defaults"] = skip_defaults
+
+        return super().dict(**kwargs)
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args, **kwargs):
