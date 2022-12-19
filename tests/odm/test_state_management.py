@@ -78,11 +78,13 @@ def test_save_state():
         "num_1": 2,
         "num_2": 3,
         "internal": {"num": 1, "string": "s", "lst": [1, 2, 3, 4, 5]},
+        "_id": doc.id,
     }
     assert doc.get_previous_saved_state() == {
         "num_1": 1,
         "num_2": 2,
         "internal": {"num": 1, "string": "s", "lst": [1, 2, 3, 4, 5]},
+        "_id": doc.id,
     }
 
 
