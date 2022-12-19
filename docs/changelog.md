@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.16.3] - 2022-12-19
+
+### Fix
+
+- [[BUG] revision_id field saved in MongoDB using save()/replace() on an existing document even if use_revision is False](https://github.com/roman-right/beanie/issues/420)
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/452>
+
 ## [1.16.2] - 2022-12-19
 
 ### Fix
@@ -1156,3 +1166,5 @@ how specific type should be presented in the database
 [1.16.1]: https://pypi.org/project/beanie/1.16.1
 
 [1.16.2]: https://pypi.org/project/beanie/1.16.2
+
+[1.16.3]: https://pypi.org/project/beanie/1.16.3
