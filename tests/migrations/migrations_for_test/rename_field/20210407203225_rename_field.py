@@ -12,7 +12,7 @@ class OldNote(Document):
     name: str
     tag: Tag
 
-    class Collection:
+    class Settings:
         name = "notes"
 
 
@@ -20,7 +20,7 @@ class Note(Document):
     title: str
     tag: Tag
 
-    class Collection:
+    class Settings:
         name = "notes"
 
 

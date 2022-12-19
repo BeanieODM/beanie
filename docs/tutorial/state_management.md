@@ -1,8 +1,8 @@
 # State Management
 
-Beanie can keep the document state, that synced with the database, to find local changes and save only them.
+Beanie can keep the document state synced with the database in order to find local changes and save only them.
 
-This feature must be turned on in the `Settings` inner class explicitly:
+This feature must be explicitly turned on in the `Settings` inner class:
 
 ```python
 class Sample(Document):
@@ -19,7 +19,7 @@ Every new save override the previous changes and clears the current changes.
 
 ## Saving changes
 
-To save only changed values the `save_changes()` method should be used.
+To save only changed values, the `save_changes()` method should be used.
 
 ```python
 s = await Sample.find_one(Sample.name == "Test")
@@ -67,8 +67,9 @@ s.get_changes() == {}
 
 ## Options
 
-By default, state management will merge the changes made to nested objects, which is fine for most cases,
-as it is non-destructive, and does not re-assign the whole object is only one of its attributes changed:
+By default, state management will merge the changes made to nested objects, 
+which is fine for most cases as it is non-destructive and does not re-assign the whole object 
+if only one of its attributes changed:
 
 ```python
 from typing import Dict
@@ -91,7 +92,7 @@ await i.save_changes()
 # Keeping attribute_2
 ```
 
-However, there's some cases where you want to replace the whole object when one of its attributes changed.
+However, there are some cases where you would want to replace the whole object when one of its attributes changed.
 You can enable the `state_management_replace_objects` attribute in your model's `Settings` inner class:
 
 ```python
@@ -107,7 +108,7 @@ class Item(Document):
         state_management_replace_objects = True
 ```
 
-With this setting activated, when one attribute of the nested object is changed, the whole object will be overridden:
+With this setting activated, the whole object will be overridden when one attribute of the nested object is changed:
 
 ```python
 i = Item(name="Test", attributes={"attribute_1": 1.0, "attribute_2": 2.0})

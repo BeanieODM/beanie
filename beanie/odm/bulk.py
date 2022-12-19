@@ -1,6 +1,6 @@
 from typing import Dict, Any, List, Optional, Union, Type, Mapping
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pymongo import (
     InsertOne,
     DeleteOne,
@@ -22,6 +22,7 @@ class Operation(BaseModel):
     ]
     first_query: Mapping[str, Any]
     second_query: Optional[Dict[str, Any]] = None
+    pymongo_kwargs: Dict[str, Any] = Field(default_factory=dict)
     object_class: Type
 
     class Config:
@@ -51,9 +52,11 @@ class BulkWriter:
                         "All the operations should be for a single document model"
                     )
                 if op.operation in [InsertOne, DeleteOne]:
-                    query = op.operation(op.first_query)
+                    query = op.operation(op.first_query, **op.pymongo_kwargs)
                 else:
-                    query = op.operation(op.first_query, op.second_query)
+                    query = op.operation(
+                        op.first_query, op.second_query, **op.pymongo_kwargs
+                    )
                 requests.append(query)
 
             await obj_class.get_motor_collection().bulk_write(requests)  # type: ignore

@@ -17,7 +17,7 @@ class OldNote(Document):
     name: str
     tag: Tag
 
-    class Collection:
+    class Settings:
         name = "notes"
 
 
@@ -25,7 +25,7 @@ class Note(Document):
     title: str
     tag: Tag
 
-    class Collection:
+    class Settings:
         name = "notes"
 
 
@@ -37,7 +37,7 @@ async def notes(loop, db):
         note = OldNote(name=str(i), tag=Tag(name="test", color="red"))
         await note.insert()
     yield
-    await OldNote.delete_all()
+    # await OldNote.delete_all()
 
 
 async def test_migration_rename_field(settings, notes, db):

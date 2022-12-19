@@ -16,7 +16,7 @@ class OldNote(Document):
     title: str
     tag: Tag
 
-    class Collection:
+    class Settings:
         name = "notes"
         indexes = ["title"]
 
@@ -25,7 +25,7 @@ class Note(Document):
     title: str
     tag: Tag
 
-    class Collection:
+    class Settings:
         name = "notes"
 
 

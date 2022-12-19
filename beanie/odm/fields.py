@@ -1,6 +1,6 @@
 import asyncio
 from enum import Enum
-from typing import Generic, TypeVar, Union, Type, List
+from typing import Dict, Generic, TypeVar, Union, Type, List, Optional
 
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
@@ -19,6 +19,7 @@ from beanie.odm.operators.find.comparison import (
     NE,
     In,
 )
+from beanie.odm.utils.parsing import parse_obj
 
 
 def Indexed(typ, index_type=ASCENDING, **kwargs):
@@ -116,6 +117,12 @@ class ExpressionField(str):
     def __neg__(self):
         return self, SortDirection.DESCENDING
 
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
+
 
 class DeleteRules(str, Enum):
     DO_NOTHING = "DO_NOTHING"
@@ -131,12 +138,14 @@ class LinkTypes(str, Enum):
     DIRECT = "DIRECT"
     OPTIONAL_DIRECT = "OPTIONAL_DIRECT"
     LIST = "LIST"
+    OPTIONAL_LIST = "OPTIONAL_LIST"
 
 
 class LinkInfo(BaseModel):
     field: str
     model_class: Type[BaseModel]  # Document class
     link_type: LinkTypes
+    nested_links: Optional[Dict]
 
 
 T = TypeVar("T")
@@ -147,8 +156,8 @@ class Link(Generic[T]):
         self.ref = ref
         self.model_class = model_class
 
-    async def fetch(self) -> Union[T, "Link"]:
-        result = await self.model_class.get(self.ref.id)  # type: ignore
+    async def fetch(self, fetch_links: bool = False) -> Union[T, "Link"]:
+        result = await self.model_class.get(self.ref.id, with_children=True, fetch_links=fetch_links)  # type: ignore
         return result or self
 
     @classmethod
@@ -156,7 +165,7 @@ class Link(Generic[T]):
         return await link.fetch()
 
     @classmethod
-    async def fetch_list(cls, links: List["Link"]):
+    async def fetch_list(cls, links: List["Link"], fetch_links: bool = False):
         ids = []
         model_class = None
         for link in links:
@@ -168,7 +177,7 @@ class Link(Generic[T]):
                         "All the links must have the same model class"
                     )
             ids.append(link.ref.id)
-        return await model_class.find(In("_id", ids)).to_list()  # type: ignore
+        return await model_class.find(In("_id", ids), with_children=True, fetch_links=fetch_links).to_list()  # type: ignore
 
     @classmethod
     async def fetch_many(cls, links: List["Link"]):
@@ -189,7 +198,7 @@ class Link(Generic[T]):
         if isinstance(v, Link):
             return v
         if isinstance(v, dict) or isinstance(v, BaseModel):
-            return model_class.validate(v)
+            return parse_obj(model_class, v)
         new_id = parse_obj_as(model_class.__fields__["id"].type_, v)
         ref = DBRef(collection=model_class.get_collection_name(), id=new_id)
         return cls(ref=ref, model_class=model_class)

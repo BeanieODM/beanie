@@ -28,6 +28,7 @@ from beanie.odm.cache import LRUCache
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.aggregation_methods import AggregateMethods
+from beanie.odm.interfaces.clone import CloneInterface
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import UpdateMethods
 from beanie.odm.operators.find.logical import And
@@ -55,7 +56,9 @@ FindQueryProjectionType = TypeVar("FindQueryProjectionType", bound=BaseModel)
 FindQueryResultType = TypeVar("FindQueryResultType", bound=BaseModel)
 
 
-class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
+class FindQuery(
+    Generic[FindQueryResultType], UpdateMethods, SessionMethods, CloneInterface
+):
     """
     Find Query base class
 
@@ -83,6 +86,7 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         self.encoders = self.document_model.get_bson_encoders()
         self.fetch_links: bool = False
         self.pymongo_kwargs: Dict[str, Any] = {}
+        self.lazy_parse = False
 
     def prepare_find_expressions(self):
         if self.document_model.get_link_fields() is not None:
@@ -138,7 +142,6 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
         *args: Mapping[str, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
     ):
         """
@@ -160,7 +163,6 @@ class FindQuery(Generic[FindQueryResultType], UpdateMethods, SessionMethods):
             .upsert(
                 *args,
                 on_insert=on_insert,
-                bulk_writer=bulk_writer,
                 **pymongo_kwargs,
             )
             .set_session(session=self.session)
@@ -255,6 +257,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryResultType]":
         ...
@@ -263,13 +266,14 @@ class FindMany(
     def find_many(
         self: "FindMany[FindQueryResultType]",
         *args: Union[Mapping[str, Any], bool],
-        projection_model: Type[FindQueryProjectionType] = None,
+        projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
@@ -284,6 +288,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
@@ -312,6 +317,8 @@ class FindMany(
         self.ignore_cache = ignore_cache
         self.fetch_links = fetch_links
         self.pymongo_kwargs.update(pymongo_kwargs)
+        if lazy_parse is True:
+            self.lazy_parse = lazy_parse
         return self
 
     # TODO probably merge FindOne and FindMany to one class to avoid this
@@ -357,6 +364,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryResultType]":
         ...
@@ -365,13 +373,14 @@ class FindMany(
     def find(
         self: "FindMany[FindQueryResultType]",
         *args: Union[Mapping[str, Any], bool],
-        projection_model: Type[FindQueryProjectionType] = None,
+        projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
@@ -386,6 +395,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
+        lazy_parse: bool = False,
         **pymongo_kwargs,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
@@ -402,6 +412,7 @@ class FindMany(
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
+            lazy_parse=lazy_parse,
             **pymongo_kwargs,
         )
 
@@ -476,7 +487,7 @@ class FindMany(
         Provide search criteria to the
         [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
 
-        :param args: *Mappingp[str,Any] - the modifications to apply.
+        :param args: *Mapping[str,Any] - the modifications to apply.
         :param session: Optional[ClientSession]
         :return: [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
         """
@@ -824,6 +835,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                         by_alias=True, exclude={"_id"}
                     ).encode(document),
                     object_class=self.document_model,
+                    pymongo_kwargs=self.pymongo_kwargs,
                 )
             )
             return None

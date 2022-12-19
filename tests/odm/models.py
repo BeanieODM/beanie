@@ -9,17 +9,23 @@ from ipaddress import (
     IPv6Network,
 )
 from pathlib import Path
-from typing import List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 from uuid import UUID, uuid4
 
 import pymongo
-from pydantic import SecretBytes, SecretStr, Extra, PrivateAttr
+from pydantic import (
+    BaseModel,
+    Extra,
+    Field,
+    PrivateAttr,
+    SecretBytes,
+    SecretStr,
+)
 from pydantic.color import Color
-from pydantic import BaseModel, Field
 from pymongo import IndexModel
 
-from beanie import Document, Indexed, Insert, Replace, ValidateOnSave, Update
-from beanie.odm.actions import before_event, after_event, Delete
+from beanie import Document, Indexed, Insert, Replace, Update, ValidateOnSave
+from beanie.odm.actions import Delete, after_event, before_event
 from beanie.odm.fields import Link
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
@@ -80,11 +86,8 @@ class DocumentTestModelWithCustomCollectionName(Document):
     test_list: List[SubDocument]
     test_str: str
 
-    class Collection:
+    class Settings:
         name = "custom"
-
-    # class Settings:
-    #     name = "custom"
 
 
 class DocumentTestModelWithSimpleIndex(Document):
@@ -110,7 +113,7 @@ class DocumentTestModelWithComplexIndex(Document):
     test_list: List[SubDocument]
     test_str: str
 
-    class Collection:
+    class Settings:
         name = "docs_with_index"
         indexes = [
             "test_int",
@@ -123,20 +126,6 @@ class DocumentTestModelWithComplexIndex(Document):
                 name="test_string_index_DESCENDING",
             ),
         ]
-
-    # class Settings:
-    #     name = "docs_with_index"
-    #     indexes = [
-    #         "test_int",
-    #         [
-    #             ("test_int", pymongo.ASCENDING),
-    #             ("test_str", pymongo.DESCENDING),
-    #         ],
-    #         IndexModel(
-    #             [("test_str", pymongo.DESCENDING)],
-    #             name="test_string_index_DESCENDING",
-    #         ),
-    #     ]
 
 
 class DocumentTestModelWithDroppedIndex(Document):
@@ -252,6 +241,49 @@ class DocumentWithActions(Document):
         self.num_2 -= 1
 
 
+class DocumentWithActions2(Document):
+    name: str
+    num_1: int = 0
+    num_2: int = 10
+    num_3: int = 100
+
+    class Inner:
+        inner_num_1 = 0
+        inner_num_2 = 0
+
+    @before_event(Insert)
+    def capitalize_name(self):
+        self.name = self.name.capitalize()
+
+    @before_event(Insert, Replace)
+    async def add_one(self):
+        self.num_1 += 1
+
+    @after_event(Insert)
+    def num_2_change(self):
+        self.num_2 -= 1
+
+    @after_event(Replace)
+    def num_3_change(self):
+        self.num_3 -= 1
+
+    @before_event(Delete)
+    def inner_num_to_one(self):
+        self.Inner.inner_num_1 = 1
+
+    @after_event(Delete)
+    def inner_num_to_two(self):
+        self.Inner.inner_num_2 = 2
+
+    @before_event(Update)
+    def inner_num_to_one_2(self):
+        self.num_1 += 1
+
+    @after_event(Update)
+    def inner_num_to_two_2(self):
+        self.num_2 -= 1
+
+
 class InheritedDocumentWithActions(DocumentWithActions):
     ...
 
@@ -333,13 +365,25 @@ class DocumentWithExtrasKw(Document, extra=Extra.allow):
     num_1: int
 
 
+class Yard(Document):
+    v: int
+    w: int
+
+
+class Lock(Document):
+    k: int
+
+
 class Window(Document):
     x: int
     y: int
+    lock: Optional[Link[Lock]]
 
 
 class Door(Document):
     t: int = 10
+    window: Optional[Link[Window]]
+    locks: Optional[List[Link[Lock]]]
 
 
 class Roof(Document):
@@ -350,6 +394,7 @@ class House(Document):
     windows: List[Link[Window]]
     door: Link[Door]
     roof: Optional[Link[Roof]]
+    yards: Optional[List[Link[Yard]]]
     name: Indexed(str) = Field(hidden=True)
     height: Indexed(int) = 2
 
@@ -405,9 +450,27 @@ class DocumentMultiModelTwo(Document):
         union_doc = DocumentUnion
 
 
+class YardWithRevision(Document):
+    v: int
+    w: int
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
+
+
+class LockWithRevision(Document):
+    k: int
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
+
+
 class WindowWithRevision(Document):
     x: int
     y: int
+    lock: Link[LockWithRevision]
 
     class Settings:
         use_revision = True
@@ -420,3 +483,94 @@ class HouseWithRevision(Document):
     class Settings:
         use_revision = True
         use_state_management = True
+
+
+# classes for inheritance test
+class Vehicle(Document):
+    """Root parent for testing flat inheritance"""
+
+    #               Vehicle
+    #              /   |   \
+    #             /    |    \
+    #        Bicycle  Bike  Car
+    #                         \
+    #                          \
+    #                          Bus
+    color: str
+
+    @after_event(Insert)
+    def on_object_create(self):
+        # this event will be triggered for all children too (self will have corresponding type)
+        ...
+
+    class Settings:
+        is_root = True
+
+
+class Bicycle(Vehicle):
+    frame: int
+    wheels: int
+
+
+class Fuelled(BaseModel):
+    """Just a mixin"""
+
+    fuel: Optional[str]
+
+
+class Car(Vehicle, Fuelled):
+    body: str
+
+
+class Bike(Vehicle, Fuelled):
+    ...
+
+
+class Bus(Car, Fuelled):
+    seats: int
+
+
+class Owner(Document):
+    name: str
+    vehicles: List[Link[Vehicle]] = []
+
+
+class MixinNonRoot(BaseModel):
+    id: int = Field(..., ge=1, le=254)
+
+
+class MyDocNonRoot(Document):
+    class Settings:
+        use_state_management = True
+
+
+class TestNonRoot(MixinNonRoot, MyDocNonRoot):
+    name: str
+
+
+class Test2NonRoot(MyDocNonRoot):
+    name: str
+
+
+class Child(BaseModel):
+    child_field: str
+
+
+class SampleWithMutableObjects(Document):
+    d: Dict[str, Child]
+    l: List[Child]
+
+
+class SampleLazyParsing(Document):
+    i: int
+    s: str
+    lst: List[int] = Field(
+        [],
+    )
+
+    class Settings:
+        lazy_parsing = True
+        use_state_management = True
+
+    class Config:
+        validate_assignment = True

@@ -2,6 +2,7 @@ from abc import abstractmethod
 
 
 from beanie.odm.bulk import BulkWriter, Operation
+from beanie.odm.interfaces.clone import CloneInterface
 from beanie.odm.utils.encoder import Encoder
 from typing import (
     Callable,
@@ -31,7 +32,7 @@ if TYPE_CHECKING:
     from beanie.odm.documents import DocType
 
 
-class UpdateQuery(UpdateMethods, SessionMethods):
+class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
     """
     Update Query base class
 
@@ -97,7 +98,6 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         *args: Mapping[str, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
     ) -> "UpdateQuery":
         """
@@ -111,9 +111,7 @@ class UpdateQuery(UpdateMethods, SessionMethods):
         :return: UpdateMany query
         """
         self.upsert_insert_doc = on_insert  # type: ignore
-        self.update(
-            *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
-        )
+        self.update(*args, session=session, **pymongo_kwargs)
         return self
 
     @abstractmethod
@@ -122,7 +120,9 @@ class UpdateQuery(UpdateMethods, SessionMethods):
 
     def __await__(
         self,
-    ) -> Generator[Any, None, Union[UpdateResult, InsertOneResult]]:
+    ) -> Generator[
+        Any, None, Union[UpdateResult, InsertOneResult, Optional["DocType"]]
+    ]:
         """
         Run the query
         :return:
@@ -190,6 +190,7 @@ class UpdateMany(UpdateQuery):
                     first_query=self.find_query,
                     second_query=self.update_query,
                     object_class=self.document_model,
+                    pymongo_kwargs=self.pymongo_kwargs,
                 )
             )
 
@@ -238,5 +239,6 @@ class UpdateOne(UpdateQuery):
                     first_query=self.find_query,
                     second_query=self.update_query,
                     object_class=self.document_model,
+                    pymongo_kwargs=self.pymongo_kwargs,
                 )
             )

@@ -5,10 +5,7 @@
 
 ## Overview
 
-[Beanie](https://github.com/roman-right/beanie) - is an Asynchronous Python
-object-document mapper (ODM) for MongoDB, based
-on [Motor](https://motor.readthedocs.io/en/stable/)
-and [Pydantic](https://pydantic-docs.helpmanual.io/).
+fix:[Beanie](https://github.com/roman-right/beanie) - is an asynchronous Python object-document mapper (ODM) for MongoDB. Data models are based on [Pydantic](https://pydantic-docs.helpmanual.io/).
 
 When using Beanie each database collection has a corresponding `Document` that
 is used to interact with that collection. In addition to retrieving data,
@@ -19,6 +16,8 @@ Beanie saves you time by removing boilerplate code, and it helps you focus on
 the parts of your app that actually matter.
 
 Data and schema migrations are supported by Beanie out of the box.
+
+There is a synchronous version of Beanie ODM - [Bunnet](https://github.com/roman-right/bunnet)
 
 ## Installation
 
@@ -57,7 +56,7 @@ class Product(Document):
     category: Category                 # You can include pydantic models as well
 
 
-# Beanie is fully asynchronous, so we will access it from an async function
+# This is an asynchronous example, so we will access it from an async function
 async def example():
     # Beanie uses Motor async client under the hood 
     client = AsyncIOMotorClient("mongodb://user:pass@host:27017")
@@ -93,6 +92,8 @@ if __name__ == "__main__":
 - **[fastapi-cosmos-beanie](https://github.com/tonybaloney/ants-azure-demos/tree/master/fastapi-cosmos-beanie)** - FastAPI + Beanie ODM + Azure Cosmos Demo Application by [Anthony Shaw](https://github.com/tonybaloney)
 - **[fastapi-beanie-jwt](https://github.com/flyinactor91/fastapi-beanie-jwt)** - 
   Sample FastAPI server with JWT auth and Beanie ODM by [Michael duPont](https://github.com/flyinactor91)
+- **[Shortify](https://github.com/IHosseini083/Shortify)** - URL shortener RESTful API (FastAPI + Beanie ODM + JWT & OAuth2) by [
+Iliya Hosseini](https://github.com/IHosseini083)
 
 ### Articles
 
@@ -111,11 +112,6 @@ if __name__ == "__main__":
   the valuable changes
 - **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share
   ideas or just say `Hello!!`
-
-## Sponsor the project
-
-- Bitcoin `bc1qz8z0uhftdcra7u8hjyft6nqn30uhktlcgsg0tq`
-- Doge `DPKs32RSEVwPiKuGAAmQHZ8VQ8BQK5Qg4L`
 
 ----
 Supported by [JetBrains](https://jb.gg/OpenSource)

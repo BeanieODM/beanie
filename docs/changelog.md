@@ -2,6 +2,158 @@
 
 Beanie project
 
+## [1.16.1] - 2022-12-17
+
+### Feature
+
+- Remove yarl dependency
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/448>
+
+## [1.16.0] - 2022-12-17
+
+### Feature
+
+- Support for fetching deep-nested Links
+
+### Implementation
+
+- Author - [Courtney Sanders](https://github.com/csanders-rga)
+- PR <https://github.com/roman-right/beanie/pull/419>
+
+## [1.16.0b3] - 2022-11-28
+
+### Feature
+
+- Lazy parsing for find many
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/436>
+
+## [1.15.4] - 2022-11-18
+
+### Fix
+
+- Wrong inheritance behavior with non-rooted documents
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/422>
+
+## [1.15.3] - 2022-11-10
+
+### Fix
+
+- Deepcopy dict before encode it to save the original
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/412>
+
+## [1.15.2] - 2022-11-09
+
+### Fix
+
+- Use Settings inner class in migrations internals
+- Fix inheritance: mark root docs with `_inheritance_inited = True`
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/409>
+
+## [1.15.1] - 2022-11-07
+
+### Fix
+
+- Pass pymongo kwargs to the bulk writer
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/406>
+
+## [1.15.0] - 2022-11-05
+
+### Feature
+
+- The sync version was moved to a separate project
+
+### Breaking change
+
+- There is no sync version here more. Please use [Bunnet](https://github.com/roman-right/bunnet) instead
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/395>
+
+## [1.14.0] - 2022-11-04
+
+### Feature
+
+- Multi-model behavior for inherited documents
+
+### Breaking change
+
+- The inner class `Collection` is not supported more. Please, use `Settings` instead.
+
+### Implementation
+
+- Author - [Vitaliy Ivanov](https://github.com/Vitalium)
+- PR <https://github.com/roman-right/beanie/pull/395>
+
+## [1.13.1] - 2022-10-26
+
+### Fix
+
+- Remove redundant async things from sync interface
+
+### Implementation
+
+- ISSUE <https://github.com/roman-right/beanie/issues/390>
+
+## [1.13.0] - 2022-10-22
+
+### Improvement
+
+- Sync interface
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/386>
+
+## [1.12.1] - 2022-10-17
+
+### Improvement
+
+- Clone interface for query objects
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/378>
+
+## [1.12.0] - 2022-10-06
+
+### Improvement
+
+- Optional list of links field
+
+### Implementation
+
+- Author - [Alex Deng](https://github.com/rga-alex-deng)
+- PR <https://github.com/roman-right/beanie/pull/358>
+
+## [1.11.12] - 2022-09-28
+
+### Improvement
+
+- Change before_event, after_event signature to be more pythonic
+
+### Implementation
+
+- DISCUSSION <https://github.com/roman-right/beanie/discussions/354>
+
 ## [1.11.11] - 2022-09-26
 
 ### Fix
@@ -962,3 +1114,31 @@ how specific type should be presented in the database
 [1.11.10]: https://pypi.org/project/beanie/1.11.10
 
 [1.11.11]: https://pypi.org/project/beanie/1.11.11
+
+[1.11.12]: https://pypi.org/project/beanie/1.11.12
+
+[1.12.0]: https://pypi.org/project/beanie/1.12.0
+
+[1.12.1]: https://pypi.org/project/beanie/1.12.1
+
+[1.13.0]: https://pypi.org/project/beanie/1.13.0
+
+[1.13.1]: https://pypi.org/project/beanie/1.13.1
+
+[1.14.0]: https://pypi.org/project/beanie/1.14.0
+
+[1.15.0]: https://pypi.org/project/beanie/1.15.0
+
+[1.15.1]: https://pypi.org/project/beanie/1.15.1
+
+[1.15.2]: https://pypi.org/project/beanie/1.15.2
+
+[1.15.3]: https://pypi.org/project/beanie/1.15.3
+
+[1.15.4]: https://pypi.org/project/beanie/1.15.4
+
+[1.16.0b3]: https://pypi.org/project/beanie/1.16.0b3
+
+[1.16.0]: https://pypi.org/project/beanie/1.16.0
+
+[1.16.1]: https://pypi.org/project/beanie/1.16.1
