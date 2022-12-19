@@ -12,6 +12,9 @@ from tests.odm.models import (
     RootDocument,
     ADocument,
     BDocument,
+    UsersAddresses,
+    Region,
+    AddressView,
 )
 
 
@@ -354,3 +357,14 @@ class TestOther:
         assert set(RootDocument._link_fields.keys()) == {"link_root"}
         assert set(ADocument._link_fields.keys()) == {"link_root", "link_a"}
         assert set(BDocument._link_fields.keys()) == {"link_root", "link_b"}
+
+    async def test_with_projection(self):
+        await UsersAddresses(region_id=Region()).insert(
+            link_rule=WriteRules.WRITE
+        )
+        res = await UsersAddresses.find_one(fetch_links=True).project(
+            AddressView
+        )
+        assert res.id is not None
+        assert res.state == "TEST"
+        assert res.city == "TEST"

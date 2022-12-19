@@ -62,6 +62,8 @@ from tests.odm.models import (
     ADocument,
     BDocument,
     StateAndDecimalFieldModel,
+    Region,
+    UsersAddresses,
 )
 from tests.odm.views import TestView
 
@@ -204,6 +206,8 @@ async def init(loop, db):
         ADocument,
         BDocument,
         StateAndDecimalFieldModel,
+        Region,
+        UsersAddresses,
     ]
     await init_beanie(
         database=db,
