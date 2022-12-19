@@ -735,8 +735,8 @@ class Document(
         :return: None
         """
         if self.use_state_management() and self.id is not None:
-            self._saved_state = get_dict(self)
             self._previous_saved_state = self._saved_state
+            self._saved_state = get_dict(self)
 
     def get_saved_state(self) -> Optional[Dict[str, Any]]:
         """
