@@ -11,6 +11,7 @@ from tests.odm.models import (
     InternalDoc,
     LockWithRevision,
     WindowWithRevision,
+    StateAndDecimalFieldModel,
 )
 
 
@@ -237,3 +238,8 @@ async def test_fetch_save_changes(house):
     window_0.x = 10000
     window_0.lock.k = 10000
     await window_0.save_changes()
+
+
+async def test_state_with_decimal_field():
+    await StateAndDecimalFieldModel(amt=10.01).insert()
+    await StateAndDecimalFieldModel.all().to_list()

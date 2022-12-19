@@ -1,4 +1,5 @@
 import datetime
+import decimal
 from decimal import Decimal
 from ipaddress import (
     IPv4Address,
@@ -20,6 +21,7 @@ from pydantic import (
     PrivateAttr,
     SecretBytes,
     SecretStr,
+    condecimal,
 )
 from pydantic.color import Color
 from pymongo import IndexModel
@@ -574,3 +576,36 @@ class SampleLazyParsing(Document):
 
     class Config:
         validate_assignment = True
+
+
+class RootDocument(Document):
+    name: str
+    link_root: Link[Document]
+
+
+class ADocument(RootDocument):
+    surname: str
+    link_a: Link[Document]
+
+    class Settings:
+        name = "B"
+
+
+class BDocument(RootDocument):
+    email: str
+    link_b: Link[Document]
+
+    class Settings:
+        name = "B"
+
+
+class StateAndDecimalFieldModel(Document):
+    amt: decimal.Decimal
+    other_amt: condecimal(
+        decimal_places=1, multiple_of=decimal.Decimal("0.5")
+    ) = 0
+
+    class Settings:
+        name = "amounts"
+        use_revision = True
+        use_state_management = True

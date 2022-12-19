@@ -148,6 +148,7 @@ class Initializer:
         cls._parent = None
         cls._inheritance_inited = False
         cls._class_id = None
+        cls._link_fields = None
 
     @staticmethod
     def init_cache(cls) -> None:

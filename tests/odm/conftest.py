@@ -58,6 +58,10 @@ from tests.odm.models import (
     WindowWithRevision,
     Yard,
     YardWithRevision,
+    RootDocument,
+    ADocument,
+    BDocument,
+    StateAndDecimalFieldModel,
 )
 from tests.odm.views import TestView
 
@@ -196,6 +200,10 @@ async def init(loop, db):
         TestNonRoot,
         Test2NonRoot,
         SampleLazyParsing,
+        RootDocument,
+        ADocument,
+        BDocument,
+        StateAndDecimalFieldModel,
     ]
     await init_beanie(
         database=db,
