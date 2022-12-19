@@ -2,6 +2,18 @@
 
 Beanie project
 
+## [1.16.2] - 2022-12-19
+
+### Fix
+
+- [[BUG] find_one projection link](https://github.com/roman-right/beanie/issues/383)
+- [[BUG]: Link fields interference/contamination](https://github.com/roman-right/beanie/issues/433)
+- [[BUG]: ElemMatch on Document property of Type List[Link] fails with IndexError in relations.py convert_ids()](https://github.com/roman-right/beanie/issues/439)
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/448>
+
 ## [1.16.1] - 2022-12-17
 
 ### Feature
@@ -1142,3 +1154,5 @@ how specific type should be presented in the database
 [1.16.0]: https://pypi.org/project/beanie/1.16.0
 
 [1.16.1]: https://pypi.org/project/beanie/1.16.1
+
+[1.16.2]: https://pypi.org/project/beanie/1.16.2
