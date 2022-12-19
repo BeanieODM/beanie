@@ -1,4 +1,5 @@
 import datetime
+import decimal
 from decimal import Decimal
 from ipaddress import (
     IPv4Address,
@@ -20,13 +21,14 @@ from pydantic import (
     PrivateAttr,
     SecretBytes,
     SecretStr,
+    condecimal,
 )
 from pydantic.color import Color
 from pymongo import IndexModel
 
 from beanie import Document, Indexed, Insert, Replace, Update, ValidateOnSave
 from beanie.odm.actions import Delete, after_event, before_event
-from beanie.odm.fields import Link
+from beanie.odm.fields import Link, PydanticObjectId
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
 
@@ -574,3 +576,67 @@ class SampleLazyParsing(Document):
 
     class Config:
         validate_assignment = True
+
+
+class RootDocument(Document):
+    name: str
+    link_root: Link[Document]
+
+
+class ADocument(RootDocument):
+    surname: str
+    link_a: Link[Document]
+
+    class Settings:
+        name = "B"
+
+
+class BDocument(RootDocument):
+    email: str
+    link_b: Link[Document]
+
+    class Settings:
+        name = "B"
+
+
+class StateAndDecimalFieldModel(Document):
+    amt: decimal.Decimal
+    other_amt: condecimal(
+        decimal_places=1, multiple_of=decimal.Decimal("0.5")
+    ) = 0
+
+    class Settings:
+        name = "amounts"
+        use_revision = True
+        use_state_management = True
+
+
+class Region(Document):
+    state: Optional[str] = "TEST"
+    city: Optional[str] = "TEST"
+    district: Optional[str] = "TEST"
+
+
+class UsersAddresses(Document):
+    region_id: Optional[Link[Region]]
+    phone_number: Optional[str] = None
+    street: Optional[str] = None
+
+
+class AddressView(BaseModel):
+    id: Optional[PydanticObjectId] = Field(alias="_id")
+    phone_number: Optional[str]
+    street: Optional[str]
+    state: Optional[str]
+    city: Optional[str]
+    district: Optional[str]
+
+    class Settings:
+        projection = {
+            "id": "$_id",
+            "phone_number": 1,
+            "street": 1,
+            "sub_district": "$region_id.sub_district",
+            "city": "$region_id.city",
+            "state": "$region_id.state",
+        }

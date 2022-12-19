@@ -58,16 +58,18 @@ def convert_ids(
     # TODO add all the cases
     new_query = {}
     for k, v in query.items():
+        k_splitted = k.split(".")
         if (
             isinstance(k, ExpressionField)
             and doc.get_link_fields() is not None
-            and k.split(".")[0] in doc.get_link_fields().keys()  # type: ignore
-            and k.split(".")[1] == "id"
+            and len(k_splitted) == 2
+            and k_splitted[0] in doc.get_link_fields().keys()  # type: ignore
+            and k_splitted[1] == "id"
         ):
             if fetch_links:
-                new_k = f"{k.split('.')[0]}._id"
+                new_k = f"{k_splitted[0]}._id"
             else:
-                new_k = f"{k.split('.')[0]}.$id"
+                new_k = f"{k_splitted[0]}.$id"
         else:
             new_k = k
 

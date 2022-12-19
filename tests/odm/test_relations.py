@@ -2,7 +2,20 @@ import pytest
 
 from beanie.exceptions import DocumentWasNotSaved
 from beanie.odm.fields import DeleteRules, Link, WriteRules
-from tests.odm.models import Door, House, Lock, Roof, Window, Yard
+from tests.odm.models import (
+    Door,
+    House,
+    Lock,
+    Roof,
+    Window,
+    Yard,
+    RootDocument,
+    ADocument,
+    BDocument,
+    UsersAddresses,
+    Region,
+    AddressView,
+)
 
 
 @pytest.fixture
@@ -314,3 +327,44 @@ class TestDelete:
 
         locks = await Lock.all().to_list()
         assert locks == []
+
+
+class TestOther:
+    async def test_query_composition(self):
+        SYS = {"id", "revision_id"}
+
+        # Simple fields are initialized using the pydantic __fields__ internal property
+        # such fields are properly isolated when multi inheritance is involved.
+        assert set(RootDocument.__fields__.keys()) == SYS | {
+            "name",
+            "link_root",
+        }
+        assert set(ADocument.__fields__.keys()) == SYS | {
+            "name",
+            "link_root",
+            "surname",
+            "link_a",
+        }
+        assert set(BDocument.__fields__.keys()) == SYS | {
+            "name",
+            "link_root",
+            "email",
+            "link_b",
+        }
+
+        # Where Document.init_fields() has a bug that prevents proper link inheritance when parent
+        # documents are initialized. Furthermore, some-why BDocument._link_fields are not deterministic
+        assert set(RootDocument._link_fields.keys()) == {"link_root"}
+        assert set(ADocument._link_fields.keys()) == {"link_root", "link_a"}
+        assert set(BDocument._link_fields.keys()) == {"link_root", "link_b"}
+
+    async def test_with_projection(self):
+        await UsersAddresses(region_id=Region()).insert(
+            link_rule=WriteRules.WRITE
+        )
+        res = await UsersAddresses.find_one(fetch_links=True).project(
+            AddressView
+        )
+        assert res.id is not None
+        assert res.state == "TEST"
+        assert res.city == "TEST"
