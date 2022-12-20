@@ -7,6 +7,9 @@ from beanie.odm.interfaces.detector import ModelType
 if TYPE_CHECKING:
     from beanie import Document
 
+# TODO: check if this is the most efficient way for
+#  appending subqueries to the queries var
+
 
 def construct_lookup_queries(cls: Type["Document"]) -> List[Dict[str, Any]]:
     if cls.get_model_type() == ModelType.UnionDoc:
