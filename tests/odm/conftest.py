@@ -64,6 +64,9 @@ from tests.odm.models import (
     StateAndDecimalFieldModel,
     Region,
     UsersAddresses,
+    SelfLinked,
+    LoopedLinksA,
+    LoopedLinksB,
 )
 from tests.odm.views import TestView
 
@@ -208,6 +211,9 @@ async def init(loop, db):
         StateAndDecimalFieldModel,
         Region,
         UsersAddresses,
+        SelfLinked,
+        LoopedLinksA,
+        LoopedLinksB,
     ]
     await init_beanie(
         database=db,

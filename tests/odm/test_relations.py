@@ -15,6 +15,9 @@ from tests.odm.models import (
     UsersAddresses,
     Region,
     AddressView,
+    SelfLinked,
+    LoopedLinksA,
+    LoopedLinksB,
 )
 
 
@@ -81,7 +84,9 @@ async def houses():
         house = await House(
             door=Door(
                 t=i,
-                window=Window(x=20, y=21 + i, lock=Lock(k=20 + i)),
+                window=Window(x=20, y=21 + i, lock=Lock(k=20 + i))
+                if i % 2 == 0
+                else None,
                 locks=[Lock(k=20 + i)],
             ),
             windows=[
@@ -173,8 +178,9 @@ class TestFind:
         for yard in items[1].yards:
             assert isinstance(yard, Yard)
         assert isinstance(items[0].door, Door)
-        assert isinstance(items[0].door.window, Window)
-        assert isinstance(items[0].door.window.lock, Lock)
+        assert isinstance(items[1].door.window, Window)
+        assert items[0].door.window is None
+        assert isinstance(items[1].door.window.lock, Lock)
         for lock in items[0].door.locks:
             assert isinstance(lock, Lock)
         assert items[0].roof is None
@@ -186,6 +192,7 @@ class TestFind:
         assert len(houses[0].windows) == 1
         assert isinstance(houses[0].windows[0].lock, Link)
         assert isinstance(houses[0].door, Link)
+
         await houses[0].fetch_link(House.door)
         assert isinstance(houses[0].door, Link)
 
@@ -368,3 +375,38 @@ class TestOther:
         assert res.id is not None
         assert res.state == "TEST"
         assert res.city == "TEST"
+
+    async def test_self_linked(self):
+        await SelfLinked(item=SelfLinked(s="2"), s="1").insert(
+            link_rule=WriteRules.WRITE
+        )
+
+        res = await SelfLinked.find_one(fetch_links=True)
+        assert isinstance(res, SelfLinked)
+        assert res.item is None
+
+        await SelfLinked.delete_all()
+
+        await SelfLinked(
+            item=SelfLinked(
+                item=SelfLinked(item=SelfLinked(s="4"), s="3"), s="2"
+            ),
+            s="1",
+        ).insert(link_rule=WriteRules.WRITE)
+
+        res = await SelfLinked.find_one(SelfLinked.s == "1", fetch_links=True)
+        assert isinstance(res, SelfLinked)
+        assert isinstance(res.item, SelfLinked)
+        assert isinstance(res.item.item, SelfLinked)
+        assert isinstance(res.item.item.item, Link)
+
+    async def test_looped_links(self):
+        await LoopedLinksA(
+            b=LoopedLinksB(a=LoopedLinksA(b=LoopedLinksB()))
+        ).insert(link_rule=WriteRules.WRITE)
+        res = await LoopedLinksA.find_one(fetch_links=True)
+        assert isinstance(res, LoopedLinksA)
+        assert isinstance(res.b, LoopedLinksB)
+        assert isinstance(res.b.a, LoopedLinksA)
+        assert isinstance(res.b.a.b, LoopedLinksB)
+        assert res.b.a.b.a is None

@@ -2,6 +2,17 @@
 
 Beanie project
 
+## [1.16.4] - 2022-12-20
+
+### Fix
+
+- [[BUG] Initiating self-referencing documents with nested links breaks due to uncaught request loop](https://github.com/roman-right/beanie/issues/449)
+- Nested lookups for direct links
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/455>
+
 ## [1.16.3] - 2022-12-19
 
 ### Fix
@@ -1168,3 +1179,5 @@ how specific type should be presented in the database
 [1.16.2]: https://pypi.org/project/beanie/1.16.2
 
 [1.16.3]: https://pypi.org/project/beanie/1.16.3
+
+[1.16.4]: https://pypi.org/project/beanie/1.16.4
