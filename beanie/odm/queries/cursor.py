@@ -73,6 +73,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
         if cursor is None:
             raise RuntimeError("self.motor_cursor was not set")
         motor_list: List[Dict[str, Any]] = self._get_cache()
+
         if motor_list is None:
             motor_list = await cursor.to_list(length)
             self._set_cache(motor_list)

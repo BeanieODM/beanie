@@ -640,3 +640,16 @@ class AddressView(BaseModel):
             "city": "$region_id.city",
             "state": "$region_id.state",
         }
+
+
+class SelfLinked(Document):
+    item: Optional[Link["SelfLinked"]]
+    s: str
+
+
+class LoopedLinksA(Document):
+    b: "LoopedLinksB"
+
+
+class LoopedLinksB(Document):
+    a: Optional[LoopedLinksA]

@@ -1,5 +1,6 @@
 import importlib
 import inspect
+from copy import copy
 from typing import Optional, List, Type, Union
 
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
@@ -168,8 +169,13 @@ class Initializer:
         Init class fields
         :return: None
         """
+        cls.update_forward_refs()
 
-        def check_nested_links(link_info: LinkInfo):
+        def check_nested_links(
+            link_info: LinkInfo, prev_models: List[Type[BaseModel]]
+        ):
+            if link_info.model_class in prev_models:
+                return
             for k, v in link_info.model_class.__fields__.items():
                 nested_link_info = detect_link(v)
                 if nested_link_info is None:
@@ -178,7 +184,11 @@ class Initializer:
                 if link_info.nested_links is None:
                     link_info.nested_links = {}
                 link_info.nested_links[v.name] = nested_link_info
-                check_nested_links(nested_link_info)
+                new_prev_models = copy(prev_models)
+                new_prev_models.append(link_info.model_class)
+                check_nested_links(
+                    nested_link_info, prev_models=new_prev_models
+                )
 
         if cls._link_fields is None:
             cls._link_fields = {}
@@ -189,7 +199,7 @@ class Initializer:
             link_info = detect_link(v)
             if link_info is not None:
                 cls._link_fields[v.name] = link_info
-                check_nested_links(link_info)
+                check_nested_links(link_info, prev_models=[])
 
         cls._hidden_fields = cls.get_hidden_fields()
 
