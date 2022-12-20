@@ -67,14 +67,15 @@ def construct_query(
                 },
             ]  # type: ignore
             if link_info.nested_links is not None:
+                lookup_steps[0]["$lookup"]["pipeline"] = []
                 for nested_link in link_info.nested_links:
-                    lookup_steps[0]["$lookup"]["pipeline"] = []
                     construct_query(
                         link_info=link_info.nested_links[nested_link],
                         queries=lookup_steps[0]["$lookup"]["pipeline"],
                         database_major_version=database_major_version,
                     )
             queries += lookup_steps
+
         else:
             lookup_steps = [
                 {
@@ -163,5 +164,4 @@ def construct_query(
                     database_major_version=database_major_version,
                 )
             queries.append(lookup_step)
-
     return queries
