@@ -43,6 +43,7 @@ from beanie.odm.queries.update import (
     UpdateMany,
     UpdateOne,
 )
+from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
 from beanie.odm.utils.find import construct_lookup_queries
 from beanie.odm.utils.parsing import parse_obj
@@ -818,7 +819,7 @@ class FindOne(FindQuery[FindQueryResultType]):
             result: UpdateResult = (
                 await self.document_model.get_motor_collection().replace_one(
                     self.get_filter_query(),
-                    Encoder(by_alias=True, exclude={"_id"}).encode(document),
+                    get_dict(document, to_db=True, exclude={"_id"}),
                     session=self.session,
                 )
             )
@@ -842,16 +843,13 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     async def _find_one(self):
         if self.fetch_links:
-            result = await self.document_model.find(
+            return await self.document_model.find_many(
                 *self.find_expressions,
                 session=self.session,
                 fetch_links=self.fetch_links,
+                projection_model=self.projection_model,
                 **self.pymongo_kwargs,
-            ).to_list(length=1)
-            if result:
-                return result[0]
-            else:
-                return None
+            ).first_or_none()
         return await self.document_model.get_motor_collection().find_one(
             filter=self.get_filter_query(),
             projection=get_projection(self.projection_model),
@@ -890,6 +888,8 @@ class FindOne(FindQuery[FindQueryResultType]):
             document = yield from self._find_one().__await__()  # type: ignore
         if document is None:
             return None
+        if type(document) == self.projection_model:
+            return cast(FindQueryResultType, document)
         return cast(
             FindQueryResultType, parse_obj(self.projection_model, document)
         )

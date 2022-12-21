@@ -12,6 +12,7 @@ from tests.odm.models import (
     InternalDoc,
     LockWithRevision,
     WindowWithRevision,
+    StateAndDecimalFieldModel,
 )
 
 
@@ -83,6 +84,10 @@ class TestStateManagement:
     async def test_use_state_management_property(self):
         assert DocumentWithTurnedOnStateManagement.use_state_management() is True
         assert DocumentWithTurnedOffStateManagement.use_state_management() is False
+
+    async def test_state_with_decimal_field(self, ):
+        await StateAndDecimalFieldModel(amt=10.01).insert()
+        await StateAndDecimalFieldModel.all().to_list()
 
     async def test_parse_object_with_saving_state(self):
         obj = {

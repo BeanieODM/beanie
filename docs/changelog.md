@@ -2,6 +2,39 @@
 
 Beanie project
 
+## [1.16.4] - 2022-12-20
+
+### Fix
+
+- [[BUG] Initiating self-referencing documents with nested links breaks due to uncaught request loop](https://github.com/roman-right/beanie/issues/449)
+- Nested lookups for direct links
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/455>
+
+## [1.16.3] - 2022-12-19
+
+### Fix
+
+- [[BUG] revision_id field saved in MongoDB using save()/replace() on an existing document even if use_revision is False](https://github.com/roman-right/beanie/issues/420)
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/452>
+
+## [1.16.2] - 2022-12-19
+
+### Fix
+
+- [[BUG] find_one projection link](https://github.com/roman-right/beanie/issues/383)
+- [[BUG]: Link fields interference/contamination](https://github.com/roman-right/beanie/issues/433)
+- [[BUG]: ElemMatch on Document property of Type List[Link] fails with IndexError in relations.py convert_ids()](https://github.com/roman-right/beanie/issues/439)
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/448>
+
 ## [1.16.1] - 2022-12-17
 
 ### Feature
@@ -1142,3 +1175,9 @@ how specific type should be presented in the database
 [1.16.0]: https://pypi.org/project/beanie/1.16.0
 
 [1.16.1]: https://pypi.org/project/beanie/1.16.1
+
+[1.16.2]: https://pypi.org/project/beanie/1.16.2
+
+[1.16.3]: https://pypi.org/project/beanie/1.16.3
+
+[1.16.4]: https://pypi.org/project/beanie/1.16.4
