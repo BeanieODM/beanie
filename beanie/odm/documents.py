@@ -774,7 +774,7 @@ class Document(
     @saved_state_needed
     @previous_saved_state_needed
     def has_changed(self) -> bool:
-        if self._previous_saved_state == self._saved_state:
+        if self._previous_saved_state is None or self._previous_saved_state == self._saved_state:
             return False
         return True
 
