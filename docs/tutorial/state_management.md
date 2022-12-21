@@ -13,7 +13,7 @@ class Sample(Document):
         use_state_management = True
 ```
 
-Beanie keeps the current changes (not yet saved in the database), AND the previous changes (saved to the database).
+Beanie keeps the current changes (not yet saved in the database) by default, AND the previous changes (saved to the database) with an option (`state_management_save_previous`).
 Every new save override the previous changes and clears the current changes.
 
 
@@ -51,7 +51,7 @@ s.is_changed == False
 s.get_changes() == {}
 ```
 
-And similar methods can be used with the previous changes that have been saved in the database:
+And similar methods can be used with the previous changes that have been saved in the database if `state_management_save_previous` is set to `True`:
 
 ```python
 s = await Sample.find_one(Sample.name == "Test")
