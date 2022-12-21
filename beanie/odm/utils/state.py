@@ -43,6 +43,7 @@ def check_if_previous_state_saved(self: "DocType"):
             "State management's option to save previous state is turned off for this document"
         )
 
+
 def previous_saved_state_needed(f: Callable):
     @wraps(f)
     def sync_wrapper(self: "DocType", *args, **kwargs):
