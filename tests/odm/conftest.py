@@ -34,6 +34,7 @@ from tests.odm.models import (
     DocumentWithTurnedOffStateManagement,
     DocumentWithTurnedOnReplaceObjects,
     DocumentWithTurnedOnStateManagement,
+    DocumentWithTurnedOnSavePrevious,
     DocumentWithValidationOnSave,
     Door,
     GeoObject,
@@ -147,6 +148,7 @@ async def session(cli, loop):
 
 @pytest.fixture(autouse=True)
 async def init(loop, db):
+    print("INIT CALLED")
     models = [
         DocumentWithExtras,
         DocumentWithPydanticConfig,
@@ -165,6 +167,7 @@ async def init(loop, db):
         DocumentWithActions,
         DocumentWithTurnedOnStateManagement,
         DocumentWithTurnedOnReplaceObjects,
+        DocumentWithTurnedOnSavePrevious,
         DocumentWithTurnedOffStateManagement,
         DocumentWithValidationOnSave,
         DocumentWithRevisionTurnedOn,
