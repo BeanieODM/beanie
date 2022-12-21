@@ -77,6 +77,7 @@ from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
     saved_state_needed,
+    previous_saved_state_needed,
     save_state_after,
     swap_revision_after,
 )
@@ -722,6 +723,14 @@ class Document(
         return cls.get_settings().use_state_management
 
     @classmethod
+    def state_management_save_previous(cls) -> bool:
+        """
+        Should we save the previous state after a commit to database
+        :return: bool
+        """
+        return cls.get_settings().state_management_save_previous
+
+    @classmethod
     def state_management_replace_objects(cls) -> bool:
         """
         Should objects be replaced when using state management
@@ -735,7 +744,9 @@ class Document(
         :return: None
         """
         if self.use_state_management() and self.id is not None:
-            self._previous_saved_state = self._saved_state
+            if self.state_management_save_previous():
+                self._previous_saved_state = self._saved_state
+
             self._saved_state = get_dict(self)
 
     def get_saved_state(self) -> Optional[Dict[str, Any]]:
@@ -761,8 +772,9 @@ class Document(
 
     @property  # type: ignore
     @saved_state_needed
+    @previous_saved_state_needed
     def has_changed(self) -> bool:
-        if self._previous_saved_state is None or self._previous_saved_state == self._saved_state:
+        if self._previous_saved_state == self._saved_state:
             return False
         return True
 
@@ -811,6 +823,7 @@ class Document(
         )
 
     @saved_state_needed
+    @previous_saved_state_needed
     def get_previous_changes(self) -> Dict[str, Any]:
         if self._previous_saved_state is None:
             return {}
