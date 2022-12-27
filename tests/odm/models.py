@@ -127,12 +127,6 @@ class DocumentTestModelWithDroppedIndex(Document):
     test_list: List[SubDocument]
     test_str: str
 
-    class Collection:
-        name = "docs_with_index"
-        indexes = [
-            "test_int",
-        ]
-
     class Settings:
         name = "docs_with_index"
         indexes = [
@@ -146,9 +140,6 @@ class DocumentTestModelStringImport(Document):
 
 class DocumentTestModelFailInspection(Document):
     test_int_2: int
-
-    class Collection:
-        name = "DocumentTestModel"
 
     class Settings:
         name = "DocumentTestModel"
@@ -537,3 +528,10 @@ class Child(BaseModel):
 class SampleWithMutableObjects(Document):
     d: Dict[str, Child]
     l: List[Child]
+
+
+class DocWithCollectionInnerClass(Document):
+    s: str
+
+    class Collection:
+        name = "test"
