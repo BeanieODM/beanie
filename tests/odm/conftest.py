@@ -157,7 +157,6 @@ async def session(cli, loop):
 
 @pytest.fixture(autouse=True)
 async def init(loop, db):
-    print("INIT CALLED")
     models = [
         DocumentWithExtras,
         DocumentWithPydanticConfig,
