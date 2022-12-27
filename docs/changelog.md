@@ -8,6 +8,11 @@ Beanie project
 
 - Raises exception if `Collection` inner class was used as it is not supported more
 
+### Backported to
+
+- [1.15.5]
+- [1.14.1]
+
 ### Implementation
 
 - PR <https://github.com/roman-right/beanie/pull/460>
@@ -1193,3 +1198,7 @@ how specific type should be presented in the database
 [1.16.4]: https://pypi.org/project/beanie/1.16.4
 
 [1.16.5]: https://pypi.org/project/beanie/1.16.5
+
+[1.14.1]: https://pypi.org/project/beanie/1.14.1
+
+[1.15.5]: https://pypi.org/project/beanie/1.15.5
