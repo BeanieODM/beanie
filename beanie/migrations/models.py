@@ -13,7 +13,7 @@ class MigrationLog(Document):
     name: str
     is_current: bool
 
-    class Collection:
+    class Settings:
         name = "migrations_log"
 
 

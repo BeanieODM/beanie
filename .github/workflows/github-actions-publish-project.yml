@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - 1.14.x
 jobs:
   publish_project:
     runs-on: ubuntu-latest
