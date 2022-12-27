@@ -7,7 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from pydantic import BaseModel
 from pymongo import IndexModel
 
-from beanie.exceptions import MongoDBVersionError
+from beanie.exceptions import MongoDBVersionError, Deprecation
 from beanie.odm.actions import ActionRegistry
 from beanie.odm.cache import LRUCache
 from beanie.odm.documents import DocType
@@ -441,6 +441,19 @@ class Initializer:
         cls._settings.motor_collection = self.database[cls._settings.name]
         cls._is_inited = True
 
+    # Deprecations
+
+    @staticmethod
+    def check_deprecations(
+        cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+    ):
+        if hasattr(cls, "Collection"):
+            raise Deprecation(
+                "Collection inner class is not supported more. "
+                "Please use Settings instead. "
+                "https://beanie-odm.dev/tutorial/defining-a-document/#settings"
+            )
+
     # Final
 
     async def init_class(
@@ -452,6 +465,8 @@ class Initializer:
         :param cls:
         :return:
         """
+        self.check_deprecations(cls)
+
         if issubclass(cls, Document):
             await self.init_document(cls)
 
