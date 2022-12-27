@@ -13,9 +13,19 @@ class Sample(Document):
         use_state_management = True
 ```
 
-Beanie keeps the current changes (not yet saved in the database) by default, AND the previous changes (saved to the database) with an option (`state_management_save_previous`).
-Every new save override the previous changes and clears the current changes.
+Beanie keeps the current changes (not yet saved in the database) by default (with `use_state_management = True`), AND the previous changes (saved to the database) with `state_management_save_previous = True`.
 
+```python
+class Sample(Document):
+    num: int
+    name: str
+
+    class Settings:
+        use_state_management = True
+        state_management_save_previous = True
+```
+
+Every new save override the previous changes and clears the current changes.
 
 ## Saving changes
 
