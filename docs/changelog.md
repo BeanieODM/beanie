@@ -2,6 +2,17 @@
 
 Beanie project
 
+## [1.16.6] - 2022-12-27
+
+### Feature
+
+- Previous saved state
+
+### Implementation
+
+- Author - [Paul Renvoisé](https://github.com/paul-finary)
+- PR <https://github.com/roman-right/beanie/pull/305>
+
 ## [1.16.5] - 2022-12-27
 
 ### Deprecation
@@ -1202,3 +1213,5 @@ how specific type should be presented in the database
 [1.14.1]: https://pypi.org/project/beanie/1.14.1
 
 [1.15.5]: https://pypi.org/project/beanie/1.15.5
+
+[1.16.6]: https://pypi.org/project/beanie/1.16.6

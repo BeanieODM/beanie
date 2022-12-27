@@ -77,6 +77,7 @@ from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
     saved_state_needed,
+    previous_saved_state_needed,
     save_state_after,
     swap_revision_after,
 )
@@ -116,6 +117,7 @@ class Document(
     revision_id: Optional[UUID] = Field(default=None, hidden=True)
     _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
+    _previous_saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
 
     # Relations
     _link_fields: ClassVar[Optional[Dict[str, LinkInfo]]] = None
@@ -157,8 +159,6 @@ class Document(
             )
         for key, value in dict(new_instance).items():
             setattr(self, key, value)
-        if self.use_state_management():
-            self._save_state()
 
     @classmethod
     async def get(
@@ -723,6 +723,14 @@ class Document(
         return cls.get_settings().use_state_management
 
     @classmethod
+    def state_management_save_previous(cls) -> bool:
+        """
+        Should we save the previous state after a commit to database
+        :return: bool
+        """
+        return cls.get_settings().state_management_save_previous
+
+    @classmethod
     def state_management_replace_objects(cls) -> bool:
         """
         Should objects be replaced when using state management
@@ -736,6 +744,9 @@ class Document(
         :return: None
         """
         if self.use_state_management() and self.id is not None:
+            if self.state_management_save_previous():
+                self._previous_saved_state = self._saved_state
+
             self._saved_state = get_dict(self)
 
     def get_saved_state(self) -> Optional[Dict[str, Any]]:
@@ -745,10 +756,25 @@ class Document(
         """
         return self._saved_state
 
+    def get_previous_saved_state(self) -> Optional[Dict[str, Any]]:
+        """
+        Previous state getter. It is a protected property.
+        :return: Optional[Dict[str, Any]] - previous state
+        """
+        return self._previous_saved_state
+
     @property  # type: ignore
     @saved_state_needed
     def is_changed(self) -> bool:
         if self._saved_state == get_dict(self, to_db=True):
+            return False
+        return True
+
+    @property  # type: ignore
+    @saved_state_needed
+    @previous_saved_state_needed
+    def has_changed(self) -> bool:
+        if self._previous_saved_state is None or self._previous_saved_state == self._saved_state:
             return False
         return True
 
@@ -794,6 +820,16 @@ class Document(
     def get_changes(self) -> Dict[str, Any]:
         return self._collect_updates(
             self._saved_state, get_dict(self, to_db=True)  # type: ignore
+        )
+
+    @saved_state_needed
+    @previous_saved_state_needed
+    def get_previous_changes(self) -> Dict[str, Any]:
+        if self._previous_saved_state is None:
+            return {}
+
+        return self._collect_updates(
+            self._previous_saved_state, self._saved_state  # type: ignore
         )
 
     @saved_state_needed
