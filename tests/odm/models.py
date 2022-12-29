@@ -81,6 +81,8 @@ class DocumentTestModel(Document):
         cache_expiration_time = datetime.timedelta(seconds=10)
         cache_capacity = 5
         use_state_management = True
+        name = "different_name"
+        class_id = "different_class_id"
 
 
 class DocumentTestModelWithCustomCollectionName(Document):
@@ -434,6 +436,7 @@ class DocumentForEncodingTestDate(Document):
 class DocumentUnion(UnionDoc):
     class Settings:
         name = "multi_model"
+        class_id = "123"
 
 
 class DocumentMultiModelOne(Document):
@@ -442,6 +445,8 @@ class DocumentMultiModelOne(Document):
 
     class Settings:
         union_doc = DocumentUnion
+        name = "multi_one"
+        class_id = "123"
 
 
 class DocumentMultiModelTwo(Document):
@@ -451,6 +456,8 @@ class DocumentMultiModelTwo(Document):
 
     class Settings:
         union_doc = DocumentUnion
+        name = "multi_two"
+        class_id = "123"
 
 
 class YardWithRevision(Document):
