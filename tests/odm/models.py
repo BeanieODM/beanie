@@ -81,8 +81,6 @@ class DocumentTestModel(Document):
         cache_expiration_time = datetime.timedelta(seconds=10)
         cache_capacity = 5
         use_state_management = True
-        name = "different_name"
-        class_id = "different_class_id"
 
 
 class DocumentTestModelWithCustomCollectionName(Document):
@@ -92,6 +90,7 @@ class DocumentTestModelWithCustomCollectionName(Document):
 
     class Settings:
         name = "custom"
+        class_id = "different_class_id"
 
 
 class DocumentTestModelWithSimpleIndex(Document):
