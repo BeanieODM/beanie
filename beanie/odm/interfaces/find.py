@@ -405,7 +405,7 @@ class FindInterface:
             (
                 True
                 for a in args
-                if isinstance(a, Iterable) and "_class_id" in a
+                if isinstance(a, Iterable) and cls.get_settings().class_id in a
             )
         ):
             return args
