@@ -415,11 +415,11 @@ class FindInterface:
             and cls._inheritance_inited
         ):
             if not with_children:
-                args += ({"_class_id": cls._class_id},)
+                args += ({cls.get_settings().class_id: cls._class_id},)
             else:
                 args += (
                     {
-                        "_class_id": {
+                        cls.get_settings().class_id: {
                             "$in": [cls._class_id]
                             + [cname for cname in cls._children.keys()]
                         }
