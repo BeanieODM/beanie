@@ -237,6 +237,7 @@ class Initializer:
             document_settings.name = document_settings.union_doc.register_doc(
                 name, cls
             )
+            document_settings.union_doc_alias = name
 
         # set a name
 
