@@ -233,8 +233,9 @@ class Initializer:
         # register in the Union Doc
 
         if document_settings.union_doc is not None:
+            name = cls.get_settings().name or cls.__name__
             document_settings.name = document_settings.union_doc.register_doc(
-                cls
+                name, cls
             )
 
         # set a name

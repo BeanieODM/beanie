@@ -24,7 +24,7 @@ def parse_obj(
             raise UnionHasNoRegisteredDocs
 
         if isinstance(data, dict):
-            class_name = data["_class_id"]
+            class_name = data[model.get_settings().class_id]
         else:
             class_name = data._class_id
 
