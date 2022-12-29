@@ -28,8 +28,8 @@ class One(Document):
     shared: int = 0        
 
     class Settings:
-        name = "One" # Child collection name
         union_doc = Parent
+        union_doc_alias = "One" # Name used to filer union document 'One', default to class name
 
 
 class Two(Document):
