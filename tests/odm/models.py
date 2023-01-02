@@ -63,7 +63,7 @@ class Sample(Document):
     optional: Optional[Option2]
     union: Union[Option1, Option2]
     geo: GeoObject
-    const: str
+    const: str = "TEST"
 
 
 class SubDocument(BaseModel):
