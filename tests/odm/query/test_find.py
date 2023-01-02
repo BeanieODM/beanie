@@ -207,6 +207,18 @@ async def test_sort(preset_documents):
         assert i_buf >= a.integer
         i_buf = a.integer
 
+    result = (
+        await Sample.find_many(Sample.integer > 1)
+        .sort([Sample.const, -Sample.integer])
+        .to_list()
+    )
+    i_buf = None
+    for a in result:
+        if i_buf is None:
+            i_buf = a.integer
+        assert i_buf >= a.integer
+        i_buf = a.integer
+
     with pytest.raises(TypeError):
         Sample.find_many(Sample.integer > 1, sort=1)
 
