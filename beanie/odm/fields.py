@@ -94,6 +94,8 @@ class ExpressionField(str):
         return hash(str(self))
 
     def __eq__(self, other):
+        if isinstance(other, ExpressionField):
+            return super(ExpressionField, self).__eq__(other)
         return Eq(field=self, other=other)
 
     def __gt__(self, other):

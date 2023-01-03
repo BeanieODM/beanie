@@ -106,6 +106,8 @@ async def preset_documents(point):
             optional=optional,
         )
 
+        const = "TEST"
+
         sample = Sample(
             timestamp=timestamp,
             increment=i,
@@ -116,7 +118,9 @@ async def preset_documents(point):
             optional=optional,
             union=union,
             geo=geo,
+            const=const,
         )
+
         docs.append(sample)
     await Sample.insert_many(documents=docs)
 

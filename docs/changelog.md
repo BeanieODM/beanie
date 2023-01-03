@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [1.16.7] - 2023-01-03
+
+### Fix
+
+- sort many args
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/468>
+
 ## [1.16.6] - 2022-12-27
 
 ### Feature
@@ -1215,3 +1225,5 @@ how specific type should be presented in the database
 [1.15.5]: https://pypi.org/project/beanie/1.15.5
 
 [1.16.6]: https://pypi.org/project/beanie/1.16.6
+
+[1.16.7]: https://pypi.org/project/beanie/1.16.7
