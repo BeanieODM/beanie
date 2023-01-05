@@ -10,7 +10,7 @@ jobs:
         poetry-version: [ 1.2 ]
         mongodb-version: [ 4.4, 5.0 ]
         pydantic-version: [1.10.0]
-        os: [ ubuntu-18.04 ]
+        os: [ ubuntu-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
