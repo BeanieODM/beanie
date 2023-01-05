@@ -2,6 +2,17 @@
 
 Beanie project
 
+## [1.16.8] - 2022-01-05
+
+### Fix
+
+- Already inserted Links will throw DuplicateKeyError on insert of wrapping doc
+
+### Implementation
+
+- Author - [noaHson86](https://github.com/noaHson86)
+- PR <https://github.com/roman-right/beanie/pull/469>
+
 ## [1.16.7] - 2023-01-03
 
 ### Fix
@@ -1227,3 +1238,5 @@ how specific type should be presented in the database
 [1.16.6]: https://pypi.org/project/beanie/1.16.6
 
 [1.16.7]: https://pypi.org/project/beanie/1.16.7
+
+[1.16.8]: https://pypi.org/project/beanie/1.16.8

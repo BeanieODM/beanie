@@ -216,7 +216,7 @@ class Document(
                         LinkTypes.OPTIONAL_DIRECT,
                     ]:
                         if isinstance(value, Document):
-                            await value.insert(link_rule=WriteRules.WRITE)
+                            await value.save(link_rule=WriteRules.WRITE)
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
@@ -224,9 +224,7 @@ class Document(
                         if isinstance(value, List):
                             for obj in value:
                                 if isinstance(obj, Document):
-                                    await obj.insert(
-                                        link_rule=WriteRules.WRITE
-                                    )
+                                    await obj.save(link_rule=WriteRules.WRITE)
 
         result = await self.get_motor_collection().insert_one(
             get_dict(self, to_db=True), session=session
@@ -774,7 +772,10 @@ class Document(
     @saved_state_needed
     @previous_saved_state_needed
     def has_changed(self) -> bool:
-        if self._previous_saved_state is None or self._previous_saved_state == self._saved_state:
+        if (
+            self._previous_saved_state is None
+            or self._previous_saved_state == self._saved_state
+        ):
             return False
         return True
 

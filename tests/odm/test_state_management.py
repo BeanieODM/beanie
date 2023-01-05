@@ -82,10 +82,17 @@ async def house(house_not_inserted):
 
 class TestStateManagement:
     async def test_use_state_management_property(self):
-        assert DocumentWithTurnedOnStateManagement.use_state_management() is True
-        assert DocumentWithTurnedOffStateManagement.use_state_management() is False
+        assert (
+            DocumentWithTurnedOnStateManagement.use_state_management() is True
+        )
+        assert (
+            DocumentWithTurnedOffStateManagement.use_state_management()
+            is False
+        )
 
-    async def test_state_with_decimal_field(self, ):
+    async def test_state_with_decimal_field(
+        self,
+    ):
         await StateAndDecimalFieldModel(amt=10.01).insert()
         await StateAndDecimalFieldModel.all().to_list()
 
@@ -292,15 +299,21 @@ class TestStateManagement:
             saved_doc_default.num_1 = 10000
 
             saved_doc_default.internal.change_private()
-            assert saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
+            assert (
+                saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
+            )
 
             await saved_doc_default.save_changes()
 
             assert saved_doc_default.get_saved_state()["num_1"] == 10000
             assert saved_doc_default.get_previous_saved_state() is None
-            assert saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
+            assert (
+                saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
+            )
 
-            new_doc = await DocumentWithTurnedOnStateManagement.get(saved_doc_default.id)
+            new_doc = await DocumentWithTurnedOnStateManagement.get(
+                saved_doc_default.id
+            )
             assert new_doc.num_1 == 10000
 
         async def test_save_changes_previous(self, saved_doc_previous):
@@ -310,14 +323,20 @@ class TestStateManagement:
             saved_doc_previous.num_1 = 10000
 
             saved_doc_previous.internal.change_private()
-            assert saved_doc_previous.internal.get_private() == "PRIVATE_CHANGED"
+            assert (
+                saved_doc_previous.internal.get_private() == "PRIVATE_CHANGED"
+            )
 
             await saved_doc_previous.save_changes()
             assert saved_doc_previous.get_saved_state()["num_1"] == 10000
             assert saved_doc_previous.get_previous_saved_state()["num_1"] == 1
-            assert saved_doc_previous.internal.get_private() == "PRIVATE_CHANGED"
+            assert (
+                saved_doc_previous.internal.get_private() == "PRIVATE_CHANGED"
+            )
 
-            new_doc = await DocumentWithTurnedOnSavePrevious.get(saved_doc_previous.id)
+            new_doc = await DocumentWithTurnedOnSavePrevious.get(
+                saved_doc_previous.id
+            )
             assert new_doc.num_1 == 10000
 
         async def test_fetch_save_changes(self, house):
@@ -360,7 +379,9 @@ class TestStateManagement:
                 assert doc.get_previous_saved_state() is None
 
         async def test_insert(self, state_without_id):
-            doc = DocumentWithTurnedOnStateManagement.parse_obj(state_without_id)
+            doc = DocumentWithTurnedOnStateManagement.parse_obj(
+                state_without_id
+            )
             assert doc.get_saved_state() is None
             await doc.insert()
             new_state = doc.get_saved_state()
