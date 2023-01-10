@@ -277,6 +277,7 @@ def documents(documents_not_inserted):
 
     return generate_documents
 
+
 @pytest.fixture
 def documents_with_links(documents):
     async def generate_documents():

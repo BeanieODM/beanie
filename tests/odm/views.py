@@ -15,6 +15,7 @@ class TestView(View):
             {"$project": {"number": "$test_int", "string": "$test_str"}},
         ]
 
+
 class TestViewWithLink(View):
     link: Link[DocumentTestModel]
 

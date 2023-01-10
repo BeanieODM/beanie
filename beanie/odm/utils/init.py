@@ -378,6 +378,7 @@ class Initializer:
         Init class fields
         :return: None
         """
+
         def check_nested_links(
             link_info: LinkInfo, prev_models: List[Type[BaseModel]]
         ):

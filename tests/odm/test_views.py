@@ -25,4 +25,4 @@ class TestViews:
             await document.fetch_all_links()
 
         for i, document in enumerate(results):
-            assert document.link.test_int == i 
+            assert document.link.test_int == i

@@ -26,6 +26,7 @@ class View(
     pipeline
 
     """
+
     # Relations
     _link_fields: ClassVar[Optional[Dict[str, LinkInfo]]] = None
 
