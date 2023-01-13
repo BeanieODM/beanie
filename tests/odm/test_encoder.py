@@ -56,7 +56,7 @@ async def test_bytes_already_binary():
 
 async def test_mutable_objects_on_save():
     instance = SampleWithMutableObjects(
-        d={"Bar": Child(child_field="Foo")}, l=[Child(child_field="Bar")]
+        d={"Bar": Child(child_field="Foo")}, lst=[Child(child_field="Bar")]
     )
     await instance.save()
     assert isinstance(instance.d["Bar"], Child)

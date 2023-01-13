@@ -562,7 +562,7 @@ class Child(BaseModel):
 
 class SampleWithMutableObjects(Document):
     d: Dict[str, Child]
-    l: List[Child]
+    lst: List[Child]
 
 
 class SampleLazyParsing(Document):

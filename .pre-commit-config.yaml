@@ -4,10 +4,11 @@ repos:
     hooks:
     - id: black
       language_version: python3.10
-  - repo: https://github.com/pycqa/flake8
-    rev: 3.9.2
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.220
     hooks:
-    - id: flake8
+      - id: ruff
+        args: [ "--force-exclude" ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.910
     hooks:

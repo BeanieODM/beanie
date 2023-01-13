@@ -53,7 +53,7 @@ class ActionRegistry:
 
     @classmethod
     def clean_actions(cls, document_class: Type):
-        if not cls._actions.get(document_class) is None:
+        if cls._actions.get(document_class) is not None:
             del cls._actions[document_class]
 
     @classmethod
