@@ -545,7 +545,7 @@ class Document(
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: bool = False,
         **kwargs,
-    ):
+    ) -> None:
         """
         Set values
 
@@ -567,7 +567,7 @@ class Document(
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
-        :return: self
+        :return: None
         """
         return self.update(
             SetOperator(expression),
