@@ -60,4 +60,4 @@ async def test_mutable_objects_on_save():
     )
     await instance.save()
     assert isinstance(instance.d["Bar"], Child)
-    assert isinstance(instance.l[0], Child)
+    assert isinstance(instance.lst[0], Child)
