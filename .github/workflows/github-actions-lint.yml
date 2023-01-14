@@ -6,15 +6,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 3.10.5 ]
-        os: [ ubuntu-latest ]
-    runs-on: ${{ matrix.os }}
+        python-version: [ 3.10.9 ]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: flake8 install
-        run: pip3 install flake8
+      - name: ruff install
+        run: pip3 install ruff
       - name: lint
-        run: flake8 beanie/ tests/
+        run: ruff beanie/ tests/

@@ -6,12 +6,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 3.7, 3.8, 3.9, 3.10.5 ]
-        poetry-version: [ 1.2 ]
+        python-version: [ 3.7, 3.8, 3.9, 3.10.9, 3.11 ]
         mongodb-version: [ 4.4, 5.0 ]
-        pydantic-version: [1.10.0]
-        os: [ ubuntu-latest ]
-    runs-on: ${{ matrix.os }}
+        pydantic-version: [ 1.10.0 ]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -22,11 +20,9 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: test-rs
-      - name: Run image
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: ${{ matrix.poetry-version }}
-      - name: poetry install
+      - name: install poetry
+        run: pip install poetry
+      - name: install dependencies
         run: poetry install
       - name: specify pydantic
         run: poetry add pydantic==${{ matrix.pydantic-version }}

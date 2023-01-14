@@ -12,9 +12,7 @@ jobs:
         with:
           python-version: 3.8
       - name: install poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: 1.2
+        run: pip install poetry
       - name: install dependencies
         run: poetry install
       - name: publish docs
