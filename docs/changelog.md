@@ -2,6 +2,19 @@
 
 Beanie project
 
+## [1.17.0] - 2023-01-19
+
+### Feature
+
+- Add links to views
+
+### Implementation
+
+- Author - [Sebastian Battle](https://github.com/sabattle)
+- PR <https://github.com/roman-right/beanie/pull/472>
+
+[1.17.0]: https://pypi.org/project/beanie/1.17.0
+
 ## [1.16.8] - 2022-01-05
 
 ### Fix

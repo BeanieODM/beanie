@@ -84,6 +84,16 @@ class DocumentTestModel(Document):
         use_state_management = True
 
 
+class DocumentTestModelWithLink(Document):
+    test_link: Link[DocumentTestModel]
+
+    class Settings:
+        use_cache = True
+        cache_expiration_time = datetime.timedelta(seconds=10)
+        cache_capacity = 5
+        use_state_management = True
+
+
 class DocumentTestModelWithCustomCollectionName(Document):
     test_int: int
     test_list: List[SubDocument]
