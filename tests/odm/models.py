@@ -63,6 +63,7 @@ class Sample(Document):
     optional: Optional[Option2]
     union: Union[Option1, Option2]
     geo: GeoObject
+    const: str = "TEST"
 
 
 class SubDocument(BaseModel):
@@ -145,12 +146,6 @@ class DocumentTestModelWithDroppedIndex(Document):
     test_list: List[SubDocument]
     test_str: str
 
-    class Collection:
-        name = "docs_with_index"
-        indexes = [
-            "test_int",
-        ]
-
     class Settings:
         name = "docs_with_index"
         indexes = [
@@ -164,9 +159,6 @@ class DocumentTestModelStringImport(Document):
 
 class DocumentTestModelFailInspection(Document):
     test_int_2: int
-
-    class Collection:
-        name = "DocumentTestModel"
 
     class Settings:
         name = "DocumentTestModel"
@@ -330,6 +322,16 @@ class DocumentWithTurnedOnReplaceObjects(Document):
     class Settings:
         use_state_management = True
         state_management_replace_objects = True
+
+
+class DocumentWithTurnedOnSavePrevious(Document):
+    num_1: int
+    num_2: int
+    internal: InternalDoc
+
+    class Settings:
+        use_state_management = True
+        state_management_save_previous = True
 
 
 class DocumentWithTurnedOffStateManagement(Document):
@@ -570,7 +572,7 @@ class Child(BaseModel):
 
 class SampleWithMutableObjects(Document):
     d: Dict[str, Child]
-    l: List[Child]
+    lst: List[Child]
 
 
 class SampleLazyParsing(Document):
@@ -663,3 +665,10 @@ class LoopedLinksA(Document):
 
 class LoopedLinksB(Document):
     a: Optional[LoopedLinksA]
+
+
+class DocWithCollectionInnerClass(Document):
+    s: str
+
+    class Collection:
+        name = "test"

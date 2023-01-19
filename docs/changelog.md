@@ -15,6 +15,53 @@ Beanie project
 
 [1.17.0]: https://pypi.org/project/beanie/1.17.0
 
+## [1.16.8] - 2022-01-05
+
+### Fix
+
+- Already inserted Links will throw DuplicateKeyError on insert of wrapping doc
+
+### Implementation
+
+- Author - [noaHson86](https://github.com/noaHson86)
+- PR <https://github.com/roman-right/beanie/pull/469>
+
+## [1.16.7] - 2023-01-03
+
+### Fix
+
+- sort many args
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/468>
+
+## [1.16.6] - 2022-12-27
+
+### Feature
+
+- Previous saved state
+
+### Implementation
+
+- Author - [Paul Renvoisé](https://github.com/paul-finary)
+- PR <https://github.com/roman-right/beanie/pull/305>
+
+## [1.16.5] - 2022-12-27
+
+### Deprecation
+
+- Raises exception if `Collection` inner class was used as it is not supported more
+
+### Backported to
+
+- [1.15.5]
+- [1.14.1]
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/460>
+
 ## [1.16.4] - 2022-12-20
 
 ### Fix
@@ -1194,3 +1241,15 @@ how specific type should be presented in the database
 [1.16.3]: https://pypi.org/project/beanie/1.16.3
 
 [1.16.4]: https://pypi.org/project/beanie/1.16.4
+
+[1.16.5]: https://pypi.org/project/beanie/1.16.5
+
+[1.14.1]: https://pypi.org/project/beanie/1.14.1
+
+[1.15.5]: https://pypi.org/project/beanie/1.15.5
+
+[1.16.6]: https://pypi.org/project/beanie/1.16.6
+
+[1.16.7]: https://pypi.org/project/beanie/1.16.7
+
+[1.16.8]: https://pypi.org/project/beanie/1.16.8

@@ -5,7 +5,7 @@
 
 ## Overview
 
-fix:[Beanie](https://github.com/roman-right/beanie) - is an asynchronous Python object-document mapper (ODM) for MongoDB. Data models are based on [Pydantic](https://pydantic-docs.helpmanual.io/).
+[Beanie](https://github.com/roman-right/beanie) - is an asynchronous Python object-document mapper (ODM) for MongoDB. Data models are based on [Pydantic](https://pydantic-docs.helpmanual.io/).
 
 When using Beanie each database collection has a corresponding `Document` that
 is used to interact with that collection. In addition to retrieving data,
@@ -110,7 +110,7 @@ Iliya Hosseini](https://github.com/IHosseini083)
   project
 - **[Changelog](https://roman-right.github.io/beanie/changelog)** - list of all
   the valuable changes
-- **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share
+- **[Discord](https://discord.gg/29mMrEBvr4)** - ask your questions, share
   ideas or just say `Hello!!`
 
 ----

@@ -13,6 +13,22 @@ class Sample(Document):
         use_state_management = True
 ```
 
+Beanie keeps the current changes (not yet saved in the database) by default (with `use_state_management = True`), AND the previous changes (saved to the database) with `state_management_save_previous = True`.
+
+```python
+class Sample(Document):
+    num: int
+    name: str
+
+    class Settings:
+        use_state_management = True
+        state_management_save_previous = True
+```
+
+Every new save override the previous changes and clears the current changes.
+
+## Saving changes
+
 To save only changed values, the `save_changes()` method should be used.
 
 ```python
@@ -21,7 +37,43 @@ s.num = 100
 await s.save_changes()
 ```
 
-The `save_changes()` method can be used only with already existing documents.
+The `save_changes()` method can only be used with already inserted documents.
+
+
+## Interacting with changes
+
+Beanie exposes several methods that can be used to interact with the saved changes:
+
+```python
+s = await Sample.find_one(Sample.name == "Test")
+
+s.is_changed == False
+s.get_changes == {}
+
+s.num = 200
+
+s.is_changed == True
+s.get_changes() == {"num": 200}
+
+s.rollback()
+
+s.is_changed == False
+s.get_changes() == {}
+```
+
+And similar methods can be used with the previous changes that have been saved in the database if `state_management_save_previous` is set to `True`:
+
+```python
+s = await Sample.find_one(Sample.name == "Test")
+
+s.num = 200
+await s.save_changes()
+
+s.has_changed == True
+s.get_previous_changes() == {"num": 200}
+s.get_changes() == {}
+```
+
 
 ## Options
 

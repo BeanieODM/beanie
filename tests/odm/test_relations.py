@@ -151,6 +151,20 @@ class TestInsert:
         await house.insert(link_rule=WriteRules.WRITE)
         house.json()
 
+    async def test_multi_insert_links(self):
+        house = House(name="random", windows=[], door=Door())
+        window = await Window(x=13, y=23).insert()
+        assert window.id
+        house.windows.append(window)
+
+        house = await house.insert(link_rule=WriteRules.WRITE)
+        new_window = Window(x=11, y=22)
+        house.windows.append(new_window)
+        house = await house.save(link_rule=WriteRules.WRITE)
+        for win in house.windows:
+            assert isinstance(win, Window)
+            assert win.id
+
 
 class TestFind:
     async def test_prefetch_find_many(self, houses):
