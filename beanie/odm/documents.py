@@ -997,3 +997,9 @@ class Document(
         ) -> None:
             for field_name in model._hidden_fields:
                 schema.get("properties", {}).pop(field_name, None)
+
+            props = {}
+            for k, v in schema.get('properties', {}).items():
+                if not v.get("hidden", False):
+                    props[k] = v
+            schema["properties"] = props
