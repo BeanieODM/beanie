@@ -26,7 +26,15 @@ from pydantic import (
 from pydantic.color import Color
 from pymongo import IndexModel
 
-from beanie import Document, Indexed, Insert, Replace, Update, ValidateOnSave
+from beanie import (
+    Document,
+    Indexed,
+    Insert,
+    Replace,
+    Update,
+    ValidateOnSave,
+    Save,
+)
 from beanie.odm.actions import Delete, after_event, before_event
 from beanie.odm.fields import Link, PydanticObjectId
 from beanie.odm.settings.timeseries import TimeSeriesConfig
@@ -207,6 +215,7 @@ class DocumentWithActions(Document):
     num_1: int = 0
     num_2: int = 10
     num_3: int = 100
+    _private_num: int = PrivateAttr(default=100)
 
     class Inner:
         inner_num_1 = 0
@@ -216,7 +225,7 @@ class DocumentWithActions(Document):
     def capitalize_name(self):
         self.name = self.name.capitalize()
 
-    @before_event([Insert, Replace])
+    @before_event([Insert, Replace, Save])
     async def add_one(self):
         self.num_1 += 1
 
@@ -238,7 +247,7 @@ class DocumentWithActions(Document):
 
     @before_event(Update)
     def inner_num_to_one_2(self):
-        self.num_1 += 1
+        self._private_num += 1
 
     @after_event(Update)
     def inner_num_to_two_2(self):
@@ -250,6 +259,7 @@ class DocumentWithActions2(Document):
     num_1: int = 0
     num_2: int = 10
     num_3: int = 100
+    _private_num: int = PrivateAttr(default=100)
 
     class Inner:
         inner_num_1 = 0
@@ -259,7 +269,7 @@ class DocumentWithActions2(Document):
     def capitalize_name(self):
         self.name = self.name.capitalize()
 
-    @before_event(Insert, Replace)
+    @before_event(Insert, Replace, Save)
     async def add_one(self):
         self.num_1 += 1
 
@@ -281,7 +291,7 @@ class DocumentWithActions2(Document):
 
     @before_event(Update)
     def inner_num_to_one_2(self):
-        self.num_1 += 1
+        self._private_num += 1
 
     @after_event(Update)
     def inner_num_to_two_2(self):

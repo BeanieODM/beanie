@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 class EventTypes(str, Enum):
     INSERT = "INSERT"
     REPLACE = "REPLACE"
+    SAVE = "SAVE"
     SAVE_CHANGES = "SAVE_CHANGES"
     VALIDATE_ON_SAVE = "VALIDATE_ON_SAVE"
     DELETE = "DELETE"
@@ -29,6 +30,7 @@ class EventTypes(str, Enum):
 
 Insert = EventTypes.INSERT
 Replace = EventTypes.REPLACE
+Save = EventTypes.SAVE
 SaveChanges = EventTypes.SAVE_CHANGES
 ValidateOnSave = EventTypes.VALIDATE_ON_SAVE
 Delete = EventTypes.DELETE
@@ -132,7 +134,6 @@ class ActionRegistry:
                 coros.append(action(instance))
             elif inspect.isfunction(action):
                 action(instance)
-
         await asyncio.gather(*coros)
 
 
@@ -171,7 +172,6 @@ def before_event(*args: Union[List[EventTypes], EventTypes]):
     :param args: Union[List[EventTypes], EventTypes] - event types
     :return: None
     """
-
     return register_action(
         action_direction=ActionDirections.BEFORE, event_types=args  # type: ignore
     )

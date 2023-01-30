@@ -2,6 +2,19 @@
 
 Beanie project
 
+## [1.18.0b0] - 2023-01-30
+
+### Feature
+
+- feat: convert updates to be atomic operations
+
+### Implementation
+
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/481>
+
+[1.18.0b0]: https://pypi.org/project/beanie/1.18.0b0
+
 ## [1.17.0] - 2023-01-19
 
 ### Feature

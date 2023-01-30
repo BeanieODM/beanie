@@ -5,6 +5,7 @@ from beanie.odm.actions import (
     after_event,
     Insert,
     Replace,
+    Save,
     SaveChanges,
     ValidateOnSave,
     Before,
@@ -26,7 +27,7 @@ from beanie.odm.documents import Document
 from beanie.odm.views import View
 from beanie.odm.union_doc import UnionDoc
 
-__version__ = "1.17.0"
+__version__ = "1.18.0b0"
 __all__ = [
     # ODM
     "Document",
@@ -42,6 +43,7 @@ __all__ = [
     "after_event",
     "Insert",
     "Replace",
+    "Save",
     "SaveChanges",
     "ValidateOnSave",
     "Delete",
