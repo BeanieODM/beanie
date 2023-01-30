@@ -35,9 +35,9 @@ if TYPE_CHECKING:
 
 
 class UpdateResponse(str, Enum):
-    UPDATE_RESULT = "UPDATE_RESULT"
-    OLD_DOCUMENT = "OLD_DOCUMENT"
-    NEW_DOCUMENT = "NEW_DOCUMENT"
+    UPDATE_RESULT = "UPDATE_RESULT"  # PyMongo update result
+    OLD_DOCUMENT = "OLD_DOCUMENT"  # Original document
+    NEW_DOCUMENT = "NEW_DOCUMENT"  # Updated document
 
 
 class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
@@ -303,7 +303,6 @@ class UpdateOne(UpdateQuery):
                 return await self.document_model.get_motor_collection().update_one(
                     self.find_query,
                     self.update_query,
-                    returnNewDocument=True,
                     session=self.session,
                     **self.pymongo_kwargs,
                 )
