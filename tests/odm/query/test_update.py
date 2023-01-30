@@ -174,7 +174,6 @@ async def test_update_one_upsert_with_insert(
     await Sample.find_one(Sample.integer > 100000).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
-    await asyncio.sleep(2)
     new_docs = await Sample.find_many(
         Sample.string == sample_doc_not_saved.string
     ).to_list()
@@ -189,7 +188,6 @@ async def test_update_one_upsert_without_insert(
     await Sample.find_one(Sample.integer > 1).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
-    await asyncio.sleep(2)
     new_docs = await Sample.find_many(
         Sample.string == sample_doc_not_saved.string
     ).to_list()

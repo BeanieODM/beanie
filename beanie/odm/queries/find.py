@@ -42,6 +42,7 @@ from beanie.odm.queries.update import (
     UpdateQuery,
     UpdateMany,
     UpdateOne,
+    UpdateResponse,
 )
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
@@ -111,63 +112,6 @@ class FindQuery(
             )
         else:
             return {}
-
-    def update(
-        self,
-        *args: Mapping[str, Any],
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
-    ):
-        """
-        Create Update with modifications query
-        and provide search criteria there
-
-        :param args: *Mapping[str,Any] - the modifications to apply.
-        :param session: Optional[ClientSession]
-        :param bulk_writer: Optional[BulkWriter]
-        :return: UpdateMany query
-        """
-        self.set_session(session)
-        return (
-            self.UpdateQueryType(
-                document_model=self.document_model,
-                find_query=self.get_filter_query(),
-            )
-            .update(*args, bulk_writer=bulk_writer, **pymongo_kwargs)
-            .set_session(session=self.session)
-        )
-
-    def upsert(
-        self,
-        *args: Mapping[str, Any],
-        on_insert: "DocType",
-        session: Optional[ClientSession] = None,
-        **pymongo_kwargs,
-    ):
-        """
-        Create Update with modifications query
-        and provide search criteria there
-
-        :param args: *Mapping[str,Any] - the modifications to apply.
-        :param on_insert: DocType - document to insert if there is no matched
-        document in the collection
-        :param session: Optional[ClientSession]
-        :return: UpdateMany query
-        """
-        self.set_session(session)
-        return (
-            self.UpdateQueryType(
-                document_model=self.document_model,
-                find_query=self.get_filter_query(),
-            )
-            .upsert(
-                *args,
-                on_insert=on_insert,
-                **pymongo_kwargs,
-            )
-            .set_session(session=self.session)
-        )
 
     def delete(
         self,
@@ -477,6 +421,63 @@ class FindMany(
             self.limit_number = n
         return self
 
+    def update(
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
+    ):
+        """
+        Create Update with modifications query
+        and provide search criteria there
+
+        :param args: *Mapping[str,Any] - the modifications to apply.
+        :param session: Optional[ClientSession]
+        :param bulk_writer: Optional[BulkWriter]
+        :return: UpdateMany query
+        """
+        self.set_session(session)
+        return (
+            self.UpdateQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+            )
+            .update(*args, bulk_writer=bulk_writer, **pymongo_kwargs)
+            .set_session(session=self.session)
+        )
+
+    def upsert(
+        self,
+        *args: Mapping[str, Any],
+        on_insert: "DocType",
+        session: Optional[ClientSession] = None,
+        **pymongo_kwargs,
+    ):
+        """
+        Create Update with modifications query
+        and provide search criteria there
+
+        :param args: *Mapping[str,Any] - the modifications to apply.
+        :param on_insert: DocType - document to insert if there is no matched
+        document in the collection
+        :param session: Optional[ClientSession]
+        :return: UpdateMany query
+        """
+        self.set_session(session)
+        return (
+            self.UpdateQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+            )
+            .upsert(
+                *args,
+                on_insert=on_insert,
+                **pymongo_kwargs,
+            )
+            .set_session(session=self.session)
+        )
+
     def update_many(
         self,
         *args: Mapping[str, Any],
@@ -756,11 +757,79 @@ class FindOne(FindQuery[FindQueryResultType]):
         self.pymongo_kwargs.update(pymongo_kwargs)
         return self
 
+    def update(
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        response_type: Optional[UpdateResponse] = None,
+        **pymongo_kwargs,
+    ):
+        """
+        Create Update with modifications query
+        and provide search criteria there
+
+        :param args: *Mapping[str,Any] - the modifications to apply.
+        :param session: Optional[ClientSession]
+        :param bulk_writer: Optional[BulkWriter]
+        :param response_type: Optional[UpdateResponse]
+        :return: UpdateMany query
+        """
+        self.set_session(session)
+        return (
+            self.UpdateQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+            )
+            .update(
+                *args,
+                bulk_writer=bulk_writer,
+                response_type=response_type,
+                **pymongo_kwargs,
+            )
+            .set_session(session=self.session)
+        )
+
+    def upsert(
+        self,
+        *args: Mapping[str, Any],
+        on_insert: "DocType",
+        session: Optional[ClientSession] = None,
+        response_type: Optional[UpdateResponse] = None,
+        **pymongo_kwargs,
+    ):
+        """
+        Create Update with modifications query
+        and provide search criteria there
+
+        :param args: *Mapping[str,Any] - the modifications to apply.
+        :param on_insert: DocType - document to insert if there is no matched
+        document in the collection
+        :param session: Optional[ClientSession]
+        :param response_type: Optional[UpdateResponse]
+        :return: UpdateMany query
+        """
+        self.set_session(session)
+        return (
+            self.UpdateQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+            )
+            .upsert(
+                *args,
+                on_insert=on_insert,
+                response_type=response_type,
+                **pymongo_kwargs,
+            )
+            .set_session(session=self.session)
+        )
+
     def update_one(
         self,
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
+        response_type: Optional[UpdateResponse] = None,
         **pymongo_kwargs,
     ) -> UpdateOne:
         """
@@ -768,6 +837,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         provide search criteria there
         :param args: *Mapping[str,Any] - the modifications to apply
         :param session: Optional[ClientSession] - PyMongo sessions
+        :param response_type: Optional[UpdateResponse]
         :return: [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query
         """
         return cast(
@@ -776,6 +846,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 *args,
                 session=session,
                 bulk_writer=bulk_writer,
+                response_type=response_type,
                 **pymongo_kwargs,
             ),
         )

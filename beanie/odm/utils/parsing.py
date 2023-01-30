@@ -11,6 +11,28 @@ if TYPE_CHECKING:
     from beanie.odm.documents import Document
 
 
+def merge_models(left: BaseModel, right: BaseModel) -> None:
+    from beanie.odm.fields import Link
+
+    for k, right_value in right.__iter__():
+        left_value = left.__getattribute__(k)
+        if isinstance(right_value, BaseModel) and isinstance(
+            left_value, BaseModel
+        ):
+            merge_models(left_value, right_value)
+            continue
+        if isinstance(right_value, list):
+            links_found = False
+            for i in right_value:
+                if isinstance(i, Link):
+                    links_found = True
+                    break
+            if links_found:
+                continue
+        elif not isinstance(right_value, Link):
+            left.__setattr__(k, right_value)
+
+
 def parse_obj(
     model: Union[Type[BaseModel], Type["Document"]],
     data: Any,
