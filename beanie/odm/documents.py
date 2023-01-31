@@ -74,7 +74,7 @@ from beanie.odm.operators.update.general import (
 from beanie.odm.queries.update import UpdateMany, UpdateResponse
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict
-from beanie.odm.utils.parsing import merge_models
+from beanie.odm.utils.merge import merge_models
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
     saved_state_needed,
