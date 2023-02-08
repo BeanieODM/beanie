@@ -143,8 +143,6 @@ class Document(
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
-        self._save_state()
-        self._swap_revision()
 
     @classmethod
     async def get(

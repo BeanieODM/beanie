@@ -33,6 +33,13 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
             left.__setattr__(k, right_value)
 
 
+def save_state_swap_revision(item: BaseModel):
+    if hasattr(item, "_save_state"):
+        item._save_state()
+    if hasattr(item, "_swap_revision"):
+        item._swap_revision()
+
+
 def parse_obj(
     model: Union[Type[BaseModel], Type["Document"]],
     data: Any,
@@ -76,8 +83,6 @@ def parse_obj(
                 lazy_parse=lazy_parse,
             )  # type: ignore
 
-    # if hasattr(model, "_parse_obj_saving_state"):
-    #     return model._parse_obj_saving_state(data)  # type: ignore
     if (
         lazy_parse
         and hasattr(model, "get_model_type")
@@ -86,4 +91,6 @@ def parse_obj(
         o = model.lazy_parse(data, {"_id"})
         o._saved_state = {"_id": o.id}
         return o
-    return model.parse_obj(data)
+    result = model.parse_obj(data)
+    save_state_swap_revision(result)
+    return result

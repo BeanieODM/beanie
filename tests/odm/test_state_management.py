@@ -3,6 +3,7 @@ from bson import ObjectId
 
 from beanie import PydanticObjectId, WriteRules
 from beanie.exceptions import StateManagementIsTurnedOff, StateNotSaved
+from beanie.odm.utils.parsing import parse_obj
 from tests.odm.models import (
     DocumentWithTurnedOffStateManagement,
     DocumentWithTurnedOnReplaceObjects,
@@ -13,6 +14,7 @@ from tests.odm.models import (
     LockWithRevision,
     WindowWithRevision,
     StateAndDecimalFieldModel,
+    DocumentWithTurnedOnStateManagementWithCustomId,
 )
 
 
@@ -37,17 +39,17 @@ def state_without_id():
 
 @pytest.fixture
 def doc_default(state):
-    return DocumentWithTurnedOnStateManagement.parse_obj(state)
+    return parse_obj(DocumentWithTurnedOnStateManagement, state)
 
 
 @pytest.fixture
 def doc_replace(state):
-    return DocumentWithTurnedOnReplaceObjects.parse_obj(state)
+    return parse_obj(DocumentWithTurnedOnReplaceObjects, state)
 
 
 @pytest.fixture
 def doc_previous(state):
-    return DocumentWithTurnedOnSavePrevious.parse_obj(state)
+    return parse_obj(DocumentWithTurnedOnSavePrevious, state)
 
 
 @pytest.fixture
@@ -103,7 +105,7 @@ class TestStateManagement:
             "_id": ObjectId(),
             "internal": InternalDoc(),
         }
-        doc = DocumentWithTurnedOnStateManagement.parse_obj(obj)
+        doc = parse_obj(DocumentWithTurnedOnStateManagement, obj)
         assert doc.get_saved_state() == obj
         assert doc.get_previous_saved_state() is None
 
@@ -135,6 +137,18 @@ class TestStateManagement:
                 "_id": doc.id,
             }
             assert doc.get_previous_saved_state() is None
+
+        async def test_save_state_with_custom_id_type(self):
+            doc = DocumentWithTurnedOnStateManagementWithCustomId(
+                id=0,
+                num_1=1,
+                num_2=2,
+            )
+            with pytest.raises(StateNotSaved):
+                await doc.save_changes()
+            doc.num_1 = 2
+            with pytest.raises(StateNotSaved):
+                await doc.save_changes()
 
         async def test_save_state_with_previous(self):
             doc = DocumentWithTurnedOnSavePrevious(

@@ -69,6 +69,7 @@ from tests.odm.models import (
     SelfLinked,
     LoopedLinksA,
     LoopedLinksB,
+    DocumentWithTurnedOnStateManagementWithCustomId,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -223,6 +224,7 @@ async def init(loop, db):
         SelfLinked,
         LoopedLinksA,
         LoopedLinksB,
+        DocumentWithTurnedOnStateManagementWithCustomId,
     ]
     await init_beanie(
         database=db,

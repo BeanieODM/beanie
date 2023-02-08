@@ -324,6 +324,15 @@ class DocumentWithTurnedOnStateManagement(Document):
         use_state_management = True
 
 
+class DocumentWithTurnedOnStateManagementWithCustomId(Document):
+    id: int
+    num_1: int
+    num_2: int
+
+    class Settings:
+        use_state_management = True
+
+
 class DocumentWithTurnedOnReplaceObjects(Document):
     num_1: int
     num_2: int
