@@ -2,6 +2,19 @@
 
 Beanie project
 
+## [1.18.0b1] - 2023-02-09
+
+### Fix
+
+- Don't create state on init for docs with custom id types
+
+### Implementation
+
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/486>
+
+[1.18.0b1]: https://pypi.org/project/beanie/1.18.0b1
+
 ## [1.18.0b0] - 2023-01-30
 
 ### Feature
