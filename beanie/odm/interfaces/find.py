@@ -25,7 +25,9 @@ from beanie.odm.queries.find import FindOne, FindMany
 from beanie.odm.settings.base import ItemSettings
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import DocType
+    from beanie.odm.documents import Document as Document
+    from beanie.odm.views import View
+    DocType = TypeVar("DocType", bound=Union[Document, View])
 
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
