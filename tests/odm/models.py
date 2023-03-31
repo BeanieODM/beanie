@@ -691,3 +691,13 @@ class DocWithCollectionInnerClass(Document):
 
     class Collection:
         name = "test"
+
+
+class ReleaseElemMatch(BaseModel):
+    major_ver: int
+    minor_ver: int
+    build_ver: int
+
+
+class PackageElemMatch(Document):
+    releases: list[ReleaseElemMatch] = []

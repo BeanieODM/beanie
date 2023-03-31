@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Optional
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -69,10 +70,15 @@ class ElemMatch(BaseFindArrayOperator):
     def __init__(
         self,
         field,
-        expression: dict,
+        expression: Optional[dict] = None,
+        **kwargs,
     ):
         self.field = field
-        self.expression = expression
+
+        if expression is None:
+            self.expression = kwargs
+        else:
+            self.expression = expression
 
     @property
     def query(self):
