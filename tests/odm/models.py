@@ -700,4 +700,4 @@ class ReleaseElemMatch(BaseModel):
 
 
 class PackageElemMatch(Document):
-    releases: list[ReleaseElemMatch] = []
+    releases: List[ReleaseElemMatch] = []
