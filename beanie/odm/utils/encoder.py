@@ -1,3 +1,4 @@
+import re
 from collections import deque
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -23,7 +24,7 @@ from typing import Any, Callable, Dict, Type
 from uuid import UUID
 
 import bson
-from bson import ObjectId, DBRef, Binary, Decimal128
+from bson import ObjectId, DBRef, Binary, Decimal128, Regex
 from pydantic import BaseModel
 from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
@@ -49,6 +50,7 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     Link: lambda l: l.ref,  # noqa: E741
     bytes: lambda b: b if isinstance(b, Binary) else Binary(b),
     UUID: lambda u: bson.Binary.from_uuid(u),
+    re.Pattern: Regex.from_native,
 }
 
 

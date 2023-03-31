@@ -445,6 +445,10 @@ class DocumentWithTimeseries(Document):
         timeseries = TimeSeriesConfig(time_field="ts", expire_after_seconds=2)
 
 
+class DocumentWithStringField(Document):
+    string_field: str
+
+
 class DocumentForEncodingTestDate(Document):
     date_field: datetime.date = Field(default_factory=datetime.date.today)
 
