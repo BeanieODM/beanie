@@ -405,7 +405,7 @@ class FindInterface:
             (
                 True
                 for a in args
-                if isinstance(a, Iterable) and "_class_id" in a
+                if isinstance(a, Iterable) and cls.get_settings().class_id in a
             )
         ):
             return args
@@ -415,11 +415,11 @@ class FindInterface:
             and cls._inheritance_inited
         ):
             if not with_children:
-                args += ({"_class_id": cls._class_id},)
+                args += ({cls.get_settings().class_id: cls._class_id},)
             else:
                 args += (
                     {
-                        "_class_id": {
+                        cls.get_settings().class_id: {
                             "$in": [cls._class_id]
                             + [cname for cname in cls._children.keys()]
                         }
@@ -427,5 +427,5 @@ class FindInterface:
                 )
 
         if cls.get_settings().union_doc:
-            args += ({"_class_id": cls.__name__},)
+            args += ({cls.get_settings().class_id: cls.get_settings().union_doc_alias},)
         return args

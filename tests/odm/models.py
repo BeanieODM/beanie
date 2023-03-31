@@ -109,6 +109,7 @@ class DocumentTestModelWithCustomCollectionName(Document):
 
     class Settings:
         name = "custom"
+        class_id = "different_class_id"
 
 
 class DocumentTestModelWithSimpleIndex(Document):
@@ -464,6 +465,7 @@ class DocumentForEncodingTestDate(Document):
 class DocumentUnion(UnionDoc):
     class Settings:
         name = "multi_model"
+        class_id = "123"
 
 
 class DocumentMultiModelOne(Document):
@@ -472,6 +474,8 @@ class DocumentMultiModelOne(Document):
 
     class Settings:
         union_doc = DocumentUnion
+        name = "multi_one"
+        class_id = "123"
 
 
 class DocumentMultiModelTwo(Document):
@@ -481,6 +485,8 @@ class DocumentMultiModelTwo(Document):
 
     class Settings:
         union_doc = DocumentUnion
+        name = "multi_two"
+        class_id = "123"
 
 
 class YardWithRevision(Document):
