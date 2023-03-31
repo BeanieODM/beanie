@@ -439,6 +439,7 @@ class Initializer:
         self.init_settings(cls)
         self.init_view_collection(cls)
         self.init_view_fields(cls)
+        self.init_cache(cls)
 
         collection_names = await self.database.list_collection_names()
         if self.recreate_views or cls._settings.name not in collection_names:
