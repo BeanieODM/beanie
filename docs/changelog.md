@@ -2,6 +2,30 @@
 
 Beanie project
 
+## [1.18.0] - 2023-03-31
+        
+### Prevent the models returned from find_all to be modified in the middle of modifying
+- Author - [Harris Tsim](https://github.com/harris)
+- PR <https://github.com/roman-right/beanie/pull/502>
+            
+### Allow change class_id and use name settings in uniondoc
+- Author - [설원준(Wonjoon Seol)/Dispatch squad](https://github.com/wonjoonSeol-WS)
+- PR <https://github.com/roman-right/beanie/pull/466>
+            
+### Fix: make `revision_id` not show in schema
+- Author - [Ivan GJ](https://github.com/ivan-gj)
+- PR <https://github.com/roman-right/beanie/pull/478>
+            
+### Fix: added re.pattern support to common encoder suite
+- Author - [Ilia](https://github.com/Abashinos)
+- PR <https://github.com/roman-right/beanie/pull/511>
+            
+### Fix other issues
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/518>
+            
+[1.18.0]: https://pypi.org/project/beanie/1.18.0
+
 ## [1.18.0b1] - 2023-02-09
 
 ### Fix
