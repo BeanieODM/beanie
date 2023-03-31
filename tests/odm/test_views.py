@@ -1,4 +1,4 @@
-from tests.odm.views import TestView
+from tests.odm.views import TestView, TestViewWithLink
 
 
 class TestViews:
@@ -17,3 +17,12 @@ class TestViews:
         ).to_list()
         assert len(results) == 3
         assert results[0]["test_field"] == 1
+
+    async def test_link(self, documents_with_links):
+        await documents_with_links()
+        results = await TestViewWithLink.all().to_list()
+        for document in results:
+            await document.fetch_all_links()
+
+        for i, document in enumerate(results):
+            assert document.link.test_int == i

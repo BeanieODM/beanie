@@ -94,6 +94,7 @@ if __name__ == "__main__":
   Sample FastAPI server with JWT auth and Beanie ODM by [Michael duPont](https://github.com/flyinactor91)
 - **[Shortify](https://github.com/IHosseini083/Shortify)** - URL shortener RESTful API (FastAPI + Beanie ODM + JWT & OAuth2) by [
 Iliya Hosseini](https://github.com/IHosseini083)
+- **[LCCN Predictor](https://github.com/baoliay2008/lccn_predictor)** - Leetcode contest rating predictor (FastAPI + Beanie ODM + React) by [L. Bao](https://github.com/baoliay2008)
 
 ### Articles
 
@@ -110,7 +111,7 @@ Iliya Hosseini](https://github.com/IHosseini083)
   project
 - **[Changelog](https://roman-right.github.io/beanie/changelog)** - list of all
   the valuable changes
-- **[Discord](https://discord.gg/ZTTnM7rMaz)** - ask your questions, share
+- **[Discord](https://discord.gg/29mMrEBvr4)** - ask your questions, share
   ideas or just say `Hello!!`
 
 ----

@@ -26,7 +26,15 @@ from pydantic import (
 from pydantic.color import Color
 from pymongo import IndexModel
 
-from beanie import Document, Indexed, Insert, Replace, Update, ValidateOnSave
+from beanie import (
+    Document,
+    Indexed,
+    Insert,
+    Replace,
+    Update,
+    ValidateOnSave,
+    Save,
+)
 from beanie.odm.actions import Delete, after_event, before_event
 from beanie.odm.fields import Link, PydanticObjectId
 from beanie.odm.settings.timeseries import TimeSeriesConfig
@@ -63,6 +71,7 @@ class Sample(Document):
     optional: Optional[Option2]
     union: Union[Option1, Option2]
     geo: GeoObject
+    const: str = "TEST"
 
 
 class SubDocument(BaseModel):
@@ -75,6 +84,16 @@ class DocumentTestModel(Document):
     test_list: List[SubDocument] = Field(hidden=True)
     test_doc: SubDocument
     test_str: str
+
+    class Settings:
+        use_cache = True
+        cache_expiration_time = datetime.timedelta(seconds=10)
+        cache_capacity = 5
+        use_state_management = True
+
+
+class DocumentTestModelWithLink(Document):
+    test_link: Link[DocumentTestModel]
 
     class Settings:
         use_cache = True
@@ -197,6 +216,7 @@ class DocumentWithActions(Document):
     num_1: int = 0
     num_2: int = 10
     num_3: int = 100
+    _private_num: int = PrivateAttr(default=100)
 
     class Inner:
         inner_num_1 = 0
@@ -206,7 +226,7 @@ class DocumentWithActions(Document):
     def capitalize_name(self):
         self.name = self.name.capitalize()
 
-    @before_event([Insert, Replace])
+    @before_event([Insert, Replace, Save])
     async def add_one(self):
         self.num_1 += 1
 
@@ -228,7 +248,7 @@ class DocumentWithActions(Document):
 
     @before_event(Update)
     def inner_num_to_one_2(self):
-        self.num_1 += 1
+        self._private_num += 1
 
     @after_event(Update)
     def inner_num_to_two_2(self):
@@ -240,6 +260,7 @@ class DocumentWithActions2(Document):
     num_1: int = 0
     num_2: int = 10
     num_3: int = 100
+    _private_num: int = PrivateAttr(default=100)
 
     class Inner:
         inner_num_1 = 0
@@ -249,7 +270,7 @@ class DocumentWithActions2(Document):
     def capitalize_name(self):
         self.name = self.name.capitalize()
 
-    @before_event(Insert, Replace)
+    @before_event(Insert, Replace, Save)
     async def add_one(self):
         self.num_1 += 1
 
@@ -271,7 +292,7 @@ class DocumentWithActions2(Document):
 
     @before_event(Update)
     def inner_num_to_one_2(self):
-        self.num_1 += 1
+        self._private_num += 1
 
     @after_event(Update)
     def inner_num_to_two_2(self):
@@ -299,6 +320,15 @@ class DocumentWithTurnedOnStateManagement(Document):
     num_1: int
     num_2: int
     internal: InternalDoc
+
+    class Settings:
+        use_state_management = True
+
+
+class DocumentWithTurnedOnStateManagementWithCustomId(Document):
+    id: int
+    num_1: int
+    num_2: int
 
     class Settings:
         use_state_management = True
@@ -567,7 +597,7 @@ class Child(BaseModel):
 
 class SampleWithMutableObjects(Document):
     d: Dict[str, Child]
-    l: List[Child]
+    lst: List[Child]
 
 
 class SampleLazyParsing(Document):

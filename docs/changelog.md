@@ -2,6 +2,66 @@
 
 Beanie project
 
+## [1.18.0b1] - 2023-02-09
+
+### Fix
+
+- Don't create state on init for docs with custom id types
+
+### Implementation
+
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/486>
+
+[1.18.0b1]: https://pypi.org/project/beanie/1.18.0b1
+
+## [1.18.0b0] - 2023-01-30
+
+### Feature
+
+- feat: convert updates to be atomic operations
+
+### Implementation
+
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/481>
+
+[1.18.0b0]: https://pypi.org/project/beanie/1.18.0b0
+
+## [1.17.0] - 2023-01-19
+
+### Feature
+
+- Add links to views
+
+### Implementation
+
+- Author - [Sebastian Battle](https://github.com/sabattle)
+- PR <https://github.com/roman-right/beanie/pull/472>
+
+[1.17.0]: https://pypi.org/project/beanie/1.17.0
+
+## [1.16.8] - 2022-01-05
+
+### Fix
+
+- Already inserted Links will throw DuplicateKeyError on insert of wrapping doc
+
+### Implementation
+
+- Author - [noaHson86](https://github.com/noaHson86)
+- PR <https://github.com/roman-right/beanie/pull/469>
+
+## [1.16.7] - 2023-01-03
+
+### Fix
+
+- sort many args
+
+### Implementation
+
+- PR <https://github.com/roman-right/beanie/pull/468>
+
 ## [1.16.6] - 2022-12-27
 
 ### Feature
@@ -1215,3 +1275,7 @@ how specific type should be presented in the database
 [1.15.5]: https://pypi.org/project/beanie/1.15.5
 
 [1.16.6]: https://pypi.org/project/beanie/1.16.6
+
+[1.16.7]: https://pypi.org/project/beanie/1.16.7
+
+[1.16.8]: https://pypi.org/project/beanie/1.16.8

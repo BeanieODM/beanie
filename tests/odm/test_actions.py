@@ -113,17 +113,30 @@ class TestActions:
     async def test_actions_update(self, doc_class):
         test_name = f"test_actions_update_{doc_class}"
         sample = doc_class(name=test_name)
-        await sample.save()
+        await sample.insert()
 
         await sample.update({"$set": {"name": "new_name"}})
         assert sample.name == "new_name"
-        assert sample.num_1 == 2
+        assert sample.num_1 == 1
         assert sample.num_2 == 9
+        assert sample._private_num == 101
 
-        await sample.set({"name": "awesome_name"}, skip_sync=True)
+        await sample.set({"name": "awesome_name"})
 
-        assert sample.num_1 == 3
-        assert sample.num_2 == 8
-
-        await sample._sync()
+        assert sample._private_num == 102
+        assert sample.num_2 == 9
         assert sample.name == "awesome_name"
+
+    @pytest.mark.parametrize(
+        "doc_class",
+        [
+            DocumentWithActions,
+            DocumentWithActions2,
+            InheritedDocumentWithActions,
+        ],
+    )
+    async def test_actions_save(self, doc_class):
+        test_name = f"test_actions_save_{doc_class}"
+        sample = doc_class(name=test_name)
+        await sample.save()
+        assert sample.num_1 == 1

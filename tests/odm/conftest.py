@@ -15,6 +15,7 @@ from tests.odm.models import (
     DocumentMultiModelOne,
     DocumentMultiModelTwo,
     DocumentTestModel,
+    DocumentTestModelWithLink,
     DocumentTestModelFailInspection,
     DocumentTestModelWithComplexIndex,
     DocumentTestModelWithCustomCollectionName,
@@ -68,8 +69,9 @@ from tests.odm.models import (
     SelfLinked,
     LoopedLinksA,
     LoopedLinksB,
+    DocumentWithTurnedOnStateManagementWithCustomId,
 )
-from tests.odm.views import TestView
+from tests.odm.views import TestView, TestViewWithLink
 
 
 @pytest.fixture
@@ -106,6 +108,8 @@ async def preset_documents(point):
             optional=optional,
         )
 
+        const = "TEST"
+
         sample = Sample(
             timestamp=timestamp,
             increment=i,
@@ -116,7 +120,9 @@ async def preset_documents(point):
             optional=optional,
             union=union,
             geo=geo,
+            const=const,
         )
+
         docs.append(sample)
     await Sample.insert_many(documents=docs)
 
@@ -161,6 +167,7 @@ async def init(loop, db):
         DocumentWithExtras,
         DocumentWithPydanticConfig,
         DocumentTestModel,
+        DocumentTestModelWithLink,
         DocumentTestModelWithCustomCollectionName,
         DocumentTestModelWithSimpleIndex,
         DocumentTestModelWithIndexFlags,
@@ -189,6 +196,7 @@ async def init(loop, db):
         DocumentForEncodingTest,
         DocumentForEncodingTestDate,
         TestView,
+        TestViewWithLink,
         DocumentMultiModelOne,
         DocumentMultiModelTwo,
         DocumentUnion,
@@ -216,6 +224,7 @@ async def init(loop, db):
         SelfLinked,
         LoopedLinksA,
         LoopedLinksB,
+        DocumentWithTurnedOnStateManagementWithCustomId,
     ]
     await init_beanie(
         database=db,
@@ -273,5 +282,16 @@ def documents(documents_not_inserted):
             documents_not_inserted(number, test_str, random)
         )
         return result.inserted_ids
+
+    return generate_documents
+
+
+@pytest.fixture
+def documents_with_links(documents):
+    async def generate_documents():
+        await documents(15)
+        results = await DocumentTestModel.all().to_list()
+        for document in results:
+            await DocumentTestModelWithLink(test_link=document).insert()
 
     return generate_documents

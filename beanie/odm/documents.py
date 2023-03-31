@@ -71,9 +71,10 @@ from beanie.odm.operators.update.general import (
     Inc,
     Set as SetOperator,
 )
-from beanie.odm.queries.update import UpdateMany
+from beanie.odm.queries.update import UpdateMany, UpdateResponse
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict
+from beanie.odm.utils.parsing import merge_models
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
     saved_state_needed,
@@ -142,23 +143,6 @@ class Document(
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
-        self._save_state()
-        self._swap_revision()
-
-    async def _sync(self) -> None:
-        """
-        Update local document from the database
-        :return: None
-        """
-        if self.id is None:
-            raise ValueError("Document has no id")
-        new_instance: Optional[Document] = await self.get(self.id)
-        if new_instance is None:
-            raise DocumentNotFound(
-                "Can not sync. The document is not in the database anymore."
-            )
-        for key, value in dict(new_instance).items():
-            setattr(self, key, value)
 
     @classmethod
     async def get(
@@ -216,7 +200,7 @@ class Document(
                         LinkTypes.OPTIONAL_DIRECT,
                     ]:
                         if isinstance(value, Document):
-                            await value.insert(link_rule=WriteRules.WRITE)
+                            await value.save(link_rule=WriteRules.WRITE)
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
@@ -224,9 +208,7 @@ class Document(
                         if isinstance(value, List):
                             for obj in value:
                                 if isinstance(obj, Document):
-                                    await obj.insert(
-                                        link_rule=WriteRules.WRITE
-                                    )
+                                    await obj.save(link_rule=WriteRules.WRITE)
 
         result = await self.get_motor_collection().insert_one(
             get_dict(self, to_db=True), session=session
@@ -386,16 +368,20 @@ class Document(
                 raise DocumentNotFound
         return self
 
+    @wrap_with_actions(EventTypes.SAVE)
+    @save_state_after
     async def save(
         self: DocType,
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         **kwargs,
-    ) -> DocType:
+    ) -> None:
         """
-        Update an existing model in the database or insert it if it does not yet exist.
+        Update an existing model in the database or
+        insert it if it does not yet exist.
 
         :param session: Optional[ClientSession] - pymongo session.
+        :param link_rule: WriteRules - rules how to deal with links on writing
         :return: None
         """
         if link_rule == WriteRules.WRITE:
@@ -421,11 +407,9 @@ class Document(
                                     await obj.save(
                                         link_rule=link_rule, session=session
                                     )
-
-        try:
-            return await self.replace(session=session, **kwargs)
-        except (ValueError, DocumentNotFound):
-            return await self.insert(session=session, **kwargs)
+        await self.set(
+            get_dict(self, to_db=True), session=session, upsert=True, **kwargs
+        )
 
     @saved_state_needed
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
@@ -453,7 +437,6 @@ class Document(
             ignore_revision=ignore_revision,
             session=session,
             bulk_writer=bulk_writer,
-            skip_sync=True,
         )
 
     @classmethod
@@ -485,8 +468,8 @@ class Document(
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        skip_sync: bool = False,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        skip_sync: Optional[bool] = None,
         **pymongo_kwargs,
     ) -> None:
         """
@@ -496,28 +479,35 @@ class Document(
         :param session: ClientSession - pymongo session.
         :param ignore_revision: bool - force update. Will update even if revision id is not the same, as stored
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
-        :param **pymongo_kwargs: pymongo native parameters for update operation
+        :param pymongo_kwargs: pymongo native parameters for update operation
         :return: None
         """
+        if skip_sync is not None:
+            raise DeprecationWarning(
+                "skip_sync parameter is not supported. The document get synced always using atomic operation."
+            )
         use_revision_id = self.get_settings().use_revision
 
-        find_query: Dict[str, Any] = {"_id": self.id}
+        if self.id is not None:
+            find_query: Dict[str, Any] = {"_id": self.id}
+        else:
+            find_query = {"_id": PydanticObjectId()}
 
         if use_revision_id and not ignore_revision:
             find_query["revision_id"] = self._previous_revision_id
 
         result = await self.find_one(find_query).update(
-            *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
+            *args,
+            session=session,
+            response_type=UpdateResponse.NEW_DOCUMENT,
+            bulk_writer=bulk_writer,
+            **pymongo_kwargs,
         )
+        if bulk_writer is None:
+            if use_revision_id and not ignore_revision and result is None:
+                raise RevisionIdWasChanged
 
-        if (
-            use_revision_id
-            and not ignore_revision
-            and result.matched_count == 0
-        ):
-            raise RevisionIdWasChanged
-        if not skip_sync:
-            await self._sync()
+            merge_models(self, result)
 
     @classmethod
     def update_all(
@@ -545,7 +535,7 @@ class Document(
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        skip_sync: bool = False,
+        skip_sync: Optional[bool] = None,
         **kwargs,
     ):
         """
@@ -584,7 +574,7 @@ class Document(
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        skip_sync: bool = False,
+        skip_sync: Optional[bool] = None,
         **kwargs,
     ):
         """
@@ -611,7 +601,7 @@ class Document(
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        skip_sync: bool = False,
+        skip_sync: Optional[bool] = None,
         **kwargs,
     ):
         """
@@ -774,7 +764,10 @@ class Document(
     @saved_state_needed
     @previous_saved_state_needed
     def has_changed(self) -> bool:
-        if self._previous_saved_state is None or self._previous_saved_state == self._saved_state:
+        if (
+            self._previous_saved_state is None
+            or self._previous_saved_state == self._saved_state
+        ):
             return False
         return True
 
