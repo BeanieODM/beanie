@@ -94,7 +94,9 @@ class Encoder:
         link_fields = obj.get_link_fields()
         obj_dict: Dict[str, Any] = {}
         if obj.get_settings().union_doc is not None:
-            obj_dict[obj.get_settings().class_id] = obj.get_settings().union_doc_alias or obj.__class__.__name__
+            obj_dict[obj.get_settings().class_id] = (
+                obj.get_settings().union_doc_alias or obj.__class__.__name__
+            )
         if obj._inheritance_inited:
             obj_dict[obj.get_settings().class_id] = obj._class_id
 
@@ -170,7 +172,17 @@ class Encoder:
             return self.encode_iterable(obj)
 
         if isinstance(
-            obj, (str, int, float, ObjectId, datetime, type(None), DBRef)
+            obj,
+            (
+                str,
+                int,
+                float,
+                ObjectId,
+                datetime,
+                type(None),
+                DBRef,
+                Decimal128,
+            ),
         ):
             return obj
 

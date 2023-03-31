@@ -660,6 +660,39 @@ class FindMany(
             return None
         return res[0]
 
+    async def count(self) -> int:
+        """
+        Number of found documents
+        :return: int
+        """
+        if self.fetch_links:
+            aggregation_pipeline: List[
+                Dict[str, Any]
+            ] = construct_lookup_queries(self.document_model)
+
+            aggregation_pipeline.append({"$match": self.get_filter_query()})
+
+            if self.skip_number != 0:
+                aggregation_pipeline.append({"$skip": self.skip_number})
+            if self.limit_number != 0:
+                aggregation_pipeline.append({"$limit": self.limit_number})
+
+            aggregation_pipeline.append({"$count": "count"})
+
+            result = (
+                await self.document_model.get_motor_collection()
+                .aggregate(
+                    aggregation_pipeline,
+                    session=self.session,
+                    **self.pymongo_kwargs,
+                )
+                .to_list(length=1)
+            )
+
+            return result[0]["count"] if result else 0
+
+        return await super(FindMany, self).count()
+
 
 class FindOne(FindQuery[FindQueryResultType]):
     """
@@ -964,3 +997,17 @@ class FindOne(FindQuery[FindQueryResultType]):
         return cast(
             FindQueryResultType, parse_obj(self.projection_model, document)
         )
+
+    async def count(self) -> int:
+        """
+        Count the number of documents matching the query
+        :return: int
+        """
+        if self.fetch_links:
+            return await self.document_model.find_many(
+                *self.find_expressions,
+                session=self.session,
+                fetch_links=self.fetch_links,
+                **self.pymongo_kwargs,
+            ).count()
+        return await super(FindOne, self).count()

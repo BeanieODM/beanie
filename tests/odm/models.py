@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, Union
 from uuid import UUID, uuid4
 
+import pydantic
 import pymongo
 from pydantic import (
     BaseModel,
@@ -701,3 +702,27 @@ class DocWithCollectionInnerClass(Document):
 
     class Collection:
         name = "test"
+
+
+class DocumentWithDecimalField(Document):
+    amt: decimal.Decimal
+    other_amt: pydantic.condecimal(
+        decimal_places=1, multiple_of=decimal.Decimal("0.5")
+    ) = 0
+
+    class Config:
+        validate_assignment = True
+
+    class Settings:
+        name = "amounts"
+        use_revision = True
+        use_state_management = True
+        indexes = [
+            pymongo.IndexModel(
+                keys=[("amt", pymongo.ASCENDING)], name="amt_ascending"
+            ),
+            pymongo.IndexModel(
+                keys=[("other_amt", pymongo.DESCENDING)],
+                name="other_amt_descending",
+            ),
+        ]

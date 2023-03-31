@@ -10,6 +10,7 @@ from tests.odm.models import (
     DocumentWithStringField,
     SampleWithMutableObjects,
     Child,
+    DocumentWithDecimalField,
 )
 
 
@@ -92,3 +93,24 @@ async def test_mutable_objects_on_save():
     await instance.save()
     assert isinstance(instance.d["Bar"], Child)
     assert isinstance(instance.lst[0], Child)
+
+
+async def test_decimal():
+    test_amts = DocumentWithDecimalField(amt=1, other_amt=2)
+    await test_amts.insert()
+    obj = await DocumentWithDecimalField.get(test_amts.id)
+    assert obj.amt == 1
+    assert obj.other_amt == 2
+
+    test_amts.amt = 6
+    await test_amts.save_changes()
+
+    obj = await DocumentWithDecimalField.get(test_amts.id)
+    assert obj.amt == 6
+
+    test_amts = (await DocumentWithDecimalField.find_all().to_list())[0]
+    test_amts.other_amt = 7
+    await test_amts.save_changes()
+
+    obj = await DocumentWithDecimalField.get(test_amts.id)
+    assert obj.other_amt == 7
