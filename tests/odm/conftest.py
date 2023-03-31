@@ -70,6 +70,7 @@ from tests.odm.models import (
     LoopedLinksA,
     LoopedLinksB,
     DocumentWithTurnedOnStateManagementWithCustomId,
+    DocumentWithDecimalField,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -225,6 +226,7 @@ async def init(loop, db):
         LoopedLinksA,
         LoopedLinksB,
         DocumentWithTurnedOnStateManagementWithCustomId,
+        DocumentWithDecimalField,
     ]
     await init_beanie(
         database=db,
