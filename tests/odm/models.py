@@ -37,7 +37,7 @@ from beanie import (
     Save,
 )
 from beanie.odm.actions import Delete, after_event, before_event
-from beanie.odm.fields import Link, PydanticObjectId
+from beanie.odm.fields import Link, PydanticObjectId, BackLink
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
 
@@ -726,3 +726,13 @@ class DocumentWithDecimalField(Document):
                 name="other_amt_descending",
             ),
         ]
+
+
+class DocumentWithLink(Document):
+    link: Link["DocumentWithBackLink"]
+    s: str = "TEST"
+
+
+class DocumentWithBackLink(Document):
+    back_link: BackLink[DocumentWithLink]
+    i: int = 1

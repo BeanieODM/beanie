@@ -18,6 +18,8 @@ from tests.odm.models import (
     SelfLinked,
     LoopedLinksA,
     LoopedLinksB,
+    DocumentWithBackLink,
+    DocumentWithLink,
 )
 
 
@@ -431,3 +433,23 @@ class TestOther:
         assert isinstance(res.b.a, LoopedLinksA)
         assert isinstance(res.b.a.b, LoopedLinksB)
         assert res.b.a.b.a is None
+
+
+@pytest.fixture()
+async def link_and_backlink_doc_pair():
+    back_link_doc = DocumentWithBackLink()
+    print(back_link_doc)
+    await back_link_doc.insert()
+    link_doc = DocumentWithLink(link=back_link_doc)
+    await link_doc.insert()
+    return link_doc, back_link_doc
+
+
+class TestBackLinks:
+    async def test_prefetch(self, link_and_backlink_doc_pair):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert back_link_doc.link is not None
+        assert back_link_doc.link.id == link_doc.id

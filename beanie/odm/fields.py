@@ -142,6 +142,11 @@ class LinkTypes(str, Enum):
     LIST = "LIST"
     OPTIONAL_LIST = "OPTIONAL_LIST"
 
+    BACK_DIRECT = "BACK_DIRECT"
+    BACK_LIST = "BACK_LIST"
+    OPTIONAL_BACK_DIRECT = "OPTIONAL_BACK_DIRECT"
+    OPTIONAL_BACK_LIST = "OPTIONAL_BACK_LIST"
+
 
 class LinkInfo(BaseModel):
     field: str
@@ -159,7 +164,9 @@ class Link(Generic[T]):
         self.model_class = model_class
 
     async def fetch(self, fetch_links: bool = False) -> Union[T, "Link"]:
-        result = await self.model_class.get(self.ref.id, with_children=True, fetch_links=fetch_links)  # type: ignore
+        result = await self.model_class.get(  # type: ignore
+            self.ref.id, with_children=True, fetch_links=fetch_links
+        )
         return result or self
 
     @classmethod
@@ -179,7 +186,9 @@ class Link(Generic[T]):
                         "All the links must have the same model class"
                     )
             ids.append(link.ref.id)
-        return await model_class.find(In("_id", ids), with_children=True, fetch_links=fetch_links).to_list()  # type: ignore
+        return await model_class.find(  # type: ignore
+            In("_id", ids), with_children=True, fetch_links=fetch_links
+        ).to_list()
 
     @classmethod
     async def fetch_many(cls, links: List["Link"]):
@@ -213,3 +222,27 @@ class Link(Generic[T]):
 
 
 ENCODERS_BY_TYPE[Link] = lambda o: o.to_dict()
+
+
+class BackLink(Generic[T]):
+    """Back reference to a document"""
+
+    def __init__(self, model_class: Type[T]):
+        self.model_class = model_class
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v: Union[DBRef, T], field: ModelField):
+        model_class = field.sub_fields[0].type_  # type: ignore
+        if isinstance(v, dict) or isinstance(v, BaseModel):
+            return parse_obj(model_class, v)
+        return cls(model_class=model_class)
+
+    def to_dict(self):
+        return {"collection": self.model_class.get_collection_name()}
+
+
+ENCODERS_BY_TYPE[BackLink] = lambda o: o.to_dict()

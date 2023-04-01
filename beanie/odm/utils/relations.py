@@ -4,7 +4,13 @@ from typing import Optional, Any, Dict
 from pydantic.fields import ModelField
 from pydantic.typing import get_origin
 
-from beanie.odm.fields import LinkTypes, LinkInfo, Link, ExpressionField
+from beanie.odm.fields import (
+    LinkTypes,
+    LinkInfo,
+    Link,
+    ExpressionField,
+    BackLink,
+)
 
 from typing import TYPE_CHECKING
 
@@ -31,6 +37,18 @@ def detect_link(field: ModelField) -> Optional[LinkInfo]:
             model_class=field.sub_fields[0].type_,  # type: ignore
             link_type=LinkTypes.DIRECT,
         )
+    if field.type_ == BackLink:
+        if field.allow_none is True:
+            return LinkInfo(
+                field=field.name,
+                model_class=field.sub_fields[0].type_,  # type: ignore
+                link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
+            )
+        return LinkInfo(
+            field=field.name,
+            model_class=field.sub_fields[0].type_,  # type: ignore
+            link_type=LinkTypes.BACK_DIRECT,
+        )
     if (
         inspect.isclass(get_origin(field.outer_type_))
         and issubclass(get_origin(field.outer_type_), list)  # type: ignore
@@ -48,6 +66,18 @@ def detect_link(field: ModelField) -> Optional[LinkInfo]:
                 field=field.name,
                 model_class=internal_field.sub_fields[0].type_,  # type: ignore
                 link_type=LinkTypes.LIST,
+            )
+        if internal_field.type_ == BackLink:
+            if field.allow_none is True:
+                return LinkInfo(
+                    field=field.name,
+                    model_class=internal_field.sub_fields[0].type_,  # type: ignore
+                    link_type=LinkTypes.OPTIONAL_BACK_LIST,
+                )
+            return LinkInfo(
+                field=field.name,
+                model_class=internal_field.sub_fields[0].type_,  # type: ignore
+                link_type=LinkTypes.BACK_LIST,
             )
     return None
 

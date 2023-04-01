@@ -22,6 +22,7 @@ from pydantic import (
     Field,
     parse_obj_as,
 )
+from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
 from pymongo import InsertOne
 from pymongo.client_session import ClientSession
@@ -53,6 +54,7 @@ from beanie.odm.fields import (
     LinkTypes,
     WriteRules,
     DeleteRules,
+    BackLink,
 )
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import ModelType
@@ -143,6 +145,30 @@ class Document(
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
+
+    @root_validator(pre=True)
+    def fill_back_refs(cls, values):
+        if cls._link_fields:
+            print(cls._link_fields)
+            for field_name, link_info in cls._link_fields.items():
+                if (
+                    link_info.link_type
+                    in [LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT]
+                    and field_name not in values
+                ):
+                    values[field_name] = BackLink[link_info.model_class](
+                        link_info.model_class
+                    )
+                    print("HERE")
+                if (
+                    link_info.link_type
+                    in [LinkTypes.BACK_LIST, LinkTypes.OPTIONAL_BACK_LIST]
+                    and field_name not in values
+                ):
+                    values[field_name] = [
+                        BackLink[link_info.model_class](link_info.model_class)
+                    ]
+        return values
 
     @classmethod
     async def get(
