@@ -149,7 +149,8 @@ class LinkTypes(str, Enum):
 
 
 class LinkInfo(BaseModel):
-    field: str
+    field_name: str
+    lookup_field_name: str
     model_class: Type[BaseModel]  # Document class
     link_type: LinkTypes
     nested_links: Optional[Dict]

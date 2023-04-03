@@ -20,6 +20,8 @@ from tests.odm.models import (
     LoopedLinksB,
     DocumentWithBackLink,
     DocumentWithLink,
+    DocumentWithListBackLink,
+    DocumentWithListLink,
 )
 
 
@@ -438,18 +440,34 @@ class TestOther:
 @pytest.fixture()
 async def link_and_backlink_doc_pair():
     back_link_doc = DocumentWithBackLink()
-    print(back_link_doc)
     await back_link_doc.insert()
     link_doc = DocumentWithLink(link=back_link_doc)
     await link_doc.insert()
     return link_doc, back_link_doc
 
 
+@pytest.fixture()
+async def list_link_and_list_backlink_doc_pair():
+    back_link_doc = DocumentWithListBackLink()
+    await back_link_doc.insert()
+    link_doc = DocumentWithListLink(link=[back_link_doc])
+    await link_doc.insert()
+    return link_doc, back_link_doc
+
+
 class TestBackLinks:
-    async def test_prefetch(self, link_and_backlink_doc_pair):
+    async def test_prefetch_direct(self, link_and_backlink_doc_pair):
         link_doc, back_link_doc = link_and_backlink_doc_pair
         back_link_doc = await DocumentWithBackLink.get(
             back_link_doc.id, fetch_links=True
         )
-        assert back_link_doc.link is not None
-        assert back_link_doc.link.id == link_doc.id
+        assert back_link_doc.back_link.id == link_doc.id
+        assert back_link_doc.back_link.link.id == back_link_doc.id
+
+    async def test_prefetch_list(self, list_link_and_list_backlink_doc_pair):
+        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert back_link_doc.back_link[0].id == link_doc.id
+        assert back_link_doc.back_link[0].link[0].id == back_link_doc.id

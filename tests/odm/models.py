@@ -734,5 +734,17 @@ class DocumentWithLink(Document):
 
 
 class DocumentWithBackLink(Document):
-    back_link: BackLink[DocumentWithLink]
+    back_link: BackLink[DocumentWithLink] = Field(original_field="link")
+    i: int = 1
+
+
+class DocumentWithListLink(Document):
+    link: List[Link["DocumentWithListBackLink"]]
+    s: str = "TEST"
+
+
+class DocumentWithListBackLink(Document):
+    back_link: List[BackLink[DocumentWithListLink]] = Field(
+        original_field="link"
+    )
     i: int = 1

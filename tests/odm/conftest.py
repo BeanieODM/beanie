@@ -74,6 +74,8 @@ from tests.odm.models import (
     DocumentWithDecimalField,
     DocumentWithLink,
     DocumentWithBackLink,
+    DocumentWithListBackLink,
+    DocumentWithListLink,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -233,6 +235,8 @@ async def init(loop, db):
         DocumentWithDecimalField,
         DocumentWithLink,
         DocumentWithBackLink,
+        DocumentWithListLink,
+        DocumentWithListBackLink,
     ]
     await init_beanie(
         database=db,
@@ -240,9 +244,9 @@ async def init(loop, db):
     )
     yield None
 
-    for model in models:
-        await model.get_motor_collection().drop()
-        await model.get_motor_collection().drop_indexes()
+    # for model in models:
+    #     await model.get_motor_collection().drop()
+    #     await model.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture

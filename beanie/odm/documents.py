@@ -149,7 +149,6 @@ class Document(
     @root_validator(pre=True)
     def fill_back_refs(cls, values):
         if cls._link_fields:
-            print(cls._link_fields)
             for field_name, link_info in cls._link_fields.items():
                 if (
                     link_info.link_type
@@ -159,7 +158,6 @@ class Document(
                     values[field_name] = BackLink[link_info.model_class](
                         link_info.model_class
                     )
-                    print("HERE")
                 if (
                     link_info.link_type
                     in [LinkTypes.BACK_LIST, LinkTypes.OPTIONAL_BACK_LIST]
