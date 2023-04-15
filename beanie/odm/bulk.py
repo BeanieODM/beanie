@@ -59,7 +59,7 @@ class BulkWriter:
                     )
                 requests.append(query)
 
-            await obj_class.get_motor_collection().bulk_write(requests)  # type: ignore
+            return await obj_class.get_motor_collection().bulk_write(requests)  # type: ignore
 
     def add_operation(self, operation: Operation):
         self.operations.append(operation)
