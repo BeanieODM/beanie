@@ -1,4 +1,5 @@
 from beanie.odm.operators.find.geospatial import (
+    Box,
     GeoIntersects,
     GeoWithin,
     Near,
@@ -34,6 +35,17 @@ async def test_geo_within():
                     "type": "Polygon",
                     "coordinates": [[1, 1], [2, 2], [3, 3]],
                 }
+            }
+        }
+    }
+
+
+async def test_box():
+    q = Box(Sample.geo, lower_left=[1,3], upper_right=[2,4])
+    assert q == {
+        "geo": {
+            "$geoWithin": {
+                "$box": [[1,3], [2,4]]
             }
         }
     }
