@@ -923,7 +923,12 @@ class FindOne(FindQuery[FindQueryResultType]):
             result: UpdateResult = (
                 await self.document_model.get_motor_collection().replace_one(
                     self.get_filter_query(),
-                    get_dict(document, to_db=True, exclude={"_id"}),
+                    get_dict(
+                        document,
+                        to_db=True,
+                        exclude={"_id"},
+                        keep_nulls=document.get_settings().keep_nulls,
+                    ),
                     session=self.session,
                 )
             )

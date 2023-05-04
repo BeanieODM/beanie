@@ -6,6 +6,11 @@ If the application with an older local copy of the document tries to change it, 
 Only when the local copy is synced with the database, the application will be allowed to change the data. 
 This helps to avoid data losses.
 
+### Be aware
+revision id feature may wor incorrectly with BulkWriter.
+
+### Usage
+
 This feature must be explicitly turned on in the `Settings` inner class:
 
 ```python
