@@ -67,11 +67,13 @@ class Encoder:
         custom_encoders: Optional[Dict[Type, Callable]] = None,
         by_alias: bool = True,
         to_db: bool = False,
+        keep_nulls: bool = True,
     ):
         self.exclude = exclude or {}
         self.by_alias = by_alias
         self.custom_encoders = custom_encoders or {}
         self.to_db = to_db
+        self.keep_nulls = keep_nulls
 
     def encode(self, obj: Any):
         """
@@ -89,6 +91,7 @@ class Encoder:
             custom_encoders=obj.get_settings().bson_encoders,
             by_alias=self.by_alias,
             to_db=self.to_db,
+            keep_nulls=self.keep_nulls,
         )
 
         link_fields = obj.get_link_fields()
@@ -101,7 +104,9 @@ class Encoder:
             obj_dict[obj.get_settings().class_id] = obj._class_id
 
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
-            if k not in self.exclude:
+            if k not in self.exclude and (
+                self.keep_nulls is True or o is not None
+            ):
                 if link_fields and k in link_fields:
                     if link_fields[k].link_type == LinkTypes.LIST:
                         obj_dict[k] = [link.to_ref() for link in o]
@@ -128,7 +133,9 @@ class Encoder:
         """
         obj_dict = {}
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
-            if k not in self.exclude:
+            if k not in self.exclude and (
+                self.keep_nulls is True or o is not None
+            ):
                 obj_dict[k] = self._encode(o)
 
         return obj_dict

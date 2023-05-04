@@ -2,7 +2,11 @@ import pytest
 from pymongo.errors import DuplicateKeyError
 
 from beanie.odm.fields import PydanticObjectId
-from tests.odm.models import DocumentTestModel
+from tests.odm.models import (
+    DocumentTestModel,
+    ModelWithOptionalField,
+    DocumentWithKeepNullsFalse,
+)
 
 
 async def test_insert_one(document_not_inserted):
@@ -53,3 +57,26 @@ async def test_insert_many_with_session(documents_not_inserted, session):
 async def test_create_with_session(document_not_inserted, session):
     await document_not_inserted.insert(session=session)
     assert isinstance(document_not_inserted.id, PydanticObjectId)
+
+
+async def test_insert_keep_nulls_false():
+    model = ModelWithOptionalField(i=10)
+    doc = DocumentWithKeepNullsFalse(m=model)
+
+    await doc.insert()
+
+    new_doc = await DocumentWithKeepNullsFalse.get(doc.id)
+
+    assert new_doc.m.i == 10
+    assert new_doc.m.s is None
+    assert new_doc.o is None
+
+    raw_data = (
+        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
+            {"_id": doc.id}
+        )
+    )
+    assert raw_data == {
+        "_id": doc.id,
+        "m": {"i": 10},
+    }

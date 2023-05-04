@@ -5,7 +5,11 @@ from beanie.exceptions import (
     ReplaceError,
 )
 from beanie.odm.fields import PydanticObjectId
-from tests.odm.models import DocumentTestModel
+from tests.odm.models import (
+    DocumentTestModel,
+    ModelWithOptionalField,
+    DocumentWithKeepNullsFalse,
+)
 
 
 # REPLACE
@@ -147,6 +151,51 @@ async def test_update_all(documents):
         {"test_str": "smth_else"}
     ).to_list()
     assert len(smth_else_documetns) == 17
+
+
+async def test_save_keep_nulls_false():
+    model = ModelWithOptionalField(i=10, s="TEST_MODEL")
+    doc = DocumentWithKeepNullsFalse(m=model, o="TEST_DOCUMENT")
+
+    await doc.insert()
+
+    doc.o = None
+    doc.m.s = None
+    await doc.save()
+
+    from_db = await DocumentWithKeepNullsFalse.get(doc.id)
+    assert from_db.o is None
+    assert from_db.m.s is None
+
+    raw_data = (
+        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
+            {"_id": doc.id}
+        )
+    )
+    assert raw_data == {"_id": doc.id, "m": {"i": 10}}
+
+
+async def test_save_changes_keep_nulls_false():
+    model = ModelWithOptionalField(i=10, s="TEST_MODEL")
+    doc = DocumentWithKeepNullsFalse(m=model, o="TEST_DOCUMENT")
+
+    await doc.insert()
+
+    doc.o = None
+    doc.m.s = None
+
+    await doc.save_changes()
+
+    from_db = await DocumentWithKeepNullsFalse.get(doc.id)
+    assert from_db.o is None
+    assert from_db.m.s is None
+
+    raw_data = (
+        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
+            {"_id": doc.id}
+        )
+    )
+    assert raw_data == {"_id": doc.id, "m": {"i": 10}}
 
 
 # WITH SESSION

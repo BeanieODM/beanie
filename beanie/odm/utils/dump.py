@@ -10,6 +10,7 @@ def get_dict(
     document: "Document",
     to_db: bool = False,
     exclude: Optional[Set[str]] = None,
+    keep_nulls: bool = True,
 ):
     if exclude is None:
         exclude = set()
@@ -17,6 +18,34 @@ def get_dict(
         exclude.add("_id")
     if not document.get_settings().use_revision:
         exclude.add("revision_id")
-    return Encoder(by_alias=True, exclude=exclude, to_db=to_db).encode(
-        document
-    )
+    return Encoder(
+        by_alias=True, exclude=exclude, to_db=to_db, keep_nulls=keep_nulls
+    ).encode(document)
+
+
+def get_nulls(
+    document: "Document",
+    exclude: Optional[Set[str]] = None,
+):
+    dictionary = get_dict(document, exclude=exclude, keep_nulls=True)
+    return filter_none(dictionary)
+
+
+def get_top_level_nones(
+    document: "Document",
+    exclude: Optional[Set[str]] = None,
+):
+    dictionary = get_dict(document, exclude=exclude, keep_nulls=True)
+    return {k: v for k, v in dictionary.items() if v is None}
+
+
+def filter_none(d):
+    result = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            filtered = filter_none(v)
+            if filtered:
+                result[k] = filtered
+        elif v is None:
+            result[k] = v
+    return result

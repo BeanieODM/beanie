@@ -726,3 +726,17 @@ class DocumentWithDecimalField(Document):
                 name="other_amt_descending",
             ),
         ]
+
+
+class ModelWithOptionalField(BaseModel):
+    s: Optional[str]
+    i: int
+
+
+class DocumentWithKeepNullsFalse(Document):
+    o: Optional[str]
+    m: ModelWithOptionalField
+
+    class Settings:
+        keep_nulls = False
+        use_state_management = True

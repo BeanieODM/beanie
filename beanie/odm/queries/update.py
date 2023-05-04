@@ -3,6 +3,7 @@ from enum import Enum
 
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.interfaces.clone import CloneInterface
+from beanie.odm.operators.update.general import SetRevisionId
 from beanie.odm.utils.encoder import Encoder
 from typing import (
     Callable,
@@ -74,6 +75,10 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
                 query.update(expression.query)
             elif isinstance(expression, dict):
                 query.update(expression)
+            elif isinstance(expression, SetRevisionId):
+                set_query = query.get("$set", {})
+                set_query.update(expression.query.get("$set", {}))
+                query["$set"] = set_query
             else:
                 raise TypeError("Wrong expression type")
         return Encoder(custom_encoders=self.encoders).encode(query)
@@ -339,7 +344,6 @@ class UpdateOne(UpdateQuery):
         Run the query
         :return:
         """
-
         update_result = yield from self._update().__await__()
         if self.upsert_insert_doc is None:
             return update_result
