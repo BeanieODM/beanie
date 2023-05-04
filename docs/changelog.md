@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.18.1] - 2023-05-04
+        
+### Keep nulls config
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/555>
+            
+[1.18.1]: https://pypi.org/project/beanie/1.18.1
+
 ## [1.18.0] - 2023-03-31
         
 ### Prevent the models returned from find_all to be modified in the middle of modifying
