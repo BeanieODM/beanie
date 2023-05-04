@@ -1,8 +1,6 @@
 # Defining a document
 
-The `Document` class in Beanie is responsible for mapping and handling the data
-from the collection. It is inherited from the `BaseModel` Pydantic class, so it
-follows the same data typing and parsing behavior.
+The `Document` class in Beanie is responsible for mapping and managing data from a MongoDB collection. Since it inherits from the `BaseModel` class of Pydantic, it follows the same data typing and parsing behavior.
 
 ```python
 from typing import Optional
@@ -37,17 +35,14 @@ class Product(Document):  # This is the model
 
 ## Fields
 
-As it was mentioned before, the `Document` class is inherited from the Pydantic `BaseModel` class. 
-It uses all the same patterns of `BaseModel`. But also it has special types of fields:
+As previously mentioned, the `Document` class inherits from Pydantic's `BaseModel` class and follows the same patterns. However, it also includes special types of fields:
 
 - id
 - Indexed
 
 ### id
 
-`id` field of the `Document` class reflects the unique `_id` field of the MongoDB document. 
-Each object of the `Document` type has this field. 
-The default type of this is [PydanticObjectId](/api-documentation/fields/#pydanticobjectid).
+The `id` field of the `Document` class corresponds to the unique `_id` field of a MongoDB document. Each `Document` object has this field by default. The default type of this field is [PydanticObjectId](/api-documentation/fields/#pydanticobjectid).
 
 ```python
 class Sample(Document):
@@ -61,7 +56,7 @@ print(foo.id)  # This will print id
 bar = await Sample.get(foo.id)  # get by id
 ```
 
-If you prefer another type, you can set it up too. For example, UUID:
+If you prefer another type, you can set it up as well. For example, UUID:
 
 ```python
 from uuid import UUID, uuid4
@@ -77,7 +72,7 @@ class Sample(Document):
 
 ### Indexed
 
-To set up an index over a single field, the `Indexed` function can be used to wrap the type:
+To set up an index for a single field, you can use the `Indexed` function to wrap the field's type:
 
 ```python
 from beanie import Indexed
@@ -88,15 +83,15 @@ class Sample(Document):
     description: str
 ```
 
-The `Indexed` function takes an optional argument `index_type`, which may be set to a pymongo index type:
+The `Indexed` function accepts an optional argument `index_type`, which can be set to a pymongo index type:
 
 ```python
 class Sample(Document):
     description: Indexed(str, index_type=pymongo.TEXT)
 ```
 
-The `Indexed` function also supports pymongo `IndexModel` kwargs arguments ([PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)). 
- 
+The `Indexed` function also supports pymongo `IndexModel` kwargs arguments ([PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel)).
+
 For example, to create a `unique` index:
 
 ```python
@@ -118,7 +113,7 @@ The inner class `Settings` is used to configure:
 
 ### Collection name
 
-To set MongoDB collection name, you can use the `name` field of the `Settings` inner class.
+To set the MongoDB collection name, you can use the `name` field of the `Settings` inner class.
 
 ```python
 class Sample(Document):
