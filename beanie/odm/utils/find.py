@@ -189,7 +189,7 @@ def construct_query(
                                 "$match": {
                                     "$expr": {
                                         "$eq": [
-                                            f"${link_info.lookup_field_name}",
+                                            f"${link_info.lookup_field_name}.$id",
                                             "$$link_id",
                                         ]
                                     }

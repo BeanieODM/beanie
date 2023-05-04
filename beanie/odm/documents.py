@@ -757,7 +757,6 @@ class Document(
                         LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
-                            print("deleting", value)
                             await value.delete(
                                 link_rule=DeleteRules.DELETE_LINKS,
                                 **pymongo_kwargs,
