@@ -59,7 +59,7 @@ class View(
         link_fields = self.get_link_fields()
         if link_fields is not None:
             for ref in link_fields.values():
-                coros.append(self.fetch_link(ref.field))  # TODO lists
+                coros.append(self.fetch_link(ref.field_name))  # TODO lists
         await asyncio.gather(*coros)
 
     @classmethod

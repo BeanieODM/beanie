@@ -218,7 +218,7 @@ class Document(
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
@@ -348,10 +348,12 @@ class Document(
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
+                        LinkTypes.BACK_DIRECT,
+                        LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
                             await value.replace(
@@ -363,6 +365,8 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
+                        LinkTypes.BACK_LIST,
+                        LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -412,10 +416,12 @@ class Document(
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
+                        LinkTypes.BACK_DIRECT,
+                        LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
                             await value.save(
@@ -424,6 +430,8 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
+                        LinkTypes.BACK_LIST,
+                        LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -681,12 +689,15 @@ class Document(
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
+                        LinkTypes.BACK_DIRECT,
+                        LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
+                            print("deleting", value)
                             await value.delete(
                                 link_rule=DeleteRules.DELETE_LINKS,
                                 **pymongo_kwargs,
@@ -694,6 +705,8 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
+                        LinkTypes.BACK_LIST,
+                        LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -972,7 +985,7 @@ class Document(
         link_fields = self.get_link_fields()
         if link_fields is not None:
             for ref in link_fields.values():
-                coros.append(self.fetch_link(ref.field))  # TODO lists
+                coros.append(self.fetch_link(ref.field_name))  # TODO lists
         await asyncio.gather(*coros)
 
     @classmethod
