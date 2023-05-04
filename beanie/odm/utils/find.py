@@ -100,7 +100,7 @@ def construct_query(
                 },
                 {
                     "$unwind": {
-                        "path": f"$_link_{link_info.field}",
+                        "path": f"$_link_{link_info.field_name}",
                         "preserveNullAndEmptyArrays": True,
                     }
                 },
