@@ -11,6 +11,8 @@ from tests.odm.models import (
     SampleWithMutableObjects,
     Child,
     DocumentWithDecimalField,
+    DocumentWithKeepNullsFalse,
+    ModelWithOptionalField,
 )
 
 
@@ -114,3 +116,12 @@ async def test_decimal():
 
     obj = await DocumentWithDecimalField.get(test_amts.id)
     assert obj.other_amt == 7
+
+
+def test_keep_nulls_false():
+    model = ModelWithOptionalField(i=10)
+    doc = DocumentWithKeepNullsFalse(m=model)
+
+    encoder = Encoder(keep_nulls=False, to_db=True)
+    encoded_doc = encoder.encode(doc)
+    assert encoded_doc == {"m": {"i": 10}}

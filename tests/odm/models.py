@@ -728,6 +728,20 @@ class DocumentWithDecimalField(Document):
         ]
 
 
+class ModelWithOptionalField(BaseModel):
+    s: Optional[str]
+    i: int
+
+
+class DocumentWithKeepNullsFalse(Document):
+    o: Optional[str]
+    m: ModelWithOptionalField
+
+    class Settings:
+        keep_nulls = False
+        use_state_management = True
+
+
 class DocumentWithLink(Document):
     link: Link["DocumentWithBackLink"]
     s: str = "TEST"
