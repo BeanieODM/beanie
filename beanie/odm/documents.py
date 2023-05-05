@@ -150,7 +150,7 @@ class Document(
     @classmethod
     async def get(
         cls: Type["DocType"],
-        document_id: PydanticObjectId,
+        document_id: Any,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
