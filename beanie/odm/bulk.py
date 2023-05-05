@@ -9,6 +9,7 @@ from pymongo import (
     UpdateOne,
     UpdateMany,
 )
+from pymongo.results import BulkWriteResult
 
 
 class Operation(BaseModel):
@@ -39,7 +40,7 @@ class BulkWriter:
     async def __aexit__(self, exc_type, exc, tb):
         await self.commit()
 
-    async def commit(self):
+    async def commit(self) -> BulkWriteResult:
         obj_class = None
         requests = []
         if self.operations:
