@@ -18,6 +18,8 @@ class ItemSettings(BaseModel):
     motor_collection: Optional[AsyncIOMotorCollection] = None
 
     union_doc: Optional[Type] = None
+    union_doc_alias: Optional[str] = None
+    class_id: str = "_class_id"
 
     is_root: bool = False
 

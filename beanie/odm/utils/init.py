@@ -233,9 +233,11 @@ class Initializer:
         # register in the Union Doc
 
         if document_settings.union_doc is not None:
+            name = cls.get_settings().name or cls.__name__
             document_settings.name = document_settings.union_doc.register_doc(
-                cls
+                name, cls
             )
+            document_settings.union_doc_alias = name
 
         # set a name
 
@@ -437,6 +439,7 @@ class Initializer:
         self.init_settings(cls)
         self.init_view_collection(cls)
         self.init_view_fields(cls)
+        self.init_cache(cls)
 
         collection_names = await self.database.list_collection_names()
         if self.recreate_views or cls._settings.name not in collection_names:

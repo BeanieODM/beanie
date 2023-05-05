@@ -12,6 +12,7 @@ from tests.odm.models import (
     Car,
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
+    DocumentWithStringField,
     DocumentMultiModelOne,
     DocumentMultiModelTwo,
     DocumentTestModel,
@@ -70,6 +71,8 @@ from tests.odm.models import (
     LoopedLinksA,
     LoopedLinksB,
     DocumentWithTurnedOnStateManagementWithCustomId,
+    DocumentWithDecimalField,
+    DocumentWithKeepNullsFalse,
     PackageElemMatch,
 )
 from tests.odm.views import TestView, TestViewWithLink
@@ -196,6 +199,7 @@ async def init(loop, db):
         InheritedDocumentWithActions,
         DocumentForEncodingTest,
         DocumentForEncodingTestDate,
+        DocumentWithStringField,
         TestView,
         TestViewWithLink,
         DocumentMultiModelOne,
@@ -226,6 +230,8 @@ async def init(loop, db):
         LoopedLinksA,
         LoopedLinksB,
         DocumentWithTurnedOnStateManagementWithCustomId,
+        DocumentWithDecimalField,
+        DocumentWithKeepNullsFalse,
         PackageElemMatch,
     ]
     await init_beanie(

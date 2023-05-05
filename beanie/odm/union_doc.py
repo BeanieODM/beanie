@@ -23,14 +23,14 @@ class UnionDoc(
         return cls._settings
 
     @classmethod
-    def register_doc(cls, doc_model: Type):
+    def register_doc(cls, name: str, doc_model: Type):
         if cls._document_models is None:
             cls._document_models = {}
 
         if cls._is_inited is False:
             raise UnionDocNotInited
 
-        cls._document_models[doc_model.__name__] = doc_model
+        cls._document_models[name] = doc_model
         return cls.get_settings().name
 
     @classmethod

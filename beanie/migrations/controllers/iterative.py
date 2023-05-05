@@ -4,6 +4,7 @@ from typing import Type, Optional, Union, List
 from beanie.migrations.utils import update_dict
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.odm.documents import Document
+import asyncio
 
 
 class DummyOutput:
@@ -90,6 +91,7 @@ def iterative_migration(
 
         async def run(self, session):
             output_documents = []
+            all_migration_ops = []
             async for input_document in self.input_document_model.find_all():
                 output = DummyOutput()
                 function_kwargs = {
@@ -102,19 +104,22 @@ def iterative_migration(
                 output_dict = input_document.dict()
                 update_dict(output_dict, output.dict())
                 output_document = self.output_document_model.parse_obj(
-                    output_dict
-                )
+                    output_dict)
                 output_documents.append(output_document)
 
                 if len(output_documents) == self.batch_size:
-                    await self.output_document_model.replace_many(
-                        documents=output_documents
+                    all_migration_ops.append(
+                        self.output_document_model.replace_many(
+                            documents=output_documents
+                        )
                     )
                     output_documents = []
 
             if output_documents:
-                await self.output_document_model.replace_many(
-                    documents=output_documents
+                all_migration_ops.append(
+                    self.output_document_model.replace_many(
+                        documents=output_documents)
                 )
+            await asyncio.gather(*all_migration_ops)
 
     return IterativeMigration

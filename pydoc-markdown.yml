@@ -10,8 +10,8 @@ hooks:
     - mkdir -p docs/build/content
     - cp -r docs/assets docs/build/content
     - cp docs/CNAME docs/build/content
-    
-renderer:  
+
+renderer:
   type: mkdocs
   output_directory: docs/build
   mkdocs_config:
@@ -42,11 +42,11 @@ renderer:
   markdown:
     use_fixed_header_levels: true
     header_level_by_type:
-      Module: 1
-      Class: 2
-      Method: 3
-      Function: 3
-      Data: 3
+      Module: 2
+      Class: 3
+      Method: 4
+      Function: 4
+      Data: 4
     descriptive_class_title: false
     descriptive_module_title: false
     add_method_class_prefix: true
@@ -120,13 +120,10 @@ renderer:
                 - beanie.odm.operators.update.*
         - title: Fields
           contents:
-            - beanie.odm.fields.*            
+            - beanie.odm.fields.*
     - title: Development
       source: docs/development.md
     - title: Code of conduct
       source: docs/code-of-conduct.md
     - title: Changelog
       source: docs/changelog.md
-      
-
-      

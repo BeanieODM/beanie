@@ -33,5 +33,7 @@ class DocumentSettings(ItemSettings):
 
     lazy_parsing: bool = False
 
+    keep_nulls: bool = True
+
     class Config:
         arbitrary_types_allowed = True

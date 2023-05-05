@@ -228,6 +228,13 @@ class TestFind:
 
         assert len(houses) == 3
 
+    async def test_prefect_count(self, houses):
+        c = await House.find(House.door.t > 5, fetch_links=True).count()
+        assert c == 3
+
+        c = await House.find_one(House.door.t > 5, fetch_links=True).count()
+        assert c == 3
+
     async def test_prefetch_find_one(self, house):
         house = await House.find_one(House.name == "test")
         for window in house.windows:

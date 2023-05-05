@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 def merge_models(left: BaseModel, right: BaseModel) -> None:
     from beanie.odm.fields import Link
 
+    if hasattr(left, "_previous_revision_id"):
+        left._previous_revision_id = right._previous_revision_id
     for k, right_value in right.__iter__():
         left_value = left.__getattribute__(k)
         if isinstance(right_value, BaseModel) and isinstance(
@@ -53,7 +55,7 @@ def parse_obj(
             raise UnionHasNoRegisteredDocs
 
         if isinstance(data, dict):
-            class_name = data["_class_id"]
+            class_name = data[model.get_settings().class_id]
         else:
             class_name = data._class_id
 
@@ -70,8 +72,8 @@ def parse_obj(
         and model._inheritance_inited  # type: ignore
     ):
         if isinstance(data, dict):
-            class_name = data.get("_class_id")
-        elif hasattr(data, "_class_id"):
+            class_name = data.get(model.get_settings().class_id)
+        elif hasattr(data, model.get_settings().class_id):
             class_name = data._class_id
         else:
             class_name = None

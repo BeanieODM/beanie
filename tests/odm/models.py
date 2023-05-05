@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, Union
 from uuid import UUID, uuid4
 
+import pydantic
 import pymongo
 from pydantic import (
     BaseModel,
@@ -109,6 +110,7 @@ class DocumentTestModelWithCustomCollectionName(Document):
 
     class Settings:
         name = "custom"
+        class_id = "different_class_id"
 
 
 class DocumentTestModelWithSimpleIndex(Document):
@@ -444,6 +446,10 @@ class DocumentWithTimeseries(Document):
         timeseries = TimeSeriesConfig(time_field="ts", expire_after_seconds=2)
 
 
+class DocumentWithStringField(Document):
+    string_field: str
+
+
 class DocumentForEncodingTestDate(Document):
     date_field: datetime.date = Field(default_factory=datetime.date.today)
 
@@ -464,6 +470,7 @@ class DocumentForEncodingTestDate(Document):
 class DocumentUnion(UnionDoc):
     class Settings:
         name = "multi_model"
+        class_id = "123"
 
 
 class DocumentMultiModelOne(Document):
@@ -472,6 +479,8 @@ class DocumentMultiModelOne(Document):
 
     class Settings:
         union_doc = DocumentUnion
+        name = "multi_one"
+        class_id = "123"
 
 
 class DocumentMultiModelTwo(Document):
@@ -481,6 +490,8 @@ class DocumentMultiModelTwo(Document):
 
     class Settings:
         union_doc = DocumentUnion
+        name = "multi_two"
+        class_id = "123"
 
 
 class YardWithRevision(Document):
@@ -691,6 +702,44 @@ class DocWithCollectionInnerClass(Document):
 
     class Collection:
         name = "test"
+
+
+class DocumentWithDecimalField(Document):
+    amt: decimal.Decimal
+    other_amt: pydantic.condecimal(
+        decimal_places=1, multiple_of=decimal.Decimal("0.5")
+    ) = 0
+
+    class Config:
+        validate_assignment = True
+
+    class Settings:
+        name = "amounts"
+        use_revision = True
+        use_state_management = True
+        indexes = [
+            pymongo.IndexModel(
+                keys=[("amt", pymongo.ASCENDING)], name="amt_ascending"
+            ),
+            pymongo.IndexModel(
+                keys=[("other_amt", pymongo.DESCENDING)],
+                name="other_amt_descending",
+            ),
+        ]
+
+
+class ModelWithOptionalField(BaseModel):
+    s: Optional[str]
+    i: int
+
+
+class DocumentWithKeepNullsFalse(Document):
+    o: Optional[str]
+    m: ModelWithOptionalField
+
+    class Settings:
+        keep_nulls = False
+        use_state_management = True
 
 
 class ReleaseElemMatch(BaseModel):

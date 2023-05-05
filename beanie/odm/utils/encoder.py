@@ -1,3 +1,4 @@
+import re
 from collections import deque
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -23,7 +24,7 @@ from typing import Any, Callable, Dict, Type
 from uuid import UUID
 
 import bson
-from bson import ObjectId, DBRef, Binary, Decimal128
+from bson import ObjectId, DBRef, Binary, Decimal128, Regex
 from pydantic import BaseModel
 from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
@@ -49,6 +50,7 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     Link: lambda l: l.ref,  # noqa: E741
     bytes: lambda b: b if isinstance(b, Binary) else Binary(b),
     UUID: lambda u: bson.Binary.from_uuid(u),
+    re.Pattern: Regex.from_native,
 }
 
 
@@ -65,11 +67,13 @@ class Encoder:
         custom_encoders: Optional[Dict[Type, Callable]] = None,
         by_alias: bool = True,
         to_db: bool = False,
+        keep_nulls: bool = True,
     ):
         self.exclude = exclude or {}
         self.by_alias = by_alias
         self.custom_encoders = custom_encoders or {}
         self.to_db = to_db
+        self.keep_nulls = keep_nulls
 
     def encode(self, obj: Any):
         """
@@ -87,17 +91,22 @@ class Encoder:
             custom_encoders=obj.get_settings().bson_encoders,
             by_alias=self.by_alias,
             to_db=self.to_db,
+            keep_nulls=self.keep_nulls,
         )
 
         link_fields = obj.get_link_fields()
         obj_dict: Dict[str, Any] = {}
         if obj.get_settings().union_doc is not None:
-            obj_dict["_class_id"] = obj.__class__.__name__
+            obj_dict[obj.get_settings().class_id] = (
+                obj.get_settings().union_doc_alias or obj.__class__.__name__
+            )
         if obj._inheritance_inited:
-            obj_dict["_class_id"] = obj._class_id
+            obj_dict[obj.get_settings().class_id] = obj._class_id
 
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
-            if k not in self.exclude:
+            if k not in self.exclude and (
+                self.keep_nulls is True or o is not None
+            ):
                 if link_fields and k in link_fields:
                     if link_fields[k].link_type == LinkTypes.LIST:
                         obj_dict[k] = [link.to_ref() for link in o]
@@ -124,7 +133,9 @@ class Encoder:
         """
         obj_dict = {}
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
-            if k not in self.exclude:
+            if k not in self.exclude and (
+                self.keep_nulls is True or o is not None
+            ):
                 obj_dict[k] = self._encode(o)
 
         return obj_dict
@@ -168,7 +179,17 @@ class Encoder:
             return self.encode_iterable(obj)
 
         if isinstance(
-            obj, (str, int, float, ObjectId, datetime, type(None), DBRef)
+            obj,
+            (
+                str,
+                int,
+                float,
+                ObjectId,
+                datetime,
+                type(None),
+                DBRef,
+                Decimal128,
+            ),
         ):
             return obj
 
