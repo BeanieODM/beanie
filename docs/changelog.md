@@ -17,7 +17,7 @@ Beanie project
 - PR <https://github.com/roman-right/beanie/pull/546>
             
 ### Return bulkwriteresult response from motor
-- Author - [None](https://github.com/divyam234)
+- Author - [divyam234](https://github.com/divyam234)
 - PR <https://github.com/roman-right/beanie/pull/542>
             
 ### Fix typing in 'document.get(...)'
