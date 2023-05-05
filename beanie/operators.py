@@ -28,6 +28,7 @@ from beanie.odm.operators.find.geospatial import (
     GeoIntersects,
     GeoWithinTypes,
     GeoWithin,
+    Box,
     Near,
     NearSphere,
 )
@@ -87,6 +88,7 @@ __all__ = [
     "GeoIntersects",
     "GeoWithinTypes",
     "GeoWithin",
+    "Box",
     "Near",
     "NearSphere",
     # Logical
