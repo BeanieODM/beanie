@@ -73,6 +73,7 @@ from tests.odm.models import (
     DocumentWithTurnedOnStateManagementWithCustomId,
     DocumentWithDecimalField,
     DocumentWithKeepNullsFalse,
+    PackageElemMatch,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -231,6 +232,7 @@ async def init(loop, db):
         DocumentWithTurnedOnStateManagementWithCustomId,
         DocumentWithDecimalField,
         DocumentWithKeepNullsFalse,
+        PackageElemMatch,
     ]
     await init_beanie(
         database=db,

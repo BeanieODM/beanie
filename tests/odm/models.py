@@ -740,3 +740,13 @@ class DocumentWithKeepNullsFalse(Document):
     class Settings:
         keep_nulls = False
         use_state_management = True
+
+
+class ReleaseElemMatch(BaseModel):
+    major_ver: int
+    minor_ver: int
+    build_ver: int
+
+
+class PackageElemMatch(Document):
+    releases: List[ReleaseElemMatch] = []
