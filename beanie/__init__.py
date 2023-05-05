@@ -18,6 +18,7 @@ from beanie.odm.fields import (
     PydanticObjectId,
     Indexed,
     Link,
+    BackLink,
     WriteRules,
     DeleteRules,
 )
@@ -27,7 +28,7 @@ from beanie.odm.documents import Document
 from beanie.odm.views import View
 from beanie.odm.union_doc import UnionDoc
 
-__version__ = "1.18.1"
+__version__ = "1.19.0"
 __all__ = [
     # ODM
     "Document",
@@ -57,6 +58,7 @@ __all__ = [
     "free_fall_migration",
     # Relations
     "Link",
+    "BackLink",
     "WriteRules",
     "DeleteRules",
 ]

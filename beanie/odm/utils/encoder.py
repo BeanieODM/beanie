@@ -54,6 +54,13 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
 }
 
 
+class Ignore:
+    ...
+
+
+IGNORE = Ignore()
+
+
 class Encoder:
     """
     BSON encoding class
@@ -122,9 +129,35 @@ class Encoder:
                             obj_dict[k] = [link.to_ref() for link in o]
                         else:
                             obj_dict[k] = o
+                    if (
+                        link_fields[k].link_type == LinkTypes.BACK_DIRECT
+                        and self.to_db
+                    ):
+                        obj_dict[k] = IGNORE
+                    if (
+                        link_fields[k].link_type == LinkTypes.BACK_LIST
+                        and self.to_db
+                    ):
+                        obj_dict[k] = IGNORE
+                    if (
+                        link_fields[k].link_type
+                        == LinkTypes.OPTIONAL_BACK_DIRECT
+                        and self.to_db
+                    ):
+                        obj_dict[k] = IGNORE
+                    if (
+                        link_fields[k].link_type
+                        == LinkTypes.OPTIONAL_BACK_LIST
+                        and self.to_db
+                    ):
+                        obj_dict[k] = IGNORE
                 else:
                     obj_dict[k] = o
-                obj_dict[k] = encoder.encode(obj_dict[k])
+
+                if obj_dict[k] == IGNORE:
+                    del obj_dict[k]
+                else:
+                    obj_dict[k] = encoder.encode(obj_dict[k])
         return obj_dict
 
     def encode_base_model(self, obj):

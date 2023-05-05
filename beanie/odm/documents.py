@@ -22,6 +22,7 @@ from pydantic import (
     Field,
     parse_obj_as,
 )
+from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
 from pymongo import InsertOne
 from pymongo.client_session import ClientSession
@@ -54,6 +55,7 @@ from beanie.odm.fields import (
     LinkTypes,
     WriteRules,
     DeleteRules,
+    BackLink,
 )
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import ModelType
@@ -147,6 +149,28 @@ class Document(
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
 
+    @root_validator(pre=True)
+    def fill_back_refs(cls, values):
+        if cls._link_fields:
+            for field_name, link_info in cls._link_fields.items():
+                if (
+                    link_info.link_type
+                    in [LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT]
+                    and field_name not in values
+                ):
+                    values[field_name] = BackLink[link_info.model_class](
+                        link_info.model_class
+                    )
+                if (
+                    link_info.link_type
+                    in [LinkTypes.BACK_LIST, LinkTypes.OPTIONAL_BACK_LIST]
+                    and field_name not in values
+                ):
+                    values[field_name] = [
+                        BackLink[link_info.model_class](link_info.model_class)
+                    ]
+        return values
+
     @classmethod
     async def get(
         cls: Type["DocType"],
@@ -197,7 +221,7 @@ class Document(
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
@@ -339,10 +363,12 @@ class Document(
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
+                        LinkTypes.BACK_DIRECT,
+                        LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
                             await value.replace(
@@ -354,6 +380,8 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
+                        LinkTypes.BACK_LIST,
+                        LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -405,10 +433,12 @@ class Document(
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
+                        LinkTypes.BACK_DIRECT,
+                        LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
                             await value.save(
@@ -417,6 +447,8 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
+                        LinkTypes.BACK_LIST,
+                        LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -717,10 +749,12 @@ class Document(
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
+                        LinkTypes.BACK_DIRECT,
+                        LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
                             await value.delete(
@@ -730,6 +764,8 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
+                        LinkTypes.BACK_LIST,
+                        LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -1014,7 +1050,7 @@ class Document(
         link_fields = self.get_link_fields()
         if link_fields is not None:
             for ref in link_fields.values():
-                coros.append(self.fetch_link(ref.field))  # TODO lists
+                coros.append(self.fetch_link(ref.field_name))  # TODO lists
         await asyncio.gather(*coros)
 
     @classmethod

@@ -2,6 +2,38 @@
 
 Beanie project
 
+## [1.19.0] - 2023-05-05
+        
+### Feat/back refs
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/557>
+            
+### Feat: add box operator
+- Author - [Anton Kriese](https://github.com/akriese)
+- PR <https://github.com/roman-right/beanie/pull/552>
+            
+### Fix table of contents not showing all classes
+- Author - [Kai Schniedergers](https://github.com/kschniedergers)
+- PR <https://github.com/roman-right/beanie/pull/546>
+            
+### Return bulkwriteresult response from motor
+- Author - [divyam234](https://github.com/divyam234)
+- PR <https://github.com/roman-right/beanie/pull/542>
+            
+### Fix typing in 'document.get(...)'
+- Author - [Yallxe](https://github.com/yallxe)
+- PR <https://github.com/roman-right/beanie/pull/526>
+            
+### Init view's cache
+- Author - [Antonio Eugenio Burriel](https://github.com/aeburriel)
+- PR <https://github.com/roman-right/beanie/pull/521>
+            
+### Kwargs arguments for elemmatch operator
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/517>
+            
+[1.19.0]: https://pypi.org/project/beanie/1.19.0
+
 ## [1.18.1] - 2023-05-04
         
 ### Keep nulls config

@@ -74,6 +74,10 @@ from tests.odm.models import (
     DocumentWithDecimalField,
     DocumentWithKeepNullsFalse,
     PackageElemMatch,
+    DocumentWithLink,
+    DocumentWithBackLink,
+    DocumentWithListBackLink,
+    DocumentWithListLink,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -233,6 +237,10 @@ async def init(loop, db):
         DocumentWithDecimalField,
         DocumentWithKeepNullsFalse,
         PackageElemMatch,
+        DocumentWithLink,
+        DocumentWithBackLink,
+        DocumentWithListLink,
+        DocumentWithListBackLink,
     ]
     await init_beanie(
         database=db,

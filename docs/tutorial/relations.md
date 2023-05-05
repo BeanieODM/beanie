@@ -11,6 +11,13 @@ The following field types are supported:
 - `List[Link[...]]`
 - `Optional[List[Link[...]]]`
 
+Also, backward links are supported:
+
+- `BackLink[...]`
+- `Optional[BackLink[...]]`
+- `List[BackLink[...]]`
+- `Optional[List[BackLink[...]]]`
+
 Direct link to the document:
 
 ```python
@@ -214,3 +221,35 @@ To keep linked documents, you can use the `DO_NOTHING` rule:
 ```python
 await house.delete(link_rule=DeleteRules.DO_NOTHING)
 ```
+
+## Back Links
+
+To init the back link you should have a document with the direct or list of links to the current document.
+
+```python
+from typing import List
+
+from beanie import Document, BackLink, Link
+from pydantic import Field
+
+
+class House(Document):
+    name: str
+    door: Link["Door"]
+    owners: List[Link["Person"]]
+
+    
+class Door(Document):
+    height: int = 2
+    width: int = 1
+    house: BackLink[House] = Field(original_field="door")
+
+    
+class Person(Document):
+    name: str
+    house: List[BackLink[House]] = Field(original_field="owners")
+```
+
+The `original_field` parameter is required for the back link field.
+
+Back links support all the operations that normal links support.
