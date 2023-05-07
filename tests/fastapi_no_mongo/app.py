@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from tests.fastapi.routes import house_router
+from tests.fastapi_no_mongo.routes import house_router
 
 app = FastAPI()
 

@@ -1,8 +1,7 @@
 import pytest
 from httpx import AsyncClient
 
-from tests.fastapi.app import app
-from tests.fastapi.models import HouseAPI, WindowAPI, DoorAPI, RoofAPI
+from tests.fastapi_no_mongo.app import app
 
 
 @pytest.fixture(autouse=True)

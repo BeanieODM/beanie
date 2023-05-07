@@ -1,4 +1,4 @@
-from tests.fastapi.models import WindowAPI
+from tests.fastapi_no_mongo.models import WindowAPI
 
 
 async def test_create_window(api_client):
