@@ -2,7 +2,9 @@
 
 The document can contain links to other documents in their fields.
 
-*Only top-level fields are fully supported for now.*
+> **Note:** Only top-level fields are fully supported for now
+
+> **Warning:** Nested links fetching is supported only for MongoDB version *4.4* or newer
 
 The following field types are supported:
 

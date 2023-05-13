@@ -79,6 +79,7 @@ from beanie.odm.operators.update.general import (
 from beanie.odm.queries.update import UpdateMany, UpdateResponse
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict, get_top_level_nones
+from beanie.odm.utils.general import DatabaseVersion
 from beanie.odm.utils.parsing import merge_models
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
@@ -135,7 +136,9 @@ class Document(
     _document_settings: ClassVar[Optional[DocumentSettings]] = None
 
     # Database
-    _database_major_version: ClassVar[int] = 4
+    _database_version: ClassVar[DatabaseVersion] = DatabaseVersion.from_str(
+        "4"
+    )
 
     # Other
     _hidden_fields: ClassVar[Set[str]] = set()

@@ -18,6 +18,8 @@ from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
 from beanie.odm.union_doc import UnionDoc
+from beanie.odm.utils.compatibility import supports_timeseries
+from beanie.odm.utils.general import DatabaseVersion
 from beanie.odm.utils.relations import detect_link
 from beanie.odm.views import View
 
@@ -230,7 +232,7 @@ class Initializer:
 
         document_settings = cls.get_settings()
 
-        # register in the Union Doc
+        # Register as union doc
 
         if document_settings.union_doc is not None:
             name = cls.get_settings().name or cls.__name__
@@ -239,21 +241,23 @@ class Initializer:
             )
             document_settings.union_doc_alias = name
 
-        # set a name
+        # Set document name
 
         if not document_settings.name:
             document_settings.name = cls.__name__
 
-        # check mongodb version fits
+        # Check for possible compatibility issues
+
         if (
             document_settings.timeseries is not None
-            and cls._database_major_version < 5
+            and not supports_timeseries(cls._database_version)
         ):
             raise MongoDBVersionError(
                 "Timeseries are supported by MongoDB version 5 and higher"
             )
 
-        # create motor collection
+        # Create motor collection
+
         if (
             document_settings.timeseries is not None
             and document_settings.name
@@ -322,8 +326,7 @@ class Initializer:
 
         # get db version
         build_info = await self.database.command({"buildInfo": 1})
-        mongo_version = build_info["version"]
-        cls._database_major_version = int(mongo_version.split(".")[0])
+        cls._database_version = DatabaseVersion.from_str(build_info["version"])
 
         if cls not in self.inited_classes:
             self.set_default_class_vars(cls)

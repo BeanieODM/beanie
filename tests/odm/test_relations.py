@@ -1,3 +1,5 @@
+from typing import List
+
 import pytest
 
 from beanie.exceptions import DocumentWasNotSaved
@@ -79,33 +81,37 @@ async def house(house_not_inserted):
 
 @pytest.fixture
 async def houses():
+    _houses: List[House] = []
     for i in range(10):
         roof = Roof() if i % 2 == 0 else None
         if i % 2 == 0:
             yards = [Yard(v=10, w=10 + i), Yard(v=11, w=10 + i)]
         else:
             yards = None
-        house = await House(
-            door=Door(
-                t=i,
-                window=Window(x=20, y=21 + i, lock=Lock(k=20 + i))
-                if i % 2 == 0
-                else None,
-                locks=[Lock(k=20 + i)],
-            ),
-            windows=[
-                Window(x=10, y=10 + i, lock=Lock(k=10 + i)),
-                Window(x=11, y=11 + i, lock=Lock(k=11 + i)),
-            ],
-            yards=yards,
-            roof=roof,
-            name="test",
-            height=i,
-        ).insert(link_rule=WriteRules.WRITE)
-        if i == 9:
-            await house.windows[0].delete()
-            await house.windows[1].lock.delete()
-            await house.door.delete()
+        _houses.append(
+            await House(
+                door=Door(
+                    t=i,
+                    window=Window(x=20, y=21 + i, lock=Lock(k=20 + i))
+                    if i % 2 == 0
+                    else None,
+                    locks=[Lock(k=20 + i)],
+                ),
+                windows=[
+                    Window(x=10, y=10 + i, lock=Lock(k=10 + i)),
+                    Window(x=11, y=11 + i, lock=Lock(k=11 + i)),
+                ],
+                yards=yards,
+                roof=roof,
+                name="test",
+                height=i,
+            ).insert(link_rule=WriteRules.WRITE)
+        )
+
+    await _houses[-1].windows[0].delete()
+    await _houses[-1].windows[1].lock.delete()
+    await _houses[-1].door.delete()
+    return _houses
 
 
 class TestInsert:
@@ -232,7 +238,7 @@ class TestFind:
 
         assert len(houses) == 3
 
-    async def test_prefect_count(self, houses):
+    async def test_prefetch_count(self, houses):
         c = await House.find(House.door.t > 5, fetch_links=True).count()
         assert c == 3
 

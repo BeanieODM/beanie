@@ -2,20 +2,19 @@ import pytest
 
 from beanie import init_beanie
 from beanie.exceptions import MongoDBVersionError
+from beanie.odm.utils.compatibility import supports_timeseries
+from beanie.odm.utils.general import DatabaseVersion
 from tests.odm.models import DocumentWithTimeseries
 
 
-async def test_timeseries_collection(db):
-    build_info = await db.command({"buildInfo": 1})
-    mongo_version = build_info["version"]
-    major_version = int(mongo_version.split(".")[0])
-    if major_version < 5:
+async def test_timeseries_collection(db, database_version: DatabaseVersion):
+    if not supports_timeseries(database_version):
         with pytest.raises(MongoDBVersionError):
             await init_beanie(
                 database=db, document_models=[DocumentWithTimeseries]
             )
 
-    if major_version >= 5:
+    if supports_timeseries(database_version):
         await init_beanie(
             database=db, document_models=[DocumentWithTimeseries]
         )

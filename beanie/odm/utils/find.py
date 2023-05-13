@@ -1,8 +1,10 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Type
 
-from beanie.exceptions import NotSupported
+from beanie.exceptions import NotSupported, MongoDBVersionError
 from beanie.odm.fields import LinkInfo, LinkTypes
 from beanie.odm.interfaces.detector import ModelType
+from beanie.odm.utils.compatibility import supports_nested_links
+from beanie.odm.utils.general import DatabaseVersion
 
 if TYPE_CHECKING:
     from beanie import Document
@@ -18,11 +20,16 @@ def construct_lookup_queries(cls: Type["Document"]) -> List[Dict[str, Any]]:
     queries: List = []
     link_fields = cls.get_link_fields()
     if link_fields is not None:
+        if not supports_nested_links(cls._database_version):
+            raise MongoDBVersionError(
+                f"Nested links are supported starting with MongoDB version 4.4"
+                f" (installed version: {cls._database_version})."
+            )
         for link_info in link_fields.values():
             construct_query(
                 link_info=link_info,
                 queries=queries,
-                database_major_version=cls._database_major_version,
+                database_version=cls._database_version,
             )
     return queries
 
@@ -30,13 +37,13 @@ def construct_lookup_queries(cls: Type["Document"]) -> List[Dict[str, Any]]:
 def construct_query(
     link_info: LinkInfo,
     queries: List,
-    database_major_version: int,
+    database_version: DatabaseVersion,
 ):
     if link_info.link_type in [
         LinkTypes.DIRECT,
         LinkTypes.OPTIONAL_DIRECT,
     ]:
-        if database_major_version >= 5 or link_info.nested_links is None:
+        if database_version.major >= 5 or link_info.nested_links is None:
             lookup_steps = [
                 {
                     "$lookup": {
@@ -76,10 +83,9 @@ def construct_query(
                     construct_query(
                         link_info=link_info.nested_links[nested_link],
                         queries=lookup_steps[0]["$lookup"]["pipeline"],
-                        database_major_version=database_major_version,
+                        database_version=database_version,
                     )
             queries += lookup_steps
-
         else:
             lookup_steps = [
                 {
@@ -125,7 +131,7 @@ def construct_query(
                 construct_query(
                     link_info=link_info.nested_links[nested_link],
                     queries=lookup_steps[0]["$lookup"]["pipeline"],
-                    database_major_version=database_major_version,
+                    database_version=database_version,
                 )
             queries += lookup_steps
 
@@ -133,7 +139,7 @@ def construct_query(
         LinkTypes.BACK_DIRECT,
         LinkTypes.OPTIONAL_BACK_DIRECT,
     ]:
-        if database_major_version >= 5 or link_info.nested_links is None:
+        if database_version.major >= 5 or link_info.nested_links is None:
             lookup_steps = [
                 {
                     "$lookup": {
@@ -173,7 +179,7 @@ def construct_query(
                     construct_query(
                         link_info=link_info.nested_links[nested_link],
                         queries=lookup_steps[0]["$lookup"]["pipeline"],
-                        database_major_version=database_major_version,
+                        database_version=database_version,
                     )
             queries += lookup_steps
 
@@ -225,7 +231,7 @@ def construct_query(
                 construct_query(
                     link_info=link_info.nested_links[nested_link],
                     queries=lookup_steps[0]["$lookup"]["pipeline"],
-                    database_major_version=database_major_version,
+                    database_version=database_version,
                 )
             queries += lookup_steps
 
@@ -233,7 +239,7 @@ def construct_query(
         LinkTypes.LIST,
         LinkTypes.OPTIONAL_LIST,
     ]:
-        if database_major_version >= 5 or link_info.nested_links is None:
+        if database_version.major >= 5 or link_info.nested_links is None:
             queries.append(
                 {
                     "$lookup": {
@@ -252,7 +258,7 @@ def construct_query(
                     construct_query(
                         link_info=link_info.nested_links[nested_link],
                         queries=queries[-1]["$lookup"]["pipeline"],
-                        database_major_version=database_major_version,
+                        database_version=database_version,
                     )
         else:
             lookup_step = {
@@ -270,7 +276,7 @@ def construct_query(
                 construct_query(
                     link_info=link_info.nested_links[nested_link],
                     queries=lookup_step["$lookup"]["pipeline"],
-                    database_major_version=database_major_version,
+                    database_version=database_version,
                 )
             queries.append(lookup_step)
 
@@ -278,7 +284,7 @@ def construct_query(
         LinkTypes.BACK_LIST,
         LinkTypes.OPTIONAL_BACK_LIST,
     ]:
-        if database_major_version >= 5 or link_info.nested_links is None:
+        if database_version.major >= 5 or link_info.nested_links is None:
             queries.append(
                 {
                     "$lookup": {
@@ -297,7 +303,7 @@ def construct_query(
                     construct_query(
                         link_info=link_info.nested_links[nested_link],
                         queries=queries[-1]["$lookup"]["pipeline"],
-                        database_major_version=database_major_version,
+                        database_version=database_version,
                     )
         else:
             lookup_step = {
@@ -324,7 +330,7 @@ def construct_query(
                 construct_query(
                     link_info=link_info.nested_links[nested_link],
                     queries=lookup_step["$lookup"]["pipeline"],
-                    database_major_version=database_major_version,
+                    database_version=database_version,
                 )
             queries.append(lookup_step)
 
