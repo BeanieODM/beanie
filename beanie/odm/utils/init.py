@@ -53,6 +53,8 @@ class Initializer:
         self.allow_index_dropping = allow_index_dropping
         self.recreate_views = recreate_views
 
+        self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
+
         if (connection_string is None and database is None) or (
             connection_string is not None and database is not None
         ):
@@ -134,6 +136,17 @@ class Initializer:
         if issubclass(cls, UnionDoc):
             cls._settings = UnionDocSettings.parse_obj(settings_vars)
 
+    def update_forward_refs(self, cls: Type[BaseModel]):
+        """
+        Update forward refs
+
+        :param cls: Type[BaseModel] - class to update forward refs
+        :return: None
+        """
+        if cls not in self.models_with_updated_forward_refs:
+            cls.update_forward_refs()
+            self.models_with_updated_forward_refs.append(cls)
+
     # Document
 
     @staticmethod
@@ -163,19 +176,19 @@ class Initializer:
                 expiration_time=cls.get_settings().cache_expiration_time,
             )
 
-    @staticmethod
-    def init_document_fields(cls) -> None:
+    def init_document_fields(self, cls) -> None:
         """
         Init class fields
         :return: None
         """
-        cls.update_forward_refs()
+        self.update_forward_refs(cls)
 
         def check_nested_links(
             link_info: LinkInfo, prev_models: List[Type[BaseModel]]
         ):
             if link_info.model_class in prev_models:
                 return
+            self.update_forward_refs(link_info.model_class)
             for k, v in link_info.model_class.__fields__.items():
                 nested_link_info = detect_link(v)
                 if nested_link_info is None:

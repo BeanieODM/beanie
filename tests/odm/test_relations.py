@@ -1,7 +1,11 @@
-import pytest
+from typing import List
 
+import pytest
+from pydantic.fields import Field
+
+from beanie import init_beanie, Document
 from beanie.exceptions import DocumentWasNotSaved
-from beanie.odm.fields import DeleteRules, Link, WriteRules
+from beanie.odm.fields import DeleteRules, Link, WriteRules, BackLink
 from tests.odm.models import (
     Door,
     House,
@@ -577,6 +581,25 @@ class TestSaveBackLinks:
             assert lnk.s == "new value"
 
 
+class HouseForReversedOrderInit(Document):
+    name: str
+    door: Link["DoorForReversedOrderInit"]
+    owners: List[Link["PersonForReversedOrderInit"]]
+
+
+class DoorForReversedOrderInit(Document):
+    height: int = 2
+    width: int = 1
+    house: BackLink[HouseForReversedOrderInit] = Field(original_field="door")
+
+
+class PersonForReversedOrderInit(Document):
+    name: str
+    house: List[BackLink[HouseForReversedOrderInit]] = Field(
+        original_field="owners"
+    )
+
+
 class TestDeleteBackLinks:
     async def test_do_nothing(self, link_and_backlink_doc_pair):
         link_doc, back_link_doc = link_and_backlink_doc_pair
@@ -623,3 +646,13 @@ class TestDeleteBackLinks:
             link_doc.id, fetch_links=True
         )
         assert new_link_doc is None
+
+    async def test_init_reversed_order(self, db):
+        await init_beanie(
+            database=db,
+            document_models=[
+                DoorForReversedOrderInit,
+                HouseForReversedOrderInit,
+                PersonForReversedOrderInit,
+            ],
+        )
