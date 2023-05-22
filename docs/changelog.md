@@ -2,6 +2,18 @@
 
 Beanie project
 
+## [1.19.1] - 2023-05-22
+        
+### Fix: update forward refs during nested links check
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/566>
+            
+### Fix: session in iterative transactions
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/567>
+            
+[1.19.1]: https://pypi.org/project/beanie/1.19.1
+
 ## [1.19.0] - 2023-05-05
         
 ### Feat/back refs
