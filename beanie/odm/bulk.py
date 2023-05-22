@@ -10,6 +10,7 @@ from pymongo import (
     UpdateMany,
 )
 from pymongo.results import BulkWriteResult
+from pymongo.client_session import ClientSession
 
 
 class Operation(BaseModel):
@@ -31,8 +32,9 @@ class Operation(BaseModel):
 
 
 class BulkWriter:
-    def __init__(self):
+    def __init__(self, session: Optional[ClientSession] = None):
         self.operations: List[Operation] = []
+        self.session = session
 
     async def __aenter__(self):
         return self
@@ -60,7 +62,9 @@ class BulkWriter:
                     )
                 requests.append(query)
 
-            return await obj_class.get_motor_collection().bulk_write(requests)  # type: ignore
+            return await obj_class.get_motor_collection().bulk_write(  # type: ignore
+                requests, session=self.session
+            )
 
     def add_operation(self, operation: Operation):
         self.operations.append(operation)

@@ -52,6 +52,8 @@ async def test_migration_break(settings, notes, db):
     await init_beanie(database=db, document_models=[OldNote])
     inspection = await OldNote.inspect_collection()
     assert inspection.status == InspectionStatuses.OK
-    notes = await OldNote.all().to_list()
-    names = set(n.name for n in notes)
+    notes = await OldNote.get_motor_collection().find().to_list(length=100)
+    names = set(n["name"] for n in notes)
     assert names == {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
+    for note in notes:
+        assert "title" not in note

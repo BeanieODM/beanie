@@ -38,6 +38,7 @@ from beanie.exceptions import (
     RevisionIdWasChanged,
     DocumentWasNotSaved,
     NotSupported,
+    ReplaceError,
 )
 from beanie.odm.actions import (
     EventTypes,
@@ -67,6 +68,7 @@ from beanie.odm.models import (
     InspectionStatuses,
     InspectionError,
 )
+from beanie.odm.operators.find.comparison import In
 from beanie.odm.operators.update.general import (
     CurrentDate,
     Inc,
@@ -535,12 +537,16 @@ class Document(
         :param session: Optional[ClientSession] - pymongo session.
         :return: None
         """
-        # async with BulkWriter() as bulk_writer:
-        for document in documents:
-            await document.replace(
-                # bulk_writer=bulk_writer,
-                session=session
+        ids_list = [document.id for document in documents]
+        if await cls.find(In(cls.id, ids_list)).count() != len(ids_list):
+            raise ReplaceError(
+                "Some of the documents are not exist in the collection"
             )
+        async with BulkWriter(session=session) as bulk_writer:
+            for document in documents:
+                await document.replace(
+                    bulk_writer=bulk_writer, session=session
+                )
 
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
