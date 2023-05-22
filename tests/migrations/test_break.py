@@ -38,6 +38,8 @@ async def notes(loop, db):
         await note.insert()
     yield
     await OldNote.delete_all()
+    await OldNote.get_motor_collection().drop()
+    await OldNote.get_motor_collection().drop_indexes()
 
 
 async def test_migration_break(settings, notes, db):

@@ -92,7 +92,9 @@ def iterative_migration(
         async def run(self, session):
             output_documents = []
             all_migration_ops = []
-            async for input_document in self.input_document_model.find_all():
+            async for input_document in self.input_document_model.find_all(
+                session=session
+            ):
                 output = DummyOutput()
                 function_kwargs = {
                     "input_document": input_document,
