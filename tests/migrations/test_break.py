@@ -37,7 +37,7 @@ async def notes(loop, db):
         note = OldNote(name=str(i), tag=Tag(name="test", color="red"))
         await note.insert()
     yield
-    # await OldNote.delete_all()
+    await OldNote.delete_all()
 
 
 async def test_migration_break(settings, notes, db):
