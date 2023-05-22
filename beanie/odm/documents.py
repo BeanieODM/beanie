@@ -34,11 +34,11 @@ from pymongo.results import (
 
 from beanie.exceptions import (
     CollectionWasNotInitialized,
-    ReplaceError,
     DocumentNotFound,
     RevisionIdWasChanged,
     DocumentWasNotSaved,
     NotSupported,
+    ReplaceError,
 )
 from beanie.odm.actions import (
     EventTypes,
@@ -542,8 +542,11 @@ class Document(
             raise ReplaceError(
                 "Some of the documents are not exist in the collection"
             )
-        await cls.find(In(cls.id, ids_list), session=session).delete()
-        await cls.insert_many(documents, session=session)
+        async with BulkWriter(session=session) as bulk_writer:
+            for document in documents:
+                await document.replace(
+                    bulk_writer=bulk_writer, session=session
+                )
 
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
