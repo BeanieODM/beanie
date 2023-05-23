@@ -54,13 +54,13 @@ class ElemMatch(BaseFindArrayOperator):
     class Sample(Document):
         results: List[int]
 
-    ElemMatch(Sample.results, [80, 85])
+    ElemMatch(Sample.results, {"$in": [80, 85]})
     ```
 
     Will return query object like
 
     ```python
-    {"results": {"$elemMatch": [80, 85]}}
+    {"results": {"$elemMatch": {"$in": [80, 85]}}}
     ```
 
     MongoDB doc:
