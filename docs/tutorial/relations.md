@@ -253,3 +253,7 @@ class Person(Document):
 The `original_field` parameter is required for the back link field.
 
 Back links support all the operations that normal links support.
+
+## Limitations
+
+- Find operations with the `fetch_links` parameter can not be used in the chaning with `delete` and `update` methods.

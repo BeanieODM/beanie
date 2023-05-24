@@ -440,6 +440,29 @@ class TestOther:
         assert isinstance(res.b.a.b, LoopedLinksB)
         assert res.b.a.b.a is None
 
+    async def test_with_chaining_aggregation(self):
+        region = Region()
+        await region.insert()
+
+        for i in range(10):
+            await UsersAddresses(region_id=region).insert()
+
+        region_2 = Region()
+        await region_2.insert()
+
+        for i in range(10):
+            await UsersAddresses(region_id=region_2).insert()
+
+        addresses_count = (
+            await UsersAddresses.find(
+                UsersAddresses.region_id.id == region.id, fetch_links=True
+            )
+            .aggregate([{"$count": "count"}])
+            .to_list()
+        )
+
+        assert addresses_count[0] == {"count": 10}
+
 
 @pytest.fixture()
 async def link_and_backlink_doc_pair():
