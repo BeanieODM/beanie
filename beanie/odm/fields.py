@@ -13,6 +13,8 @@ from typing import (
     TYPE_CHECKING,
 )
 
+from typing import OrderedDict as OrderedDictType
+
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
 from pydantic import BaseModel, parse_obj_as
@@ -226,7 +228,7 @@ class Link(Generic[T]):
     @staticmethod
     def repack_links(
         links: List[Union["Link", "DocType"]]
-    ) -> OrderedDict[Any, Any]:
+    ) -> OrderedDictType[Any, Any]:
         result = OrderedDict()
         for link in links:
             if isinstance(link, Link):
