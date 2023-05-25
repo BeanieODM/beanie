@@ -784,3 +784,7 @@ class DocumentToBeLinked(Document):
 class DocumentWithListOfLinks(Document):
     links: List[Link[DocumentToBeLinked]]
     s: str = "TEST"
+
+
+class DocumentWithTimeStampToTestConsistency(Document):
+    ts: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
