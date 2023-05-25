@@ -217,6 +217,8 @@ class Document(
         Insert the document (self) to the collection
         :return: Document
         """
+        if self.get_settings().use_revision:
+            self.revision_id = uuid4()
         if link_rule == WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
