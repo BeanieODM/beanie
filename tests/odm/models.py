@@ -772,3 +772,12 @@ class DocumentWithListBackLink(Document):
         original_field="link"
     )
     i: int = 1
+
+
+class DocumentToBeLinked(Document):
+    s: str = "TEST"
+
+
+class DocumentWithListOfLinks(Document):
+    links: List[Link[DocumentToBeLinked]]
+    s: str = "TEST"

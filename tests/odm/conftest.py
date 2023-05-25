@@ -78,6 +78,8 @@ from tests.odm.models import (
     DocumentWithBackLink,
     DocumentWithListBackLink,
     DocumentWithListLink,
+    DocumentWithListOfLinks,
+    DocumentToBeLinked,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -241,6 +243,8 @@ async def init(loop, db):
         DocumentWithBackLink,
         DocumentWithListLink,
         DocumentWithListBackLink,
+        DocumentWithListOfLinks,
+        DocumentToBeLinked,
     ]
     await init_beanie(
         database=db,

@@ -26,6 +26,8 @@ from tests.odm.models import (
     DocumentWithLink,
     DocumentWithListBackLink,
     DocumentWithListLink,
+    DocumentWithListOfLinks,
+    DocumentToBeLinked,
 )
 
 
@@ -305,6 +307,32 @@ class TestFind:
         )
         assert house_1 is not None
         assert house_2 is not None
+
+    async def test_fetch_list_with_some_prefetched(self):
+        docs = []
+        for i in range(10):
+            doc = DocumentToBeLinked()
+            await doc.save()
+            docs.append(doc)
+
+        doc_with_links = DocumentWithListOfLinks(links=docs)
+        await doc_with_links.save()
+
+        doc_with_links = await DocumentWithListOfLinks.get(
+            doc_with_links.id, fetch_links=False
+        )
+        doc_with_links.links[-1] = await doc_with_links.links[-1].fetch()
+
+        await doc_with_links.fetch_all_links()
+
+        for link in doc_with_links.links:
+            assert isinstance(link, DocumentToBeLinked)
+
+        assert len(doc_with_links.links) == 10
+
+        # test order
+        for i in range(10):
+            assert doc_with_links.links[i].id == docs[i].id
 
 
 class TestReplace:
