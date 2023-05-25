@@ -433,6 +433,9 @@ class House(Document):
     name: Indexed(str) = Field(hidden=True)
     height: Indexed(int) = 2
 
+    class Config:
+        extra = Extra.allow
+
 
 class DocumentForEncodingTest(Document):
     bytes_field: Optional[bytes]

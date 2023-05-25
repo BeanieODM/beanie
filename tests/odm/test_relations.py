@@ -491,6 +491,31 @@ class TestOther:
 
         assert addresses_count[0] == {"count": 10}
 
+    async def test_with_extra_allow(self, houses):
+        res = await House.find(fetch_links=True).to_list()
+        assert res[0].__fields__.keys() == {
+            "id",
+            "revision_id",
+            "windows",
+            "door",
+            "roof",
+            "yards",
+            "name",
+            "height",
+        }
+
+        res = await House.find_one(fetch_links=True)
+        assert res.__fields__.keys() == {
+            "id",
+            "revision_id",
+            "windows",
+            "door",
+            "roof",
+            "yards",
+            "name",
+            "height",
+        }
+
 
 @pytest.fixture()
 async def link_and_backlink_doc_pair():
