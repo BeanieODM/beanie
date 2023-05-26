@@ -78,6 +78,9 @@ from tests.odm.models import (
     DocumentWithBackLink,
     DocumentWithListBackLink,
     DocumentWithListLink,
+    DocumentWithListOfLinks,
+    DocumentToBeLinked,
+    DocumentWithTimeStampToTestConsistency,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -241,11 +244,15 @@ async def init(loop, db):
         DocumentWithBackLink,
         DocumentWithListLink,
         DocumentWithListBackLink,
+        DocumentWithListOfLinks,
+        DocumentToBeLinked,
+        DocumentWithTimeStampToTestConsistency,
     ]
     await init_beanie(
         database=db,
         document_models=models,
     )
+
     yield None
 
     for model in models:

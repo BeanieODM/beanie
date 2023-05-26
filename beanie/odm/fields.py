@@ -1,6 +1,19 @@
 import asyncio
+from collections import OrderedDict
 from enum import Enum
-from typing import Dict, Generic, TypeVar, Union, Type, List, Optional
+from typing import (
+    Dict,
+    Generic,
+    TypeVar,
+    Union,
+    Type,
+    List,
+    Optional,
+    Any,
+    TYPE_CHECKING,
+)
+
+from typing import OrderedDict as OrderedDictType
 
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
@@ -20,6 +33,9 @@ from beanie.odm.operators.find.comparison import (
     In,
 )
 from beanie.odm.utils.parsing import parse_obj
+
+if TYPE_CHECKING:
+    from beanie.odm.documents import DocType
 
 
 def Indexed(typ, index_type=ASCENDING, **kwargs):
@@ -175,21 +191,51 @@ class Link(Generic[T]):
         return await link.fetch()
 
     @classmethod
-    async def fetch_list(cls, links: List["Link"], fetch_links: bool = False):
-        ids = []
+    async def fetch_list(
+        cls, links: List[Union["Link", "DocType"]], fetch_links: bool = False
+    ):
+        """
+        Fetch list that contains links and documents
+        :param links:
+        :param fetch_links:
+        :return:
+        """
+        data = Link.repack_links(links)  # type: ignore
+        ids_to_fetch = []
         model_class = None
-        for link in links:
-            if model_class is None:
-                model_class = link.model_class
-            else:
-                if model_class != link.model_class:
-                    raise ValueError(
-                        "All the links must have the same model class"
-                    )
-            ids.append(link.ref.id)
-        return await model_class.find(  # type: ignore
-            In("_id", ids), with_children=True, fetch_links=fetch_links
+        for doc_id, link in data.items():
+            if isinstance(link, Link):
+                if model_class is None:
+                    model_class = link.model_class
+                else:
+                    if model_class != link.model_class:
+                        raise ValueError(
+                            "All the links must have the same model class"
+                        )
+                ids_to_fetch.append(link.ref.id)
+
+        fetched_models = await model_class.find(  # type: ignore
+            In("_id", ids_to_fetch),
+            with_children=True,
+            fetch_links=fetch_links,
         ).to_list()
+
+        for model in fetched_models:
+            data[model.id] = model
+
+        return list(data.values())
+
+    @staticmethod
+    def repack_links(
+        links: List[Union["Link", "DocType"]]
+    ) -> OrderedDictType[Any, Any]:
+        result = OrderedDict()
+        for link in links:
+            if isinstance(link, Link):
+                result[link.ref.id] = link
+            else:
+                result[link.id] = link
+        return result
 
     @classmethod
     async def fetch_many(cls, links: List["Link"]):

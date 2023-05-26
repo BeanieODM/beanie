@@ -14,7 +14,7 @@ from beanie.odm.documents import DocType
 from beanie.odm.documents import Document
 from beanie.odm.fields import ExpressionField, LinkInfo
 from beanie.odm.interfaces.detector import ModelType
-from beanie.odm.settings.document import DocumentSettings
+from beanie.odm.settings.document import DocumentSettings, IndexModelField
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
 from beanie.odm.union_doc import UnionDoc
@@ -291,37 +291,48 @@ class Initializer:
         collection = cls.get_motor_collection()
         document_settings = cls.get_settings()
 
-        old_indexes = (await collection.index_information()).keys()
-        new_indexes = ["_id_"]
+        index_information = await collection.index_information()
+
+        old_indexes = IndexModelField.from_motor_index_information(
+            index_information
+        )
+        new_indexes = []
 
         # Indexed field wrapped with Indexed()
         found_indexes = [
-            IndexModel(
-                [
-                    (
-                        fvalue.alias,
-                        fvalue.type_._indexed[0],
-                    )
-                ],
-                **fvalue.type_._indexed[1],
+            IndexModelField(
+                IndexModel(
+                    [
+                        (
+                            fvalue.alias,
+                            fvalue.type_._indexed[0],
+                        )
+                    ],
+                    **fvalue.type_._indexed[1],
+                )
             )
             for _, fvalue in cls.__fields__.items()
             if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
         ]
 
-        # get indexes from the Collection class
         if document_settings.indexes:
             found_indexes += document_settings.indexes
 
-        # create indices
-        if found_indexes:
-            new_indexes += await collection.create_indexes(found_indexes)
+        new_indexes += found_indexes
 
         # delete indexes
         # Only drop indexes if the user specifically allows for it
         if allow_index_dropping:
-            for index in set(old_indexes) - set(new_indexes):
-                await collection.drop_index(index)
+            for index in IndexModelField.list_difference(
+                old_indexes, new_indexes
+            ):
+                await collection.drop_index(index.name)
+
+        # create indices
+        if found_indexes:
+            new_indexes += await collection.create_indexes(
+                IndexModelField.list_to_index_model(new_indexes)
+            )
 
     async def init_document(self, cls: Type[Document]) -> Optional[Output]:
         """

@@ -433,6 +433,9 @@ class House(Document):
     name: Indexed(str) = Field(hidden=True)
     height: Indexed(int) = 2
 
+    class Config:
+        extra = Extra.allow
+
 
 class DocumentForEncodingTest(Document):
     bytes_field: Optional[bytes]
@@ -772,3 +775,16 @@ class DocumentWithListBackLink(Document):
         original_field="link"
     )
     i: int = 1
+
+
+class DocumentToBeLinked(Document):
+    s: str = "TEST"
+
+
+class DocumentWithListOfLinks(Document):
+    links: List[Link[DocumentToBeLinked]]
+    s: str = "TEST"
+
+
+class DocumentWithTimeStampToTestConsistency(Document):
+    ts: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
