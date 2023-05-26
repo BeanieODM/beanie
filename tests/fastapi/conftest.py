@@ -16,7 +16,7 @@ async def api_client(clean_db):
 
 
 @pytest.fixture(autouse=True)
-async def clean_db(loop, db):
+async def clean_db(db):
     models = [HouseAPI, WindowAPI, DoorAPI, RoofAPI]
     yield None
 

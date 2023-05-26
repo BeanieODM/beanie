@@ -36,7 +36,7 @@ class Note(Document):
 
 
 @pytest.fixture()
-async def notes(loop, db):
+async def notes(db):
     await init_beanie(database=db, document_models=[OldNote])
     await OldNote.delete_all()
     for i in range(10):

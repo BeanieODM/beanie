@@ -20,10 +20,8 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: test-rs
-      - name: install flit
-        run: pip3 install flit
       - name: install dependencies
-        run: flit install --deps develop
+        run: pip install .[test]
       - name: specify pydantic
         run: pip3 install pydantic==${{ matrix.pydantic-version }}
       - name: run tests

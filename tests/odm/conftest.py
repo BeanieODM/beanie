@@ -163,14 +163,14 @@ def sample_doc_not_saved(point):
 
 
 @pytest.fixture()
-async def session(cli, loop):
+async def session(cli):
     s = await cli.start_session()
     yield s
     await s.end_session()
 
 
 @pytest.fixture(autouse=True)
-async def init(loop, db):
+async def init(db):
     models = [
         DocumentWithExtras,
         DocumentWithPydanticConfig,
@@ -285,7 +285,7 @@ def documents_not_inserted():
 
 
 @pytest.fixture
-async def document(document_not_inserted, loop) -> DocumentTestModel:
+async def document(document_not_inserted) -> DocumentTestModel:
     return await document_not_inserted.insert()
 
 
