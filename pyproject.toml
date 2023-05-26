@@ -25,10 +25,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
+test = [
     "pre-commit>=2.3.0",
     "pytest>=6.0.0",
-    "pytest-aiohttp>=0.3.0",
+    "pytest-asyncio>=0.21.0",
     "pytest-cov>=2.8.1",
     "dnspython>=2.1.0",
     "flake8>=3",
@@ -84,6 +84,7 @@ filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::UserWarning",
 ]
+asyncio_mode = "auto"
 
 [tool.beanie.migrations]
 path = "beanie/example_migration"
