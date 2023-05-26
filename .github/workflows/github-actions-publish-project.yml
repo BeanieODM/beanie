@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: pdm-project/setup-pdm@v3
+      - name: install flit
+        run: pip3 install flit
       - name: publish project
-        run: pdm publish
+        run: flit publish
