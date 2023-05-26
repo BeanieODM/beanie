@@ -7,13 +7,7 @@ jobs:
   publish_project:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.10.9
-      - name: install poetry
-        run: pip install poetry
-      - name: install dependencies
-        run: poetry install
+      - uses: actions/checkout@v3
+      - uses: pdm-project/setup-pdm@v3
       - name: publish project
-        run: poetry publish --build --username __token__ --password ${{ secrets.PYPI_TOKEN }}
+        run: pdm publish

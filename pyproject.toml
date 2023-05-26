@@ -1,50 +1,62 @@
-[tool.poetry]
+[project]
 name = "beanie"
 version = "1.19.1"
 description = "Asynchronous Python ODM for MongoDB"
-authors = ["Roman <roman-right@protonmail.com>"]
-license = "Apache-2.0"
+authors = [
+    {name = "Roman", email = "roman-right@protonmail.com"},
+]
+dependencies = [
+    "pydantic>=1.10.0",
+    "motor<4.0,>=2.5",
+    "click>=7",
+    "toml",
+    "lazy-model>=0.0.3"
+]
+requires-python = ">=3.7,<4.0"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+keywords = ["mongodb", "odm", "orm", "pydantic", "mongo", "async", "python"]
+
+[project.optional-dependencies]  # This is optional dependencies
+queue = ["beanie_batteries_queue>=0.0.1"]
+
+[project.urls]
 homepage = "https://roman-right.github.io/beanie/"
 repository = "https://github.com/roman-right/beanie"
-keywords = ["mongodb", "odm", "orm", "pydantic", "mongo", "async", "python"]
-include = [
-    "LICENSE",
-    "beanie/py.typed"
+
+[project.scripts]
+beanie = "beanie.executors.migrate:migrations"
+
+[tool.pdm]
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pre-commit<3.0.0,>=2.3.0",
+    "pytest<7.0.0,>=6.0.0",
+    "pytest-aiohttp<1.0.0,>=0.3.0",
+    "pytest-cov<3.0.0,>=2.8.1",
+    "Pygments<3.0.0,>=2.8.0",
+    "dnspython<3.0.0,>=2.1.0",
+    "mkdocs-material>=9.0",
+    "pydoc-markdown>=4.6",
+    "flake8>=3",
+    "pyright>=0",
+    "mkdocs>=1.4",
+    "icecream<3.0.0,>=2.1.1",
+    "jinja2==3.0.3",
+    "fastapi<1.0.0,>=0.78.0",
+    "asgi-lifespan<2.0.0,>=1.0.1",
+    "httpx<1.0.0,>=0.23.0",
+    "Markdown>=3.3",
+    "importlib-metadata<5.0.0,>=4.12.0",
 ]
-readme = "README.md"
 
-[tool.poetry.dependencies]
-python = ">=3.7,<4.0"
-pydantic = ">=1.10.0"
-motor = ">=2.5,<4.0"
-click = ">=7"
-toml = "*"
-lazy-model = ">=0.0.3"
-
-[tool.poetry.dev-dependencies]
-pre-commit = "^2.3.0"
-pytest = "^6.0.0"
-pytest-aiohttp = "^0.3.0"
-pytest-cov = "^2.8.1"
-Pygments = "^2.8.0"
-dnspython = "^2.1.0"
-mkdocs-material = ">=9.0"
-pydoc-markdown = ">=4.6"
-flake8 = ">=3"
-pyright = ">=0"
-mkdocs = ">=1.4"
-icecream = "^2.1.1"
-jinja2 = "3.0.3"
-fastapi = "^0.78.0"
-asgi-lifespan = "^1.0.1"
-httpx = "^0.23.0"
-Markdown = ">=3.3"
-importlib-metadata = "^4.12.0"
-
+[tool.pdm.build]
+includes = ["beanie", "LICENSE", "beanie/py.typed"]
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [tool.black]
 line-length = 79
