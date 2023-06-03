@@ -22,9 +22,11 @@ from pydantic import (
     Field,
     parse_obj_as,
 )
+from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
 from pymongo import InsertOne
 from pymongo.client_session import ClientSession
+from pymongo.errors import DuplicateKeyError
 from pymongo.results import (
     DeleteResult,
     InsertManyResult,
@@ -32,11 +34,11 @@ from pymongo.results import (
 
 from beanie.exceptions import (
     CollectionWasNotInitialized,
-    ReplaceError,
     DocumentNotFound,
     RevisionIdWasChanged,
     DocumentWasNotSaved,
     NotSupported,
+    ReplaceError,
 )
 from beanie.odm.actions import (
     EventTypes,
@@ -53,6 +55,7 @@ from beanie.odm.fields import (
     LinkTypes,
     WriteRules,
     DeleteRules,
+    BackLink,
 )
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import ModelType
@@ -70,10 +73,12 @@ from beanie.odm.operators.update.general import (
     CurrentDate,
     Inc,
     Set as SetOperator,
+    Unset,
+    SetRevisionId,
 )
 from beanie.odm.queries.update import UpdateMany, UpdateResponse
 from beanie.odm.settings.document import DocumentSettings
-from beanie.odm.utils.dump import get_dict
+from beanie.odm.utils.dump import get_dict, get_top_level_nones
 from beanie.odm.utils.parsing import merge_models
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
@@ -140,10 +145,32 @@ class Document(
             self._previous_revision_id = self.revision_id
             self.revision_id = uuid4()
 
+    @root_validator(pre=True)
+    def fill_back_refs(cls, values):
+        if cls._link_fields:
+            for field_name, link_info in cls._link_fields.items():
+                if (
+                    link_info.link_type
+                    in [LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT]
+                    and field_name not in values
+                ):
+                    values[field_name] = BackLink[link_info.model_class](
+                        link_info.model_class
+                    )
+                if (
+                    link_info.link_type
+                    in [LinkTypes.BACK_LIST, LinkTypes.OPTIONAL_BACK_LIST]
+                    and field_name not in values
+                ):
+                    values[field_name] = [
+                        BackLink[link_info.model_class](link_info.model_class)
+                    ]
+        return values
+
     @classmethod
     async def get(
         cls: Type["DocType"],
-        document_id: PydanticObjectId,
+        document_id: Any,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -186,11 +213,13 @@ class Document(
         Insert the document (self) to the collection
         :return: Document
         """
+        if self.get_settings().use_revision:
+            self.revision_id = uuid4()
         if link_rule == WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
@@ -207,7 +236,10 @@ class Document(
                                     await obj.save(link_rule=WriteRules.WRITE)
 
         result = await self.get_motor_collection().insert_one(
-            get_dict(self, to_db=True), session=session
+            get_dict(
+                self, to_db=True, keep_nulls=self.get_settings().keep_nulls
+            ),
+            session=session,
         )
         new_id = result.inserted_id
         if not isinstance(new_id, self.__fields__["id"].type_):
@@ -255,7 +287,11 @@ class Document(
             bulk_writer.add_operation(
                 Operation(
                     operation=InsertOne,
-                    first_query=get_dict(document, to_db=True),
+                    first_query=get_dict(
+                        document,
+                        to_db=True,
+                        keep_nulls=document.get_settings().keep_nulls,
+                    ),
                     object_class=type(document),
                 )
             )
@@ -283,7 +319,12 @@ class Document(
                 "Cascade insert not supported for insert many method"
             )
         documents_list = [
-            get_dict(document, to_db=True) for document in documents
+            get_dict(
+                document,
+                to_db=True,
+                keep_nulls=document.get_settings().keep_nulls,
+            )
+            for document in documents
         ]
         return await cls.get_motor_collection().insert_many(
             documents_list, session=session, **pymongo_kwargs
@@ -320,10 +361,12 @@ class Document(
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
+                        LinkTypes.BACK_DIRECT,
+                        LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
                             await value.replace(
@@ -335,6 +378,8 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
+                        LinkTypes.BACK_LIST,
+                        LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -370,6 +415,7 @@ class Document(
         self: DocType,
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
+        ignore_revision: bool = False,
         **kwargs,
     ) -> None:
         """
@@ -378,16 +424,19 @@ class Document(
 
         :param session: Optional[ClientSession] - pymongo session.
         :param link_rule: WriteRules - rules how to deal with links on writing
+        :param ignore_revision: bool - do force save.
         :return: None
         """
         if link_rule == WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
+                        LinkTypes.BACK_DIRECT,
+                        LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
                             await value.save(
@@ -396,6 +445,8 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
+                        LinkTypes.BACK_LIST,
+                        LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -403,9 +454,36 @@ class Document(
                                     await obj.save(
                                         link_rule=link_rule, session=session
                                     )
-        await self.set(
-            get_dict(self, to_db=True), session=session, upsert=True, **kwargs
-        )
+
+        if self.get_settings().keep_nulls is False:
+            return await self.update(
+                SetOperator(
+                    get_dict(
+                        self,
+                        to_db=True,
+                        keep_nulls=self.get_settings().keep_nulls,
+                    )
+                ),
+                Unset(get_top_level_nones(self)),
+                session=session,
+                ignore_revision=ignore_revision,
+                upsert=True,
+                **kwargs,
+            )
+        else:
+            return await self.update(
+                SetOperator(
+                    get_dict(
+                        self,
+                        to_db=True,
+                        keep_nulls=self.get_settings().keep_nulls,
+                    )
+                ),
+                session=session,
+                ignore_revision=ignore_revision,
+                upsert=True,
+                **kwargs,
+            )
 
     @saved_state_needed
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
@@ -428,12 +506,21 @@ class Document(
         if not self.is_changed:
             return None
         changes = self.get_changes()
-        await self.set(
-            changes,  # type: ignore #TODO fix typing
-            ignore_revision=ignore_revision,
-            session=session,
-            bulk_writer=bulk_writer,
-        )
+        if self.get_settings().keep_nulls is False:
+            return await self.update(
+                SetOperator(changes),
+                Unset(get_top_level_nones(self)),
+                ignore_revision=ignore_revision,
+                session=session,
+                bulk_writer=bulk_writer,
+            )
+        else:
+            return await self.set(
+                changes,  # type: ignore #TODO fix typing
+                ignore_revision=ignore_revision,
+                session=session,
+                bulk_writer=bulk_writer,
+            )
 
     @classmethod
     async def replace_many(
@@ -453,8 +540,11 @@ class Document(
             raise ReplaceError(
                 "Some of the documents are not exist in the collection"
             )
-        await cls.find(In(cls.id, ids_list), session=session).delete()
-        await cls.insert_many(documents, session=session)
+        async with BulkWriter(session=session) as bulk_writer:
+            for document in documents:
+                await document.replace(
+                    bulk_writer=bulk_writer, session=session
+                )
 
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
@@ -467,7 +557,7 @@ class Document(
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
         **pymongo_kwargs,
-    ) -> None:
+    ) -> DocType:
         """
         Partially update the document in the database
 
@@ -478,6 +568,9 @@ class Document(
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: None
         """
+
+        arguments = list(args)
+
         if skip_sync is not None:
             raise DeprecationWarning(
                 "skip_sync parameter is not supported. The document get synced always using atomic operation."
@@ -492,18 +585,23 @@ class Document(
         if use_revision_id and not ignore_revision:
             find_query["revision_id"] = self._previous_revision_id
 
-        result = await self.find_one(find_query).update(
-            *args,
-            session=session,
-            response_type=UpdateResponse.NEW_DOCUMENT,
-            bulk_writer=bulk_writer,
-            **pymongo_kwargs,
-        )
+        if use_revision_id:
+            arguments.append(SetRevisionId(self.revision_id))
+        try:
+            result = await self.find_one(find_query).update(
+                *arguments,
+                session=session,
+                response_type=UpdateResponse.NEW_DOCUMENT,
+                bulk_writer=bulk_writer,
+                **pymongo_kwargs,
+            )
+        except DuplicateKeyError:
+            raise RevisionIdWasChanged
         if bulk_writer is None:
             if use_revision_id and not ignore_revision and result is None:
                 raise RevisionIdWasChanged
-
             merge_models(self, result)
+        return self
 
     @classmethod
     def update_all(
@@ -653,10 +751,12 @@ class Document(
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
-                    value = getattr(self, field_info.field)
+                    value = getattr(self, field_info.field_name)
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
+                        LinkTypes.BACK_DIRECT,
+                        LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
                             await value.delete(
@@ -666,6 +766,8 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
+                        LinkTypes.BACK_LIST,
+                        LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
                             for obj in value:
@@ -733,7 +835,9 @@ class Document(
             if self.state_management_save_previous():
                 self._previous_saved_state = self._saved_state
 
-            self._saved_state = get_dict(self)
+            self._saved_state = get_dict(
+                self, to_db=True, keep_nulls=self.get_settings().keep_nulls
+            )
 
     def get_saved_state(self) -> Optional[Dict[str, Any]]:
         """
@@ -752,7 +856,9 @@ class Document(
     @property  # type: ignore
     @saved_state_needed
     def is_changed(self) -> bool:
-        if self._saved_state == get_dict(self, to_db=True):
+        if self._saved_state == get_dict(
+            self, to_db=True, keep_nulls=self.get_settings().keep_nulls
+        ):
             return False
         return True
 
@@ -780,35 +886,37 @@ class Document(
 
         """
         updates = {}
-
-        for field_name, field_value in new_dict.items():
-            if field_value != old_dict.get(field_name):
-                if not self.state_management_replace_objects() and (
-                    isinstance(field_value, dict)
-                    and isinstance(old_dict.get(field_name), dict)
-                ):
-                    if old_dict.get(field_name) is None:
-                        updates[field_name] = field_value
-                    elif isinstance(field_value, dict) and isinstance(
-                        old_dict.get(field_name), dict
+        if old_dict.keys() - new_dict.keys():
+            updates = new_dict
+        else:
+            for field_name, field_value in new_dict.items():
+                if field_value != old_dict.get(field_name):
+                    if not self.state_management_replace_objects() and (
+                        isinstance(field_value, dict)
+                        and isinstance(old_dict.get(field_name), dict)
                     ):
+                        if old_dict.get(field_name) is None:
+                            updates[field_name] = field_value
+                        elif isinstance(field_value, dict) and isinstance(
+                            old_dict.get(field_name), dict
+                        ):
 
-                        field_data = self._collect_updates(
-                            old_dict.get(field_name),  # type: ignore
-                            field_value,
-                        )
+                            field_data = self._collect_updates(
+                                old_dict.get(field_name),  # type: ignore
+                                field_value,
+                            )
 
-                        for k, v in field_data.items():
-                            updates[f"{field_name}.{k}"] = v
-                else:
-                    updates[field_name] = field_value
+                            for k, v in field_data.items():
+                                updates[f"{field_name}.{k}"] = v
+                    else:
+                        updates[field_name] = field_value
 
         return updates
 
     @saved_state_needed
     def get_changes(self) -> Dict[str, Any]:
         return self._collect_updates(
-            self._saved_state, get_dict(self, to_db=True)  # type: ignore
+            self._saved_state, get_dict(self, to_db=True, keep_nulls=self.get_settings().keep_nulls)  # type: ignore
         )
 
     @saved_state_needed
@@ -944,7 +1052,7 @@ class Document(
         link_fields = self.get_link_fields()
         if link_fields is not None:
             for ref in link_fields.values():
-                coros.append(self.fetch_link(ref.field))  # TODO lists
+                coros.append(self.fetch_link(ref.field_name))  # TODO lists
         await asyncio.gather(*coros)
 
     @classmethod

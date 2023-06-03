@@ -14,7 +14,7 @@ from beanie.odm.documents import DocType
 from beanie.odm.documents import Document
 from beanie.odm.fields import ExpressionField, LinkInfo
 from beanie.odm.interfaces.detector import ModelType
-from beanie.odm.settings.document import DocumentSettings
+from beanie.odm.settings.document import DocumentSettings, IndexModelField
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
 from beanie.odm.union_doc import UnionDoc
@@ -52,6 +52,8 @@ class Initializer:
         self.inited_classes: List[Type] = []
         self.allow_index_dropping = allow_index_dropping
         self.recreate_views = recreate_views
+
+        self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
 
         if (connection_string is None and database is None) or (
             connection_string is not None and database is not None
@@ -134,6 +136,17 @@ class Initializer:
         if issubclass(cls, UnionDoc):
             cls._settings = UnionDocSettings.parse_obj(settings_vars)
 
+    def update_forward_refs(self, cls: Type[BaseModel]):
+        """
+        Update forward refs
+
+        :param cls: Type[BaseModel] - class to update forward refs
+        :return: None
+        """
+        if cls not in self.models_with_updated_forward_refs:
+            cls.update_forward_refs()
+            self.models_with_updated_forward_refs.append(cls)
+
     # Document
 
     @staticmethod
@@ -163,19 +176,19 @@ class Initializer:
                 expiration_time=cls.get_settings().cache_expiration_time,
             )
 
-    @staticmethod
-    def init_document_fields(cls) -> None:
+    def init_document_fields(self, cls) -> None:
         """
         Init class fields
         :return: None
         """
-        cls.update_forward_refs()
+        self.update_forward_refs(cls)
 
         def check_nested_links(
             link_info: LinkInfo, prev_models: List[Type[BaseModel]]
         ):
             if link_info.model_class in prev_models:
                 return
+            self.update_forward_refs(link_info.model_class)
             for k, v in link_info.model_class.__fields__.items():
                 nested_link_info = detect_link(v)
                 if nested_link_info is None:
@@ -278,37 +291,48 @@ class Initializer:
         collection = cls.get_motor_collection()
         document_settings = cls.get_settings()
 
-        old_indexes = (await collection.index_information()).keys()
-        new_indexes = ["_id_"]
+        index_information = await collection.index_information()
+
+        old_indexes = IndexModelField.from_motor_index_information(
+            index_information
+        )
+        new_indexes = []
 
         # Indexed field wrapped with Indexed()
         found_indexes = [
-            IndexModel(
-                [
-                    (
-                        fvalue.alias,
-                        fvalue.type_._indexed[0],
-                    )
-                ],
-                **fvalue.type_._indexed[1],
+            IndexModelField(
+                IndexModel(
+                    [
+                        (
+                            fvalue.alias,
+                            fvalue.type_._indexed[0],
+                        )
+                    ],
+                    **fvalue.type_._indexed[1],
+                )
             )
             for _, fvalue in cls.__fields__.items()
             if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
         ]
 
-        # get indexes from the Collection class
         if document_settings.indexes:
             found_indexes += document_settings.indexes
 
-        # create indices
-        if found_indexes:
-            new_indexes += await collection.create_indexes(found_indexes)
+        new_indexes += found_indexes
 
         # delete indexes
         # Only drop indexes if the user specifically allows for it
         if allow_index_dropping:
-            for index in set(old_indexes) - set(new_indexes):
-                await collection.drop_index(index)
+            for index in IndexModelField.list_difference(
+                old_indexes, new_indexes
+            ):
+                await collection.drop_index(index.name)
+
+        # create indices
+        if found_indexes:
+            new_indexes += await collection.create_indexes(
+                IndexModelField.list_to_index_model(new_indexes)
+            )
 
     async def init_document(self, cls: Type[Document]) -> Optional[Output]:
         """
@@ -439,6 +463,7 @@ class Initializer:
         self.init_settings(cls)
         self.init_view_collection(cls)
         self.init_view_fields(cls)
+        self.init_cache(cls)
 
         collection_names = await self.database.list_collection_names()
         if self.recreate_views or cls._settings.name not in collection_names:

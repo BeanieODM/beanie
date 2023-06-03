@@ -1,7 +1,11 @@
-import pytest
+from typing import List
 
+import pytest
+from pydantic.fields import Field
+
+from beanie import init_beanie, Document
 from beanie.exceptions import DocumentWasNotSaved
-from beanie.odm.fields import DeleteRules, Link, WriteRules
+from beanie.odm.fields import DeleteRules, Link, WriteRules, BackLink
 from tests.odm.models import (
     Door,
     House,
@@ -18,6 +22,12 @@ from tests.odm.models import (
     SelfLinked,
     LoopedLinksA,
     LoopedLinksB,
+    DocumentWithBackLink,
+    DocumentWithLink,
+    DocumentWithListBackLink,
+    DocumentWithListLink,
+    DocumentWithListOfLinks,
+    DocumentToBeLinked,
 )
 
 
@@ -298,6 +308,32 @@ class TestFind:
         assert house_1 is not None
         assert house_2 is not None
 
+    async def test_fetch_list_with_some_prefetched(self):
+        docs = []
+        for i in range(10):
+            doc = DocumentToBeLinked()
+            await doc.save()
+            docs.append(doc)
+
+        doc_with_links = DocumentWithListOfLinks(links=docs)
+        await doc_with_links.save()
+
+        doc_with_links = await DocumentWithListOfLinks.get(
+            doc_with_links.id, fetch_links=False
+        )
+        doc_with_links.links[-1] = await doc_with_links.links[-1].fetch()
+
+        await doc_with_links.fetch_all_links()
+
+        for link in doc_with_links.links:
+            assert isinstance(link, DocumentToBeLinked)
+
+        assert len(doc_with_links.links) == 10
+
+        # test order
+        for i in range(10):
+            assert doc_with_links.links[i].id == docs[i].id
+
 
 class TestReplace:
     async def test_do_nothing(self, house):
@@ -431,3 +467,268 @@ class TestOther:
         assert isinstance(res.b.a, LoopedLinksA)
         assert isinstance(res.b.a.b, LoopedLinksB)
         assert res.b.a.b.a is None
+
+    async def test_with_chaining_aggregation(self):
+        region = Region()
+        await region.insert()
+
+        for i in range(10):
+            await UsersAddresses(region_id=region).insert()
+
+        region_2 = Region()
+        await region_2.insert()
+
+        for i in range(10):
+            await UsersAddresses(region_id=region_2).insert()
+
+        addresses_count = (
+            await UsersAddresses.find(
+                UsersAddresses.region_id.id == region.id, fetch_links=True
+            )
+            .aggregate([{"$count": "count"}])
+            .to_list()
+        )
+
+        assert addresses_count[0] == {"count": 10}
+
+    async def test_with_extra_allow(self, houses):
+        res = await House.find(fetch_links=True).to_list()
+        assert res[0].__fields__.keys() == {
+            "id",
+            "revision_id",
+            "windows",
+            "door",
+            "roof",
+            "yards",
+            "name",
+            "height",
+        }
+
+        res = await House.find_one(fetch_links=True)
+        assert res.__fields__.keys() == {
+            "id",
+            "revision_id",
+            "windows",
+            "door",
+            "roof",
+            "yards",
+            "name",
+            "height",
+        }
+
+
+@pytest.fixture()
+async def link_and_backlink_doc_pair():
+    back_link_doc = DocumentWithBackLink()
+    await back_link_doc.insert()
+    link_doc = DocumentWithLink(link=back_link_doc)
+    await link_doc.insert()
+    return link_doc, back_link_doc
+
+
+@pytest.fixture()
+async def list_link_and_list_backlink_doc_pair():
+    back_link_doc = DocumentWithListBackLink()
+    await back_link_doc.insert()
+    link_doc = DocumentWithListLink(link=[back_link_doc])
+    await link_doc.insert()
+    return link_doc, back_link_doc
+
+
+class TestFindBackLinks:
+    async def test_prefetch_direct(self, link_and_backlink_doc_pair):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert back_link_doc.back_link.id == link_doc.id
+        assert back_link_doc.back_link.link.id == back_link_doc.id
+
+    async def test_prefetch_list(self, list_link_and_list_backlink_doc_pair):
+        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert back_link_doc.back_link[0].id == link_doc.id
+        assert back_link_doc.back_link[0].link[0].id == back_link_doc.id
+
+
+class TestReplaceBackLinks:
+    async def test_do_nothing(self, link_and_backlink_doc_pair):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc.back_link.s = "new value"
+        await back_link_doc.replace()
+        new_back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert new_back_link_doc.back_link.s == "TEST"
+
+    async def test_do_nothing_list(self, list_link_and_list_backlink_doc_pair):
+        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        for lnk in back_link_doc.back_link:
+            lnk.s = "new value"
+        await back_link_doc.replace()
+        new_back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        for lnk in new_back_link_doc.back_link:
+            assert lnk.s == "TEST"
+
+    async def test_write(self, link_and_backlink_doc_pair):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        back_link_doc.back_link.s = "new value"
+        await back_link_doc.replace(link_rule=WriteRules.WRITE)
+        new_back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert new_back_link_doc.back_link.s == "new value"
+
+    async def test_do_nothing_write_list(
+        self, list_link_and_list_backlink_doc_pair
+    ):
+        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        for lnk in back_link_doc.back_link:
+            lnk.s = "new value"
+        await back_link_doc.replace(link_rule=WriteRules.WRITE)
+        new_back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        for lnk in new_back_link_doc.back_link:
+            assert lnk.s == "new value"
+
+
+class TestSaveBackLinks:
+    async def test_do_nothing(self, link_and_backlink_doc_pair):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc.back_link.s = "new value"
+        await back_link_doc.save()
+        new_back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert new_back_link_doc.back_link.s == "TEST"
+
+    async def test_do_nothing_list(self, list_link_and_list_backlink_doc_pair):
+        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        for lnk in back_link_doc.back_link:
+            lnk.s = "new value"
+        await back_link_doc.save()
+        new_back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        for lnk in new_back_link_doc.back_link:
+            assert lnk.s == "TEST"
+
+    async def test_write(self, link_and_backlink_doc_pair):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        back_link_doc.back_link.s = "new value"
+        await back_link_doc.save(link_rule=WriteRules.WRITE)
+        new_back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert new_back_link_doc.back_link.s == "new value"
+
+    async def test_write_list(self, list_link_and_list_backlink_doc_pair):
+        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        for lnk in back_link_doc.back_link:
+            lnk.s = "new value"
+        await back_link_doc.save(link_rule=WriteRules.WRITE)
+        new_back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        for lnk in new_back_link_doc.back_link:
+            assert lnk.s == "new value"
+
+
+class HouseForReversedOrderInit(Document):
+    name: str
+    door: Link["DoorForReversedOrderInit"]
+    owners: List[Link["PersonForReversedOrderInit"]]
+
+
+class DoorForReversedOrderInit(Document):
+    height: int = 2
+    width: int = 1
+    house: BackLink[HouseForReversedOrderInit] = Field(original_field="door")
+
+
+class PersonForReversedOrderInit(Document):
+    name: str
+    house: List[BackLink[HouseForReversedOrderInit]] = Field(
+        original_field="owners"
+    )
+
+
+class TestDeleteBackLinks:
+    async def test_do_nothing(self, link_and_backlink_doc_pair):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        await back_link_doc.delete()
+        new_link_doc = await DocumentWithLink.get(
+            link_doc.id, fetch_links=True
+        )
+        assert new_link_doc is not None
+
+    async def test_do_nothing_list(self, list_link_and_list_backlink_doc_pair):
+        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        await back_link_doc.delete()
+        new_link_doc = await DocumentWithListLink.get(
+            link_doc.id, fetch_links=True
+        )
+        assert new_link_doc is not None
+
+    async def test_delete_links(self, link_and_backlink_doc_pair):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        await back_link_doc.delete(link_rule=DeleteRules.DELETE_LINKS)
+        new_link_doc = await DocumentWithLink.get(
+            link_doc.id, fetch_links=True
+        )
+        assert new_link_doc is None
+
+    async def test_delete_links_list(
+        self, list_link_and_list_backlink_doc_pair
+    ):
+        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        await back_link_doc.delete(link_rule=DeleteRules.DELETE_LINKS)
+        new_link_doc = await DocumentWithListLink.get(
+            link_doc.id, fetch_links=True
+        )
+        assert new_link_doc is None
+
+    async def test_init_reversed_order(self, db):
+        await init_beanie(
+            database=db,
+            document_models=[
+                DoorForReversedOrderInit,
+                HouseForReversedOrderInit,
+                PersonForReversedOrderInit,
+            ],
+        )

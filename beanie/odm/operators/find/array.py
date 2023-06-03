@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Optional
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -53,13 +54,13 @@ class ElemMatch(BaseFindArrayOperator):
     class Sample(Document):
         results: List[int]
 
-    ElemMatch(Sample.results, [80, 85])
+    ElemMatch(Sample.results, {"$in": [80, 85]})
     ```
 
     Will return query object like
 
     ```python
-    {"results": {"$elemMatch": [80, 85]}}
+    {"results": {"$elemMatch": {"$in": [80, 85]}}}
     ```
 
     MongoDB doc:
@@ -69,10 +70,15 @@ class ElemMatch(BaseFindArrayOperator):
     def __init__(
         self,
         field,
-        expression: dict,
+        expression: Optional[dict] = None,
+        **kwargs,
     ):
         self.field = field
-        self.expression = expression
+
+        if expression is None:
+            self.expression = kwargs
+        else:
+            self.expression = expression
 
     @property
     def query(self):

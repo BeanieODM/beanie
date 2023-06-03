@@ -54,6 +54,13 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
 }
 
 
+class Ignore:
+    ...
+
+
+IGNORE = Ignore()
+
+
 class Encoder:
     """
     BSON encoding class
@@ -67,11 +74,13 @@ class Encoder:
         custom_encoders: Optional[Dict[Type, Callable]] = None,
         by_alias: bool = True,
         to_db: bool = False,
+        keep_nulls: bool = True,
     ):
         self.exclude = exclude or {}
         self.by_alias = by_alias
         self.custom_encoders = custom_encoders or {}
         self.to_db = to_db
+        self.keep_nulls = keep_nulls
 
     def encode(self, obj: Any):
         """
@@ -89,6 +98,7 @@ class Encoder:
             custom_encoders=obj.get_settings().bson_encoders,
             by_alias=self.by_alias,
             to_db=self.to_db,
+            keep_nulls=self.keep_nulls,
         )
 
         link_fields = obj.get_link_fields()
@@ -101,7 +111,9 @@ class Encoder:
             obj_dict[obj.get_settings().class_id] = obj._class_id
 
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
-            if k not in self.exclude:
+            if k not in self.exclude and (
+                self.keep_nulls is True or o is not None
+            ):
                 if link_fields and k in link_fields:
                     if link_fields[k].link_type == LinkTypes.LIST:
                         obj_dict[k] = [link.to_ref() for link in o]
@@ -117,9 +129,35 @@ class Encoder:
                             obj_dict[k] = [link.to_ref() for link in o]
                         else:
                             obj_dict[k] = o
+                    if (
+                        link_fields[k].link_type == LinkTypes.BACK_DIRECT
+                        and self.to_db
+                    ):
+                        obj_dict[k] = IGNORE
+                    if (
+                        link_fields[k].link_type == LinkTypes.BACK_LIST
+                        and self.to_db
+                    ):
+                        obj_dict[k] = IGNORE
+                    if (
+                        link_fields[k].link_type
+                        == LinkTypes.OPTIONAL_BACK_DIRECT
+                        and self.to_db
+                    ):
+                        obj_dict[k] = IGNORE
+                    if (
+                        link_fields[k].link_type
+                        == LinkTypes.OPTIONAL_BACK_LIST
+                        and self.to_db
+                    ):
+                        obj_dict[k] = IGNORE
                 else:
                     obj_dict[k] = o
-                obj_dict[k] = encoder.encode(obj_dict[k])
+
+                if obj_dict[k] == IGNORE:
+                    del obj_dict[k]
+                else:
+                    obj_dict[k] = encoder.encode(obj_dict[k])
         return obj_dict
 
     def encode_base_model(self, obj):
@@ -128,7 +166,9 @@ class Encoder:
         """
         obj_dict = {}
         for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
-            if k not in self.exclude:
+            if k not in self.exclude and (
+                self.keep_nulls is True or o is not None
+            ):
                 obj_dict[k] = self._encode(o)
 
         return obj_dict

@@ -92,7 +92,9 @@ def iterative_migration(
         async def run(self, session):
             output_documents = []
             all_migration_ops = []
-            async for input_document in self.input_document_model.find_all():
+            async for input_document in self.input_document_model.find_all(
+                session=session
+            ):
                 output = DummyOutput()
                 function_kwargs = {
                     "input_document": input_document,
@@ -104,13 +106,14 @@ def iterative_migration(
                 output_dict = input_document.dict()
                 update_dict(output_dict, output.dict())
                 output_document = self.output_document_model.parse_obj(
-                    output_dict)
+                    output_dict
+                )
                 output_documents.append(output_document)
 
                 if len(output_documents) == self.batch_size:
                     all_migration_ops.append(
                         self.output_document_model.replace_many(
-                            documents=output_documents
+                            documents=output_documents, session=session
                         )
                     )
                     output_documents = []
@@ -118,7 +121,8 @@ def iterative_migration(
             if output_documents:
                 all_migration_ops.append(
                     self.output_document_model.replace_many(
-                        documents=output_documents)
+                        documents=output_documents, session=session
+                    )
                 )
             await asyncio.gather(*all_migration_ops)
 

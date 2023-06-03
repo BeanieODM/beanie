@@ -138,6 +138,62 @@ class GeoWithin(BaseFindGeospatialOperator):
         }
 
 
+class Box(BaseFindGeospatialOperator):
+    """
+    `$box` query operator
+
+    Example:
+
+    ```python
+    class GeoObject(BaseModel):
+        type: str = "Point"
+        coordinates: Tuple[float, float]
+
+    class Place(Document):
+        geo: GeoObject
+
+        class Collection:
+            name = "places"
+            indexes = [
+                [("geo", pymongo.GEOSPHERE)],  # GEO index
+            ]
+
+    Box(Place.geo, lower_left=[10,12], upper_right=[15,20])
+    ```
+
+    Will return query object like
+
+    ```python
+    {
+        "geo": {
+            "$geoWithin": {
+                "$box": [[10, 12], [15, 20]]
+            }
+        }
+    }
+    ```
+
+    MongoDB doc:
+    <https://docs.mongodb.com/manual/reference/operator/query/box/>
+    """
+
+    def __init__(
+        self, field, lower_left: List[float], upper_right: List[float]
+    ):
+        self.field = field
+        self.coordinates = [lower_left, upper_right]
+
+    @property
+    def query(self):
+        return {
+            self.field: {
+                "$geoWithin": {
+                    "$box": self.coordinates
+                }
+            }
+        }
+
+
 class Near(BaseFindGeospatialOperator):
     """
     `$near` query operator

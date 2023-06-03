@@ -1,6 +1,6 @@
 from pydantic.main import BaseModel
 
-from beanie import Document, iterative_migration
+from beanie import Document, iterative_migration, PydanticObjectId, Indexed
 
 
 class Tag(BaseModel):
@@ -9,7 +9,7 @@ class Tag(BaseModel):
 
 
 class OldNote(Document):
-    name: str
+    name: Indexed(str, unique=True)
     tag: Tag
 
     class Settings:
@@ -17,6 +17,7 @@ class OldNote(Document):
 
 
 class Note(Document):
+    name: Indexed(str, unique=True)
     title: str
     tag: Tag
 
@@ -24,14 +25,17 @@ class Note(Document):
         name = "notes"
 
 
+fixed_id = PydanticObjectId("6076f1f3e4b7f6b7a0f6e5a0")
+
+
 class Forward:
-    @iterative_migration()
+    @iterative_migration(batch_size=2)
     async def name_to_title(
         self, input_document: OldNote, output_document: Note
     ):
         output_document.title = input_document.name
-        if output_document.title == "5":
-            raise Exception
+        if output_document.title > "5":
+            output_document.name = "5"
 
 
 class Backward:

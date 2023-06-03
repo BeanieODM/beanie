@@ -37,7 +37,7 @@ from beanie import (
     Save,
 )
 from beanie.odm.actions import Delete, after_event, before_event
-from beanie.odm.fields import Link, PydanticObjectId
+from beanie.odm.fields import Link, PydanticObjectId, BackLink
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
 
@@ -433,6 +433,9 @@ class House(Document):
     name: Indexed(str) = Field(hidden=True)
     height: Indexed(int) = 2
 
+    class Config:
+        extra = Extra.allow
+
 
 class DocumentForEncodingTest(Document):
     bytes_field: Optional[bytes]
@@ -726,3 +729,62 @@ class DocumentWithDecimalField(Document):
                 name="other_amt_descending",
             ),
         ]
+
+
+class ModelWithOptionalField(BaseModel):
+    s: Optional[str]
+    i: int
+
+
+class DocumentWithKeepNullsFalse(Document):
+    o: Optional[str]
+    m: ModelWithOptionalField
+
+    class Settings:
+        keep_nulls = False
+        use_state_management = True
+
+
+class ReleaseElemMatch(BaseModel):
+    major_ver: int
+    minor_ver: int
+    build_ver: int
+
+
+class PackageElemMatch(Document):
+    releases: List[ReleaseElemMatch] = []
+
+
+class DocumentWithLink(Document):
+    link: Link["DocumentWithBackLink"]
+    s: str = "TEST"
+
+
+class DocumentWithBackLink(Document):
+    back_link: BackLink[DocumentWithLink] = Field(original_field="link")
+    i: int = 1
+
+
+class DocumentWithListLink(Document):
+    link: List[Link["DocumentWithListBackLink"]]
+    s: str = "TEST"
+
+
+class DocumentWithListBackLink(Document):
+    back_link: List[BackLink[DocumentWithListLink]] = Field(
+        original_field="link"
+    )
+    i: int = 1
+
+
+class DocumentToBeLinked(Document):
+    s: str = "TEST"
+
+
+class DocumentWithListOfLinks(Document):
+    links: List[Link[DocumentToBeLinked]]
+    s: str = "TEST"
+
+
+class DocumentWithTimeStampToTestConsistency(Document):
+    ts: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
