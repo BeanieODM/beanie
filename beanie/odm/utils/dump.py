@@ -18,9 +18,8 @@ def get_dict(
         exclude.add("_id")
     if not document.get_settings().use_revision:
         exclude.add("revision_id")
-    return Encoder(
-        by_alias=True, exclude=exclude, to_db=to_db, keep_nulls=keep_nulls
-    ).encode(document)
+    encoder = Encoder(exclude=exclude, to_db=to_db, keep_nulls=keep_nulls)
+    return encoder.encode(document)
 
 
 def get_nulls(
