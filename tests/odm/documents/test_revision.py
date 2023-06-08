@@ -138,3 +138,17 @@ async def test_empty_update():
 
     # This fails with RevisionIdWasChanged
     await doc.update({"$set": {"num_1": 1}})
+
+
+async def test_save_changes_when_there_were_no_changes():
+    doc = DocumentWithRevisionTurnedOn(num_1=1, num_2=2)
+    await doc.insert()
+    revision = doc.revision_id
+    old_revision = doc._previous_revision_id
+
+    await doc.save_changes()
+    assert doc.revision_id == revision
+    assert doc._previous_revision_id == old_revision
+
+    doc = await DocumentWithRevisionTurnedOn.get(doc.id)
+    assert doc._previous_revision_id == old_revision

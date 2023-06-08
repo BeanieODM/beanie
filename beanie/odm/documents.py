@@ -217,6 +217,8 @@ class Document(
         Insert the document (self) to the collection
         :return: Document
         """
+        if self.get_settings().use_revision:
+            self.revision_id = uuid4()
         if link_rule == WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
@@ -458,7 +460,7 @@ class Document(
                                     )
 
         if self.get_settings().keep_nulls is False:
-            await self.update(
+            return await self.update(
                 SetOperator(
                     get_dict(
                         self,
@@ -473,7 +475,7 @@ class Document(
                 **kwargs,
             )
         else:
-            await self.update(
+            return await self.update(
                 SetOperator(
                     get_dict(
                         self,
@@ -509,7 +511,7 @@ class Document(
             return None
         changes = self.get_changes()
         if self.get_settings().keep_nulls is False:
-            await self.update(
+            return await self.update(
                 SetOperator(changes),
                 Unset(get_top_level_nones(self)),
                 ignore_revision=ignore_revision,
@@ -517,7 +519,7 @@ class Document(
                 bulk_writer=bulk_writer,
             )
         else:
-            await self.set(
+            return await self.set(
                 changes,  # type: ignore #TODO fix typing
                 ignore_revision=ignore_revision,
                 session=session,
@@ -559,7 +561,7 @@ class Document(
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
         **pymongo_kwargs,
-    ) -> None:
+    ) -> DocType:
         """
         Partially update the document in the database
 
@@ -603,6 +605,7 @@ class Document(
             if use_revision_id and not ignore_revision and result is None:
                 raise RevisionIdWasChanged
             merge_models(self, result)
+        return self
 
     @classmethod
     def update_all(

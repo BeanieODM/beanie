@@ -69,13 +69,14 @@ def construct_query(
                         }
                     }
                 },
+                {"$unset": f"_link_{link_info.field_name}"},
             ]  # type: ignore
             if link_info.nested_links is not None:
-                lookup_steps[0]["$lookup"]["pipeline"] = []
+                lookup_steps[0]["$lookup"]["pipeline"] = []  # type: ignore
                 for nested_link in link_info.nested_links:
                     construct_query(
                         link_info=link_info.nested_links[nested_link],
-                        queries=lookup_steps[0]["$lookup"]["pipeline"],
+                        queries=lookup_steps[0]["$lookup"]["pipeline"],  # type: ignore
                         database_major_version=database_major_version,
                     )
             queries += lookup_steps
@@ -120,11 +121,12 @@ def construct_query(
                         }
                     }
                 },
+                {"$unset": f"_link_{link_info.field_name}"},
             ]
             for nested_link in link_info.nested_links:
                 construct_query(
                     link_info=link_info.nested_links[nested_link],
-                    queries=lookup_steps[0]["$lookup"]["pipeline"],
+                    queries=lookup_steps[0]["$lookup"]["pipeline"],  # type: ignore
                     database_major_version=database_major_version,
                 )
             queries += lookup_steps
@@ -166,13 +168,14 @@ def construct_query(
                         }
                     }
                 },
+                {"$unset": f"_link_{link_info.field_name}"},
             ]  # type: ignore
             if link_info.nested_links is not None:
-                lookup_steps[0]["$lookup"]["pipeline"] = []
+                lookup_steps[0]["$lookup"]["pipeline"] = []  # type: ignore
                 for nested_link in link_info.nested_links:
                     construct_query(
                         link_info=link_info.nested_links[nested_link],
-                        queries=lookup_steps[0]["$lookup"]["pipeline"],
+                        queries=lookup_steps[0]["$lookup"]["pipeline"],  # type: ignore
                         database_major_version=database_major_version,
                     )
             queries += lookup_steps
@@ -220,11 +223,12 @@ def construct_query(
                         }
                     }
                 },
+                {"$unset": f"_link_{link_info.field_name}"},
             ]
             for nested_link in link_info.nested_links:
                 construct_query(
                     link_info=link_info.nested_links[nested_link],
-                    queries=lookup_steps[0]["$lookup"]["pipeline"],
+                    queries=lookup_steps[0]["$lookup"]["pipeline"],  # type: ignore
                     database_major_version=database_major_version,
                 )
             queries += lookup_steps

@@ -569,11 +569,18 @@ class FindMany(
         :return:[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
         """
         self.set_session(session=session)
+        find_query = self.get_filter_query()
+        if self.fetch_links:
+            find_aggregation_pipeline = self.build_aggregation_pipeline()
+            aggregation_pipeline = (
+                find_aggregation_pipeline + aggregation_pipeline
+            )
+            find_query = {}
         return self.AggregationQueryType(
             aggregation_pipeline=aggregation_pipeline,
             document_model=self.document_model,
             projection_model=projection_model,
-            find_query=self.get_filter_query(),
+            find_query=find_query,
             ignore_cache=ignore_cache,
             **pymongo_kwargs,
         ).set_session(session=self.session)
@@ -611,24 +618,28 @@ class FindMany(
                 self._cache_key, data
             )
 
+    def build_aggregation_pipeline(self):
+        aggregation_pipeline: List[Dict[str, Any]] = construct_lookup_queries(
+            self.document_model
+        )
+
+        aggregation_pipeline.append({"$match": self.get_filter_query()})
+
+        sort_pipeline = {"$sort": {i[0]: i[1] for i in self.sort_expressions}}
+        if sort_pipeline["$sort"]:
+            aggregation_pipeline.append(sort_pipeline)
+        if self.skip_number != 0:
+            aggregation_pipeline.append({"$skip": self.skip_number})
+        if self.limit_number != 0:
+            aggregation_pipeline.append({"$limit": self.limit_number})
+        return aggregation_pipeline
+
     @property
     def motor_cursor(self):
         if self.fetch_links:
             aggregation_pipeline: List[
                 Dict[str, Any]
-            ] = construct_lookup_queries(self.document_model)
-
-            aggregation_pipeline.append({"$match": self.get_filter_query()})
-
-            sort_pipeline = {
-                "$sort": {i[0]: i[1] for i in self.sort_expressions}
-            }
-            if sort_pipeline["$sort"]:
-                aggregation_pipeline.append(sort_pipeline)
-            if self.skip_number != 0:
-                aggregation_pipeline.append({"$skip": self.skip_number})
-            if self.limit_number != 0:
-                aggregation_pipeline.append({"$limit": self.limit_number})
+            ] = self.build_aggregation_pipeline()
 
             projection = get_projection(self.projection_model)
 

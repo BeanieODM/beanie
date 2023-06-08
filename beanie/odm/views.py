@@ -48,10 +48,10 @@ class View(
     async def fetch_link(self, field: Union[str, Any]):
         ref_obj = getattr(self, field, None)
         if isinstance(ref_obj, Link):
-            value = await ref_obj.fetch()
+            value = await ref_obj.fetch(fetch_links=True)
             setattr(self, field, value)
         if isinstance(ref_obj, list) and ref_obj:
-            values = await Link.fetch_list(ref_obj)
+            values = await Link.fetch_list(ref_obj, fetch_links=True)
             setattr(self, field, values)
 
     async def fetch_all_links(self):

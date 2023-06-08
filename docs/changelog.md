@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.19.2] - 2023-05-25
+        
+### Fix: issues opened before 2023.05
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/571>
+            
+[1.19.2]: https://pypi.org/project/beanie/1.19.2
+
 ## [1.19.1] - 2023-05-22
         
 ### Fix: update forward refs during nested links check

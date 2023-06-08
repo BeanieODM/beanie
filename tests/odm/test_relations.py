@@ -26,6 +26,8 @@ from tests.odm.models import (
     DocumentWithLink,
     DocumentWithListBackLink,
     DocumentWithListLink,
+    DocumentWithListOfLinks,
+    DocumentToBeLinked,
 )
 
 
@@ -306,6 +308,32 @@ class TestFind:
         assert house_1 is not None
         assert house_2 is not None
 
+    async def test_fetch_list_with_some_prefetched(self):
+        docs = []
+        for i in range(10):
+            doc = DocumentToBeLinked()
+            await doc.save()
+            docs.append(doc)
+
+        doc_with_links = DocumentWithListOfLinks(links=docs)
+        await doc_with_links.save()
+
+        doc_with_links = await DocumentWithListOfLinks.get(
+            doc_with_links.id, fetch_links=False
+        )
+        doc_with_links.links[-1] = await doc_with_links.links[-1].fetch()
+
+        await doc_with_links.fetch_all_links()
+
+        for link in doc_with_links.links:
+            assert isinstance(link, DocumentToBeLinked)
+
+        assert len(doc_with_links.links) == 10
+
+        # test order
+        for i in range(10):
+            assert doc_with_links.links[i].id == docs[i].id
+
 
 class TestReplace:
     async def test_do_nothing(self, house):
@@ -439,6 +467,54 @@ class TestOther:
         assert isinstance(res.b.a, LoopedLinksA)
         assert isinstance(res.b.a.b, LoopedLinksB)
         assert res.b.a.b.a is None
+
+    async def test_with_chaining_aggregation(self):
+        region = Region()
+        await region.insert()
+
+        for i in range(10):
+            await UsersAddresses(region_id=region).insert()
+
+        region_2 = Region()
+        await region_2.insert()
+
+        for i in range(10):
+            await UsersAddresses(region_id=region_2).insert()
+
+        addresses_count = (
+            await UsersAddresses.find(
+                UsersAddresses.region_id.id == region.id, fetch_links=True
+            )
+            .aggregate([{"$count": "count"}])
+            .to_list()
+        )
+
+        assert addresses_count[0] == {"count": 10}
+
+    async def test_with_extra_allow(self, houses):
+        res = await House.find(fetch_links=True).to_list()
+        assert res[0].__fields__.keys() == {
+            "id",
+            "revision_id",
+            "windows",
+            "door",
+            "roof",
+            "yards",
+            "name",
+            "height",
+        }
+
+        res = await House.find_one(fetch_links=True)
+        assert res.__fields__.keys() == {
+            "id",
+            "revision_id",
+            "windows",
+            "door",
+            "roof",
+            "yards",
+            "name",
+            "height",
+        }
 
 
 @pytest.fixture()

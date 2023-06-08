@@ -1,7 +1,7 @@
 import pytest
 from motor.motor_asyncio import AsyncIOMotorCollection
 
-from beanie import Document, init_beanie
+from beanie import Document, init_beanie, Indexed
 from beanie.exceptions import CollectionWasNotInitialized
 from beanie.odm.utils.projection import get_projection
 from tests.odm.models import (
@@ -14,6 +14,7 @@ from tests.odm.models import (
     DocumentTestModelStringImport,
     DocumentTestModelWithDroppedIndex,
 )
+from pymongo import IndexModel
 
 
 async def test_init_collection_was_not_initialized():
@@ -128,6 +129,10 @@ async def test_index_dropping_is_allowed(db):
     await init_beanie(
         database=db, document_models=[DocumentTestModelWithComplexIndex]
     )
+    collection: AsyncIOMotorCollection = (
+        DocumentTestModelWithComplexIndex.get_motor_collection()
+    )
+
     await init_beanie(
         database=db,
         document_models=[DocumentTestModelWithDroppedIndex],
@@ -232,3 +237,38 @@ async def test_projection():
         "test_doc": 1,
         "revision_id": 1,
     }
+
+
+async def test_index_recreation(db):
+    class Sample1(Document):
+        name: Indexed(str, unique=True)
+
+        class Settings:
+            name = "sample"
+
+    class Sample2(Document):
+        name: str
+        status: str = "active"
+
+        class Settings:
+            indexes = [
+                IndexModel(
+                    "name",
+                    unique=True,
+                    partialFilterExpression={"is_active": {"$eq": "active"}},
+                ),
+            ]
+            name = "sample"
+
+    await db.drop_collection("sample")
+
+    await init_beanie(
+        database=db,
+        document_models=[Sample1],
+    )
+
+    await init_beanie(
+        database=db, document_models=[Sample2], allow_index_dropping=True
+    )
+
+    await db.drop_collection("sample")

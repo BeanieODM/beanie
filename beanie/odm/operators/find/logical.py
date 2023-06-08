@@ -39,7 +39,7 @@ class Or(LogicalOperatorForListOfExpressions):
         price: float
         category: str
 
-    Or({Product.price<10}, {Product.category=="Sweets"})
+    Or(Product.price<10, Product.category=="Sweets")
     ```
 
     Will return query object like
@@ -66,7 +66,7 @@ class And(LogicalOperatorForListOfExpressions):
         price: float
         category: str
 
-    And({Product.price<10}, {Product.category=="Sweets"})
+    And(Product.price<10, Product.category=="Sweets")
     ```
 
     Will return query object like
@@ -93,7 +93,7 @@ class Nor(BaseFindLogicalOperator):
         price: float
         category: str
 
-    Nor({Product.price<10}, {Product.category=="Sweets"})
+    Nor(Product.price<10, Product.category=="Sweets")
     ```
 
     Will return query object like
@@ -130,7 +130,7 @@ class Not(BaseFindLogicalOperator):
         price: float
         category: str
 
-    Not({Product.price<10})
+    Not(Product.price<10)
     ```
 
     Will return query object like
