@@ -40,7 +40,7 @@ test = [
 doc = [
     "Pygments>=2.8.0",
     "Markdown>=3.3",
-    "pydoc-markdown>=4.6",
+    "pydoc-markdown==4.6",
     "mkdocs>=1.4",
     "mkdocs-material>=9.0",
     "jinja2>=3.0.3"
