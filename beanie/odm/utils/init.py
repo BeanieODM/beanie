@@ -548,6 +548,9 @@ class Initializer:
         if issubclass(cls, UnionDoc):
             await self.init_union_doc(cls)
 
+        if hasattr(cls, "custom_init"):
+            await cls.custom_init()  # type: ignore
+
 
 async def init_beanie(
     database: AsyncIOMotorDatabase = None,

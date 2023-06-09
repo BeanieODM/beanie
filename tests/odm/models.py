@@ -10,7 +10,7 @@ from ipaddress import (
     IPv6Network,
 )
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union, ClassVar
 from uuid import UUID, uuid4
 
 import pydantic
@@ -822,3 +822,11 @@ class DocumentWithIndexMerging2(DocumentWithIndexMerging1):
                 name="s3_index",
             ),
         ]
+
+
+class DocumentWithCustomInit(Document):
+    s: ClassVar[str] = "TEST"
+
+    @classmethod
+    async def custom_init(cls):
+        cls.s = "TEST2"

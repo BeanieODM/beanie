@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.20.0b1] - 2023-06-09
+        
+### Feature: custom init classmethod
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/590>
+            
+[1.20.0b1]: https://pypi.org/project/beanie/1.20.0b1
+
 ## [1.20.0b0] - 2023-06-09
         
 ### Feature: optional batteries

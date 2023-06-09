@@ -14,6 +14,7 @@ from tests.odm.models import (
     DocumentTestModelStringImport,
     DocumentTestModelWithDroppedIndex,
     DocumentWithIndexMerging2,
+    DocumentWithCustomInit,
 )
 from pymongo import IndexModel
 
@@ -284,3 +285,7 @@ async def test_merge_indexes():
         "s3_index": {"key": [("s3", -1)], "v": 2},
         "s4_index": {"key": [("s4", 1)], "v": 2},
     }
+
+
+async def test_custom_init():
+    assert DocumentWithCustomInit.s == "TEST2"
