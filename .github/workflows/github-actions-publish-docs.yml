@@ -14,7 +14,4 @@ jobs:
       - name: install dependencies
         run: pip3 install .[doc]
       - name: publish docs
-        env:
-          FLIT_USERNAME: __token__
-          FLIT_PASSWORD: ${{ secrets.FLIT_PASSWORD }}
         run: bash scripts/publish_docs.sh

@@ -11,4 +11,7 @@ jobs:
       - name: install flit
         run: pip3 install flit
       - name: publish project
+        env:
+          FLIT_USERNAME: __token__
+          FLIT_PASSWORD: ${{ secrets.FLIT_PASSWORD }}
         run: flit publish
