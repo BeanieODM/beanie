@@ -1,8 +1,5 @@
 name: Publish docs
-on:
-  push:
-    branches:
-      - main
+on: [ pull_request ]
 jobs:
   publish_docs:
     runs-on: ubuntu-latest
