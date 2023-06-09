@@ -81,6 +81,8 @@ from tests.odm.models import (
     DocumentWithListOfLinks,
     DocumentToBeLinked,
     DocumentWithTimeStampToTestConsistency,
+    DocumentWithIndexMerging1,
+    DocumentWithIndexMerging2,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -166,14 +168,14 @@ def sample_doc_not_saved(point):
 
 
 @pytest.fixture()
-async def session(cli, loop):
+async def session(cli):
     s = await cli.start_session()
     yield s
     await s.end_session()
 
 
 @pytest.fixture(autouse=True)
-async def init(loop, db):
+async def init(db):
     models = [
         DocumentWithExtras,
         DocumentWithPydanticConfig,
@@ -247,6 +249,8 @@ async def init(loop, db):
         DocumentWithListOfLinks,
         DocumentToBeLinked,
         DocumentWithTimeStampToTestConsistency,
+        DocumentWithIndexMerging1,
+        DocumentWithIndexMerging2,
     ]
     await init_beanie(
         database=db,
@@ -292,7 +296,7 @@ def documents_not_inserted():
 
 
 @pytest.fixture
-async def document(document_not_inserted, loop) -> DocumentTestModel:
+async def document(document_not_inserted) -> DocumentTestModel:
     return await document_not_inserted.insert()
 
 

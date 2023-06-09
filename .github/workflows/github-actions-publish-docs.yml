@@ -7,13 +7,11 @@ jobs:
   publish_docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v2
         with:
           python-version: 3.10.9
-      - name: install poetry
-        run: pip install poetry
       - name: install dependencies
-        run: poetry install
+        run: pip3 instll .[doc]
       - name: publish docs
         run: bash scripts/publish_docs.sh

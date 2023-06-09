@@ -1,50 +1,60 @@
-[tool.poetry]
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
 name = "beanie"
-version = "1.19.2"
+version = "1.20.0b0"
 description = "Asynchronous Python ODM for MongoDB"
-authors = ["Roman <roman-right@protonmail.com>"]
-license = "Apache-2.0"
+readme = "README.md"
+requires-python = ">=3.7,<4.0"
+license = { file="LICENSE" }
+authors = [
+    {name = "Roman Right", email = "roman-right@protonmail.com"}
+]
+keywords = ["mongodb", "odm", "orm", "pydantic", "mongo", "async", "python"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+]
+dependencies = [
+    "pydantic>=1.10.0,<2.0.0",
+    "motor>=2.5.0,<4.0.0",
+    "click>=7",
+    "toml",
+    "lazy-model>=0.0.3"
+]
+
+[project.optional-dependencies]
+test = [
+    "pre-commit>=2.3.0",
+    "pytest>=6.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=2.8.1",
+    "dnspython>=2.1.0",
+    "flake8>=3",
+    "pyright>=0",
+    "fastapi>=0.78.0",
+    "asgi-lifespan>=1.0.1",
+    "httpx>=0.23.0"
+]
+doc = [
+    "Pygments>=2.8.0",
+    "Markdown>=3.3",
+    "pydoc-markdown>=4.6",
+    "mkdocs>=1.4",
+    "mkdocs-material>=9.0",
+    "jinja2>=3.0.3"
+]
+queue = ["beanie-batteries-queue>=0.0.1"]
+
+[project.urls]
 homepage = "https://roman-right.github.io/beanie/"
 repository = "https://github.com/roman-right/beanie"
-keywords = ["mongodb", "odm", "orm", "pydantic", "mongo", "async", "python"]
-include = [
-    "LICENSE",
-    "beanie/py.typed"
-]
-readme = "README.md"
 
-[tool.poetry.dependencies]
-python = ">=3.7,<4.0"
-pydantic = ">=1.10.0"
-motor = ">=2.5,<4.0"
-click = ">=7"
-toml = "*"
-lazy-model = ">=0.0.3"
+[project.scripts]
+beanie = "beanie.executors.migrate:migrations"
 
-[tool.poetry.dev-dependencies]
-pre-commit = "^2.3.0"
-pytest = "^6.0.0"
-pytest-aiohttp = "^0.3.0"
-pytest-cov = "^2.8.1"
-Pygments = "^2.8.0"
-dnspython = "^2.1.0"
-mkdocs-material = ">=9.0"
-pydoc-markdown = ">=4.6"
-flake8 = ">=3"
-pyright = ">=0"
-mkdocs = ">=1.4"
-icecream = "^2.1.1"
-jinja2 = "3.0.3"
-fastapi = "^0.78.0"
-asgi-lifespan = "^1.0.1"
-httpx = "^0.23.0"
-Markdown = ">=3.3"
-importlib-metadata = "^4.12.0"
-
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+# TOOLS
 
 [tool.black]
 line-length = 79
@@ -74,9 +84,7 @@ filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::UserWarning",
 ]
-
-[tool.poetry.scripts]
-beanie = "beanie.executors.migrate:migrations"
+asyncio_mode = "auto"
 
 [tool.beanie.migrations]
 path = "beanie/example_migration"

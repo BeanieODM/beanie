@@ -14,8 +14,10 @@ if TYPE_CHECKING:
 def merge_models(left: BaseModel, right: BaseModel) -> None:
     from beanie.odm.fields import Link
 
-    if hasattr(left, "_previous_revision_id"):
-        left._previous_revision_id = right._previous_revision_id
+    if hasattr(left, "_previous_revision_id") and hasattr(
+        right, "_previous_revision_id"
+    ):
+        left._previous_revision_id = right._previous_revision_id  # type: ignore
     for k, right_value in right.__iter__():
         left_value = left.__getattribute__(k)
         if isinstance(right_value, BaseModel) and isinstance(
@@ -37,9 +39,9 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
 
 def save_state_swap_revision(item: BaseModel):
     if hasattr(item, "_save_state"):
-        item._save_state()
+        item._save_state()  # type: ignore
     if hasattr(item, "_swap_revision"):
-        item._swap_revision()
+        item._swap_revision()  # type: ignore
 
 
 def parse_obj(
@@ -55,14 +57,14 @@ def parse_obj(
             raise UnionHasNoRegisteredDocs
 
         if isinstance(data, dict):
-            class_name = data[model.get_settings().class_id]
+            class_name = data[model.get_settings().class_id]  # type: ignore
         else:
             class_name = data._class_id
 
         if class_name not in model._document_models:  # type: ignore
             raise DocWasNotRegisteredInUnionClass
         return parse_obj(
-            model=model._document_models[class_name],
+            model=model._document_models[class_name],  # type: ignore
             data=data,
             lazy_parse=lazy_parse,
         )  # type: ignore
@@ -72,15 +74,15 @@ def parse_obj(
         and model._inheritance_inited  # type: ignore
     ):
         if isinstance(data, dict):
-            class_name = data.get(model.get_settings().class_id)
-        elif hasattr(data, model.get_settings().class_id):
+            class_name = data.get(model.get_settings().class_id)  # type: ignore
+        elif hasattr(data, model.get_settings().class_id):  # type: ignore
             class_name = data._class_id
         else:
             class_name = None
 
         if model._children and class_name in model._children:  # type: ignore
             return parse_obj(
-                model=model._children[class_name],
+                model=model._children[class_name],  # type: ignore
                 data=data,
                 lazy_parse=lazy_parse,
             )  # type: ignore
@@ -88,9 +90,9 @@ def parse_obj(
     if (
         lazy_parse
         and hasattr(model, "get_model_type")
-        and model.get_model_type() == ModelType.Document
+        and model.get_model_type() == ModelType.Document  # type: ignore
     ):
-        o = model.lazy_parse(data, {"_id"})
+        o = model.lazy_parse(data, {"_id"})  # type: ignore
         o._saved_state = {"_id": o.id}
         return o
     result = model.parse_obj(data)

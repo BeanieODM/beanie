@@ -42,7 +42,11 @@ class BulkWriter:
     async def __aexit__(self, exc_type, exc, tb):
         await self.commit()
 
-    async def commit(self) -> BulkWriteResult:
+    async def commit(self) -> Optional[BulkWriteResult]:
+        """
+        Commit all the operations to the database
+        :return:
+        """
         obj_class = None
         requests = []
         if self.operations:
@@ -55,16 +59,17 @@ class BulkWriter:
                         "All the operations should be for a single document model"
                     )
                 if op.operation in [InsertOne, DeleteOne]:
-                    query = op.operation(op.first_query, **op.pymongo_kwargs)
+                    query = op.operation(op.first_query, **op.pymongo_kwargs)  # type: ignore
                 else:
                     query = op.operation(
-                        op.first_query, op.second_query, **op.pymongo_kwargs
+                        op.first_query, op.second_query, **op.pymongo_kwargs  # type: ignore
                     )
                 requests.append(query)
 
             return await obj_class.get_motor_collection().bulk_write(  # type: ignore
                 requests, session=self.session
             )
+        return None
 
     def add_operation(self, operation: Operation):
         self.operations.append(operation)

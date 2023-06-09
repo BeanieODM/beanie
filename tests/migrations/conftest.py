@@ -5,7 +5,7 @@ from beanie.migrations.models import MigrationLog
 
 
 @pytest.fixture(autouse=True)
-async def init(db, loop):
+async def init(db):
     await init_beanie(
         database=db,
         document_models=[
@@ -15,5 +15,5 @@ async def init(db, loop):
 
 
 @pytest.fixture(autouse=True)
-async def remove_migrations_log(db, init, loop):
+async def remove_migrations_log(db, init):
     await MigrationLog.delete_all()

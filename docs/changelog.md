@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.20.0b0] - 2023-06-09
+        
+### Feature: optional batteries
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/575>
+            
+[1.20.0b0]: https://pypi.org/project/beanie/1.20.0b0
+
 ## [1.19.2] - 2023-05-25
         
 ### Fix: issues opened before 2023.05

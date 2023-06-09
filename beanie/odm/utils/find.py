@@ -40,8 +40,7 @@ def construct_query(
             lookup_steps = [
                 {
                     "$lookup": {
-                        "from": link_info.model_class.get_motor_collection().name,
-                        # type: ignore
+                        "from": link_info.model_class.get_motor_collection().name,  # type: ignore
                         "localField": f"{link_info.lookup_field_name}.$id",
                         "foreignField": "_id",
                         "as": f"_link_{link_info.field_name}",
@@ -85,7 +84,7 @@ def construct_query(
             lookup_steps = [
                 {
                     "$lookup": {
-                        "from": link_info.model_class.get_motor_collection().name,
+                        "from": link_info.model_class.get_motor_collection().name,  # type: ignore
                         "let": {
                             "link_id": f"${link_info.lookup_field_name}.$id"
                         },
@@ -139,8 +138,7 @@ def construct_query(
             lookup_steps = [
                 {
                     "$lookup": {
-                        "from": link_info.model_class.get_motor_collection().name,
-                        # type: ignore
+                        "from": link_info.model_class.get_motor_collection().name,  # type: ignore
                         "localField": "_id",
                         "foreignField": f"{link_info.lookup_field_name}.$id",
                         "as": f"_link_{link_info.field_name}",
@@ -184,7 +182,7 @@ def construct_query(
             lookup_steps = [
                 {
                     "$lookup": {
-                        "from": link_info.model_class.get_motor_collection().name,
+                        "from": link_info.model_class.get_motor_collection().name,  # type: ignore
                         "let": {"link_id": "$_id"},
                         "as": f"_link_{link_info.field_name}",
                         "pipeline": [
@@ -241,8 +239,7 @@ def construct_query(
             queries.append(
                 {
                     "$lookup": {
-                        "from": link_info.model_class.get_motor_collection().name,
-                        # type: ignore
+                        "from": link_info.model_class.get_motor_collection().name,  # type: ignore
                         "localField": f"{link_info.lookup_field_name}.$id",
                         "foreignField": "_id",
                         "as": link_info.field_name,
@@ -261,7 +258,7 @@ def construct_query(
         else:
             lookup_step = {
                 "$lookup": {
-                    "from": link_info.model_class.get_motor_collection().name,
+                    "from": link_info.model_class.get_motor_collection().name,  # type: ignore
                     "let": {"link_id": f"${link_info.lookup_field_name}.$id"},
                     "as": link_info.field_name,
                     "pipeline": [
@@ -286,8 +283,7 @@ def construct_query(
             queries.append(
                 {
                     "$lookup": {
-                        "from": link_info.model_class.get_motor_collection().name,
-                        # type: ignore
+                        "from": link_info.model_class.get_motor_collection().name,  # type: ignore
                         "localField": "_id",
                         "foreignField": f"{link_info.lookup_field_name}.$id",
                         "as": link_info.field_name,
@@ -306,7 +302,7 @@ def construct_query(
         else:
             lookup_step = {
                 "$lookup": {
-                    "from": link_info.model_class.get_motor_collection().name,
+                    "from": link_info.model_class.get_motor_collection().name,  # type: ignore
                     "let": {"link_id": "$_id"},
                     "as": link_info.field_name,
                     "pipeline": [

@@ -13,6 +13,7 @@ from tests.odm.models import (
     DocumentTestModelWithComplexIndex,
     DocumentTestModelStringImport,
     DocumentTestModelWithDroppedIndex,
+    DocumentWithIndexMerging2,
 )
 from pymongo import IndexModel
 
@@ -272,3 +273,14 @@ async def test_index_recreation(db):
     )
 
     await db.drop_collection("sample")
+
+
+async def test_merge_indexes():
+    assert await DocumentWithIndexMerging2.get_motor_collection().index_information() == {
+        "_id_": {"key": [("_id", 1)], "v": 2},
+        "s0_1": {"key": [("s0", 1)], "v": 2},
+        "s1_1": {"key": [("s1", 1)], "v": 2},
+        "s2_-1": {"key": [("s2", -1)], "v": 2},
+        "s3_index": {"key": [("s3", -1)], "v": 2},
+        "s4_index": {"key": [("s4", 1)], "v": 2},
+    }

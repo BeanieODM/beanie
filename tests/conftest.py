@@ -14,10 +14,10 @@ def settings():
 
 
 @pytest.fixture()
-def cli(settings, loop):
+def cli(settings):
     return motor.motor_asyncio.AsyncIOMotorClient(settings.mongodb_dsn)
 
 
 @pytest.fixture()
-def db(cli, settings, loop):
+def db(cli, settings):
     return cli[settings.mongodb_db_name]

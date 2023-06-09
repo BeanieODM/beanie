@@ -788,3 +788,37 @@ class DocumentWithListOfLinks(Document):
 
 class DocumentWithTimeStampToTestConsistency(Document):
     ts: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+
+
+class DocumentWithIndexMerging1(Document):
+    class Settings:
+        indexes = [
+            "s1",
+            [
+                ("s2", pymongo.ASCENDING),
+            ],
+            IndexModel(
+                [("s3", pymongo.ASCENDING)],
+                name="s3_index",
+            ),
+            IndexModel(
+                [("s4", pymongo.ASCENDING)],
+                name="s4_index",
+            ),
+        ]
+
+
+class DocumentWithIndexMerging2(DocumentWithIndexMerging1):
+    class Settings:
+        merge_indexes = True
+        indexes = [
+            "s0",
+            "s1",
+            [
+                ("s2", pymongo.DESCENDING),
+            ],
+            IndexModel(
+                [("s3", pymongo.DESCENDING)],
+                name="s3_index",
+            ),
+        ]

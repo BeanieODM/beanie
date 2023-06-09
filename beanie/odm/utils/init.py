@@ -283,8 +283,7 @@ class Initializer:
 
         cls.set_collection(collection)
 
-    @staticmethod
-    async def init_indexes(cls, allow_index_dropping: bool = False):
+    async def init_indexes(self, cls, allow_index_dropping: bool = False):
         """
         Async indexes initializer
         """
@@ -315,8 +314,28 @@ class Initializer:
             if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
         ]
 
-        if document_settings.indexes:
-            found_indexes += document_settings.indexes
+        if document_settings.merge_indexes:
+            result: List[IndexModelField] = []
+            for subclass in reversed(cls.mro()):
+                if issubclass(subclass, Document) and not subclass == Document:
+                    if (
+                        subclass not in self.inited_classes
+                        and not subclass == cls
+                    ):
+                        await self.init_class(subclass)
+                    if subclass.get_settings().indexes:
+                        result = IndexModelField.merge_indexes(
+                            result, subclass.get_settings().indexes
+                        )
+            found_indexes = IndexModelField.merge_indexes(
+                found_indexes, result
+            )
+
+        else:
+            if document_settings.indexes:
+                found_indexes = IndexModelField.merge_indexes(
+                    found_indexes, document_settings.indexes
+                )
 
         new_indexes += found_indexes
 
@@ -348,7 +367,6 @@ class Initializer:
         build_info = await self.database.command({"buildInfo": 1})
         mongo_version = build_info["version"]
         cls._database_major_version = int(mongo_version.split(".")[0])
-
         if cls not in self.inited_classes:
             self.set_default_class_vars(cls)
             self.init_settings(cls)

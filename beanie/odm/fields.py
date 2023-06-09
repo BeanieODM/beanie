@@ -33,6 +33,7 @@ from beanie.odm.operators.find.comparison import (
     In,
 )
 from beanie.odm.utils.parsing import parse_obj
+from pymongo import IndexModel
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
@@ -293,3 +294,85 @@ class BackLink(Generic[T]):
 
 
 ENCODERS_BY_TYPE[BackLink] = lambda o: o.to_dict()
+
+
+class IndexModelField:
+    def __init__(self, index: IndexModel):
+        self.index = index
+        self.name = index.document["name"]
+
+        self.fields = tuple(sorted(self.index.document["key"]))
+        self.options = tuple(
+            sorted(
+                (k, v)
+                for k, v in self.index.document.items()
+                if k not in ["key", "v"]
+            )
+        )
+
+    def __eq__(self, other):
+        return self.fields == other.fields and self.options == other.options
+
+    def __repr__(self):
+        return f"IndexModelField({self.name}, {self.fields}, {self.options})"
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        if isinstance(v, IndexModel):
+            return IndexModelField(v)
+        else:
+            return IndexModelField(IndexModel(v))
+
+    @staticmethod
+    def list_difference(
+        left: List["IndexModelField"], right: List["IndexModelField"]
+    ):
+        result = []
+        for index in left:
+            if index not in right:
+                result.append(index)
+        return result
+
+    @staticmethod
+    def list_to_index_model(left: List["IndexModelField"]):
+        return [index.index for index in left]
+
+    @classmethod
+    def from_motor_index_information(cls, index_info: dict):
+        result = []
+        for name, details in index_info.items():
+            fields = details["key"]
+            if ("_id", 1) in fields:
+                continue
+
+            options = {k: v for k, v in details.items() if k != "key"}
+            index_model = IndexModelField(
+                IndexModel(fields, name=name, **options)
+            )
+            result.append(index_model)
+        return result
+
+    def same_fields(self, other: "IndexModelField"):
+        return self.fields == other.fields
+
+    @staticmethod
+    def find_index_with_the_same_fields(
+        indexes: List["IndexModelField"], index: "IndexModelField"
+    ):
+        for i in indexes:
+            if i.same_fields(index):
+                return i
+        return None
+
+    @staticmethod
+    def merge_indexes(
+        left: List["IndexModelField"], right: List["IndexModelField"]
+    ):
+        left_dict = {index.fields: index for index in left}
+        right_dict = {index.fields: index for index in right}
+        left_dict.update(right_dict)
+        return list(left_dict.values())
