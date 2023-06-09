@@ -83,6 +83,7 @@ from tests.odm.models import (
     DocumentWithTimeStampToTestConsistency,
     DocumentWithIndexMerging1,
     DocumentWithIndexMerging2,
+    DocumentWithCustomInit,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -251,6 +252,7 @@ async def init(db):
         DocumentWithTimeStampToTestConsistency,
         DocumentWithIndexMerging1,
         DocumentWithIndexMerging2,
+        DocumentWithCustomInit,
     ]
     await init_beanie(
         database=db,
