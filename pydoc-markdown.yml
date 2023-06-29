@@ -99,6 +99,10 @@ renderer:
           source: docs/tutorial/on_save_validation.md
         - title: Migrations
           source: docs/tutorial/migrations.md
+    - title: Batteries
+      children:
+        - title: Queue
+          source: docs/batteries/queue.md
     - title: API Documentation
       children:
         - title: Document
