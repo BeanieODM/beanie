@@ -193,8 +193,7 @@ class TaskWithMultipleDependencies(Task):
 
 ### Expire time
 
-You can specify the time after which the task will be removed from the queue, even if it is not finished or has failed. This is controlled by the expireAfterSeconds index, which is set to 24 hours by default.
-Finished or failed tasks are not immediately removed from the queue. They are removed after the expiration time. You can manually delete them using the delete() method.
+You can specify the time after which the task will be removed from the queue, even if it is not finished or has failed. This is controlled by the `expireAfterSeconds` index, which is set to 24 hours by default.
 
 ```python
 from pymongo import ASCENDING
@@ -211,3 +210,5 @@ class TaskWithExpireTime(Task):
             [("created_at", ASCENDING), ("expireAfterSeconds", 300)],
         ]
 ```
+
+Finished or failed tasks are not immediately removed from the queue. They are removed after the expiration time. You can manually delete them using the `delete()` method.
