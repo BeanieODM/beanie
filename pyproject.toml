@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "beanie"
-version = "1.20.0b1"
+version = "1.20.0"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
 requires-python = ">=3.7,<4.0"
@@ -45,7 +45,7 @@ doc = [
     "mkdocs-material>=9.0",
     "jinja2>=3.0.3"
 ]
-queue = ["beanie-batteries-queue>=0.0.1"]
+queue = ["beanie-batteries-queue>=0.2"]
 
 [project.urls]
 homepage = "https://roman-right.github.io/beanie/"

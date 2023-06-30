@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.20.0] - 2023-06-30
+        
+### Docs: queue battery
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/603>
+            
+[1.20.0]: https://pypi.org/project/beanie/1.20.0
+
 ## [1.20.0b1] - 2023-06-09
         
 ### Feature: custom init classmethod
