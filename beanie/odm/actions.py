@@ -8,10 +8,10 @@ from typing import (
     Union,
     Dict,
     TYPE_CHECKING,
-    Any,
     Type,
     Optional,
     Tuple,
+    Any,
 )
 
 if TYPE_CHECKING:
@@ -47,21 +47,20 @@ After = ActionDirections.AFTER
 
 
 class ActionRegistry:
-    _actions: Dict[Type, Any] = {}
-
-    # TODO the real type is
-    #  Dict[str, Dict[EventTypes,Dict[ActionDirections: List[Callable]]]]
-    #  But mypy says it has syntax error inside. Fix it.
+    _actions: Dict[
+        Type["Document"],
+        Dict[EventTypes, Dict[ActionDirections, List[Callable[..., Any]]]],
+    ] = {}
 
     @classmethod
-    def clean_actions(cls, document_class: Type):
+    def clean_actions(cls, document_class: Type["Document"]):
         if cls._actions.get(document_class) is not None:
             del cls._actions[document_class]
 
     @classmethod
     def add_action(
         cls,
-        document_class: Type,
+        document_class: Type["Document"],
         event_types: List[EventTypes],
         action_direction: ActionDirections,
         funct: Callable,
@@ -89,7 +88,7 @@ class ActionRegistry:
     @classmethod
     def get_action_list(
         cls,
-        document_class: Type,
+        document_class: Type["Document"],
         event_type: EventTypes,
         action_direction: ActionDirections,
     ) -> List[Callable]:
