@@ -158,8 +158,8 @@ class Document(
                     in [LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT]
                     and field_name not in values
                 ):
-                    values[field_name] = BackLink[link_info.model_class](
-                        link_info.model_class
+                    values[field_name] = BackLink[link_info.document_class](
+                        link_info.document_class
                     )
                 if (
                     link_info.link_type
@@ -167,7 +167,7 @@ class Document(
                     and field_name not in values
                 ):
                     values[field_name] = [
-                        BackLink[link_info.model_class](link_info.model_class)
+                        BackLink[link_info.document_class](link_info.document_class)
                     ]
         return values
 
@@ -986,8 +986,8 @@ class Document(
     def get_hidden_fields(cls):
         return set(
             attribute_name
-            for attribute_name, model_field in cls.__fields__.items()
-            if model_field.field_info.extra.get("hidden") is True
+            for attribute_name, model_field in cls.model_fields.items()
+            if model_field.json_schema_extra is not None and model_field.json_schema_extra.get("hidden") is True
         )
 
     def dict(
@@ -1082,7 +1082,7 @@ class Document(
     @classmethod
     def link_from_id(cls, id: Any):
         ref = DBRef(id=id, collection=cls.get_collection_name())
-        return Link(ref, model_class=cls)
+        return Link(ref, document_class=cls)
 
     class Config:
         json_encoders = {

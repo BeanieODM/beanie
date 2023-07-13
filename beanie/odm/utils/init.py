@@ -130,11 +130,12 @@ class Initializer:
             {} if settings_class is None else dict(vars(settings_class))
         )
         if issubclass(cls, Document):
-            cls._document_settings = DocumentSettings.parse_obj(settings_vars)
+            print(settings_vars)
+            cls._document_settings = DocumentSettings.model_validate(settings_vars)
         if issubclass(cls, View):
-            cls._settings = ViewSettings.parse_obj(settings_vars)
+            cls._settings = ViewSettings.model_validate(settings_vars)
         if issubclass(cls, UnionDoc):
-            cls._settings = UnionDocSettings.parse_obj(settings_vars)
+            cls._settings = UnionDocSettings.model_validate(settings_vars)
 
     def update_forward_refs(self, cls: Type[BaseModel]):
         """
@@ -144,7 +145,7 @@ class Initializer:
         :return: None
         """
         if cls not in self.models_with_updated_forward_refs:
-            cls.update_forward_refs()
+            cls.model_rebuild()
             self.models_with_updated_forward_refs.append(cls)
 
     # Document
@@ -186,11 +187,11 @@ class Initializer:
         def check_nested_links(
             link_info: LinkInfo, prev_models: List[Type[BaseModel]]
         ):
-            if link_info.model_class in prev_models:
+            if link_info.document_class in prev_models:
                 return
-            self.update_forward_refs(link_info.model_class)
-            for k, v in link_info.model_class.__fields__.items():
-                nested_link_info = detect_link(v)
+            self.update_forward_refs(link_info.document_class)
+            for k, v in link_info.document_class.model_fields.items():
+                nested_link_info = detect_link(v, k)
                 if nested_link_info is None:
                     continue
 
@@ -198,20 +199,20 @@ class Initializer:
                     link_info.nested_links = {}
                 link_info.nested_links[v.name] = nested_link_info
                 new_prev_models = copy(prev_models)
-                new_prev_models.append(link_info.model_class)
+                new_prev_models.append(link_info.document_class)
                 check_nested_links(
                     nested_link_info, prev_models=new_prev_models
                 )
 
         if cls._link_fields is None:
             cls._link_fields = {}
-        for k, v in cls.__fields__.items():
-            path = v.alias or v.name
+        for k, v in cls.model_fields.items():
+            path = v.alias or k
             setattr(cls, k, ExpressionField(path))
 
-            link_info = detect_link(v)
+            link_info = detect_link(v, k)
             if link_info is not None:
-                cls._link_fields[v.name] = link_info
+                cls._link_fields[k] = link_info
                 check_nested_links(link_info, prev_models=[])
 
         cls._hidden_fields = cls.get_hidden_fields()
@@ -303,15 +304,15 @@ class Initializer:
                 IndexModel(
                     [
                         (
-                            fvalue.alias,
-                            fvalue.type_._indexed[0],
+                            fvalue.alias or k,
+                            fvalue.annotation._indexed[0],
                         )
                     ],
-                    **fvalue.type_._indexed[1],
+                    **fvalue.annotation._indexed[1],
                 )
             )
-            for _, fvalue in cls.__fields__.items()
-            if hasattr(fvalue.type_, "_indexed") and fvalue.type_._indexed
+            for k, fvalue in cls.model_fields.items()
+            if hasattr(fvalue.annotation, "_indexed") and fvalue.annotation._indexed
         ]
 
         if document_settings.merge_indexes:
@@ -426,10 +427,10 @@ class Initializer:
         def check_nested_links(
             link_info: LinkInfo, prev_models: List[Type[BaseModel]]
         ):
-            if link_info.model_class in prev_models:
+            if link_info.document_class in prev_models:
                 return
-            for k, v in link_info.model_class.__fields__.items():
-                nested_link_info = detect_link(v)
+            for k, v in link_info.document_class.model_fields.items():
+                nested_link_info = detect_link(v, k)
                 if nested_link_info is None:
                     continue
 
@@ -437,21 +438,21 @@ class Initializer:
                     link_info.nested_links = {}
                 link_info.nested_links[v.name] = nested_link_info
                 new_prev_models = copy(prev_models)
-                new_prev_models.append(link_info.model_class)
+                new_prev_models.append(link_info.document_class)
                 check_nested_links(
                     nested_link_info, prev_models=new_prev_models
                 )
 
         if cls._link_fields is None:
             cls._link_fields = {}
-        for k, v in cls.__fields__.items():
-            path = v.alias or v.name
+        for k, v in cls.model_fields.items():
+            path = v.alias or k
             setattr(cls, k, ExpressionField(path))
 
-        link_info = detect_link(v)
-        if link_info is not None:
-            cls._link_fields[v.name] = link_info
-            check_nested_links(link_info, prev_models=[])
+            link_info = detect_link(v, k)
+            if link_info is not None:
+                cls._link_fields[k] = link_info
+                check_nested_links(link_info, prev_models=[])
 
     def init_view_collection(self, cls):
         """

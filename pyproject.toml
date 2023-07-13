@@ -17,7 +17,7 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
 ]
 dependencies = [
-    "pydantic>=1.10.0,<2.0.0",
+    "pydantic>=2.0",
     "motor>=2.5.0,<4.0.0",
     "click>=7",
     "toml",
@@ -33,9 +33,10 @@ test = [
     "dnspython>=2.1.0",
     "flake8>=3",
     "pyright>=0",
-    "fastapi>=0.78.0",
     "asgi-lifespan>=1.0.1",
-    "httpx>=0.23.0"
+    "httpx>=0.23.0",
+    "pydantic-settings>=2.0",
+    "fastapi==0.100.0b3",
 ]
 doc = [
     "Pygments>=2.8.0",

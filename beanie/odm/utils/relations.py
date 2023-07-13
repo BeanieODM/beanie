@@ -1,8 +1,10 @@
 import inspect
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, get_origin
 
-from pydantic.fields import ModelField
-from pydantic.typing import get_origin
+from pydantic.fields import FieldInfo
+
+# from pydantic.fields import ModelField
+# from pydantic.typing import get_origin
 
 from beanie.odm.fields import (
     LinkTypes,
@@ -14,77 +16,80 @@ from beanie.odm.fields import (
 
 from typing import TYPE_CHECKING
 
+from beanie.odm.utils.typing import get_annotation_type
+
 if TYPE_CHECKING:
     from beanie import Document
 
 
-def detect_link(field: ModelField) -> Optional[LinkInfo]:
+def detect_link(field: FieldInfo, field_name: str) -> Optional[LinkInfo]:
     """
     It detects link and returns LinkInfo if any found.
 
     :param field: ModelField
     :return: Optional[LinkInfo]
     """
-    if field.type_ == Link:
-        if field.allow_none is True:
-            return LinkInfo(
-                field_name=field.name,
-                lookup_field_name=field.name,
-                model_class=field.sub_fields[0].type_,  # type: ignore
-                link_type=LinkTypes.OPTIONAL_DIRECT,
-            )
-        return LinkInfo(
-            field_name=field.name,
-            lookup_field_name=field.name,
-            model_class=field.sub_fields[0].type_,  # type: ignore
-            link_type=LinkTypes.DIRECT,
-        )
-    if field.type_ == BackLink:
-        if field.allow_none is True:
-            return LinkInfo(
-                field_name=field.name,
-                lookup_field_name=field.field_info.extra["original_field"],
-                model_class=field.sub_fields[0].type_,  # type: ignore
-                link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
-            )
-        return LinkInfo(
-            field_name=field.name,
-            lookup_field_name=field.field_info.extra["original_field"],
-            model_class=field.sub_fields[0].type_,  # type: ignore
-            link_type=LinkTypes.BACK_DIRECT,
-        )
-    if (
-        inspect.isclass(get_origin(field.outer_type_))
-        and issubclass(get_origin(field.outer_type_), list)  # type: ignore
-        and len(field.sub_fields) == 1  # type: ignore
-    ):
-        internal_field = field.sub_fields[0]  # type: ignore
-        if internal_field.type_ == Link:
-            if field.allow_none is True:
+    annotation_type = get_annotation_type(field.annotation)
+    if annotation_type is None:
+        return None
+
+    if annotation_type.is_list is False:
+        if annotation_type.base_class == Link:
+            if annotation_type.is_optional is True:
                 return LinkInfo(
-                    field_name=field.name,
-                    lookup_field_name=field.name,
-                    model_class=internal_field.sub_fields[0].type_,  # type: ignore
+                    field_name=field_name,
+                    lookup_field_name=field_name,
+                    document_class=annotation_type.generic_type,  # type: ignore
+                    link_type=LinkTypes.OPTIONAL_DIRECT,
+                )
+            print(annotation_type.generic_type)
+            return LinkInfo(
+                field_name=field_name,
+                lookup_field_name=field_name,
+                document_class=annotation_type.generic_type,  # type: ignore
+                link_type=LinkTypes.DIRECT,
+            )
+        if annotation_type.base_class == BackLink:
+            if annotation_type.is_optional is True:
+                return LinkInfo(
+                    field_name=field_name,
+                    lookup_field_name=field.json_schema_extra["original_field"],
+                    document_class=annotation_type.generic_type,  # type: ignore
+                    link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
+                )
+            return LinkInfo(
+                field_name=field_name,
+                lookup_field_name=field.json_schema_extra["original_field"],
+                document_class=field.sub_fields[0].type_,  # type: ignore
+                link_type=LinkTypes.BACK_DIRECT,
+            )
+    else:
+        if annotation_type.base_class == Link:
+            if annotation_type.is_optional is True:
+                return LinkInfo(
+                    field_name=field_name,
+                    lookup_field_name=field_name,
+                    document_class=annotation_type.generic_type,  # type: ignore
                     link_type=LinkTypes.OPTIONAL_LIST,
                 )
             return LinkInfo(
-                field_name=field.name,
-                lookup_field_name=field.name,
-                model_class=internal_field.sub_fields[0].type_,  # type: ignore
+                field_name=field_name,
+                lookup_field_name=field_name,
+                document_class=annotation_type.generic_type,  # type: ignore
                 link_type=LinkTypes.LIST,
             )
-        if internal_field.type_ == BackLink:
-            if field.allow_none is True:
+        if annotation_type.base_class == BackLink:
+            if annotation_type.is_optional is True:
                 return LinkInfo(
-                    field_name=field.name,
-                    lookup_field_name=field.field_info.extra["original_field"],
-                    model_class=internal_field.sub_fields[0].type_,  # type: ignore
+                    field_name=field_name,
+                    lookup_field_name=field.json_schema_extra["original_field"],
+                    document_class=annotation_type.generic_type,  # type: ignore
                     link_type=LinkTypes.OPTIONAL_BACK_LIST,
                 )
             return LinkInfo(
-                field_name=field.name,
-                lookup_field_name=field.field_info.extra["original_field"],
-                model_class=internal_field.sub_fields[0].type_,  # type: ignore
+                field_name=field_name,
+                lookup_field_name=field.json_schema_extra["original_field"],
+                document_class=annotation_type.generic_type,  # type: ignore
                 link_type=LinkTypes.BACK_LIST,
             )
     return None

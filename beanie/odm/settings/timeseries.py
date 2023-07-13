@@ -20,9 +20,9 @@ class TimeSeriesConfig(BaseModel):
     """
 
     time_field: str
-    meta_field: Optional[str]
-    granularity: Optional[Granularity]
-    expire_after_seconds: Optional[float]
+    meta_field: Optional[str] = None
+    granularity: Optional[Granularity] = None
+    expire_after_seconds: Optional[float] = None
 
     def build_query(self, collection_name: str) -> Dict[str, Any]:
         res: Dict[str, Any] = {"name": collection_name}
