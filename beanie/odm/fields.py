@@ -365,8 +365,6 @@ class IndexModelField:
 
     @classmethod
     def validate(cls, v, *args, **kwargs):
-        print("validate", v)
-        print(args, kwargs)
         if isinstance(v, IndexModel):
             return IndexModelField(v)
         else:

@@ -20,7 +20,7 @@ from pydantic import (
     ValidationError,
     PrivateAttr,
     Field,
-    parse_obj_as,
+    parse_obj_as, TypeAdapter,
 )
 from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
@@ -246,8 +246,9 @@ class Document(
             session=session,
         )
         new_id = result.inserted_id
-        if not isinstance(new_id, self.__fields__["id"].type_):
-            new_id = parse_obj_as(self.__fields__["id"].type_, new_id)
+        if not isinstance(new_id, self.model_fields["id"].annotation):
+            print(self.model_fields["id"].annotation, new_id, type(new_id))
+            new_id = TypeAdapter(self.model_fields["id"].annotation).validate_python(new_id)
         self.id = new_id
         return self
 

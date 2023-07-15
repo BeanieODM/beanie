@@ -1,10 +1,11 @@
 import importlib
 import inspect
 from copy import copy
-from typing import Optional, List, Type, Union
+from typing import Optional, List, Type, Union, _GenericAlias, get_origin, get_args, ForwardRef
 
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from pydantic import BaseModel
+from pydantic.fields import FieldInfo
 from pymongo import IndexModel
 
 from beanie.exceptions import MongoDBVersionError, Deprecation
@@ -12,13 +13,12 @@ from beanie.odm.actions import ActionRegistry
 from beanie.odm.cache import LRUCache
 from beanie.odm.documents import DocType
 from beanie.odm.documents import Document
-from beanie.odm.fields import ExpressionField, LinkInfo
+from beanie.odm.fields import ExpressionField, LinkInfo, Link, BackLink, LinkTypes
 from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.settings.document import DocumentSettings, IndexModelField
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
 from beanie.odm.union_doc import UnionDoc
-from beanie.odm.utils.relations import detect_link
 from beanie.odm.views import View
 
 
@@ -29,14 +29,14 @@ class Output(BaseModel):
 
 class Initializer:
     def __init__(
-        self,
-        database: AsyncIOMotorDatabase = None,
-        connection_string: Optional[str] = None,
-        document_models: Optional[
-            List[Union[Type["DocType"], Type["View"], str]]
-        ] = None,
-        allow_index_dropping: bool = False,
-        recreate_views: bool = False,
+            self,
+            database: AsyncIOMotorDatabase = None,
+            connection_string: Optional[str] = None,
+            document_models: Optional[
+                List[Union[Type["DocType"], Type["View"], str]]
+            ] = None,
+            allow_index_dropping: bool = False,
+            recreate_views: bool = False,
     ):
         """
         Beanie initializer
@@ -55,8 +55,10 @@ class Initializer:
 
         self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
 
+        self.local_models_ns = {}
+
         if (connection_string is None and database is None) or (
-            connection_string is not None and database is not None
+                connection_string is not None and database is not None
         ):
             raise ValueError(
                 "connection_string parameter or database parameter must be set"
@@ -82,6 +84,9 @@ class Initializer:
             for model in document_models
         ]
 
+        self.local_models_ns = {}
+        self.build_namespace()
+
         self.document_models.sort(
             key=lambda val: sort_order[val.get_model_type()]
         )
@@ -91,6 +96,12 @@ class Initializer:
             yield from self.init_class(model).__await__()
 
     # General
+    def build_namespace(self):
+        for model in self.document_models:
+            module = inspect.getmodule(model)
+            members = inspect.getmembers(module)
+            classes = {name: obj for name, obj in members if inspect.isclass(obj)}
+            self.local_models_ns.update(classes)
 
     @staticmethod
     def get_model(dot_path: str) -> Type["DocType"]:
@@ -116,7 +127,7 @@ class Initializer:
             )
 
     def init_settings(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+            self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
     ):
         """
         Init Settings
@@ -130,23 +141,124 @@ class Initializer:
             {} if settings_class is None else dict(vars(settings_class))
         )
         if issubclass(cls, Document):
-            print(settings_vars)
             cls._document_settings = DocumentSettings.model_validate(settings_vars)
         if issubclass(cls, View):
             cls._settings = ViewSettings.model_validate(settings_vars)
         if issubclass(cls, UnionDoc):
             cls._settings = UnionDocSettings.model_validate(settings_vars)
 
-    def update_forward_refs(self, cls: Type[BaseModel]):
-        """
-        Update forward refs
+    # def update_forward_refs(self, cls: Type[BaseModel]):
+    #     """
+    #     Update forward refs
+    #
+    #     :param cls: Type[BaseModel] - class to update forward refs
+    #     :return: None
+    #     """
+    #     if cls not in self.models_with_updated_forward_refs:
+    #         cls.model_rebuild(_parent_namespace_depth=10)
+    #         self.models_with_updated_forward_refs.append(cls)
 
-        :param cls: Type[BaseModel] - class to update forward refs
-        :return: None
+    # General. Relations
+
+    def evaluate_fr(self, forward_ref: Union[ForwardRef, Type]):
         """
-        if cls not in self.models_with_updated_forward_refs:
-            cls.model_rebuild()
-            self.models_with_updated_forward_refs.append(cls)
+        Evaluate forward ref
+
+        :param forward_ref: ForwardRef - forward ref to evaluate
+        :return: Type[BaseModel] - class of the forward ref
+        """
+        if isinstance(forward_ref, ForwardRef) and forward_ref.__forward_arg__ in self.local_models_ns:
+            return self.local_models_ns[forward_ref.__forward_arg__]
+        else:
+            return forward_ref
+
+    def detect_link(self, field: FieldInfo, field_name: str) -> Optional[LinkInfo]:
+        """
+        It detects link and returns LinkInfo if any found.
+
+        :param field: ModelField
+        :return: Optional[LinkInfo]
+        """
+
+        origin = get_origin(field.annotation)
+        args = get_args(field.annotation)
+        classes = [Link, BackLink]
+
+        for cls in classes:
+            # Check if annotation is one of the custom classes
+            if isinstance(field.annotation, _GenericAlias) and field.annotation.__origin__ is cls:
+                if cls is Link:
+
+                    return LinkInfo(
+                        field_name=field_name,
+                        lookup_field_name=field_name,
+                        document_class=self.evaluate_fr(args[0]),  # type: ignore
+                        link_type=LinkTypes.DIRECT,
+                    )
+                if cls is BackLink:
+                    return LinkInfo(
+                        field_name=field_name,
+                        lookup_field_name=field.json_schema_extra["original_field"],
+                        document_class=self.evaluate_fr(args[0]),  # type: ignore
+                        link_type=LinkTypes.BACK_DIRECT,
+                    )
+
+            # Check if annotation is List[custom class]
+            elif origin is List and len(args) == 1 and isinstance(args[0], _GenericAlias) and args[0].__origin__ is cls:
+                if cls is Link:
+                    return LinkInfo(
+                        field_name=field_name,
+                        lookup_field_name=field_name,
+                        document_class=self.evaluate_fr(get_args(args[0])[0]),  # type: ignore
+                        link_type=LinkTypes.LIST,
+                    )
+                if cls is BackLink:
+                    return LinkInfo(
+                        field_name=field_name,
+                        lookup_field_name=field.json_schema_extra["original_field"],
+                        document_class=self.evaluate_fr(get_args(args[0])[0]),  # type: ignore
+                        link_type=LinkTypes.BACK_LIST,
+                    )
+
+            # Check if annotation is Optional[custom class] or Optional[List[custom class]]
+            elif origin is Optional and len(args) == 1:
+                optional_origin = get_origin(args[0])
+                optional_args = get_args(args[0])
+
+                if isinstance(args[0], _GenericAlias) and args[0].__origin__ is cls:
+                    if cls is Link:
+                        return LinkInfo(
+                            field_name=field_name,
+                            lookup_field_name=field_name,
+                            document_class=self.evaluate_fr(optional_args[0]),  # type: ignore
+                            link_type=LinkTypes.OPTIONAL_DIRECT,
+                        )
+                    if cls is BackLink:
+                        return LinkInfo(
+                            field_name=field_name,
+                            lookup_field_name=field.json_schema_extra["original_field"],
+                            document_class=self.evaluate_fr(optional_args[0]),  # type: ignore
+                            link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
+                        )
+
+                elif optional_origin is List and len(optional_args) == 1 and isinstance(optional_args[0],
+                                                                                        _GenericAlias) and \
+                        optional_args[0].__origin__ is cls:
+                    if cls is Link:
+                        return LinkInfo(
+                            field_name=field_name,
+                            lookup_field_name=field_name,
+                            document_class=self.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
+                            link_type=LinkTypes.OPTIONAL_LIST,
+                        )
+                    if cls is BackLink:
+                        return LinkInfo(
+                            field_name=field_name,
+                            lookup_field_name=field.json_schema_extra["original_field"],
+                            document_class=self.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
+                            link_type=LinkTypes.OPTIONAL_BACK_LIST,
+                        )
+        return None
 
     # Document
 
@@ -182,22 +294,22 @@ class Initializer:
         Init class fields
         :return: None
         """
-        self.update_forward_refs(cls)
+        # self.update_forward_refs(cls)
 
         def check_nested_links(
-            link_info: LinkInfo, prev_models: List[Type[BaseModel]]
+                link_info: LinkInfo, prev_models: List[Type[BaseModel]]
         ):
             if link_info.document_class in prev_models:
                 return
-            self.update_forward_refs(link_info.document_class)
+            # self.update_forward_refs(link_info.document_class)
             for k, v in link_info.document_class.model_fields.items():
-                nested_link_info = detect_link(v, k)
+                nested_link_info = self.detect_link(v, k)
                 if nested_link_info is None:
                     continue
 
                 if link_info.nested_links is None:
                     link_info.nested_links = {}
-                link_info.nested_links[v.name] = nested_link_info
+                link_info.nested_links[k] = nested_link_info
                 new_prev_models = copy(prev_models)
                 new_prev_models.append(link_info.document_class)
                 check_nested_links(
@@ -210,7 +322,7 @@ class Initializer:
             path = v.alias or k
             setattr(cls, k, ExpressionField(path))
 
-            link_info = detect_link(v, k)
+            link_info = self.detect_link(v, k)
             if link_info is not None:
                 cls._link_fields[k] = link_info
                 check_nested_links(link_info, prev_models=[])
@@ -260,8 +372,8 @@ class Initializer:
 
         # check mongodb version fits
         if (
-            document_settings.timeseries is not None
-            and cls._database_major_version < 5
+                document_settings.timeseries is not None
+                and cls._database_major_version < 5
         ):
             raise MongoDBVersionError(
                 "Timeseries are supported by MongoDB version 5 and higher"
@@ -269,9 +381,9 @@ class Initializer:
 
         # create motor collection
         if (
-            document_settings.timeseries is not None
-            and document_settings.name
-            not in await self.database.list_collection_names()
+                document_settings.timeseries is not None
+                and document_settings.name
+                not in await self.database.list_collection_names()
         ):
 
             collection = await self.database.create_collection(
@@ -320,8 +432,8 @@ class Initializer:
             for subclass in reversed(cls.mro()):
                 if issubclass(subclass, Document) and not subclass == Document:
                     if (
-                        subclass not in self.inited_classes
-                        and not subclass == cls
+                            subclass not in self.inited_classes
+                            and not subclass == cls
                     ):
                         await self.init_class(subclass)
                     if subclass.get_settings().indexes:
@@ -344,7 +456,7 @@ class Initializer:
         # Only drop indexes if the user specifically allows for it
         if allow_index_dropping:
             for index in IndexModelField.list_difference(
-                old_indexes, new_indexes
+                    old_indexes, new_indexes
             ):
                 await collection.drop_index(index.name)
 
@@ -378,7 +490,7 @@ class Initializer:
             parent = bases[0]
             output = await self.init_document(parent)
             if cls.get_settings().is_root and (
-                parent is Document or not parent.get_settings().is_root
+                    parent is Document or not parent.get_settings().is_root
             ):
                 if cls.get_collection_name() is None:
                     cls.set_collection_name(cls.__name__)
@@ -417,20 +529,19 @@ class Initializer:
 
     # Views
 
-    @staticmethod
-    def init_view_fields(cls) -> None:
+    def init_view_fields(self, cls) -> None:
         """
         Init class fields
         :return: None
         """
 
         def check_nested_links(
-            link_info: LinkInfo, prev_models: List[Type[BaseModel]]
+                link_info: LinkInfo, prev_models: List[Type[BaseModel]]
         ):
             if link_info.document_class in prev_models:
                 return
             for k, v in link_info.document_class.model_fields.items():
-                nested_link_info = detect_link(v, k)
+                nested_link_info = self.detect_link(v, k)
                 if nested_link_info is None:
                     continue
 
@@ -449,7 +560,7 @@ class Initializer:
             path = v.alias or k
             setattr(cls, k, ExpressionField(path))
 
-            link_info = detect_link(v, k)
+            link_info = self.detect_link(v, k)
             if link_info is not None:
                 cls._link_fields[k] = link_info
                 check_nested_links(link_info, prev_models=[])
@@ -518,7 +629,7 @@ class Initializer:
 
     @staticmethod
     def check_deprecations(
-        cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+            cls: Union[Type[Document], Type[View], Type[UnionDoc]]
     ):
         if hasattr(cls, "Collection"):
             raise Deprecation(
@@ -530,7 +641,7 @@ class Initializer:
     # Final
 
     async def init_class(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+            self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
     ):
         """
         Init Document, View or UnionDoc based class.
@@ -554,13 +665,13 @@ class Initializer:
 
 
 async def init_beanie(
-    database: AsyncIOMotorDatabase = None,
-    connection_string: Optional[str] = None,
-    document_models: Optional[
-        List[Union[Type["DocType"], Type["View"], str]]
-    ] = None,
-    allow_index_dropping: bool = False,
-    recreate_views: bool = False,
+        database: AsyncIOMotorDatabase = None,
+        connection_string: Optional[str] = None,
+        document_models: Optional[
+            List[Union[Type["DocType"], Type["View"], str]]
+        ] = None,
+        allow_index_dropping: bool = False,
+        recreate_views: bool = False,
 ):
     """
     Beanie initialization
