@@ -20,7 +20,7 @@ from pydantic import (
     ValidationError,
     PrivateAttr,
     Field,
-    parse_obj_as,
+    TypeAdapter,
 )
 from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
@@ -247,7 +247,9 @@ class Document(
         )
         new_id = result.inserted_id
         if not isinstance(new_id, self.__fields__["id"].type_):
-            new_id = parse_obj_as(self.__fields__["id"].type_, new_id)
+            new_id = TypeAdapter(self.__fields__["id"].type_).validate_python(
+                new_id
+            )
         self.id = new_id
         return self
 
@@ -309,7 +311,6 @@ class Document(
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         **pymongo_kwargs,
     ) -> InsertManyResult:
-
         """
         Insert many documents to the collection
 
@@ -904,7 +905,6 @@ class Document(
                         elif isinstance(field_value, dict) and isinstance(
                             old_dict.get(field_name), dict
                         ):
-
                             field_data = self._collect_updates(
                                 old_dict.get(field_name),  # type: ignore
                                 field_value,

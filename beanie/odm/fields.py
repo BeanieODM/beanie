@@ -17,7 +17,7 @@ from typing import OrderedDict as OrderedDictType
 
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
-from pydantic import BaseModel, parse_obj_as
+from pydantic import BaseModel, TypeAdapter
 from pydantic.fields import ModelField
 from pydantic.json import ENCODERS_BY_TYPE
 from pymongo import ASCENDING
@@ -258,7 +258,9 @@ class Link(Generic[T]):
             return v
         if isinstance(v, dict) or isinstance(v, BaseModel):
             return parse_obj(model_class, v)
-        new_id = parse_obj_as(model_class.__fields__["id"].type_, v)
+        new_id = TypeAdapter(
+            model_class.__fields__["id"].type_
+        ).validate_python(v)
         ref = DBRef(collection=model_class.get_collection_name(), id=new_id)
         return cls(ref=ref, model_class=model_class)
 
