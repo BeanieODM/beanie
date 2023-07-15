@@ -30,7 +30,8 @@ def get_projection(
 
     document_projection: Dict[str, int] = {}
 
-    for name, field in model.__fields__.items():
-        document_projection[field.alias] = 1
-
+    print(model.model_fields)
+    for name, field in model.model_fields.items():
+        document_projection[field.alias or name] = 1
+    print(document_projection)
     return document_projection

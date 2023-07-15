@@ -190,8 +190,8 @@ class Document(
         :param **pymongo_kwargs: pymongo native parameters for find operation
         :return: Union["Document", None]
         """
-        if not isinstance(document_id, cls.__fields__["id"].type_):
-            document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
+        if not isinstance(document_id, cls.model_fields["id"].annotation):
+            document_id = TypeAdapter(cls.model_fields["id"].annotation).validate_python(document_id)
 
         return await cls.find_one(
             {"_id": document_id},

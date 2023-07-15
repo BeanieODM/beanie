@@ -78,7 +78,7 @@ class PydanticObjectId(ObjectId):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v, *args, **kwargs):
         if isinstance(v, bytes):
             v = v.decode("utf-8")
         try:
@@ -95,12 +95,9 @@ class PydanticObjectId(ObjectId):
 
     @classmethod
     def __get_pydantic_core_schema__(
-            cls, _source_type: Any, _handler: GetCoreSchemaHandler
-    ) -> core_schema.CoreSchema:
-        return core_schema.no_info_after_validator_function(
-            cls.validate,
-            core_schema.str_schema(),
-        )
+            cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:
+        return core_schema.general_plain_validator_function(cls.validate)
 
     @classmethod
     def __get_pydantic_json_schema__(
