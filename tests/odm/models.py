@@ -385,15 +385,15 @@ class DocumentWithRevisionTurnedOn(Document):
 class DocumentWithPydanticConfig(Document):
     num_1: int
 
-    class Config(Document.Config):
-        validate_assignment = True
+    # class Config(Document.Config):
+    #     validate_assignment = True
 
 
 class DocumentWithExtras(Document):
     num_1: int
 
-    class Config(Document.Config):
-        extra = Extra.allow
+    # class Config(Document.Config):
+    #     extra = Extra.allow
 
 
 class DocumentWithExtrasKw(Document, extra=Extra.allow):

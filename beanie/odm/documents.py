@@ -20,7 +20,7 @@ from pydantic import (
     ValidationError,
     PrivateAttr,
     Field,
-    parse_obj_as, TypeAdapter,
+    parse_obj_as, TypeAdapter, ConfigDict,
 )
 from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
@@ -95,6 +95,21 @@ DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
+def json_schema_extra(
+        schema: Dict[str, Any], model: Type["Document"]
+) -> None:
+    props = {}
+    for k, v in schema.get("properties", {}).items():
+        if not v.get("hidden", False):
+            props[k] = v
+    schema["properties"] = props
+
+
+def document_alias_generator(s: str) -> str:
+    if s == "id":
+        return "_id"
+    return s
+
 class Document(
     LazyModel,
     SettersInterface,
@@ -117,7 +132,22 @@ class Document(
     - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
-    id: Optional[PydanticObjectId] = None
+    # class Config:
+    #     json_encoders = {
+    #         ObjectId: lambda v: str(v),
+    #     }
+    #     allow_population_by_field_name = True
+    #     # fields = {"id": "_id"}
+
+    model_config = ConfigDict(
+        json_schema_extra=json_schema_extra,
+        populate_by_name=True,
+        alias_generator=document_alias_generator,
+    )
+
+    id: Optional[PydanticObjectId] = Field(
+        default=None, description="MongoDB document ObjectID"
+    )
 
     # State
     revision_id: Optional[UUID] = Field(default=None, hidden=True)
@@ -154,17 +184,17 @@ class Document(
         if cls._link_fields:
             for field_name, link_info in cls._link_fields.items():
                 if (
-                    link_info.link_type
-                    in [LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT]
-                    and field_name not in values
+                        link_info.link_type
+                        in [LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT]
+                        and field_name not in values
                 ):
                     values[field_name] = BackLink[link_info.document_class](
                         link_info.document_class
                     )
                 if (
-                    link_info.link_type
-                    in [LinkTypes.BACK_LIST, LinkTypes.OPTIONAL_BACK_LIST]
-                    and field_name not in values
+                        link_info.link_type
+                        in [LinkTypes.BACK_LIST, LinkTypes.OPTIONAL_BACK_LIST]
+                        and field_name not in values
                 ):
                     values[field_name] = [
                         BackLink[link_info.document_class](link_info.document_class)
@@ -173,13 +203,13 @@ class Document(
 
     @classmethod
     async def get(
-        cls: Type["DocType"],
-        document_id: Any,
-        session: Optional[ClientSession] = None,
-        ignore_cache: bool = False,
-        fetch_links: bool = False,
-        with_children: bool = False,
-        **pymongo_kwargs,
+            cls: Type["DocType"],
+            document_id: Any,
+            session: Optional[ClientSession] = None,
+            ignore_cache: bool = False,
+            fetch_links: bool = False,
+            with_children: bool = False,
+            **pymongo_kwargs,
     ) -> Optional["DocType"]:
         """
         Get document by id, returns None if document does not exist
@@ -207,11 +237,11 @@ class Document(
     @swap_revision_after
     @validate_self_before
     async def insert(
-        self: DocType,
-        *,
-        link_rule: WriteRules = WriteRules.DO_NOTHING,
-        session: Optional[ClientSession] = None,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+            self: DocType,
+            *,
+            link_rule: WriteRules = WriteRules.DO_NOTHING,
+            session: Optional[ClientSession] = None,
+            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> DocType:
         """
         Insert the document (self) to the collection
@@ -247,14 +277,13 @@ class Document(
         )
         new_id = result.inserted_id
         if not isinstance(new_id, self.model_fields["id"].annotation):
-            print(self.model_fields["id"].annotation, new_id, type(new_id))
             new_id = TypeAdapter(self.model_fields["id"].annotation).validate_python(new_id)
         self.id = new_id
         return self
 
     async def create(
-        self: DocType,
-        session: Optional[ClientSession] = None,
+            self: DocType,
+            session: Optional[ClientSession] = None,
     ) -> DocType:
         """
         The same as self.insert()
@@ -264,11 +293,11 @@ class Document(
 
     @classmethod
     async def insert_one(
-        cls: Type[DocType],
-        document: DocType,
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional["BulkWriter"] = None,
-        link_rule: WriteRules = WriteRules.DO_NOTHING,
+            cls: Type[DocType],
+            document: DocType,
+            session: Optional[ClientSession] = None,
+            bulk_writer: Optional["BulkWriter"] = None,
+            link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> Optional[DocType]:
         """
         Insert one document to the collection
@@ -304,11 +333,11 @@ class Document(
 
     @classmethod
     async def insert_many(
-        cls: Type[DocType],
-        documents: List[DocType],
-        session: Optional[ClientSession] = None,
-        link_rule: WriteRules = WriteRules.DO_NOTHING,
-        **pymongo_kwargs,
+            cls: Type[DocType],
+            documents: List[DocType],
+            session: Optional[ClientSession] = None,
+            link_rule: WriteRules = WriteRules.DO_NOTHING,
+            **pymongo_kwargs,
     ) -> InsertManyResult:
 
         """
@@ -340,12 +369,12 @@ class Document(
     @swap_revision_after
     @validate_self_before
     async def replace(
-        self: DocType,
-        ignore_revision: bool = False,
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        link_rule: WriteRules = WriteRules.DO_NOTHING,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+            self: DocType,
+            ignore_revision: bool = False,
+            session: Optional[ClientSession] = None,
+            bulk_writer: Optional[BulkWriter] = None,
+            link_rule: WriteRules = WriteRules.DO_NOTHING,
+            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> DocType:
         """
         Fully update the document in the database
@@ -417,11 +446,11 @@ class Document(
     @wrap_with_actions(EventTypes.SAVE)
     @save_state_after
     async def save(
-        self: DocType,
-        session: Optional[ClientSession] = None,
-        link_rule: WriteRules = WriteRules.DO_NOTHING,
-        ignore_revision: bool = False,
-        **kwargs,
+            self: DocType,
+            session: Optional[ClientSession] = None,
+            link_rule: WriteRules = WriteRules.DO_NOTHING,
+            ignore_revision: bool = False,
+            **kwargs,
     ) -> None:
         """
         Update an existing model in the database or
@@ -494,11 +523,11 @@ class Document(
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
     @validate_self_before
     async def save_changes(
-        self,
-        ignore_revision: bool = False,
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+            self,
+            ignore_revision: bool = False,
+            session: Optional[ClientSession] = None,
+            bulk_writer: Optional[BulkWriter] = None,
+            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> None:
         """
         Save changes.
@@ -529,9 +558,9 @@ class Document(
 
     @classmethod
     async def replace_many(
-        cls: Type[DocType],
-        documents: List[DocType],
-        session: Optional[ClientSession] = None,
+            cls: Type[DocType],
+            documents: List[DocType],
+            session: Optional[ClientSession] = None,
     ) -> None:
         """
         Replace list of documents
@@ -554,14 +583,14 @@ class Document(
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
     async def update(
-        self,
-        *args,
-        ignore_revision: bool = False,
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-        skip_sync: Optional[bool] = None,
-        **pymongo_kwargs,
+            self,
+            *args,
+            ignore_revision: bool = False,
+            session: Optional[ClientSession] = None,
+            bulk_writer: Optional[BulkWriter] = None,
+            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+            skip_sync: Optional[bool] = None,
+            **pymongo_kwargs,
     ) -> DocType:
         """
         Partially update the document in the database
@@ -610,11 +639,11 @@ class Document(
 
     @classmethod
     def update_all(
-        cls,
-        *args: Union[dict, Mapping],
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+            cls,
+            *args: Union[dict, Mapping],
+            session: Optional[ClientSession] = None,
+            bulk_writer: Optional[BulkWriter] = None,
+            **pymongo_kwargs,
     ) -> UpdateMany:
         """
         Partially update all the documents
@@ -630,12 +659,12 @@ class Document(
         )
 
     def set(
-        self,
-        expression: Dict[Union[ExpressionField, str], Any],
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        skip_sync: Optional[bool] = None,
-        **kwargs,
+            self,
+            expression: Dict[Union[ExpressionField, str], Any],
+            session: Optional[ClientSession] = None,
+            bulk_writer: Optional[BulkWriter] = None,
+            skip_sync: Optional[bool] = None,
+            **kwargs,
     ):
         """
         Set values
@@ -669,12 +698,12 @@ class Document(
         )
 
     def current_date(
-        self,
-        expression: Dict[Union[ExpressionField, str], Any],
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        skip_sync: Optional[bool] = None,
-        **kwargs,
+            self,
+            expression: Dict[Union[ExpressionField, str], Any],
+            session: Optional[ClientSession] = None,
+            bulk_writer: Optional[BulkWriter] = None,
+            skip_sync: Optional[bool] = None,
+            **kwargs,
     ):
         """
         Set current date
@@ -696,12 +725,12 @@ class Document(
         )
 
     def inc(
-        self,
-        expression: Dict[Union[ExpressionField, str], Any],
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        skip_sync: Optional[bool] = None,
-        **kwargs,
+            self,
+            expression: Dict[Union[ExpressionField, str], Any],
+            session: Optional[ClientSession] = None,
+            bulk_writer: Optional[BulkWriter] = None,
+            skip_sync: Optional[bool] = None,
+            **kwargs,
     ):
         """
         Increment
@@ -735,12 +764,12 @@ class Document(
 
     @wrap_with_actions(EventTypes.DELETE)
     async def delete(
-        self,
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        link_rule: DeleteRules = DeleteRules.DO_NOTHING,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-        **pymongo_kwargs,
+            self,
+            session: Optional[ClientSession] = None,
+            bulk_writer: Optional[BulkWriter] = None,
+            link_rule: DeleteRules = DeleteRules.DO_NOTHING,
+            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+            **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         """
         Delete the document
@@ -788,10 +817,10 @@ class Document(
 
     @classmethod
     async def delete_all(
-        cls,
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+            cls,
+            session: Optional[ClientSession] = None,
+            bulk_writer: Optional[BulkWriter] = None,
+            **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         """
         Delete all the documents
@@ -862,7 +891,7 @@ class Document(
     @saved_state_needed
     def is_changed(self) -> bool:
         if self._saved_state == get_dict(
-            self, to_db=True, keep_nulls=self.get_settings().keep_nulls
+                self, to_db=True, keep_nulls=self.get_settings().keep_nulls
         ):
             return False
         return True
@@ -872,14 +901,14 @@ class Document(
     @previous_saved_state_needed
     def has_changed(self) -> bool:
         if (
-            self._previous_saved_state is None
-            or self._previous_saved_state == self._saved_state
+                self._previous_saved_state is None
+                or self._previous_saved_state == self._saved_state
         ):
             return False
         return True
 
     def _collect_updates(
-        self, old_dict: Dict[str, Any], new_dict: Dict[str, Any]
+            self, old_dict: Dict[str, Any], new_dict: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Compares old_dict with new_dict and returns field paths that have been updated
@@ -897,13 +926,13 @@ class Document(
             for field_name, field_value in new_dict.items():
                 if field_value != old_dict.get(field_name):
                     if not self.state_management_replace_objects() and (
-                        isinstance(field_value, dict)
-                        and isinstance(old_dict.get(field_name), dict)
+                            isinstance(field_value, dict)
+                            and isinstance(old_dict.get(field_name), dict)
                     ):
                         if old_dict.get(field_name) is None:
                             updates[field_name] = field_value
                         elif isinstance(field_value, dict) and isinstance(
-                            old_dict.get(field_name), dict
+                                old_dict.get(field_name), dict
                         ):
 
                             field_data = self._collect_updates(
@@ -959,7 +988,7 @@ class Document(
 
     @classmethod
     async def inspect_collection(
-        cls, session: Optional[ClientSession] = None
+            cls, session: Optional[ClientSession] = None
     ) -> InspectionResult:
         """
         Check, if documents, stored in the MongoDB collection
@@ -969,7 +998,7 @@ class Document(
         """
         inspection_result = InspectionResult()
         async for json_document in cls.get_motor_collection().find(
-            {}, session=session
+                {}, session=session
         ):
             try:
                 cls.parse_obj(json_document)
@@ -992,16 +1021,16 @@ class Document(
         )
 
     def dict(
-        self,
-        *,
-        include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-        exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-        by_alias: bool = False,
-        skip_defaults: bool = False,
-        exclude_hidden: bool = True,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
+            self,
+            *,
+            include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+            exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+            by_alias: bool = False,
+            skip_defaults: bool = False,
+            exclude_hidden: bool = True,
+            exclude_unset: bool = False,
+            exclude_defaults: bool = False,
+            exclude_none: bool = False,
     ) -> "DictStrAny":
         """
         Overriding of the respective method from Pydantic
@@ -1070,11 +1099,11 @@ class Document(
 
     @classmethod
     async def distinct(
-        cls,
-        key: str,
-        filter: Optional[Mapping[str, Any]] = None,
-        session: Optional[ClientSession] = None,
-        **kwargs: Any,
+            cls,
+            key: str,
+            filter: Optional[Mapping[str, Any]] = None,
+            session: Optional[ClientSession] = None,
+            **kwargs: Any,
     ) -> list:
         return await cls.get_motor_collection().distinct(
             key, filter, session, **kwargs
@@ -1084,20 +1113,3 @@ class Document(
     def link_from_id(cls, id: Any):
         ref = DBRef(id=id, collection=cls.get_collection_name())
         return Link(ref, document_class=cls)
-
-    class Config:
-        json_encoders = {
-            ObjectId: lambda v: str(v),
-        }
-        allow_population_by_field_name = True
-        fields = {"id": "_id"}
-
-        @staticmethod
-        def schema_extra(
-            schema: Dict[str, Any], model: Type["Document"]
-        ) -> None:
-            props = {}
-            for k, v in schema.get("properties", {}).items():
-                if not v.get("hidden", False):
-                    props[k] = v
-            schema["properties"] = props

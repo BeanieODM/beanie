@@ -970,7 +970,6 @@ class FindOne(FindQuery[FindQueryResultType]):
                 projection_model=self.projection_model,
                 **self.pymongo_kwargs,
             ).first_or_none()
-        print(get_projection(self.projection_model))
         return await self.document_model.get_motor_collection().find_one(
             filter=self.get_filter_query(),
             projection=get_projection(self.projection_model),

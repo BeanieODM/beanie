@@ -20,7 +20,7 @@ from bson.errors import InvalidId
 from pydantic import BaseModel, parse_obj_as, GetCoreSchemaHandler, GetJsonSchemaHandler
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema, CoreSchema
-from pydantic_core.core_schema import ValidatorFunctionWrapHandler, simple_ser_schema
+from pydantic_core.core_schema import ValidatorFunctionWrapHandler, simple_ser_schema, ValidationInfo, str_schema
 # from pydantic.json import ENCODERS_BY_TYPE
 from pymongo import ASCENDING
 
@@ -78,13 +78,13 @@ class PydanticObjectId(ObjectId):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v, *args, **kwargs):
+    def validate(cls, v, _: ValidationInfo):
         if isinstance(v, bytes):
             v = v.decode("utf-8")
         try:
             return PydanticObjectId(v)
         except InvalidId:
-            raise TypeError("Id must be of type PydanticObjectId")
+            raise ValueError("Id must be of type PydanticObjectId")
 
     # @classmethod
     # def __modify_schema__(cls, field_schema):
@@ -97,7 +97,10 @@ class PydanticObjectId(ObjectId):
     def __get_pydantic_core_schema__(
             cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> CoreSchema:
-        return core_schema.general_plain_validator_function(cls.validate)
+        return core_schema.json_or_python_schema(
+            python_schema=core_schema.general_plain_validator_function(cls.validate),
+            json_schema=str_schema(),
+        )
 
     @classmethod
     def __get_pydantic_json_schema__(
@@ -279,6 +282,7 @@ class Link(Generic[T]):
 
     @classmethod
     def validate(cls, v: Union[DBRef, T], field):
+        print(field)
         document_class = field.sub_fields[0].type_  # type: ignore
         if isinstance(v, DBRef):
             return cls(ref=v, document_class=document_class)
@@ -300,6 +304,8 @@ class Link(Generic[T]):
     def __get_pydantic_core_schema__(
             cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> CoreSchema:
+        print(source_type)
+        print(handler)
         return core_schema.general_plain_validator_function(cls.validate)
 
 
