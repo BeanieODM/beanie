@@ -1,7 +1,7 @@
 import importlib
 import inspect
 from copy import copy
-from typing import Optional, List, Type, Union, _GenericAlias, get_origin, get_args, ForwardRef
+from typing import Optional, List, Type, Union, _GenericAlias, get_origin, get_args, ForwardRef, Dict
 
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from pydantic import BaseModel
@@ -25,6 +25,7 @@ from beanie.odm.views import View
 class Output(BaseModel):
     class_name: str
     collection_name: str
+
 
 
 class Initializer:

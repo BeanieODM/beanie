@@ -17,7 +17,7 @@ from typing import OrderedDict as OrderedDictType
 
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
-from pydantic import BaseModel, parse_obj_as, GetCoreSchemaHandler, GetJsonSchemaHandler
+from pydantic import BaseModel, parse_obj_as, GetCoreSchemaHandler, GetJsonSchemaHandler, TypeAdapter
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema, CoreSchema
 from pydantic_core.core_schema import ValidatorFunctionWrapHandler, simple_ser_schema, ValidationInfo, str_schema
@@ -276,23 +276,29 @@ class Link(Generic[T]):
             coros.append(link.fetch())
         return await asyncio.gather(*coros)
 
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
+    # @classmethod
+    # def __get_validators__(cls):
+    #     print("get validators")
+    #     yield cls.validate
 
     @classmethod
-    def validate(cls, v: Union[DBRef, T], field):
-        print(field)
-        document_class = field.sub_fields[0].type_  # type: ignore
-        if isinstance(v, DBRef):
-            return cls(ref=v, document_class=document_class)
-        if isinstance(v, Link):
-            return v
-        if isinstance(v, dict) or isinstance(v, BaseModel):
-            return parse_obj(document_class, v)
-        new_id = parse_obj_as(document_class.__fields__["id"].type_, v)
-        ref = DBRef(collection=document_class.get_collection_name(), id=new_id)
-        return cls(ref=ref, document_class=document_class)
+    def build_validation(cls, handler, source_type):
+
+        def validate(v: Union[DBRef, T], validation_info: ValidationInfo):
+            document_class = get_args(source_type)[0]  # type: ignore
+            if isinstance(v, DBRef):
+                return cls(ref=v, document_class=document_class)
+            if isinstance(v, Link):
+                return v
+            if isinstance(v, dict) or isinstance(v, BaseModel):
+                print("PARSE OBJ", v.__class__.__name__, document_class)
+                return parse_obj(document_class, v)
+            new_id = TypeAdapter(document_class.__fields__["id"].type_).validate_python(v)
+            ref = DBRef(collection=document_class.get_collection_name(), id=new_id)
+            print("REF", ref)
+            return cls(ref=ref, document_class=document_class)
+
+        return validate
 
     def to_ref(self):
         return self.ref
@@ -304,9 +310,7 @@ class Link(Generic[T]):
     def __get_pydantic_core_schema__(
             cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> CoreSchema:
-        print(source_type)
-        print(handler)
-        return core_schema.general_plain_validator_function(cls.validate)
+        return core_schema.general_plain_validator_function(cls.build_validation(handler, source_type))
 
 
 # ENCODERS_BY_TYPE[Link] = lambda o: o.to_dict()
@@ -323,11 +327,14 @@ class BackLink(Generic[T]):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v: Union[DBRef, T], field):
-        document_class = field.sub_fields[0].type_  # type: ignore
-        if isinstance(v, dict) or isinstance(v, BaseModel):
-            return parse_obj(document_class, v)
-        return cls(document_class=document_class)
+    def build_validation(cls, handler, source_type):
+
+        def validate(v: Union[DBRef, T], field):
+            document_class = get_args(source_type)[0]  # type: ignore
+            if isinstance(v, dict) or isinstance(v, BaseModel):
+                return parse_obj(document_class, v)
+            return cls(document_class=document_class)
+        return validate
 
     def to_dict(self):
         return {"collection": self.document_class.get_collection_name()}
@@ -336,7 +343,7 @@ class BackLink(Generic[T]):
     def __get_pydantic_core_schema__(
             cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> CoreSchema:
-        return core_schema.general_plain_validator_function(cls.validate)
+        return core_schema.general_plain_validator_function(cls.build_validation(handler, source_type))
 
 
 # ENCODERS_BY_TYPE[BackLink] = lambda o: o.to_dict()

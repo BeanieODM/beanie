@@ -176,6 +176,7 @@ class Document(
             self.revision_id = uuid4()
 
     def __init__(self, *args, **kwargs):
+        print(kwargs)
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
 
