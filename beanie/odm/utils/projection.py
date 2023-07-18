@@ -25,8 +25,8 @@ def get_projection(
         if hasattr(settings, "projection"):
             return getattr(settings, "projection")
 
-    # if getattr(model.Config, "extra", None) == "allow":
-    #     return None
+    if model.model_config.get("extra") == "allow":
+        return None
 
     document_projection: Dict[str, int] = {}
 

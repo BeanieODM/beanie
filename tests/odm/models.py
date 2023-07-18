@@ -22,7 +22,7 @@ from pydantic import (
     PrivateAttr,
     SecretBytes,
     SecretStr,
-    condecimal,
+    condecimal, ConfigDict,
 )
 from pydantic.color import Color
 from pymongo import IndexModel
@@ -383,17 +383,15 @@ class DocumentWithRevisionTurnedOn(Document):
 
 
 class DocumentWithPydanticConfig(Document):
-    num_1: int
+    model_config = ConfigDict(validate_assignment=True)
 
-    # class Config(Document.Config):
-    #     validate_assignment = True
+    num_1: int
 
 
 class DocumentWithExtras(Document):
-    num_1: int
+    model_config = ConfigDict(extra='allow')
 
-    # class Config(Document.Config):
-    #     extra = Extra.allow
+    num_1: int
 
 
 class DocumentWithExtrasKw(Document, extra=Extra.allow):

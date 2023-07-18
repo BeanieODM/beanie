@@ -24,7 +24,7 @@ def state():
         "num_1": 1,
         "num_2": 2,
         "_id": ObjectId(),
-        "internal": InternalDoc(),
+        "internal": InternalDoc().model_dump(),
     }
 
 
@@ -33,7 +33,7 @@ def state_without_id():
     return {
         "num_1": 1,
         "num_2": 2,
-        "internal": InternalDoc(),
+        "internal": InternalDoc().model_dump(),
     }
 
 
@@ -103,7 +103,7 @@ class TestStateManagement:
             "num_1": 1,
             "num_2": 2,
             "_id": ObjectId(),
-            "internal": InternalDoc(),
+            "internal": InternalDoc().model_dump(),
         }
         doc = parse_obj(DocumentWithTurnedOnStateManagement, obj)
         assert doc.get_saved_state() == obj
@@ -393,7 +393,7 @@ class TestStateManagement:
                 assert doc.get_previous_saved_state() is None
 
         async def test_insert(self, state_without_id):
-            doc = DocumentWithTurnedOnStateManagement.parse_obj(
+            doc = DocumentWithTurnedOnStateManagement.model_validate(
                 state_without_id
             )
             assert doc.get_saved_state() is None
