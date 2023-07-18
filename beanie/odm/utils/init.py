@@ -15,6 +15,7 @@ from beanie.odm.documents import DocType
 from beanie.odm.documents import Document
 from beanie.odm.fields import ExpressionField, LinkInfo, Link, BackLink, LinkTypes
 from beanie.odm.interfaces.detector import ModelType
+from beanie.odm.registry import DocsRegistry
 from beanie.odm.settings.document import DocumentSettings, IndexModelField
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
@@ -25,7 +26,6 @@ from beanie.odm.views import View
 class Output(BaseModel):
     class_name: str
     collection_name: str
-
 
 
 class Initializer:
@@ -56,7 +56,7 @@ class Initializer:
 
         self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
 
-        self.local_models_ns = {}
+        self._docs_ns = {}
 
         if (connection_string is None and database is None) or (
                 connection_string is not None and database is not None
@@ -85,8 +85,7 @@ class Initializer:
             for model in document_models
         ]
 
-        self.local_models_ns = {}
-        self.build_namespace()
+        self.fill_docs_registry()
 
         self.document_models.sort(
             key=lambda val: sort_order[val.get_model_type()]
@@ -97,12 +96,13 @@ class Initializer:
             yield from self.init_class(model).__await__()
 
     # General
-    def build_namespace(self):
+    def fill_docs_registry(self):
         for model in self.document_models:
             module = inspect.getmodule(model)
             members = inspect.getmembers(module)
-            classes = {name: obj for name, obj in members if inspect.isclass(obj)}
-            self.local_models_ns.update(classes)
+            for name, obj in members:
+                if inspect.isclass(obj):
+                    DocsRegistry.register(name, obj)
 
     @staticmethod
     def get_model(dot_path: str) -> Type["DocType"]:
@@ -161,18 +161,6 @@ class Initializer:
 
     # General. Relations
 
-    def evaluate_fr(self, forward_ref: Union[ForwardRef, Type]):
-        """
-        Evaluate forward ref
-
-        :param forward_ref: ForwardRef - forward ref to evaluate
-        :return: Type[BaseModel] - class of the forward ref
-        """
-        if isinstance(forward_ref, ForwardRef) and forward_ref.__forward_arg__ in self.local_models_ns:
-            return self.local_models_ns[forward_ref.__forward_arg__]
-        else:
-            return forward_ref
-
     def detect_link(self, field: FieldInfo, field_name: str) -> Optional[LinkInfo]:
         """
         It detects link and returns LinkInfo if any found.
@@ -183,46 +171,49 @@ class Initializer:
 
         origin = get_origin(field.annotation)
         args = get_args(field.annotation)
-        classes = [Link, BackLink]
+        classes = [
+            Link,
+            BackLink,
+        ]
 
         for cls in classes:
             # Check if annotation is one of the custom classes
             if isinstance(field.annotation, _GenericAlias) and field.annotation.__origin__ is cls:
                 if cls is Link:
-
                     return LinkInfo(
                         field_name=field_name,
                         lookup_field_name=field_name,
-                        document_class=self.evaluate_fr(args[0]),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(args[0]),  # type: ignore
                         link_type=LinkTypes.DIRECT,
                     )
                 if cls is BackLink:
                     return LinkInfo(
                         field_name=field_name,
                         lookup_field_name=field.json_schema_extra["original_field"],
-                        document_class=self.evaluate_fr(args[0]),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(args[0]),  # type: ignore
                         link_type=LinkTypes.BACK_DIRECT,
                     )
 
             # Check if annotation is List[custom class]
-            elif origin is List and len(args) == 1 and isinstance(args[0], _GenericAlias) and args[0].__origin__ is cls:
+            elif (origin is List or origin is list) and len(args) == 1 and isinstance(args[0], _GenericAlias) and args[
+                0].__origin__ is cls:
                 if cls is Link:
                     return LinkInfo(
                         field_name=field_name,
                         lookup_field_name=field_name,
-                        document_class=self.evaluate_fr(get_args(args[0])[0]),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
                         link_type=LinkTypes.LIST,
                     )
                 if cls is BackLink:
                     return LinkInfo(
                         field_name=field_name,
                         lookup_field_name=field.json_schema_extra["original_field"],
-                        document_class=self.evaluate_fr(get_args(args[0])[0]),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
                         link_type=LinkTypes.BACK_LIST,
                     )
 
             # Check if annotation is Optional[custom class] or Optional[List[custom class]]
-            elif origin is Optional and len(args) == 1:
+            elif origin is Union and len(args) == 2 and args[1] is type(None):
                 optional_origin = get_origin(args[0])
                 optional_args = get_args(args[0])
 
@@ -231,32 +222,33 @@ class Initializer:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field_name,
-                            document_class=self.evaluate_fr(optional_args[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_DIRECT,
                         )
                     if cls is BackLink:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field.json_schema_extra["original_field"],
-                            document_class=self.evaluate_fr(optional_args[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
                         )
 
-                elif optional_origin is List and len(optional_args) == 1 and isinstance(optional_args[0],
-                                                                                        _GenericAlias) and \
+                elif (optional_origin is List or optional_origin is list) and len(optional_args) == 1 and isinstance(
+                        optional_args[0],
+                        _GenericAlias) and \
                         optional_args[0].__origin__ is cls:
                     if cls is Link:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field_name,
-                            document_class=self.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_LIST,
                         )
                     if cls is BackLink:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field.json_schema_extra["original_field"],
-                            document_class=self.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_LIST,
                         )
         return None
@@ -295,6 +287,7 @@ class Initializer:
         Init class fields
         :return: None
         """
+
         # self.update_forward_refs(cls)
 
         def check_nested_links(

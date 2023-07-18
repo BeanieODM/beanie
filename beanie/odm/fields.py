@@ -36,6 +36,7 @@ from beanie.odm.operators.find.comparison import (
 )
 from beanie.odm.utils.parsing import parse_obj
 from pymongo import IndexModel
+from beanie.odm.registry import DocsRegistry
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
@@ -100,6 +101,9 @@ class PydanticObjectId(ObjectId):
         return core_schema.json_or_python_schema(
             python_schema=core_schema.general_plain_validator_function(cls.validate),
             json_schema=str_schema(),
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                lambda instance: str(instance)
+            ),
         )
 
     @classmethod
@@ -278,24 +282,22 @@ class Link(Generic[T]):
 
     # @classmethod
     # def __get_validators__(cls):
-    #     print("get validators")
     #     yield cls.validate
 
     @classmethod
     def build_validation(cls, handler, source_type):
 
         def validate(v: Union[DBRef, T], validation_info: ValidationInfo):
-            document_class = get_args(source_type)[0]  # type: ignore
+            document_class = DocsRegistry.evaluate_fr(get_args(source_type)[0])  # type: ignore
+
             if isinstance(v, DBRef):
                 return cls(ref=v, document_class=document_class)
             if isinstance(v, Link):
                 return v
             if isinstance(v, dict) or isinstance(v, BaseModel):
-                print("PARSE OBJ", v.__class__.__name__, document_class)
                 return parse_obj(document_class, v)
             new_id = TypeAdapter(document_class.__fields__["id"].type_).validate_python(v)
             ref = DBRef(collection=document_class.get_collection_name(), id=new_id)
-            print("REF", ref)
             return cls(ref=ref, document_class=document_class)
 
         return validate
@@ -306,10 +308,30 @@ class Link(Generic[T]):
     def to_dict(self):
         return {"id": str(self.ref.id), "collection": self.ref.collection}
 
+    @staticmethod
+    def serialize(value: Union["Link", BaseModel]):
+        if isinstance(value, Link):
+            return value.to_dict()
+        return value.model_dump()
+
     @classmethod
     def __get_pydantic_core_schema__(
             cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> CoreSchema:
+        return core_schema.json_or_python_schema(
+            python_schema=core_schema.general_plain_validator_function(cls.build_validation(handler, source_type)),
+            json_schema=core_schema.typed_dict_schema(
+                        {
+                            'id': core_schema.typed_dict_field(
+                                core_schema.str_schema()
+                            ),
+                            'collection': core_schema.typed_dict_field(core_schema.str_schema()),
+                        }
+                    ),
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                lambda instance: cls.serialize(instance)
+            ),
+        )
         return core_schema.general_plain_validator_function(cls.build_validation(handler, source_type))
 
 
