@@ -296,7 +296,7 @@ class Link(Generic[T]):
                 return v
             if isinstance(v, dict) or isinstance(v, BaseModel):
                 return parse_obj(document_class, v)
-            new_id = TypeAdapter(document_class.__fields__["id"].type_).validate_python(v)
+            new_id = TypeAdapter(document_class.model_fields["id"].annotation).validate_python(v)
             ref = DBRef(collection=document_class.get_collection_name(), id=new_id)
             return cls(ref=ref, document_class=document_class)
 

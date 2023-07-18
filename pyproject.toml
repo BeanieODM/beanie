@@ -36,7 +36,7 @@ test = [
     "asgi-lifespan>=1.0.1",
     "httpx>=0.23.0",
     "pydantic-settings>=2.0",
-    "fastapi==0.100.0b3",
+    "fastapi>=0.100",
 ]
 doc = [
     "Pygments>=2.8.0",
