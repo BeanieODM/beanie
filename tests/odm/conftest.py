@@ -261,9 +261,9 @@ async def init(db):
 
     yield None
 
-    # for model in models:
-    #     await model.get_motor_collection().drop()
-    #     await model.get_motor_collection().drop_indexes()
+    for model in models:
+        await model.get_motor_collection().drop()
+        await model.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture
