@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    mongodb_dsn: str = "mongodb://beanie:beanie@localhost:27017"
+    mongodb_dsn: str = "mongodb://localhost:27017/beanie_db"
     mongodb_db_name: str = "beanie_db"
 
 
