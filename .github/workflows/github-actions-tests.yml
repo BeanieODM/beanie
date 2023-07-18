@@ -22,7 +22,5 @@ jobs:
           mongodb-replica-set: test-rs
       - name: install dependencies
         run: pip install .[test]
-      - name: specify pydantic
-        run: pip3 install pydantic==${{ matrix.pydantic-version }}
       - name: run tests
         run: pytest
