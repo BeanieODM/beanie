@@ -19,7 +19,9 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
     ):
         left._previous_revision_id = right._previous_revision_id  # type: ignore
     for k, right_value in right.__iter__():
-        left_value = left.__getattribute__(k)
+        print("LEFT", left)
+        print("RIGHT", right)
+        left_value = getattr(left, k)
         if isinstance(right_value, BaseModel) and isinstance(
             left_value, BaseModel
         ):

@@ -1,6 +1,6 @@
 import datetime
 import decimal
-from decimal import Decimal
+from beanie import DecimalAnnotation
 from ipaddress import (
     IPv4Address,
     IPv4Interface,
@@ -22,7 +22,7 @@ from pydantic import (
     PrivateAttr,
     SecretBytes,
     SecretStr,
-    condecimal, ConfigDict,
+    ConfigDict,
 )
 from pydantic.color import Color
 from pymongo import IndexModel
@@ -186,7 +186,7 @@ class DocumentWithCustomIdInt(Document):
 
 class DocumentWithCustomFiledsTypes(Document):
     color: Color
-    decimal: Decimal
+    decimal: DecimalAnnotation
     secret_bytes: SecretBytes
     secret_string: SecretStr
     ipv4address: IPv4Address
@@ -643,10 +643,8 @@ class BDocument(RootDocument):
 
 
 class StateAndDecimalFieldModel(Document):
-    amt: decimal.Decimal
-    other_amt: condecimal(
-        decimal_places=1, multiple_of=decimal.Decimal("0.5")
-    ) = 0
+    amt: DecimalAnnotation
+    other_amt: DecimalAnnotation = Field(decimal_places=1, multiple_of=0.5, default=0)
 
     class Settings:
         name = "amounts"
@@ -706,10 +704,8 @@ class DocWithCollectionInnerClass(Document):
 
 
 class DocumentWithDecimalField(Document):
-    amt: decimal.Decimal
-    other_amt: pydantic.condecimal(
-        decimal_places=1, multiple_of=decimal.Decimal("0.5")
-    ) = 0
+    amt: DecimalAnnotation
+    other_amt: DecimalAnnotation = Field(decimal_places=1, multiple_of=0.5, default=0)
 
     class Config:
         validate_assignment = True

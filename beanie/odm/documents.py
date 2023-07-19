@@ -268,7 +268,9 @@ class Document(
                             for obj in value:
                                 if isinstance(obj, Document):
                                     await obj.save(link_rule=WriteRules.WRITE)
-
+        print("insert", get_dict(
+                self, to_db=True, keep_nulls=self.get_settings().keep_nulls
+            ),)
         result = await self.get_motor_collection().insert_one(
             get_dict(
                 self, to_db=True, keep_nulls=self.get_settings().keep_nulls
