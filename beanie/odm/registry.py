@@ -24,7 +24,10 @@ class DocsRegistry:
         :param forward_ref: ForwardRef - forward ref to evaluate
         :return: Type[BaseModel] - class of the forward ref
         """
-        if isinstance(forward_ref, ForwardRef) and forward_ref.__forward_arg__ in cls._registry:
+        if (
+            isinstance(forward_ref, ForwardRef)
+            and forward_ref.__forward_arg__ in cls._registry
+        ):
             return cls._registry[forward_ref.__forward_arg__]
         else:
             return forward_ref

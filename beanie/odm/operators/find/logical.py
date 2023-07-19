@@ -15,7 +15,7 @@ class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
         self,
         *expressions: Union[
             BaseFindOperator, Dict[str, Any], Mapping[str, Any]
-        ]
+        ],
     ):
         self.expressions = list(expressions)
 
@@ -110,7 +110,7 @@ class Nor(BaseFindLogicalOperator):
         self,
         *expressions: Union[
             BaseFindOperator, Dict[str, Any], Mapping[str, Any], bool
-        ]
+        ],
     ):
         self.expressions = list(expressions)
 

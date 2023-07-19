@@ -23,7 +23,7 @@ class UpdateMethods:
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs
+        **kwargs,
     ):
         return self
 
@@ -32,7 +32,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Set values
@@ -65,7 +65,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Set current date
@@ -81,7 +81,7 @@ class UpdateMethods:
             CurrentDate(expression),
             session=session,
             bulk_writer=bulk_writer,
-            **kwargs
+            **kwargs,
         )
 
     def inc(
@@ -89,7 +89,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Increment

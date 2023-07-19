@@ -10,17 +10,28 @@ from typing import (
     List,
     Optional,
     Any,
-    TYPE_CHECKING, get_origin, get_args,
+    TYPE_CHECKING,
+    get_args,
 )
 
 from typing import OrderedDict as OrderedDictType
 
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
-from pydantic import BaseModel, parse_obj_as, GetCoreSchemaHandler, GetJsonSchemaHandler, TypeAdapter
+from pydantic import (
+    BaseModel,
+    GetCoreSchemaHandler,
+    GetJsonSchemaHandler,
+    TypeAdapter,
+)
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema, CoreSchema
-from pydantic_core.core_schema import ValidatorFunctionWrapHandler, simple_ser_schema, ValidationInfo, str_schema
+from pydantic_core.core_schema import (
+    simple_ser_schema,
+    ValidationInfo,
+    str_schema,
+)
+
 # from pydantic.json import ENCODERS_BY_TYPE
 from pymongo import ASCENDING
 
@@ -58,7 +69,7 @@ def Indexed(typ, index_type=ASCENDING, **kwargs):
 
         @classmethod
         def __get_pydantic_core_schema__(
-                cls, _source_type: Any, _handler: GetCoreSchemaHandler
+            cls, _source_type: Any, _handler: GetCoreSchemaHandler
         ) -> core_schema.CoreSchema:
             return core_schema.no_info_after_validator_function(
                 lambda v: v,
@@ -96,10 +107,12 @@ class PydanticObjectId(ObjectId):
 
     @classmethod
     def __get_pydantic_core_schema__(
-            cls, source_type: Any, handler: GetCoreSchemaHandler
-    ) -> CoreSchema:
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:  # type: ignore
         return core_schema.json_or_python_schema(
-            python_schema=core_schema.general_plain_validator_function(cls.validate),
+            python_schema=core_schema.general_plain_validator_function(
+                cls.validate
+            ),
             json_schema=str_schema(),
             serialization=core_schema.plain_serializer_function_ser_schema(
                 lambda instance: str(instance)
@@ -108,7 +121,7 @@ class PydanticObjectId(ObjectId):
 
     @classmethod
     def __get_pydantic_json_schema__(
-            cls, schema: core_schema.CoreSchema, handler: GetJsonSchemaHandler
+        cls, schema: core_schema.CoreSchema, handler: GetJsonSchemaHandler  # type: ignore
     ) -> JsonSchemaValue:
         json_schema = handler(schema)
         json_schema.update(
@@ -228,7 +241,7 @@ class Link(Generic[T]):
 
     @classmethod
     async def fetch_list(
-            cls, links: List[Union["Link", "DocType"]], fetch_links: bool = False
+        cls, links: List[Union["Link", "DocType"]], fetch_links: bool = False
     ):
         """
         Fetch list that contains links and documents
@@ -263,7 +276,7 @@ class Link(Generic[T]):
 
     @staticmethod
     def repack_links(
-            links: List[Union["Link", "DocType"]]
+        links: List[Union["Link", "DocType"]]
     ) -> OrderedDictType[Any, Any]:
         result = OrderedDict()
         for link in links:
@@ -286,7 +299,6 @@ class Link(Generic[T]):
 
     @classmethod
     def build_validation(cls, handler, source_type):
-
         def validate(v: Union[DBRef, T], validation_info: ValidationInfo):
             document_class = DocsRegistry.evaluate_fr(get_args(source_type)[0])  # type: ignore
 
@@ -296,8 +308,12 @@ class Link(Generic[T]):
                 return v
             if isinstance(v, dict) or isinstance(v, BaseModel):
                 return parse_obj(document_class, v)
-            new_id = TypeAdapter(document_class.model_fields["id"].annotation).validate_python(v)
-            ref = DBRef(collection=document_class.get_collection_name(), id=new_id)
+            new_id = TypeAdapter(
+                document_class.model_fields["id"].annotation
+            ).validate_python(v)
+            ref = DBRef(
+                collection=document_class.get_collection_name(), id=new_id
+            )
             return cls(ref=ref, document_class=document_class)
 
         return validate
@@ -316,23 +332,29 @@ class Link(Generic[T]):
 
     @classmethod
     def __get_pydantic_core_schema__(
-            cls, source_type: Any, handler: GetCoreSchemaHandler
-    ) -> CoreSchema:
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:  # type: ignore
         return core_schema.json_or_python_schema(
-            python_schema=core_schema.general_plain_validator_function(cls.build_validation(handler, source_type)),
+            python_schema=core_schema.general_plain_validator_function(
+                cls.build_validation(handler, source_type)
+            ),
             json_schema=core_schema.typed_dict_schema(
-                        {
-                            'id': core_schema.typed_dict_field(
-                                core_schema.str_schema()
-                            ),
-                            'collection': core_schema.typed_dict_field(core_schema.str_schema()),
-                        }
+                {
+                    "id": core_schema.typed_dict_field(
+                        core_schema.str_schema()
                     ),
+                    "collection": core_schema.typed_dict_field(
+                        core_schema.str_schema()
+                    ),
+                }
+            ),
             serialization=core_schema.plain_serializer_function_ser_schema(
                 lambda instance: cls.serialize(instance)
             ),
         )
-        return core_schema.general_plain_validator_function(cls.build_validation(handler, source_type))
+        return core_schema.general_plain_validator_function(
+            cls.build_validation(handler, source_type)
+        )
 
 
 # ENCODERS_BY_TYPE[Link] = lambda o: o.to_dict()
@@ -350,12 +372,12 @@ class BackLink(Generic[T]):
 
     @classmethod
     def build_validation(cls, handler, source_type):
-
         def validate(v: Union[DBRef, T], field):
             document_class = get_args(source_type)[0]  # type: ignore
             if isinstance(v, dict) or isinstance(v, BaseModel):
                 return parse_obj(document_class, v)
             return cls(document_class=document_class)
+
         return validate
 
     def to_dict(self):
@@ -363,9 +385,11 @@ class BackLink(Generic[T]):
 
     @classmethod
     def __get_pydantic_core_schema__(
-            cls, source_type: Any, handler: GetCoreSchemaHandler
-    ) -> CoreSchema:
-        return core_schema.general_plain_validator_function(cls.build_validation(handler, source_type))
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:  # type: ignore
+        return core_schema.general_plain_validator_function(
+            cls.build_validation(handler, source_type)
+        )
 
 
 # ENCODERS_BY_TYPE[BackLink] = lambda o: o.to_dict()
@@ -404,7 +428,7 @@ class IndexModelField:
 
     @staticmethod
     def list_difference(
-            left: List["IndexModelField"], right: List["IndexModelField"]
+        left: List["IndexModelField"], right: List["IndexModelField"]
     ):
         result = []
         for index in left:
@@ -436,7 +460,7 @@ class IndexModelField:
 
     @staticmethod
     def find_index_with_the_same_fields(
-            indexes: List["IndexModelField"], index: "IndexModelField"
+        indexes: List["IndexModelField"], index: "IndexModelField"
     ):
         for i in indexes:
             if i.same_fields(index):
@@ -445,7 +469,7 @@ class IndexModelField:
 
     @staticmethod
     def merge_indexes(
-            left: List["IndexModelField"], right: List["IndexModelField"]
+        left: List["IndexModelField"], right: List["IndexModelField"]
     ):
         left_dict = {index.fields: index for index in left}
         right_dict = {index.fields: index for index in right}
@@ -454,6 +478,6 @@ class IndexModelField:
 
     @classmethod
     def __get_pydantic_core_schema__(
-            cls, source_type: Any, handler: GetCoreSchemaHandler
-    ) -> CoreSchema:
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:  # type: ignore
         return core_schema.general_plain_validator_function(cls.validate)

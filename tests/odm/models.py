@@ -1,5 +1,4 @@
 import datetime
-import decimal
 from beanie import DecimalAnnotation
 from ipaddress import (
     IPv4Address,
@@ -13,7 +12,6 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, Union, ClassVar
 from uuid import UUID, uuid4
 
-import pydantic
 import pymongo
 from pydantic import (
     BaseModel,
@@ -389,7 +387,7 @@ class DocumentWithPydanticConfig(Document):
 
 
 class DocumentWithExtras(Document):
-    model_config = ConfigDict(extra='allow')
+    model_config = ConfigDict(extra="allow")
 
     num_1: int
 
@@ -644,7 +642,9 @@ class BDocument(RootDocument):
 
 class StateAndDecimalFieldModel(Document):
     amt: DecimalAnnotation
-    other_amt: DecimalAnnotation = Field(decimal_places=1, multiple_of=0.5, default=0)
+    other_amt: DecimalAnnotation = Field(
+        decimal_places=1, multiple_of=0.5, default=0
+    )
 
     class Settings:
         name = "amounts"
@@ -705,7 +705,9 @@ class DocWithCollectionInnerClass(Document):
 
 class DocumentWithDecimalField(Document):
     amt: DecimalAnnotation
-    other_amt: DecimalAnnotation = Field(decimal_places=1, multiple_of=0.5, default=0)
+    other_amt: DecimalAnnotation = Field(
+        decimal_places=1, multiple_of=0.5, default=0
+    )
 
     class Config:
         validate_assignment = True

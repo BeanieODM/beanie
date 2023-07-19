@@ -63,11 +63,7 @@ def windows_not_inserted():
 
 @pytest.fixture
 def door_not_inserted(window_not_inserted, locks_not_inserted):
-    return Door(
-        t=10,
-        window=window_not_inserted,
-        locks=locks_not_inserted
-    )
+    return Door(t=10, window=window_not_inserted, locks=locks_not_inserted)
 
 
 @pytest.fixture

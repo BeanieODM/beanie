@@ -52,18 +52,23 @@ async def test_encode_regex():
         print(doc)
 
     print(case_insensitive_regex)
-    print(await DocumentWithStringField.find(
+    print(
+        await DocumentWithStringField.find(
             DocumentWithStringField.string_field == case_insensitive_regex
-        ).to_list())
+        ).to_list()
+    )
     print(matching_doc.id, ignore_case_matching_doc.id)
 
     print("LEFT", {matching_doc.id, ignore_case_matching_doc.id})
-    print("RIGHT", {
-        doc.id
-        async for doc in DocumentWithStringField.find(
-            DocumentWithStringField.string_field == case_insensitive_regex
-        )
-    })
+    print(
+        "RIGHT",
+        {
+            doc.id
+            async for doc in DocumentWithStringField.find(
+                DocumentWithStringField.string_field == case_insensitive_regex
+            )
+        },
+    )
     assert {matching_doc.id, ignore_case_matching_doc.id} == {
         doc.id
         async for doc in DocumentWithStringField.find(

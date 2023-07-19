@@ -23,7 +23,7 @@ class DeleteQuery(SessionMethods, CloneInterface):
         document_model: Type["DocType"],
         find_query: Mapping[str, Any],
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs
+        **pymongo_kwargs,
     ):
         self.document_model = document_model
         self.find_query = find_query
@@ -46,7 +46,7 @@ class DeleteMany(DeleteQuery):
                 .delete_many(
                     self.find_query,
                     session=self.session,
-                    **self.pymongo_kwargs
+                    **self.pymongo_kwargs,
                 )
                 .__await__()
             )
@@ -76,7 +76,7 @@ class DeleteOne(DeleteQuery):
                 .delete_one(
                     self.find_query,
                     session=self.session,
-                    **self.pymongo_kwargs
+                    **self.pymongo_kwargs,
                 )
                 .__await__()
             )

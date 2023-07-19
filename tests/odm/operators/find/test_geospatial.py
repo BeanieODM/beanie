@@ -41,14 +41,8 @@ async def test_geo_within():
 
 
 async def test_box():
-    q = Box(Sample.geo, lower_left=[1,3], upper_right=[2,4])
-    assert q == {
-        "geo": {
-            "$geoWithin": {
-                "$box": [[1,3], [2,4]]
-            }
-        }
-    }
+    q = Box(Sample.geo, lower_left=[1, 3], upper_right=[2, 4])
+    assert q == {"geo": {"$geoWithin": {"$box": [[1, 3], [2, 4]]}}}
 
 
 async def test_near():

@@ -427,5 +427,11 @@ class FindInterface:
                 )
 
         if cls.get_settings().union_doc:
-            args += ({cls.get_settings().class_id: cls.get_settings().union_doc_alias},)
+            args += (
+                {
+                    cls.get_settings()
+                    .class_id: cls.get_settings()
+                    .union_doc_alias
+                },
+            )
         return args

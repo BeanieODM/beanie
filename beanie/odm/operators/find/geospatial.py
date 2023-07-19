@@ -185,13 +185,7 @@ class Box(BaseFindGeospatialOperator):
 
     @property
     def query(self):
-        return {
-            self.field: {
-                "$geoWithin": {
-                    "$box": self.coordinates
-                }
-            }
-        }
+        return {self.field: {"$geoWithin": {"$box": self.coordinates}}}
 
 
 class Near(BaseFindGeospatialOperator):
