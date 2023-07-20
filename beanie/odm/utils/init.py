@@ -118,7 +118,7 @@ class Initializer:
             module = inspect.getmodule(model)
             members = inspect.getmembers(module)
             for name, obj in members:
-                if inspect.isclass(obj):
+                if inspect.isclass(obj) and issubclass(obj, BaseModel):
                     DocsRegistry.register(name, obj)
 
     @staticmethod

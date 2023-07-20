@@ -379,7 +379,7 @@ class BackLink(Generic[T]):
     @classmethod
     def build_validation(cls, handler, source_type):
         def validate(v: Union[DBRef, T], field):
-            document_class = get_args(source_type)[0]  # type: ignore
+            document_class = DocsRegistry.evaluate_fr(get_args(source_type)[0])  # type: ignore
             if isinstance(v, dict) or isinstance(v, BaseModel):
                 return parse_obj(document_class, v)
             return cls(document_class=document_class)
