@@ -88,6 +88,7 @@ from beanie.odm.utils.state import (
     save_state_after,
     swap_revision_after,
 )
+from beanie.odm.utils.typing import extract_id_class
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
@@ -222,7 +223,9 @@ class Document(
         :param **pymongo_kwargs: pymongo native parameters for find operation
         :return: Union["Document", None]
         """
-        if not isinstance(document_id, cls.model_fields["id"].annotation):
+        if not isinstance(
+            document_id, extract_id_class(cls.model_fields["id"].annotation)
+        ):
             document_id = TypeAdapter(
                 cls.model_fields["id"].annotation
             ).validate_python(document_id)
@@ -272,12 +275,6 @@ class Document(
                             for obj in value:
                                 if isinstance(obj, Document):
                                     await obj.save(link_rule=WriteRules.WRITE)
-        print(
-            "insert",
-            get_dict(
-                self, to_db=True, keep_nulls=self.get_settings().keep_nulls
-            ),
-        )
         result = await self.get_motor_collection().insert_one(
             get_dict(
                 self, to_db=True, keep_nulls=self.get_settings().keep_nulls
@@ -285,7 +282,9 @@ class Document(
             session=session,
         )
         new_id = result.inserted_id
-        if not isinstance(new_id, self.model_fields["id"].annotation):
+        if not isinstance(
+            new_id, extract_id_class(self.model_fields["id"].annotation)
+        ):
             new_id = TypeAdapter(
                 self.model_fields["id"].annotation
             ).validate_python(new_id)

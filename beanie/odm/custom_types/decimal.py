@@ -1,5 +1,13 @@
+# check python version
+import sys
+
+if sys.version_info >= (3, 9):
+    from typing import Annotated
+else:
+    from typing_extensions import Annotated
+
 from decimal import Decimal as NativeDecimal
-from typing import Annotated, Any, Callable
+from typing import Any, Callable
 
 from bson import Decimal128
 from pydantic import GetJsonSchemaHandler

@@ -115,10 +115,7 @@ class TestInsert:
             await house_not_inserted.insert()
 
     async def test_rule_write(self, house_not_inserted):
-        print(house_not_inserted.windows)
-        print(len(house_not_inserted.windows))
         await house_not_inserted.insert(link_rule=WriteRules.WRITE)
-        print(House.get_link_fields())
         locks = await Lock.all().to_list()
         assert len(locks) == 5
         windows = await Window.all().to_list()

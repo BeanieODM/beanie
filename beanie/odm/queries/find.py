@@ -1008,7 +1008,6 @@ class FindOne(FindQuery[FindQueryResultType]):
             document = yield from self._find_one().__await__()  # type: ignore
         if document is None:
             return None
-        print(document)
         if type(document) == self.projection_model:
             return cast(FindQueryResultType, document)
         return cast(
