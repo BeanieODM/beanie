@@ -1,3 +1,10 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from typing import get_args
+else:
+    from typing_extensions import get_args
+
 import asyncio
 from collections import OrderedDict
 from enum import Enum
@@ -11,7 +18,6 @@ from typing import (
     Optional,
     Any,
     TYPE_CHECKING,
-    get_args,
 )
 
 from typing import OrderedDict as OrderedDictType

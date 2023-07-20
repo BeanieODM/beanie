@@ -29,7 +29,7 @@ from beanie.odm.documents import Document
 from beanie.odm.views import View
 from beanie.odm.union_doc import UnionDoc
 
-__version__ = "1.20.0"
+__version__ = "1.21.0b0"
 __all__ = [
     # ODM
     "Document",

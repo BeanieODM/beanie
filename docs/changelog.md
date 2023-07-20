@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.21.0b0] - 2023-07-19
+        
+### Bump pydantic
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/620>
+            
+[1.21.0b0]: https://pypi.org/project/beanie/1.21.0b0
+
 ## [1.20.0] - 2023-06-30
         
 ### Docs: queue battery

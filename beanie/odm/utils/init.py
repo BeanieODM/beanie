@@ -1,3 +1,10 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from typing import get_args, get_origin
+else:
+    from typing_extensions import get_args, get_origin
+
 import importlib
 import inspect
 from copy import copy
@@ -7,8 +14,6 @@ from typing import (  # type: ignore
     Type,
     Union,
     _GenericAlias,
-    get_origin,
-    get_args,
 )
 
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
