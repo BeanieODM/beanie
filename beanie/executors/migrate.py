@@ -7,7 +7,7 @@ from typing import Dict, Any
 
 import click
 import toml
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 from beanie.migrations import template
 from beanie.migrations.database import DBHandler

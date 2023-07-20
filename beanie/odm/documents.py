@@ -14,13 +14,14 @@ from typing import (
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from bson import ObjectId, DBRef
+from bson import DBRef
 from lazy_model import LazyModel
 from pydantic import (
     ValidationError,
     PrivateAttr,
     Field,
-    parse_obj_as,
+    TypeAdapter,
+    ConfigDict,
 )
 from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
@@ -87,12 +88,27 @@ from beanie.odm.utils.state import (
     save_state_after,
     swap_revision_after,
 )
+from beanie.odm.utils.typing import extract_id_class
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
 
 DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
+
+
+def json_schema_extra(schema: Dict[str, Any], model: Type["Document"]) -> None:
+    props = {}
+    for k, v in schema.get("properties", {}).items():
+        if not v.get("hidden", False):
+            props[k] = v
+    schema["properties"] = props
+
+
+def document_alias_generator(s: str) -> str:
+    if s == "id":
+        return "_id"
+    return s
 
 
 class Document(
@@ -117,7 +133,22 @@ class Document(
     - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
-    id: Optional[PydanticObjectId] = None
+    # class Config:
+    #     json_encoders = {
+    #         ObjectId: lambda v: str(v),
+    #     }
+    #     allow_population_by_field_name = True
+    #     # fields = {"id": "_id"}
+
+    model_config = ConfigDict(
+        json_schema_extra=json_schema_extra,
+        populate_by_name=True,
+        alias_generator=document_alias_generator,
+    )
+
+    id: Optional[PydanticObjectId] = Field(
+        default=None, description="MongoDB document ObjectID"
+    )
 
     # State
     revision_id: Optional[UUID] = Field(default=None, hidden=True)
@@ -158,8 +189,8 @@ class Document(
                     in [LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT]
                     and field_name not in values
                 ):
-                    values[field_name] = BackLink[link_info.model_class](
-                        link_info.model_class
+                    values[field_name] = BackLink[link_info.document_class](
+                        link_info.document_class
                     )
                 if (
                     link_info.link_type
@@ -167,7 +198,9 @@ class Document(
                     and field_name not in values
                 ):
                     values[field_name] = [
-                        BackLink[link_info.model_class](link_info.model_class)
+                        BackLink[link_info.document_class](
+                            link_info.document_class
+                        )
                     ]
         return values
 
@@ -190,8 +223,12 @@ class Document(
         :param **pymongo_kwargs: pymongo native parameters for find operation
         :return: Union["Document", None]
         """
-        if not isinstance(document_id, cls.__fields__["id"].type_):
-            document_id = parse_obj_as(cls.__fields__["id"].type_, document_id)
+        if not isinstance(
+            document_id, extract_id_class(cls.model_fields["id"].annotation)
+        ):
+            document_id = TypeAdapter(
+                cls.model_fields["id"].annotation
+            ).validate_python(document_id)
 
         return await cls.find_one(
             {"_id": document_id},
@@ -238,7 +275,6 @@ class Document(
                             for obj in value:
                                 if isinstance(obj, Document):
                                     await obj.save(link_rule=WriteRules.WRITE)
-
         result = await self.get_motor_collection().insert_one(
             get_dict(
                 self, to_db=True, keep_nulls=self.get_settings().keep_nulls
@@ -246,8 +282,12 @@ class Document(
             session=session,
         )
         new_id = result.inserted_id
-        if not isinstance(new_id, self.__fields__["id"].type_):
-            new_id = parse_obj_as(self.__fields__["id"].type_, new_id)
+        if not isinstance(
+            new_id, extract_id_class(self.model_fields["id"].annotation)
+        ):
+            new_id = TypeAdapter(
+                self.model_fields["id"].annotation
+            ).validate_python(new_id)
         self.id = new_id
         return self
 
@@ -309,7 +349,6 @@ class Document(
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         **pymongo_kwargs,
     ) -> InsertManyResult:
-
         """
         Insert many documents to the collection
 
@@ -904,7 +943,6 @@ class Document(
                         elif isinstance(field_value, dict) and isinstance(
                             old_dict.get(field_name), dict
                         ):
-
                             field_data = self._collect_updates(
                                 old_dict.get(field_name),  # type: ignore
                                 field_value,
@@ -986,8 +1024,9 @@ class Document(
     def get_hidden_fields(cls):
         return set(
             attribute_name
-            for attribute_name, model_field in cls.__fields__.items()
-            if model_field.field_info.extra.get("hidden") is True
+            for attribute_name, model_field in cls.model_fields.items()
+            if model_field.json_schema_extra is not None
+            and model_field.json_schema_extra.get("hidden") is True
         )
 
     def dict(
@@ -1035,7 +1074,7 @@ class Document(
     async def validate_self(self, *args, **kwargs):
         # TODO: it can be sync, but needs some actions controller improvements
         if self.get_settings().validate_on_save:
-            self.parse_obj(self)
+            self.model_validate(self.model_dump())
 
     def to_ref(self):
         if self.id is None:
@@ -1082,21 +1121,4 @@ class Document(
     @classmethod
     def link_from_id(cls, id: Any):
         ref = DBRef(id=id, collection=cls.get_collection_name())
-        return Link(ref, model_class=cls)
-
-    class Config:
-        json_encoders = {
-            ObjectId: lambda v: str(v),
-        }
-        allow_population_by_field_name = True
-        fields = {"id": "_id"}
-
-        @staticmethod
-        def schema_extra(
-            schema: Dict[str, Any], model: Type["Document"]
-        ) -> None:
-            props = {}
-            for k, v in schema.get("properties", {}).items():
-                if not v.get("hidden", False):
-                    props[k] = v
-            schema["properties"] = props
+        return Link(ref, document_class=cls)

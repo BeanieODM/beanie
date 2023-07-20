@@ -1,6 +1,5 @@
 import datetime
-import decimal
-from decimal import Decimal
+from beanie import DecimalAnnotation
 from ipaddress import (
     IPv4Address,
     IPv4Interface,
@@ -13,7 +12,6 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, Union, ClassVar
 from uuid import UUID, uuid4
 
-import pydantic
 import pymongo
 from pydantic import (
     BaseModel,
@@ -22,7 +20,7 @@ from pydantic import (
     PrivateAttr,
     SecretBytes,
     SecretStr,
-    condecimal,
+    ConfigDict,
 )
 from pydantic.color import Color
 from pymongo import IndexModel
@@ -54,7 +52,7 @@ class Nested(BaseModel):
     integer: int
     option_1: Option1
     union: Union[Option1, Option2]
-    optional: Optional[Option2]
+    optional: Optional[Option2] = None
 
 
 class GeoObject(BaseModel):
@@ -69,7 +67,7 @@ class Sample(Document):
     float_num: float
     string: str
     nested: Nested
-    optional: Optional[Option2]
+    optional: Optional[Option2] = None
     union: Union[Option1, Option2]
     geo: GeoObject
     const: str = "TEST"
@@ -186,7 +184,7 @@ class DocumentWithCustomIdInt(Document):
 
 class DocumentWithCustomFiledsTypes(Document):
     color: Color
-    decimal: Decimal
+    decimal: DecimalAnnotation
     secret_bytes: SecretBytes
     secret_string: SecretStr
     ipv4address: IPv4Address
@@ -383,17 +381,15 @@ class DocumentWithRevisionTurnedOn(Document):
 
 
 class DocumentWithPydanticConfig(Document):
-    num_1: int
+    model_config = ConfigDict(validate_assignment=True)
 
-    class Config(Document.Config):
-        validate_assignment = True
+    num_1: int
 
 
 class DocumentWithExtras(Document):
-    num_1: int
+    model_config = ConfigDict(extra="allow")
 
-    class Config(Document.Config):
-        extra = Extra.allow
+    num_1: int
 
 
 class DocumentWithExtrasKw(Document, extra=Extra.allow):
@@ -412,13 +408,13 @@ class Lock(Document):
 class Window(Document):
     x: int
     y: int
-    lock: Optional[Link[Lock]]
+    lock: Optional[Link[Lock]] = None
 
 
 class Door(Document):
     t: int = 10
-    window: Optional[Link[Window]]
-    locks: Optional[List[Link[Lock]]]
+    window: Optional[Link[Window]] = None
+    locks: Optional[List[Link[Lock]]] = None
 
 
 class Roof(Document):
@@ -428,8 +424,8 @@ class Roof(Document):
 class House(Document):
     windows: List[Link[Window]]
     door: Link[Door]
-    roof: Optional[Link[Roof]]
-    yards: Optional[List[Link[Yard]]]
+    roof: Optional[Link[Roof]] = None
+    yards: Optional[List[Link[Yard]]] = None
     name: Indexed(str) = Field(hidden=True)
     height: Indexed(int) = 2
 
@@ -438,8 +434,8 @@ class House(Document):
 
 
 class DocumentForEncodingTest(Document):
-    bytes_field: Optional[bytes]
-    datetime_field: Optional[datetime.datetime]
+    bytes_field: Optional[bytes] = None
+    datetime_field: Optional[datetime.datetime] = None
 
 
 class DocumentWithTimeseries(Document):
@@ -562,7 +558,7 @@ class Bicycle(Vehicle):
 class Fuelled(BaseModel):
     """Just a mixin"""
 
-    fuel: Optional[str]
+    fuel: Optional[str] = None
 
 
 class Car(Vehicle, Fuelled):
@@ -645,10 +641,10 @@ class BDocument(RootDocument):
 
 
 class StateAndDecimalFieldModel(Document):
-    amt: decimal.Decimal
-    other_amt: condecimal(
-        decimal_places=1, multiple_of=decimal.Decimal("0.5")
-    ) = 0
+    amt: DecimalAnnotation
+    other_amt: DecimalAnnotation = Field(
+        decimal_places=1, multiple_of=0.5, default=0
+    )
 
     class Settings:
         name = "amounts"
@@ -663,18 +659,18 @@ class Region(Document):
 
 
 class UsersAddresses(Document):
-    region_id: Optional[Link[Region]]
+    region_id: Optional[Link[Region]] = None
     phone_number: Optional[str] = None
     street: Optional[str] = None
 
 
 class AddressView(BaseModel):
-    id: Optional[PydanticObjectId] = Field(alias="_id")
-    phone_number: Optional[str]
-    street: Optional[str]
-    state: Optional[str]
-    city: Optional[str]
-    district: Optional[str]
+    id: Optional[PydanticObjectId] = Field(alias="_id", default=None)
+    phone_number: Optional[str] = None
+    street: Optional[str] = None
+    state: Optional[str] = None
+    city: Optional[str] = None
+    district: Optional[str] = None
 
     class Settings:
         projection = {
@@ -688,7 +684,7 @@ class AddressView(BaseModel):
 
 
 class SelfLinked(Document):
-    item: Optional[Link["SelfLinked"]]
+    item: Optional[Link["SelfLinked"]] = None
     s: str
 
 
@@ -697,7 +693,7 @@ class LoopedLinksA(Document):
 
 
 class LoopedLinksB(Document):
-    a: Optional[LoopedLinksA]
+    a: Optional[LoopedLinksA] = None
 
 
 class DocWithCollectionInnerClass(Document):
@@ -708,10 +704,10 @@ class DocWithCollectionInnerClass(Document):
 
 
 class DocumentWithDecimalField(Document):
-    amt: decimal.Decimal
-    other_amt: pydantic.condecimal(
-        decimal_places=1, multiple_of=decimal.Decimal("0.5")
-    ) = 0
+    amt: DecimalAnnotation
+    other_amt: DecimalAnnotation = Field(
+        decimal_places=1, multiple_of=0.5, default=0
+    )
 
     class Config:
         validate_assignment = True
@@ -732,12 +728,12 @@ class DocumentWithDecimalField(Document):
 
 
 class ModelWithOptionalField(BaseModel):
-    s: Optional[str]
+    s: Optional[str] = None
     i: int
 
 
 class DocumentWithKeepNullsFalse(Document):
-    o: Optional[str]
+    o: Optional[str] = None
     m: ModelWithOptionalField
 
     class Settings:

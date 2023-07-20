@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "beanie"
-version = "1.20.0"
+version = "1.21.0b0"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
 requires-python = ">=3.7,<4.0"
@@ -17,11 +17,12 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
 ]
 dependencies = [
-    "pydantic>=1.10.0,<2.0.0",
+    "pydantic>=2.0",
     "motor>=2.5.0,<4.0.0",
     "click>=7",
     "toml",
-    "lazy-model>=0.0.3"
+    "lazy-model==0.1.0b0",
+    "typing-extensions>=4.7"
 ]
 
 [project.optional-dependencies]
@@ -33,9 +34,10 @@ test = [
     "dnspython>=2.1.0",
     "flake8>=3",
     "pyright>=0",
-    "fastapi>=0.78.0",
     "asgi-lifespan>=1.0.1",
-    "httpx>=0.23.0"
+    "httpx>=0.23.0",
+    "pydantic-settings>=2.0",
+    "fastapi>=0.100",
 ]
 doc = [
     "Pygments>=2.8.0",

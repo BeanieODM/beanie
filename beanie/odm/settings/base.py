@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 
 class ItemSettings(BaseModel):
-    name: Optional[str]
+    name: Optional[str] = None
 
     use_cache: bool = False
     cache_capacity: int = 32
@@ -14,7 +14,7 @@ class ItemSettings(BaseModel):
     bson_encoders: Dict[Any, Any] = Field(default_factory=dict)
     projection: Optional[Dict[str, Any]] = None
 
-    motor_db: Optional[AsyncIOMotorDatabase]
+    motor_db: Optional[AsyncIOMotorDatabase] = None
     motor_collection: Optional[AsyncIOMotorCollection] = None
 
     union_doc: Optional[Type] = None

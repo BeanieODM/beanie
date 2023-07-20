@@ -31,44 +31,39 @@ from tests.odm.models import (
 )
 
 
-@pytest.fixture
-def lock_not_inserted():
+def lock_not_inserted_fn():
     return Lock(k=10)
 
 
 @pytest.fixture
 def locks_not_inserted():
-    return [Lock(k=10), Lock(k=11)]
+    return [Lock(k=10001), Lock(k=20002)]
 
 
 @pytest.fixture
-def window_not_inserted(lock_not_inserted):
-    return Window(x=10, y=10, lock=lock_not_inserted)
+def window_not_inserted():
+    return Window(x=10, y=10, lock=lock_not_inserted_fn())
 
 
 @pytest.fixture
-def windows_not_inserted(lock_not_inserted):
+def windows_not_inserted():
     return [
         Window(
             x=10,
             y=10,
-            lock=lock_not_inserted,
+            lock=lock_not_inserted_fn(),
         ),
         Window(
             x=11,
             y=11,
-            lock=lock_not_inserted,
+            lock=lock_not_inserted_fn(),
         ),
     ]
 
 
 @pytest.fixture
-def door_not_inserted(locks_not_inserted, window_not_inserted):
-    return Door(
-        t=10,
-        window=window_not_inserted,
-        locks=locks_not_inserted,
-    )
+def door_not_inserted(window_not_inserted, locks_not_inserted):
+    return Door(t=10, window=window_not_inserted, locks=locks_not_inserted)
 
 
 @pytest.fixture
@@ -135,7 +130,6 @@ class TestInsert:
         house_not_inserted,
         door_not_inserted,
         window_not_inserted,
-        lock_not_inserted,
         locks_not_inserted,
     ):
         lock_links = []
@@ -145,7 +139,7 @@ class TestInsert:
             lock_links.append(link)
         door_not_inserted.locks = lock_links
 
-        door_window_lock = await lock_not_inserted.insert()
+        door_window_lock = await lock_not_inserted_fn().insert()
         door_window_lock_link = Lock.link_from_id(door_window_lock.id)
         window_not_inserted.lock = door_window_lock_link
 
@@ -157,9 +151,9 @@ class TestInsert:
         door_link = Door.link_from_id(door.id)
         house_not_inserted.door = door_link
 
-        house = House.parse_obj(house_not_inserted)
+        house = House.model_validate(house_not_inserted)
         await house.insert(link_rule=WriteRules.WRITE)
-        house.json()
+        house.model_dump_json()
 
     async def test_multi_insert_links(self):
         house = House(name="random", windows=[], door=Door())

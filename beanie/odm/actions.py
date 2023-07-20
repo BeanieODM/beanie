@@ -206,7 +206,6 @@ def wrap_with_actions(event_type: EventTypes):
             skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
             **kwargs,
         ):
-
             if skip_actions is None:
                 skip_actions = []
 

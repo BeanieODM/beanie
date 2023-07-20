@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+
 from pathlib import Path
 from typing import Mapping, AbstractSet
 import pytest
@@ -118,7 +119,7 @@ def test_revision_id_not_in_schema():
 
         bar: int = 3
 
-    schema = Foo.schema()
+    schema = Foo.model_json_schema()
     assert "revision_id" not in schema["properties"]
 
     # check that the document has not been initialized,

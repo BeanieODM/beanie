@@ -14,6 +14,7 @@ from beanie.odm.actions import (
     Update,
 )
 from beanie.odm.bulk import BulkWriter
+from beanie.odm.custom_types.decimal import DecimalAnnotation
 from beanie.odm.fields import (
     PydanticObjectId,
     Indexed,
@@ -28,7 +29,7 @@ from beanie.odm.documents import Document
 from beanie.odm.views import View
 from beanie.odm.union_doc import UnionDoc
 
-__version__ = "1.20.0"
+__version__ = "1.21.0b0"
 __all__ = [
     # ODM
     "Document",
@@ -61,4 +62,6 @@ __all__ = [
     "BackLink",
     "WriteRules",
     "DeleteRules",
+    # Custom Types
+    "DecimalAnnotation",
 ]

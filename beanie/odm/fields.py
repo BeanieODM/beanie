@@ -1,3 +1,10 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from typing import get_args
+else:
+    from typing_extensions import get_args
+
 import asyncio
 from collections import OrderedDict
 from enum import Enum
@@ -17,9 +24,21 @@ from typing import OrderedDict as OrderedDictType
 
 from bson import ObjectId, DBRef
 from bson.errors import InvalidId
-from pydantic import BaseModel, parse_obj_as
-from pydantic.fields import ModelField
-from pydantic.json import ENCODERS_BY_TYPE
+from pydantic import (
+    BaseModel,
+    GetCoreSchemaHandler,
+    GetJsonSchemaHandler,
+    TypeAdapter,
+)
+from pydantic.json_schema import JsonSchemaValue
+from pydantic_core import core_schema, CoreSchema
+from pydantic_core.core_schema import (
+    simple_ser_schema,
+    ValidationInfo,
+    str_schema,
+)
+
+# from pydantic.json import ENCODERS_BY_TYPE
 from pymongo import ASCENDING
 
 from beanie.odm.enums import SortDirection
@@ -34,6 +53,7 @@ from beanie.odm.operators.find.comparison import (
 )
 from beanie.odm.utils.parsing import parse_obj
 from pymongo import IndexModel
+from beanie.odm.registry import DocsRegistry
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
@@ -53,6 +73,15 @@ def Indexed(typ, index_type=ASCENDING, **kwargs):
         def __new__(cls, *args, **kwargs):
             return typ.__new__(typ, *args, **kwargs)
 
+        @classmethod
+        def __get_pydantic_core_schema__(
+            cls, _source_type: Any, _handler: GetCoreSchemaHandler
+        ) -> core_schema.CoreSchema:
+            return core_schema.no_info_after_validator_function(
+                lambda v: v,
+                simple_ser_schema(typ.__name__),
+            )
+
     NewType.__name__ = f"Indexed {typ.__name__}"
     return NewType
 
@@ -67,25 +96,50 @@ class PydanticObjectId(ObjectId):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v, _: ValidationInfo):
         if isinstance(v, bytes):
             v = v.decode("utf-8")
         try:
             return PydanticObjectId(v)
         except InvalidId:
-            raise TypeError("Id must be of type PydanticObjectId")
+            raise ValueError("Id must be of type PydanticObjectId")
+
+    # @classmethod
+    # def __modify_schema__(cls, field_schema):
+    #     field_schema.update(
+    #         type="string",
+    #         examples=["5eb7cf5a86d9755df3a6c593", "5eb7cfb05e32e07750a1756a"],
+    #     )
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:  # type: ignore
+        return core_schema.json_or_python_schema(
+            python_schema=core_schema.general_plain_validator_function(
+                cls.validate
+            ),
+            json_schema=str_schema(),
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                lambda instance: str(instance)
+            ),
+        )
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, schema: core_schema.CoreSchema, handler: GetJsonSchemaHandler  # type: ignore
+    ) -> JsonSchemaValue:
+        json_schema = handler(schema)
+        json_schema.update(
             type="string",
             example="5eb7cf5a86d9755df3a6c593",
         )
+        return json_schema
 
 
-ENCODERS_BY_TYPE[
-    PydanticObjectId
-] = str  # it is a workaround to force pydantic make json schema for this field
+# ENCODERS_BY_TYPE[
+#     PydanticObjectId
+# ] = str  # it is a workaround to force pydantic make json schema for this field
 
 
 class ExpressionField(str):
@@ -168,21 +222,21 @@ class LinkTypes(str, Enum):
 class LinkInfo(BaseModel):
     field_name: str
     lookup_field_name: str
-    model_class: Type[BaseModel]  # Document class
+    document_class: Type[BaseModel]  # Document class
     link_type: LinkTypes
-    nested_links: Optional[Dict]
+    nested_links: Optional[Dict] = None
 
 
 T = TypeVar("T")
 
 
 class Link(Generic[T]):
-    def __init__(self, ref: DBRef, model_class: Type[T]):
+    def __init__(self, ref: DBRef, document_class: Type[T]):
         self.ref = ref
-        self.model_class = model_class
+        self.document_class = document_class
 
     async def fetch(self, fetch_links: bool = False) -> Union[T, "Link"]:
-        result = await self.model_class.get(  # type: ignore
+        result = await self.document_class.get(  # type: ignore
             self.ref.id, with_children=True, fetch_links=fetch_links
         )
         return result or self
@@ -203,19 +257,19 @@ class Link(Generic[T]):
         """
         data = Link.repack_links(links)  # type: ignore
         ids_to_fetch = []
-        model_class = None
+        document_class = None
         for doc_id, link in data.items():
             if isinstance(link, Link):
-                if model_class is None:
-                    model_class = link.model_class
+                if document_class is None:
+                    document_class = link.document_class
                 else:
-                    if model_class != link.model_class:
+                    if document_class != link.document_class:
                         raise ValueError(
                             "All the links must have the same model class"
                         )
                 ids_to_fetch.append(link.ref.id)
 
-        fetched_models = await model_class.find(  # type: ignore
+        fetched_models = await document_class.find(  # type: ignore
             In("_id", ids_to_fetch),
             with_children=True,
             fetch_links=fetch_links,
@@ -245,22 +299,30 @@ class Link(Generic[T]):
             coros.append(link.fetch())
         return await asyncio.gather(*coros)
 
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
+    # @classmethod
+    # def __get_validators__(cls):
+    #     yield cls.validate
 
     @classmethod
-    def validate(cls, v: Union[DBRef, T], field: ModelField):
-        model_class = field.sub_fields[0].type_  # type: ignore
-        if isinstance(v, DBRef):
-            return cls(ref=v, model_class=model_class)
-        if isinstance(v, Link):
-            return v
-        if isinstance(v, dict) or isinstance(v, BaseModel):
-            return parse_obj(model_class, v)
-        new_id = parse_obj_as(model_class.__fields__["id"].type_, v)
-        ref = DBRef(collection=model_class.get_collection_name(), id=new_id)
-        return cls(ref=ref, model_class=model_class)
+    def build_validation(cls, handler, source_type):
+        def validate(v: Union[DBRef, T], validation_info: ValidationInfo):
+            document_class = DocsRegistry.evaluate_fr(get_args(source_type)[0])  # type: ignore
+
+            if isinstance(v, DBRef):
+                return cls(ref=v, document_class=document_class)
+            if isinstance(v, Link):
+                return v
+            if isinstance(v, dict) or isinstance(v, BaseModel):
+                return parse_obj(document_class, v)
+            new_id = TypeAdapter(
+                document_class.model_fields["id"].annotation
+            ).validate_python(v)
+            ref = DBRef(
+                collection=document_class.get_collection_name(), id=new_id
+            )
+            return cls(ref=ref, document_class=document_class)
+
+        return validate
 
     def to_ref(self):
         return self.ref
@@ -268,32 +330,75 @@ class Link(Generic[T]):
     def to_dict(self):
         return {"id": str(self.ref.id), "collection": self.ref.collection}
 
+    @staticmethod
+    def serialize(value: Union["Link", BaseModel]):
+        if isinstance(value, Link):
+            return value.to_dict()
+        return value.model_dump()
 
-ENCODERS_BY_TYPE[Link] = lambda o: o.to_dict()
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:  # type: ignore
+        return core_schema.json_or_python_schema(
+            python_schema=core_schema.general_plain_validator_function(
+                cls.build_validation(handler, source_type)
+            ),
+            json_schema=core_schema.typed_dict_schema(
+                {
+                    "id": core_schema.typed_dict_field(
+                        core_schema.str_schema()
+                    ),
+                    "collection": core_schema.typed_dict_field(
+                        core_schema.str_schema()
+                    ),
+                }
+            ),
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                lambda instance: cls.serialize(instance)
+            ),
+        )
+        return core_schema.general_plain_validator_function(
+            cls.build_validation(handler, source_type)
+        )
+
+
+# ENCODERS_BY_TYPE[Link] = lambda o: o.to_dict()
 
 
 class BackLink(Generic[T]):
     """Back reference to a document"""
 
-    def __init__(self, model_class: Type[T]):
-        self.model_class = model_class
+    def __init__(self, document_class: Type[T]):
+        self.document_class = document_class
 
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v: Union[DBRef, T], field: ModelField):
-        model_class = field.sub_fields[0].type_  # type: ignore
-        if isinstance(v, dict) or isinstance(v, BaseModel):
-            return parse_obj(model_class, v)
-        return cls(model_class=model_class)
+    def build_validation(cls, handler, source_type):
+        def validate(v: Union[DBRef, T], field):
+            document_class = get_args(source_type)[0]  # type: ignore
+            if isinstance(v, dict) or isinstance(v, BaseModel):
+                return parse_obj(document_class, v)
+            return cls(document_class=document_class)
+
+        return validate
 
     def to_dict(self):
-        return {"collection": self.model_class.get_collection_name()}
+        return {"collection": self.document_class.get_collection_name()}
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:  # type: ignore
+        return core_schema.general_plain_validator_function(
+            cls.build_validation(handler, source_type)
+        )
 
 
-ENCODERS_BY_TYPE[BackLink] = lambda o: o.to_dict()
+# ENCODERS_BY_TYPE[BackLink] = lambda o: o.to_dict()
 
 
 class IndexModelField:
@@ -321,7 +426,7 @@ class IndexModelField:
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v, *args, **kwargs):
         if isinstance(v, IndexModel):
             return IndexModelField(v)
         else:
@@ -376,3 +481,9 @@ class IndexModelField:
         right_dict = {index.fields: index for index in right}
         left_dict.update(right_dict)
         return list(left_dict.values())
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:  # type: ignore
+        return core_schema.general_plain_validator_function(cls.validate)

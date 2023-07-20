@@ -49,5 +49,5 @@ class TestLazyParsing:
         assert new_doc.i == 1000
 
     async def test_default_list(self):
-        res = parse_obj(SampleLazyParsing, {"i": 1, "s": 1})
+        res = parse_obj(SampleLazyParsing, {"i": "1", "s": "1"})
         assert res.lst == []
