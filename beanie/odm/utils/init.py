@@ -1,5 +1,12 @@
 import sys
 
+from beanie.odm.utils.pydantic import (
+    parse_model,
+    get_model_fields,
+    get_field_type,
+    get_extra_field_info,
+)
+
 if sys.version_info >= (3, 8):
     from typing import get_args, get_origin
 else:
@@ -159,13 +166,13 @@ class Initializer:
             {} if settings_class is None else dict(vars(settings_class))
         )
         if issubclass(cls, Document):
-            cls._document_settings = DocumentSettings.model_validate(
-                settings_vars
+            cls._document_settings = parse_model(
+                DocumentSettings, settings_vars
             )
         if issubclass(cls, View):
-            cls._settings = ViewSettings.model_validate(settings_vars)
+            cls._settings = parse_model(ViewSettings, settings_vars)
         if issubclass(cls, UnionDoc):
-            cls._settings = UnionDocSettings.model_validate(settings_vars)
+            cls._settings = parse_model(UnionDocSettings, settings_vars)
 
     # def update_forward_refs(self, cls: Type[BaseModel]):
     #     """
@@ -213,9 +220,9 @@ class Initializer:
                 if cls is BackLink:
                     return LinkInfo(
                         field_name=field_name,
-                        lookup_field_name=field.json_schema_extra[
-                            "original_field"
-                        ],  # type: ignore
+                        lookup_field_name=get_extra_field_info(
+                            field, "original_field"
+                        ),  # type: ignore
                         document_class=DocsRegistry.evaluate_fr(args[0]),  # type: ignore
                         link_type=LinkTypes.BACK_DIRECT,
                     )
@@ -237,9 +244,9 @@ class Initializer:
                 if cls is BackLink:
                     return LinkInfo(
                         field_name=field_name,
-                        lookup_field_name=field.json_schema_extra[  # type: ignore
-                            "original_field"
-                        ],
+                        lookup_field_name=get_extra_field_info(  # type: ignore
+                            field, "original_field"
+                        ),
                         document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
                         link_type=LinkTypes.BACK_LIST,
                     )
@@ -337,7 +344,7 @@ class Initializer:
             if link_info.document_class in prev_models:
                 return
             # self.update_forward_refs(link_info.document_class)
-            for k, v in link_info.document_class.model_fields.items():
+            for k, v in get_model_fields(link_info.document_class).items():
                 nested_link_info = self.detect_link(v, k)
                 if nested_link_info is None:
                     continue
@@ -353,7 +360,7 @@ class Initializer:
 
         if cls._link_fields is None:
             cls._link_fields = {}
-        for k, v in cls.model_fields.items():
+        for k, v in get_model_fields(cls).items():
             path = v.alias or k
             setattr(cls, k, ExpressionField(path))
 
@@ -457,9 +464,9 @@ class Initializer:
                     **fvalue.annotation._indexed[1],
                 )
             )
-            for k, fvalue in cls.model_fields.items()
-            if hasattr(fvalue.annotation, "_indexed")
-            and fvalue.annotation._indexed
+            for k, fvalue in get_model_fields(cls).items()
+            if hasattr(get_field_type(fvalue), "_indexed")
+            and get_field_type(fvalue)._indexed
         ]
 
         if document_settings.merge_indexes:
@@ -575,7 +582,7 @@ class Initializer:
         ):
             if link_info.document_class in prev_models:
                 return
-            for k, v in link_info.document_class.model_fields.items():
+            for k, v in get_model_fields(link_info.document_class).items():
                 nested_link_info = self.detect_link(v, k)
                 if nested_link_info is None:
                     continue
@@ -591,7 +598,7 @@ class Initializer:
 
         if cls._link_fields is None:
             cls._link_fields = {}
-        for k, v in cls.model_fields.items():
+        for k, v in get_model_fields(cls).items():
             path = v.alias or k
             setattr(cls, k, ExpressionField(path))
 
