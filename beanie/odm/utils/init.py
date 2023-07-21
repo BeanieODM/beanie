@@ -5,6 +5,7 @@ from beanie.odm.utils.pydantic import (
     get_model_fields,
     get_field_type,
     get_extra_field_info,
+    IS_PYDANTIC_V2,
 )
 
 if sys.version_info >= (3, 8):
@@ -174,16 +175,18 @@ class Initializer:
         if issubclass(cls, UnionDoc):
             cls._settings = parse_model(UnionDocSettings, settings_vars)
 
-    # def update_forward_refs(self, cls: Type[BaseModel]):
-    #     """
-    #     Update forward refs
-    #
-    #     :param cls: Type[BaseModel] - class to update forward refs
-    #     :return: None
-    #     """
-    #     if cls not in self.models_with_updated_forward_refs:
-    #         cls.model_rebuild(_parent_namespace_depth=10)
-    #         self.models_with_updated_forward_refs.append(cls)
+    if not IS_PYDANTIC_V2:
+
+        def update_forward_refs(self, cls: Type[BaseModel]):
+            """
+            Update forward refs
+
+            :param cls: Type[BaseModel] - class to update forward refs
+            :return: None
+            """
+            if cls not in self.models_with_updated_forward_refs:
+                cls.update_forward_refs()
+                self.models_with_updated_forward_refs.append(cls)
 
     # General. Relations
 
@@ -336,14 +339,16 @@ class Initializer:
         :return: None
         """
 
-        # self.update_forward_refs(cls)
+        if not IS_PYDANTIC_V2:
+            self.update_forward_refs(cls)
 
         def check_nested_links(
             link_info: LinkInfo, prev_models: List[Type[BaseModel]]
         ):
             if link_info.document_class in prev_models:
                 return
-            # self.update_forward_refs(link_info.document_class)
+            if not IS_PYDANTIC_V2:
+                self.update_forward_refs(link_info.document_class)
             for k, v in get_model_fields(link_info.document_class).items():
                 nested_link_info = self.detect_link(v, k)
                 if nested_link_info is None:

@@ -86,6 +86,8 @@ from beanie.odm.utils.pydantic import (
     get_model_fields,
     get_extra_field_info,
     IS_PYDANTIC_V2,
+    parse_model,
+    get_model_dump,
 )
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
@@ -1100,7 +1102,7 @@ class Document(
     async def validate_self(self, *args, **kwargs):
         # TODO: it can be sync, but needs some actions controller improvements
         if self.get_settings().validate_on_save:
-            self.model_validate(self.model_dump())
+            parse_model(self.__class__, get_model_dump(self))
 
     def to_ref(self):
         if self.id is None:

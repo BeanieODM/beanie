@@ -53,3 +53,10 @@ def get_config_value(model, parameter: str):
         return model.model_config.get(parameter)
     else:
         return getattr(model.Config, parameter, None)
+
+
+def get_model_dump(model):
+    if IS_PYDANTIC_V2:
+        return model.model_dump()
+    else:
+        return model.dict()
