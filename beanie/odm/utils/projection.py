@@ -3,6 +3,7 @@ from typing import Dict, Type, TypeVar, Optional
 from pydantic import BaseModel
 
 from beanie.odm.interfaces.detector import ModelType
+from beanie.odm.utils.pydantic import get_config_value, get_model_fields
 
 ProjectionModelType = TypeVar("ProjectionModelType", bound=BaseModel)
 
@@ -25,11 +26,11 @@ def get_projection(
         if hasattr(settings, "projection"):
             return getattr(settings, "projection")
 
-    if model.model_config.get("extra") == "allow":
+    if get_config_value(model, "extra") == "allow":
         return None
 
     document_projection: Dict[str, int] = {}
 
-    for name, field in model.model_fields.items():
+    for name, field in get_model_fields(model).items():
         document_projection[field.alias or name] = 1
     return document_projection

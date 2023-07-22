@@ -8,6 +8,7 @@ jobs:
       matrix:
         python-version: [ 3.7, 3.8, 3.9, 3.10.6, 3.11 ]
         mongodb-version: [ 4.4, 5.0 ]
+        pydantic-version: [ 1.10.11, 2.0 ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,5 +22,7 @@ jobs:
           mongodb-replica-set: test-rs
       - name: install dependencies
         run: pip install .[test]
+      - name: install pydantic
+        run: pip install pydantic==${{ matrix.pydantic-version }}
       - name: run tests
         run: pytest

@@ -14,13 +14,12 @@ from typing import (
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from bson import DBRef
+from bson import DBRef, ObjectId
 from lazy_model import LazyModel
 from pydantic import (
     ValidationError,
     PrivateAttr,
     Field,
-    TypeAdapter,
     ConfigDict,
 )
 from pydantic.class_validators import root_validator
@@ -81,6 +80,15 @@ from beanie.odm.queries.update import UpdateMany, UpdateResponse
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict, get_top_level_nones
 from beanie.odm.utils.parsing import merge_models
+from beanie.odm.utils.pydantic import (
+    parse_object_as,
+    get_field_type,
+    get_model_fields,
+    get_extra_field_info,
+    IS_PYDANTIC_V2,
+    parse_model,
+    get_model_dump,
+)
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
     saved_state_needed,
@@ -140,11 +148,30 @@ class Document(
     #     allow_population_by_field_name = True
     #     # fields = {"id": "_id"}
 
-    model_config = ConfigDict(
-        json_schema_extra=json_schema_extra,
-        populate_by_name=True,
-        alias_generator=document_alias_generator,
-    )
+    if IS_PYDANTIC_V2:
+        model_config = ConfigDict(
+            json_schema_extra=json_schema_extra,
+            populate_by_name=True,
+            alias_generator=document_alias_generator,
+        )
+    else:
+
+        class Config:
+            json_encoders = {
+                ObjectId: lambda v: str(v),
+            }
+            allow_population_by_field_name = True
+            fields = {"id": "_id"}
+
+            @staticmethod
+            def schema_extra(
+                schema: Dict[str, Any], model: Type["Document"]
+            ) -> None:
+                props = {}
+                for k, v in schema.get("properties", {}).items():
+                    if not v.get("hidden", False):
+                        props[k] = v
+                schema["properties"] = props
 
     id: Optional[PydanticObjectId] = Field(
         default=None, description="MongoDB document ObjectID"
@@ -224,11 +251,12 @@ class Document(
         :return: Union["Document", None]
         """
         if not isinstance(
-            document_id, extract_id_class(cls.model_fields["id"].annotation)
+            document_id,
+            extract_id_class(get_field_type(get_model_fields(cls)["id"])),
         ):
-            document_id = TypeAdapter(
-                cls.model_fields["id"].annotation
-            ).validate_python(document_id)
+            document_id = parse_object_as(
+                get_field_type(get_model_fields(cls)["id"]), document_id
+            )
 
         return await cls.find_one(
             {"_id": document_id},
@@ -283,11 +311,12 @@ class Document(
         )
         new_id = result.inserted_id
         if not isinstance(
-            new_id, extract_id_class(self.model_fields["id"].annotation)
+            new_id,
+            extract_id_class(get_field_type(get_model_fields(self)["id"])),
         ):
-            new_id = TypeAdapter(
-                self.model_fields["id"].annotation
-            ).validate_python(new_id)
+            new_id = parse_object_as(
+                get_field_type(get_model_fields(self)["id"]), new_id
+            )
         self.id = new_id
         return self
 
@@ -1024,9 +1053,8 @@ class Document(
     def get_hidden_fields(cls):
         return set(
             attribute_name
-            for attribute_name, model_field in cls.model_fields.items()
-            if model_field.json_schema_extra is not None
-            and model_field.json_schema_extra.get("hidden") is True
+            for attribute_name, model_field in get_model_fields(cls).items()
+            if get_extra_field_info(model_field, "hidden") is True
         )
 
     def dict(
@@ -1074,7 +1102,7 @@ class Document(
     async def validate_self(self, *args, **kwargs):
         # TODO: it can be sync, but needs some actions controller improvements
         if self.get_settings().validate_on_save:
-            self.model_validate(self.model_dump())
+            parse_model(self.__class__, get_model_dump(self))
 
     def to_ref(self):
         if self.id is None:
