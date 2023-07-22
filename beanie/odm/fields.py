@@ -443,7 +443,8 @@ class BackLink(Generic[T]):
         return {"collection": self.document_class.get_collection_name()}
 
 
-ENCODERS_BY_TYPE[BackLink] = lambda o: o.to_dict()
+if not IS_PYDANTIC_V2:
+    ENCODERS_BY_TYPE[BackLink] = lambda o: o.to_dict()
 
 
 class IndexModelField:
