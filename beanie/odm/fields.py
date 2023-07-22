@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from collections import OrderedDict
 from enum import Enum
 from typing import (
@@ -12,6 +13,11 @@ from typing import (
     Any,
     TYPE_CHECKING,
 )
+
+if sys.version_info >= (3, 8):
+    from typing import get_args
+else:
+    from typing_extensions import get_args
 
 from typing import OrderedDict as OrderedDictType
 
@@ -33,6 +39,8 @@ from beanie.odm.operators.find.comparison import (
 )
 from beanie.odm.utils.parsing import parse_obj
 from pymongo import IndexModel
+
+from beanie.odm.registry import DocsRegistry
 
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
@@ -243,7 +251,7 @@ class LinkInfo(BaseModel):
     lookup_field_name: str
     document_class: Type[BaseModel]  # Document class
     link_type: LinkTypes
-    nested_links: Optional[Dict]
+    nested_links: Optional[Dict] = None
 
 
 T = TypeVar("T")
@@ -319,6 +327,12 @@ class Link(Generic[T]):
         return await asyncio.gather(*coros)
 
     if IS_PYDANTIC_V2:
+
+        @staticmethod
+        def serialize(value: Union["Link", BaseModel]):
+            if isinstance(value, Link):
+                return value.to_dict()
+            return value.model_dump()
 
         @classmethod
         def build_validation(cls, handler, source_type):
@@ -525,10 +539,10 @@ class IndexModelField:
             cls, source_type: Any, handler: GetCoreSchemaHandler
         ) -> CoreSchema:  # type: ignore
             def validate(v, _):
-                if isinstance(v, IndexModelField):
-                    return v
-                else:
+                if isinstance(v, IndexModel):
                     return IndexModelField(v)
+                else:
+                    return IndexModelField(IndexModel(v))
 
             return core_schema.general_plain_validator_function(validate)
 
