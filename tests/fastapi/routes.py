@@ -2,9 +2,15 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from beanie import WriteRules, PydanticObjectId
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.fastapi.models import HouseAPI, WindowAPI
 
 house_router = APIRouter()
+if not IS_PYDANTIC_V2:
+    from fastapi.encoders import ENCODERS_BY_TYPE
+    from pydantic.json import ENCODERS_BY_TYPE as PYDANTIC_ENCODERS_BY_TYPE
+
+    ENCODERS_BY_TYPE.update(PYDANTIC_ENCODERS_BY_TYPE)
 
 
 class WindowInput(BaseModel):
