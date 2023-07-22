@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from pydantic import Field
+from pydantic import Field, Extra
 
 from beanie.odm.fields import IndexModelField
 from beanie.odm.settings.base import ItemSettings
@@ -25,3 +25,4 @@ class DocumentSettings(ItemSettings):
 
     class Config:
         arbitrary_types_allowed = True
+        extra = Extra.ignore
