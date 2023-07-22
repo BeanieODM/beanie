@@ -38,6 +38,7 @@ from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
     get_model_fields,
     get_field_type,
+    parse_object_as,
 )
 
 if IS_PYDANTIC_V2:
@@ -381,7 +382,7 @@ class Link(Generic[T]):
                 return v
             if isinstance(v, dict) or isinstance(v, BaseModel):
                 return parse_obj(document_class, v)
-            new_id = parse_obj(
+            new_id = parse_object_as(
                 get_field_type(get_model_fields(document_class)["id"]), v
             )
             ref = DBRef(
