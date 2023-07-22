@@ -14,7 +14,7 @@ from beanie.odm.actions import (
     Update,
 )
 from beanie.odm.bulk import BulkWriter
-from beanie.odm.custom_types.decimal import DecimalAnnotation
+from beanie.odm.custom_types import DecimalAnnotation
 from beanie.odm.fields import (
     PydanticObjectId,
     Indexed,
