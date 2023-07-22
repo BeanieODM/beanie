@@ -2,9 +2,17 @@
 
 Beanie project
 
+## [1.21.0b1] - 2023-07-21
+        
+### Bump pydantic beta 1
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/624>
+            
+[1.21.0b1]: https://pypi.org/project/beanie/1.21.0b1
+
 ## [1.21.0b0] - 2023-07-19
         
-### Bump pydantic
+### Bump pydantic beta 0
 - Author - [Roman Right](https://github.com/roman-right)
 - PR <https://github.com/roman-right/beanie/pull/620>
             
