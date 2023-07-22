@@ -7,12 +7,12 @@ from typing import Dict, Any
 
 import click
 import toml
-from pydantic_settings import BaseSettings
 
 from beanie.migrations import template
 from beanie.migrations.database import DBHandler
 from beanie.migrations.models import RunningMode, RunningDirections
 from beanie.migrations.runner import MigrationNode
+from beanie.odm.utils.pydantic import BaseSettings
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 

@@ -6,6 +6,7 @@ from pydantic.fields import Field
 from beanie import init_beanie, Document
 from beanie.exceptions import DocumentWasNotSaved
 from beanie.odm.fields import DeleteRules, Link, WriteRules, BackLink
+from beanie.odm.utils.pydantic import parse_model, IS_PYDANTIC_V2
 from tests.odm.models import (
     Door,
     House,
@@ -151,9 +152,12 @@ class TestInsert:
         door_link = Door.link_from_id(door.id)
         house_not_inserted.door = door_link
 
-        house = House.model_validate(house_not_inserted)
+        house = parse_model(House, house_not_inserted)
         await house.insert(link_rule=WriteRules.WRITE)
-        house.model_dump_json()
+        if IS_PYDANTIC_V2:
+            house.model_dump_json()
+        else:
+            house.json()
 
     async def test_multi_insert_links(self):
         house = House(name="random", windows=[], door=Door())

@@ -1,19 +1,17 @@
 from typing import Dict, Type, Union, ForwardRef
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from beanie.odm.documents import Document
+from pydantic import BaseModel
 
 
 class DocsRegistry:
-    _registry: Dict[str, Type["Document"]] = {}
+    _registry: Dict[str, Type[BaseModel]] = {}
 
     @classmethod
-    def register(cls, name: str, doc_type: Type["Document"]):
+    def register(cls, name: str, doc_type: Type[BaseModel]):
         cls._registry[name] = doc_type
 
     @classmethod
-    def get(cls, name: str) -> Type["Document"]:
+    def get(cls, name: str) -> Type[BaseModel]:
         return cls._registry[name]
 
     @classmethod

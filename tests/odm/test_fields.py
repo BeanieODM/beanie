@@ -11,6 +11,7 @@ from beanie.exceptions import CollectionWasNotInitialized
 from beanie.odm.fields import PydanticObjectId
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
     DocumentWithCustomFiledsTypes,
     DocumentWithBsonEncodersFiledsTypes,
@@ -119,7 +120,10 @@ def test_revision_id_not_in_schema():
 
         bar: int = 3
 
-    schema = Foo.model_json_schema()
+    if IS_PYDANTIC_V2:
+        schema = Foo.model_json_schema()
+    else:
+        schema = Foo.schema()
     assert "revision_id" not in schema["properties"]
 
     # check that the document has not been initialized,
