@@ -97,6 +97,5 @@ def parse_obj(
         o._saved_state = {"_id": o.id}
         return o
     result = parse_model(model, data)
-    # result = model.parse_obj(data)
     save_state_swap_revision(result)
     return result
