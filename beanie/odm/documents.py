@@ -1038,7 +1038,7 @@ class Document(
             {}, session=session
         ):
             try:
-                cls.parse_obj(json_document)
+                parse_model(cls, json_document)
             except ValidationError as e:
                 if inspection_result.status == InspectionStatuses.OK:
                     inspection_result.status = InspectionStatuses.FAIL
