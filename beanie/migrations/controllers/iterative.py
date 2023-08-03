@@ -6,6 +6,8 @@ from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.odm.documents import Document
 import asyncio
 
+from beanie.odm.utils.pydantic import parse_model
+
 
 class DummyOutput:
     def __init__(self):
@@ -105,8 +107,8 @@ def iterative_migration(
                 await self.function(**function_kwargs)
                 output_dict = input_document.dict()
                 update_dict(output_dict, output.dict())
-                output_document = self.output_document_model.parse_obj(
-                    output_dict
+                output_document = parse_model(
+                    self.output_document_model, output_dict
                 )
                 output_documents.append(output_document)
 

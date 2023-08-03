@@ -1,9 +1,10 @@
 import asyncio
 import logging
+import os
 import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 import click
 import toml
@@ -12,59 +13,90 @@ from beanie.migrations import template
 from beanie.migrations.database import DBHandler
 from beanie.migrations.models import RunningMode, RunningDirections
 from beanie.migrations.runner import MigrationNode
-from beanie.odm.utils.pydantic import BaseSettings
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 
-def toml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
-    path = Path("pyproject.toml")
-    if path.is_file():
-        return (
-            toml.load(path)
-            .get("tool", {})
-            .get("beanie", {})
-            .get("migrations", {})
+class MigrationSettings:
+    def __init__(self, **kwargs):
+        self.direction = (
+            kwargs.get("direction")
+            or self.get_env_value("direction")
+            or self.get_from_toml("direction")
+            or RunningDirections.FORWARD
         )
-    return {}
 
+        self.distance = int(
+            kwargs.get("distance")
+            or self.get_env_value("distance")
+            or self.get_from_toml("distance")
+            or 0
+        )
+        self.connection_uri = str(
+            kwargs.get("connection_uri")
+            or self.get_env_value("connection_uri")
+            or self.get_from_toml("connection_uri")
+        )
+        self.database_name = str(
+            kwargs.get("database_name")
+            or self.get_env_value("database_name")
+            or self.get_from_toml("database_name")
+        )
+        self.path = Path(
+            kwargs.get("path")
+            or self.get_env_value("path")
+            or self.get_from_toml("path")
+        )
+        self.allow_index_dropping = bool(
+            kwargs.get("allow_index_dropping")
+            or self.get_env_value("allow_index_dropping")
+            or self.get_from_toml("allow_index_dropping")
+            or False
+        )
 
-class MigrationSettings(BaseSettings):
-    direction: RunningDirections = RunningDirections.FORWARD
-    distance: int = 0
-    connection_uri: str
-    database_name: str
-    path: Path
-    allow_index_dropping: bool = False
-
-    class Config:
-        env_prefix = "beanie_"
-        fields = {
-            "connection_uri": {
-                "env": [
-                    "uri",
-                    "connection_uri",
-                    "connection_string",
-                    "mongodb_dsn",
-                    "mongodb_uri",
-                ]
-            },
-            "db": {"env": ["db", "db_name", "database_name"]},
-        }
-
-        @classmethod
-        def customise_sources(
-            cls,
-            init_settings,
-            env_settings,
-            file_secret_settings,
-        ):
-            return (
-                init_settings,
-                toml_config_settings_source,
-                env_settings,
-                file_secret_settings,
+    @staticmethod
+    def get_env_value(field_name) -> Any:
+        if field_name == "connection_uri":
+            value = (
+                os.environ.get("BEANIE_URI")
+                or os.environ.get("BEANIE_CONNECTION_URI")
+                or os.environ.get("BEANIE_CONNECTION_STRING")
+                or os.environ.get("BEANIE_MONGODB_DSN")
+                or os.environ.get("BEANIE_MONGODB_URI")
+                or os.environ.get("beanie_uri")
+                or os.environ.get("beanie_connection_uri")
+                or os.environ.get("beanie_connection_string")
+                or os.environ.get("beanie_mongodb_dsn")
+                or os.environ.get("beanie_mongodb_uri")
             )
+        elif field_name == "database_name":
+            value = (
+                os.environ.get("BEANIE_DB")
+                or os.environ.get("BEANIE_DB_NAME")
+                or os.environ.get("BEANIE_DATABASE_NAME")
+                or os.environ.get("beanie_db")
+                or os.environ.get("beanie_db_name")
+                or os.environ.get("beanie_database_name")
+            )
+        else:
+            value = os.environ.get(
+                f"BEANIE_{field_name.upper()}"
+            ) or os.environ.get(f"beanie_{field_name.lower()}")
+        return value
+
+    @staticmethod
+    def get_from_toml(field_name) -> Any:
+        path = Path("pyproject.toml")
+        if path.is_file():
+            val = (
+                toml.load(path)
+                .get("tool", {})
+                .get("beanie", {})
+                .get("migrations", {})
+            )
+        else:
+            val = {}
+        return val.get(field_name)
 
 
 @click.group()

@@ -20,9 +20,9 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: test-rs
-      - name: install dependencies
-        run: pip install .[test]
       - name: install pydantic
         run: pip install pydantic==${{ matrix.pydantic-version }}
+      - name: install dependencies
+        run: pip install .[test]
       - name: run tests
         run: pytest

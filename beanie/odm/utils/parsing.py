@@ -6,6 +6,7 @@ from beanie.exceptions import (
     DocWasNotRegisteredInUnionClass,
 )
 from beanie.odm.interfaces.detector import ModelType
+from beanie.odm.utils.pydantic import parse_model
 
 if TYPE_CHECKING:
     from beanie.odm.documents import Document
@@ -95,6 +96,6 @@ def parse_obj(
         o = model.lazy_parse(data, {"_id"})  # type: ignore
         o._saved_state = {"_id": o.id}
         return o
-    result = model.parse_obj(data)
+    result = parse_model(model, data)
     save_state_swap_revision(result)
     return result

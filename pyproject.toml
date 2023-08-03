@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "beanie"
-version = "1.21.0b1"
+version = "1.21.0"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
 requires-python = ">=3.7,<4.0"
@@ -36,8 +36,8 @@ test = [
     "pyright>=0",
     "asgi-lifespan>=1.0.1",
     "httpx>=0.23.0",
-    "pydantic-settings>=2.0",
     "fastapi>=0.100",
+    "pydantic-settings>=2.0",
 ]
 doc = [
     "Pygments>=2.8.0",

@@ -10,13 +10,6 @@ if IS_PYDANTIC_V2:
 else:
     from pydantic import parse_obj_as
 
-if IS_PYDANTIC_V2:
-    from pydantic_settings import BaseSettings
-else:
-    from pydantic import BaseSettings  # type: ignore
-
-BaseSettings = BaseSettings
-
 
 def parse_object_as(object_type: Type, data: Any):
     if IS_PYDANTIC_V2:
