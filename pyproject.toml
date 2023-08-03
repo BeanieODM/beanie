@@ -22,7 +22,8 @@ dependencies = [
     "click>=7",
     "toml",
     "lazy-model==0.1.0b0",
-    "typing-extensions>=4.7"
+    "typing-extensions>=4.7; pydantic >= 2",
+    "pydantic-settings>=2.0; pydantic >= 2",
 ]
 
 [project.optional-dependencies]
@@ -36,7 +37,6 @@ test = [
     "pyright>=0",
     "asgi-lifespan>=1.0.1",
     "httpx>=0.23.0",
-    "pydantic-settings>=2.0",
     "fastapi>=0.100",
 ]
 doc = [
