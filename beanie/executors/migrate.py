@@ -20,13 +20,13 @@ logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 class MigrationSettings:
     def __init__(self, **kwargs):
-        self.direction = parse_object_as(
+        self.direction = (
             kwargs.get("direction")
             or self.get_env_value("direction")
             or self.get_from_toml("direction")
-            or RunningDirections.FORWARD,
-            RunningDirections,
+            or RunningDirections.FORWARD
         )
+
         self.distance = parse_object_as(
             kwargs.get("distance")
             or self.get_env_value("distance")
