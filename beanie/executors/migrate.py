@@ -13,7 +13,6 @@ from beanie.migrations import template
 from beanie.migrations.database import DBHandler
 from beanie.migrations.models import RunningMode, RunningDirections
 from beanie.migrations.runner import MigrationNode
-from beanie.odm.utils.pydantic import parse_object_as
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
@@ -27,37 +26,32 @@ class MigrationSettings:
             or RunningDirections.FORWARD
         )
 
-        self.distance = parse_object_as(
+        self.distance = int(
             kwargs.get("distance")
             or self.get_env_value("distance")
             or self.get_from_toml("distance")
-            or 0,
-            int,
+            or 0
         )
-        self.connection_uri = parse_object_as(
+        self.connection_uri = str(
             kwargs.get("connection_uri")
             or self.get_env_value("connection_uri")
-            or self.get_from_toml("connection_uri"),
-            str,
+            or self.get_from_toml("connection_uri")
         )
-        self.database_name = parse_object_as(
+        self.database_name = str(
             kwargs.get("database_name")
             or self.get_env_value("database_name")
-            or self.get_from_toml("database_name"),
-            str,
+            or self.get_from_toml("database_name")
         )
-        self.path = parse_object_as(
+        self.path = Path(
             kwargs.get("path")
             or self.get_env_value("path")
-            or self.get_from_toml("path"),
-            Path,
+            or self.get_from_toml("path")
         )
-        self.allow_index_dropping = parse_object_as(
+        self.allow_index_dropping = bool(
             kwargs.get("allow_index_dropping")
             or self.get_env_value("allow_index_dropping")
             or self.get_from_toml("allow_index_dropping")
-            or False,
-            bool,
+            or False
         )
 
     @staticmethod
