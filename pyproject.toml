@@ -28,7 +28,7 @@ dependencies = [
     "click>=7",
     "toml",
     "lazy-model==0.1.0b0",
-    "typing-extensions>=4.7; python_version < 3.11",
+    "typing-extensions>=4.7; python_version < '3.11'",
 ]
 
 [project.optional-dependencies]
