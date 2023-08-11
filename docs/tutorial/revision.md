@@ -7,7 +7,7 @@ Only when the local copy is synced with the database, the application will be al
 This helps to avoid data losses.
 
 ### Be aware
-revision id feature may wor incorrectly with BulkWriter.
+revision id feature may work incorrectly with BulkWriter.
 
 ### Usage
 
