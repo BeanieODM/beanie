@@ -19,6 +19,7 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
         right, "_previous_revision_id"
     ):
         left._previous_revision_id = right._previous_revision_id  # type: ignore
+
     for k, right_value in right.__iter__():
         left_value = getattr(left, k)
         if isinstance(right_value, BaseModel) and isinstance(
@@ -26,14 +27,24 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
         ):
             merge_models(left_value, right_value)
             continue
+
         if isinstance(right_value, list):
-            links_found = False
-            for i in right_value:
+            new_list = []
+            for index, i in enumerate(right_value):
                 if isinstance(i, Link):
-                    links_found = True
-                    break
-            if links_found:
-                continue
+                    continue
+
+                if (
+                    index < len(left_value)
+                    and isinstance(i, BaseModel)
+                    and isinstance(left_value[index], BaseModel)
+                ):
+                    merge_models(left_value[index], i)
+                    new_list.append(left_value[index])
+                else:
+                    new_list.append(i)
+
+            left.__setattr__(k, new_list)
         elif not isinstance(right_value, Link):
             left.__setattr__(k, right_value)
 
