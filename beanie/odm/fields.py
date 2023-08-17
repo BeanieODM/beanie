@@ -292,9 +292,17 @@ class Link(Generic[T]):
                 else:
                     if document_class != link.document_class:
                         raise ValueError(
-                            "All the links must have the same model class"
+                            "All the documents or links must have the same model class"
                         )
                 ids_to_fetch.append(link.ref.id)
+            else:  # it is a document not link
+                if document_class is None:
+                    document_class = link.__class__
+                else:
+                    if document_class != link.__class__:
+                        raise ValueError(
+                            "All the documents or links must have the same model class"
+                        )
 
         fetched_models = await document_class.find(  # type: ignore
             In("_id", ids_to_fetch),
