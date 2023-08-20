@@ -138,7 +138,7 @@ class Document(
     Inherited from:
 
     - Pydantic BaseModel
-    - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
+    - [AggregateInterface](interfaces.md#aggregateinterface)
     """
 
     # class Config:
@@ -718,7 +718,7 @@ class Document(
 
         ```
 
-        Uses [Set operator](https://roman-right.github.io/beanie/api/operators/update/#set)
+        Uses [Set operator](operators/update.md#set)
 
         :param expression: Dict[Union[ExpressionField, str], Any] - keys and
         values to set
@@ -746,7 +746,7 @@ class Document(
         """
         Set current date
 
-        Uses [CurrentDate operator](https://roman-right.github.io/beanie/api/operators/update/#currentdate)
+        Uses [CurrentDate operator](operators/update.md#currentdate)
 
         :param expression: Dict[Union[ExpressionField, str], Any]
         :param session: Optional[ClientSession] - pymongo session
@@ -784,7 +784,7 @@ class Document(
 
         ```
 
-        Uses [Inc operator](https://roman-right.github.io/beanie/api/operators/update/#inc)
+        Uses [Inc operator](operators/update.md#inc)
 
         :param expression: Dict[Union[ExpressionField, str], Any]
         :param session: Optional[ClientSession] - pymongo session

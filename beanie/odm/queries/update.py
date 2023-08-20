@@ -47,8 +47,8 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
 
     Inherited from:
 
-    - [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods)
-    - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
+    - [UpdateMethods](interfaces.md#updatemethods)
+    - [SessionMethods](interfaces.md#sessionmethods)
     """
 
     def __init__(
@@ -94,7 +94,7 @@ class UpdateMany(UpdateQuery):
 
     Inherited from:
 
-    - [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
+    - [UpdateQuery](query.md#updatequery)
     """
 
     def update(
@@ -214,7 +214,7 @@ class UpdateOne(UpdateQuery):
 
     Inherited from:
 
-    - [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
+    - [UpdateQuery](query.md#updatequery)
     """
 
     def __init__(self, *args, **kwargs):
