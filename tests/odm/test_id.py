@@ -14,4 +14,4 @@ async def test_integer_id():
     doc = DocumentWithCustomIdInt(name="TEST", id=1)
     await doc.insert()
     new_doc = await DocumentWithCustomIdInt.get(doc.id)
-    assert type(new_doc.id) == int
+    assert isinstance(new_doc.id, int)
