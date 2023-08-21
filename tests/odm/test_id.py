@@ -7,7 +7,7 @@ async def test_uuid_id():
     doc = DocumentWithCustomIdUUID(name="TEST")
     await doc.insert()
     new_doc = await DocumentWithCustomIdUUID.get(doc.id)
-    assert type(new_doc.id) == UUID
+    assert isinstance(new_doc.id, UUID)
 
 
 async def test_integer_id():
