@@ -173,6 +173,9 @@ class TestInsert:
             assert isinstance(win, Window)
             assert win.id
 
+    async def test_fetch_after_insert(self, house_not_inserted):
+        await house_not_inserted.fetch_all_links()
+
 
 class TestFind:
     async def test_prefetch_find_many(self, houses):
@@ -395,19 +398,19 @@ class TestOther:
     async def test_query_composition(self):
         SYS = {"id", "revision_id"}
 
-        # Simple fields are initialized using the pydantic __fields__ internal property
+        # Simple fields are initialized using the pydantic model_fields internal property
         # such fields are properly isolated when multi inheritance is involved.
-        assert set(RootDocument.__fields__.keys()) == SYS | {
+        assert set(RootDocument.model_fields.keys()) == SYS | {
             "name",
             "link_root",
         }
-        assert set(ADocument.__fields__.keys()) == SYS | {
+        assert set(ADocument.model_fields.keys()) == SYS | {
             "name",
             "link_root",
             "surname",
             "link_a",
         }
-        assert set(BDocument.__fields__.keys()) == SYS | {
+        assert set(BDocument.model_fields.keys()) == SYS | {
             "name",
             "link_root",
             "email",
@@ -491,7 +494,7 @@ class TestOther:
 
     async def test_with_extra_allow(self, houses):
         res = await House.find(fetch_links=True).to_list()
-        assert res[0].__fields__.keys() == {
+        assert res[0].model_fields.keys() == {
             "id",
             "revision_id",
             "windows",
@@ -503,7 +506,7 @@ class TestOther:
         }
 
         res = await House.find_one(fetch_links=True)
-        assert res.__fields__.keys() == {
+        assert res.model_fields.keys() == {
             "id",
             "revision_id",
             "windows",
