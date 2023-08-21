@@ -29,6 +29,8 @@ from tests.odm.models import (
     DocumentWithListLink,
     DocumentWithListOfLinks,
     DocumentToBeLinked,
+    DocumentWithTextIndexAndLink,
+    LinkDocumentForTextSeacrh,
 )
 
 
@@ -334,6 +336,22 @@ class TestFind:
         # test order
         for i in range(10):
             assert doc_with_links.links[i].id == docs[i].id
+
+    async def test_text_search(self):
+        doc = DocumentWithTextIndexAndLink(
+            s="hello world", link=LinkDocumentForTextSeacrh(i=1)
+        )
+        await doc.insert(link_rule=WriteRules.WRITE)
+
+        doc2 = DocumentWithTextIndexAndLink(
+            s="hi world", link=LinkDocumentForTextSeacrh(i=2)
+        )
+        await doc2.insert(link_rule=WriteRules.WRITE)
+
+        docs = await DocumentWithTextIndexAndLink.find(
+            {"$text": {"$search": "hello"}}, fetch_links=True
+        ).to_list()
+        assert len(docs) == 1
 
 
 class TestReplace:

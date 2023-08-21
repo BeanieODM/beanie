@@ -84,6 +84,8 @@ from tests.odm.models import (
     DocumentWithIndexMerging1,
     DocumentWithIndexMerging2,
     DocumentWithCustomInit,
+    DocumentWithTextIndexAndLink,
+    LinkDocumentForTextSeacrh,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -253,6 +255,8 @@ async def init(db):
         DocumentWithIndexMerging1,
         DocumentWithIndexMerging2,
         DocumentWithCustomInit,
+        DocumentWithTextIndexAndLink,
+        LinkDocumentForTextSeacrh,
     ]
     await init_beanie(
         database=db,

@@ -148,4 +148,19 @@ class Not(BaseFindLogicalOperator):
 
     @property
     def query(self):
-        return {"$not": self.expression}
+        if len(self.expression) == 1:
+            expression_key = list(self.expression.keys())[0]
+            if expression_key.startswith("$"):
+                raise AttributeError(
+                    "Not operator can not be used with operators"
+                )
+            value = self.expression[expression_key]
+            if isinstance(value, dict):
+                internal_key = list(value.keys())[0]
+                if internal_key.startswith("$"):
+                    return {expression_key: {"$not": value}}
+
+            return {expression_key: {"$not": {"$eq": value}}}
+        raise AttributeError(
+            "Not operator can only be used with one expression"
+        )

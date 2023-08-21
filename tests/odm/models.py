@@ -837,3 +837,20 @@ class DocumentWithCustomInit(Document):
     @classmethod
     async def custom_init(cls):
         cls.s = "TEST2"
+
+
+class LinkDocumentForTextSeacrh(Document):
+    i: int
+
+
+class DocumentWithTextIndexAndLink(Document):
+    s: str
+    link: Link[LinkDocumentForTextSeacrh]
+
+    class Settings:
+        indexes = [
+            pymongo.IndexModel(
+                [("s", pymongo.TEXT)],
+                name="text_index",
+            )
+        ]
