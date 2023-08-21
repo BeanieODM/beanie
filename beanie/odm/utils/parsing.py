@@ -43,6 +43,7 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
                     break
             if links_found:
                 continue
+            left.__setattr__(k, right_value)
         elif not isinstance(right_value, Link):
             left.__setattr__(k, right_value)
 

@@ -9,6 +9,7 @@ from tests.odm.models import (
     DocumentTestModel,
     ModelWithOptionalField,
     DocumentWithKeepNullsFalse,
+    TestDocumentWithList,
 )
 
 
@@ -278,3 +279,13 @@ async def test_save_changes_keep_nulls_false():
 #         {"test_str": "smth_else"}, session=session
 #     ).to_list()
 #     assert len(smth_else_documetns) == 17
+
+
+async def test_update_list():
+    test_record = TestDocumentWithList(list_values=["1", "2", "3"])
+    test_record = await test_record.insert()
+    update_data = test_record.dict()
+    update_data["list_values"] = ["5", "6", "7"]
+
+    updated_test_record = await test_record.update({"$set": update_data})
+    assert updated_test_record.list_values == update_data["list_values"]

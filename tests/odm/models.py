@@ -854,3 +854,7 @@ class DocumentWithTextIndexAndLink(Document):
                 name="text_index",
             )
         ]
+
+
+class TestDocumentWithList(Document):
+    list_values: List[str]

@@ -23,6 +23,7 @@ from beanie.odm.fields import (
     WriteRules,
     DeleteRules,
 )
+from beanie.odm.queries.update import UpdateResponse
 from beanie.odm.settings.timeseries import TimeSeriesConfig, Granularity
 from beanie.odm.utils.init import init_beanie
 from beanie.odm.documents import Document
@@ -64,4 +65,6 @@ __all__ = [
     "DeleteRules",
     # Custom Types
     "DecimalAnnotation",
+    # UpdateResponse
+    "UpdateResponse",
 ]

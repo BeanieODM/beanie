@@ -172,6 +172,7 @@ class TestInsert:
         house.windows.append(new_window)
         await house.save(link_rule=WriteRules.WRITE)
         for win in house.windows:
+            print(type(win), win)
             assert isinstance(win, Window)
             assert win.id
 
