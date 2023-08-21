@@ -1,5 +1,5 @@
 import asyncio
-from typing import ClassVar, AbstractSet
+from typing import ClassVar, AbstractSet, Iterable
 from typing import (
     Dict,
     Optional,
@@ -373,7 +373,7 @@ class Document(
     @classmethod
     async def insert_many(
         cls: Type[DocType],
-        documents: List[DocType],
+        documents: Iterable[DocType],
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         **pymongo_kwargs,
