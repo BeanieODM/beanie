@@ -1,6 +1,6 @@
 # Development
 
-Hopefully, you have landed here because you would like to help out with the development of Beanie. Whether through adding new features, fixing bugs, or extending documentation, your help is really appreciated! Please read this page carefully. If you have any questions, drop by on [the Discord](https://discord.com/invite/ZTTnM7rMaz).
+Hopefully, you have landed here because you would like to help out with the development of Beanie. Whether through adding new features, fixing bugs, or extending documentation, your help is really appreciated! Please read this page carefully. If you have any questions, drop by on [the Discord](https://discord.com/invite/29mMrEBvr4).
 
 Also, please read the [Code of Conduct](code-of-conduct.md).
 
