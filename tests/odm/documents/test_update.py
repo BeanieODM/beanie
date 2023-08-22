@@ -10,6 +10,7 @@ from tests.odm.models import (
     ModelWithOptionalField,
     DocumentWithKeepNullsFalse,
     TestDocumentWithList,
+    Sample,
 )
 
 
@@ -289,3 +290,13 @@ async def test_update_list():
 
     updated_test_record = await test_record.update({"$set": update_data})
     assert updated_test_record.list_values == update_data["list_values"]
+
+
+async def test_update_using_pipeline(preset_documents):
+    await Sample.all().update(
+        [{"$set": {"integer": 10000}}, {"$set": {"string": "TEST3"}}]
+    )
+    all_docs = await Sample.find_many({}).to_list()
+    for doc in all_docs:
+        assert doc.integer == 10000
+        assert doc.string == "TEST3"
