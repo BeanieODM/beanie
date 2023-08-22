@@ -1057,46 +1057,91 @@ class Document(
             if get_extra_field_info(model_field, "hidden") is True
         )
 
-    def dict(
-        self,
-        *,
-        include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-        exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-        by_alias: bool = False,
-        skip_defaults: bool = False,
-        exclude_hidden: bool = True,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-    ) -> "DictStrAny":
-        """
-        Overriding of the respective method from Pydantic
-        Hides fields, marked as "hidden
-        """
-        if exclude_hidden:
-            if isinstance(exclude, AbstractSet):
-                exclude = {*self._hidden_fields, *exclude}
-            elif isinstance(exclude, Mapping):
-                exclude = dict(
-                    {k: True for k in self._hidden_fields}, **exclude
-                )  # type: ignore
-            elif exclude is None:
-                exclude = self._hidden_fields
+    if IS_PYDANTIC_V2:
 
-        kwargs = {
-            "include": include,
-            "exclude": exclude,
-            "by_alias": by_alias,
-            "exclude_unset": exclude_unset,
-            "exclude_defaults": exclude_defaults,
-            "exclude_none": exclude_none,
-        }
+        def model_dump(
+            self,
+            *,
+            mode="python",
+            include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+            exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+            by_alias: bool = False,
+            exclude_hidden: bool = True,
+            exclude_unset: bool = False,
+            exclude_defaults: bool = False,
+            exclude_none: bool = False,
+            round_trip: bool = False,
+            warnings: bool = True,
+        ) -> "DictStrAny":
+            """
+            Overriding of the respective method from Pydantic
+            Hides fields, marked as "hidden
+            """
+            if exclude_hidden:
+                if isinstance(exclude, AbstractSet):
+                    exclude = {*self._hidden_fields, *exclude}
+                elif isinstance(exclude, Mapping):
+                    exclude = dict(
+                        {k: True for k in self._hidden_fields}, **exclude
+                    )  # type: ignore
+                elif exclude is None:
+                    exclude = self._hidden_fields
 
-        # TODO: Remove this check when skip_defaults are no longer supported
-        if skip_defaults:
-            kwargs["skip_defaults"] = skip_defaults
+            kwargs = {
+                "include": include,
+                "exclude": exclude,
+                "by_alias": by_alias,
+                "exclude_unset": exclude_unset,
+                "exclude_defaults": exclude_defaults,
+                "exclude_none": exclude_none,
+                "round_trip": round_trip,
+                "warnings": warnings,
+            }
 
-        return super().dict(**kwargs)
+            return super().model_dump(**kwargs)
+
+    else:
+
+        def dict(
+            self,
+            *,
+            include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+            exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+            by_alias: bool = False,
+            skip_defaults: bool = False,
+            exclude_hidden: bool = True,
+            exclude_unset: bool = False,
+            exclude_defaults: bool = False,
+            exclude_none: bool = False,
+        ) -> "DictStrAny":
+            """
+            Overriding of the respective method from Pydantic
+            Hides fields, marked as "hidden
+            """
+            if exclude_hidden:
+                if isinstance(exclude, AbstractSet):
+                    exclude = {*self._hidden_fields, *exclude}
+                elif isinstance(exclude, Mapping):
+                    exclude = dict(
+                        {k: True for k in self._hidden_fields}, **exclude
+                    )  # type: ignore
+                elif exclude is None:
+                    exclude = self._hidden_fields
+
+            kwargs = {
+                "include": include,
+                "exclude": exclude,
+                "by_alias": by_alias,
+                "exclude_unset": exclude_unset,
+                "exclude_defaults": exclude_defaults,
+                "exclude_none": exclude_none,
+            }
+
+            # TODO: Remove this check when skip_defaults are no longer supported
+            if skip_defaults:
+                kwargs["skip_defaults"] = skip_defaults
+
+            return super().dict(**kwargs)
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args, **kwargs):
