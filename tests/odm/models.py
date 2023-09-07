@@ -22,6 +22,12 @@ from pydantic import (
     SecretStr,
     ConfigDict,
 )
+
+try:
+    from pydantic import RootModel
+except ImportError:
+    pass
+
 from pydantic.color import Color
 from pymongo import IndexModel
 
@@ -47,6 +53,17 @@ class Option2(BaseModel):
 
 class Option1(BaseModel):
     s: str
+
+
+if IS_PYDANTIC_V2:
+
+    class RootModelStr(RootModel):
+        root: str
+
+else:
+
+    class RootModelStr(BaseModel):
+        root: str
 
 
 class Nested(BaseModel):
@@ -198,6 +215,7 @@ class DocumentWithCustomFiledsTypes(Document):
     set_type: Set[str]
     tuple_type: Tuple[int, str]
     path: Path
+    root_model_str: RootModelStr
 
 
 class DocumentWithBsonEncodersFiledsTypes(Document):

@@ -26,11 +26,17 @@ from uuid import UUID
 import bson
 from bson import ObjectId, DBRef, Binary, Decimal128, Regex
 from pydantic import BaseModel
+
+try:
+    from pydantic import RootModel
+except ImportError:
+    pass
 from pydantic import SecretBytes, SecretStr
 from pydantic.color import Color
 
 from beanie.odm.fields import Link, LinkTypes
 from beanie.odm import documents
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
 ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     Color: str,
@@ -52,6 +58,8 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     UUID: lambda u: bson.Binary.from_uuid(u),
     re.Pattern: Regex.from_native,
 }
+if IS_PYDANTIC_V2:
+    ENCODERS_BY_TYPE[RootModel] = lambda rm: rm.root
 
 
 class Ignore:

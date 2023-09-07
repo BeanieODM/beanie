@@ -17,6 +17,7 @@ from tests.odm.models import (
     DocumentWithBsonEncodersFiledsTypes,
     DocumentTestModel,
     Sample,
+    RootModelStr,
 )
 
 
@@ -66,6 +67,9 @@ async def test_custom_filed_types():
         set_type={"one", "two", "three"},
         tuple_type=tuple([3, "string"]),
         path="/etc/hosts",
+        root_model_str="str_value"
+        if IS_PYDANTIC_V2
+        else {"root": "str_value"},
     )
     custom2 = DocumentWithCustomFiledsTypes(
         color="magenta",
@@ -82,6 +86,9 @@ async def test_custom_filed_types():
         set_type=["one", "two", "three"],
         tuple_type=[3, "three"],
         path=Path("C:\\Windows"),
+        root_model_str=RootModelStr("str_value")
+        if IS_PYDANTIC_V2
+        else RootModelStr(root="str_value"),
     )
     c1 = await custom1.insert()
     c2 = await custom2.insert()
@@ -104,6 +111,12 @@ async def test_custom_filed_types():
     assert Decimal(str(custom2.decimal)) == Decimal(
         str(c2_encoded.get("decimal"))
     )
+    if IS_PYDANTIC_V2:
+        assert c1_encoded.get("root_model_str") == "str_value"
+        assert c2_encoded.get("root_model_str") == "str_value"
+    else:
+        assert c1_encoded.get("root_model_str") == {"root": "str_value"}
+        assert c2_encoded.get("root_model_str") == {"root": "str_value"}
 
 
 async def test_hidden(document):
