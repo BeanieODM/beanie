@@ -24,7 +24,7 @@ async def create_window(window: WindowAPI):
 
 
 @house_router.post("/windows_2/")
-async def create_window_2(window: WindowAPI) -> WindowAPI:
+async def create_window_2(window: WindowAPI):
     return await window.save()
 
 
