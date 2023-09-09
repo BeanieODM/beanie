@@ -15,6 +15,7 @@ from beanie.odm.actions import (
 )
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.custom_types import DecimalAnnotation
+from beanie.odm.custom_types.bson.binary import BsonBinary
 from beanie.odm.fields import (
     PydanticObjectId,
     Indexed,
@@ -65,6 +66,7 @@ __all__ = [
     "DeleteRules",
     # Custom Types
     "DecimalAnnotation",
+    "BsonBinary",
     # UpdateResponse
     "UpdateResponse",
 ]

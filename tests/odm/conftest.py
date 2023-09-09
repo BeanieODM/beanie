@@ -87,6 +87,7 @@ from tests.odm.models import (
     DocumentWithTextIndexAndLink,
     LinkDocumentForTextSeacrh,
     TestDocumentWithList,
+    TestDocumentWithBsonBinaryField,
 )
 from tests.odm.views import TestView, TestViewWithLink
 
@@ -259,6 +260,7 @@ async def init(db):
         DocumentWithTextIndexAndLink,
         LinkDocumentForTextSeacrh,
         TestDocumentWithList,
+        TestDocumentWithBsonBinaryField,
     ]
     await init_beanie(
         database=db,

@@ -1,5 +1,4 @@
 import datetime
-from beanie import DecimalAnnotation
 from ipaddress import (
     IPv4Address,
     IPv4Interface,
@@ -25,6 +24,7 @@ from pydantic import (
 from pydantic.color import Color
 from pymongo import IndexModel
 
+from beanie import DecimalAnnotation
 from beanie import (
     Document,
     Indexed,
@@ -35,6 +35,7 @@ from beanie import (
     Save,
 )
 from beanie.odm.actions import Delete, after_event, before_event
+from beanie.odm.custom_types.bson.binary import BsonBinary
 from beanie.odm.fields import Link, PydanticObjectId, BackLink
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
@@ -858,3 +859,7 @@ class DocumentWithTextIndexAndLink(Document):
 
 class TestDocumentWithList(Document):
     list_values: List[str]
+
+
+class TestDocumentWithBsonBinaryField(Document):
+    binary_field: BsonBinary
