@@ -483,6 +483,7 @@ class Document(
 
     @wrap_with_actions(EventTypes.SAVE)
     @save_state_after
+    @validate_self_before
     async def save(
         self: DocType,
         session: Optional[ClientSession] = None,
