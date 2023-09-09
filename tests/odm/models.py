@@ -20,6 +20,7 @@ from pydantic import (
     SecretBytes,
     SecretStr,
     ConfigDict,
+    RootModel,
 )
 from pydantic.color import Color
 from pymongo import IndexModel
@@ -863,3 +864,10 @@ class TestDocumentWithList(Document):
 
 class TestDocumentWithBsonBinaryField(Document):
     binary_field: BsonBinary
+
+
+Pets = RootModel[List[str]]
+
+
+class TestDocumentWithRootModelAsAField(Document):
+    pets: Pets

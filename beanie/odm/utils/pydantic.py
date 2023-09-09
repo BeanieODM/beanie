@@ -60,3 +60,27 @@ def get_model_dump(model):
         return model.model_dump()
     else:
         return model.dict()
+
+
+def get_iterator(model, by_alias=False):
+    if IS_PYDANTIC_V2:
+
+        def _get_aliases(model):
+            aliases = {}
+            for k, v in model.model_fields.items():
+                if v.alias is not None:
+                    aliases[k] = v.alias
+                else:
+                    aliases[k] = k
+            return aliases
+
+        def _iter(model, by_alias=False):
+            for k, v in model.__iter__():
+                if by_alias:
+                    yield _get_aliases(model)[k], v
+                else:
+                    yield k, v
+
+        return _iter(model, by_alias=by_alias)
+    else:
+        return model._iter(to_dict=False, by_alias=False)
