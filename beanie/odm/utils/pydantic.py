@@ -65,19 +65,17 @@ def get_model_dump(model):
 def get_iterator(model, by_alias=False):
     if IS_PYDANTIC_V2:
 
-        def _get_aliases(model):
-            aliases = {}
-            for k, v in model.model_fields.items():
-                if v.alias is not None:
-                    aliases[k] = v.alias
-                else:
-                    aliases[k] = k
-            return aliases
+        def _get_alias(model, k):
+            v = model.model_fields.get(k)
+            if v is not None:
+                return v.alias or k
+            else:
+                return k
 
         def _iter(model, by_alias=False):
             for k, v in model.__iter__():
                 if by_alias:
-                    yield _get_aliases(model)[k], v
+                    yield _get_alias(model, k), v
                 else:
                     yield k, v
 
