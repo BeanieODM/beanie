@@ -89,6 +89,7 @@ from tests.odm.models import (
     DocumentWithList,
     DocumentWithBsonBinaryField,
     DocumentWithRootModelAsAField,
+    DocWithCallWrapper,
 )
 from tests.odm.views import ViewForTest, ViewForTestWithLink
 
@@ -263,6 +264,7 @@ async def init(db):
         DocumentWithList,
         DocumentWithBsonBinaryField,
         DocumentWithRootModelAsAField,
+        DocWithCallWrapper,
     ]
     await init_beanie(
         database=db,

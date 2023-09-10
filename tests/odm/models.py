@@ -31,6 +31,7 @@ from pydantic import (
     SecretStr,
     ConfigDict,
     RootModel,
+    validate_call,
 )
 from pydantic.fields import FieldInfo
 from pydantic_core import core_schema
@@ -955,3 +956,11 @@ Pets = RootModel[List[str]]
 
 class DocumentWithRootModelAsAField(Document):
     pets: Pets
+
+
+class DocWithCallWrapper(Document):
+    name: str
+
+    @validate_call
+    def foo(self, bar: str) -> None:
+        print(f"foo {bar}")
