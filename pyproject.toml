@@ -21,7 +21,7 @@ dependencies = [
     "motor>=2.5.0,<4.0.0",
     "click>=7",
     "toml",
-    "lazy-model==0.1.0b0",
+    "lazy-model==0.2.0",
     "typing-extensions>=4.7"
 ]
 
