@@ -1,15 +1,15 @@
-from tests.odm.views import TestView, TestViewWithLink
+from tests.odm.views import ViewForTest, ViewForTestWithLink
 
 
 class TestViews:
     async def test_simple(self, documents):
         await documents(number=15)
-        results = await TestView.all().to_list()
+        results = await ViewForTest.all().to_list()
         assert len(results) == 6
 
     async def test_aggregate(self, documents):
         await documents(number=15)
-        results = await TestView.aggregate(
+        results = await ViewForTest.aggregate(
             [
                 {"$set": {"test_field": 1}},
                 {"$match": {"$expr": {"$lt": ["$number", 12]}}},
@@ -20,7 +20,7 @@ class TestViews:
 
     async def test_link(self, documents_with_links):
         await documents_with_links()
-        results = await TestViewWithLink.all().to_list()
+        results = await ViewForTestWithLink.all().to_list()
         for document in results:
             await document.fetch_all_links()
 

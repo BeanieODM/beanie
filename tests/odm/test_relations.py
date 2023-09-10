@@ -685,14 +685,26 @@ class HouseForReversedOrderInit(Document):
 class DoorForReversedOrderInit(Document):
     height: int = 2
     width: int = 1
-    house: BackLink[HouseForReversedOrderInit] = Field(original_field="door")
+    if IS_PYDANTIC_V2:
+        house: BackLink[HouseForReversedOrderInit] = Field(
+            json_schema_extra={"original_field": "door"}
+        )
+    else:
+        house: BackLink[HouseForReversedOrderInit] = Field(
+            original_field="door"
+        )
 
 
 class PersonForReversedOrderInit(Document):
     name: str
-    house: List[BackLink[HouseForReversedOrderInit]] = Field(
-        original_field="owners"
-    )
+    if IS_PYDANTIC_V2:
+        house: List[BackLink[HouseForReversedOrderInit]] = Field(
+            json_schema_extra={"original_field": "owners"}
+        )
+    else:
+        house: List[BackLink[HouseForReversedOrderInit]] = Field(
+            original_field="owners"
+        )
 
 
 class TestDeleteBackLinks:

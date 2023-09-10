@@ -21,6 +21,7 @@ from pydantic import (
     PrivateAttr,
     Field,
     ConfigDict,
+    model_validator,
 )
 from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
@@ -141,13 +142,6 @@ class Document(
     - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
-    # class Config:
-    #     json_encoders = {
-    #         ObjectId: lambda v: str(v),
-    #     }
-    #     allow_population_by_field_name = True
-    #     # fields = {"id": "_id"}
-
     if IS_PYDANTIC_V2:
         model_config = ConfigDict(
             json_schema_extra=json_schema_extra,
@@ -178,7 +172,12 @@ class Document(
     )
 
     # State
-    revision_id: Optional[UUID] = Field(default=None, hidden=True)
+    if IS_PYDANTIC_V2:
+        revision_id: Optional[UUID] = Field(
+            default=None, json_schema_extra={"hidden": True}
+        )
+    else:
+        revision_id: Optional[UUID] = Field(default=None, hidden=True)  # type: ignore
     _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
     _previous_saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
@@ -207,8 +206,8 @@ class Document(
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
 
-    @root_validator(pre=True)
-    def fill_back_refs(cls, values):
+    @classmethod
+    def _fill_back_refs(cls, values):
         if cls._link_fields:
             for field_name, link_info in cls._link_fields.items():
                 if (
@@ -230,6 +229,18 @@ class Document(
                         )
                     ]
         return values
+
+    if IS_PYDANTIC_V2:
+
+        @model_validator(mode="before")
+        def fill_back_refs(cls, values):
+            return cls._fill_back_refs(values)
+
+    else:
+
+        @root_validator(pre=True)
+        def fill_back_refs(cls, values):
+            return cls._fill_back_refs(values)
 
     @classmethod
     async def get(

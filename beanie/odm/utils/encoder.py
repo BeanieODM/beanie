@@ -27,14 +27,12 @@ import bson
 from bson import ObjectId, DBRef, Binary, Decimal128, Regex
 from pydantic import BaseModel, RootModel
 from pydantic import SecretBytes, SecretStr
-from pydantic.color import Color
 
 from beanie.odm.fields import Link, LinkTypes
 from beanie.odm import documents
 from beanie.odm.utils.pydantic import get_iterator
 
 ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
-    Color: str,
     timedelta: lambda td: td.total_seconds(),
     Decimal: Decimal128,
     deque: list,
