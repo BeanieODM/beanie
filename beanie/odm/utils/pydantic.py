@@ -81,4 +81,4 @@ def get_iterator(model, by_alias=False):
 
         return _iter(model, by_alias=by_alias)
     else:
-        return model._iter(to_dict=False, by_alias=False)
+        return model._iter(to_dict=False, by_alias=by_alias)

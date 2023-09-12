@@ -25,12 +25,15 @@ from uuid import UUID
 
 import bson
 from bson import ObjectId, DBRef, Binary, Decimal128, Regex
-from pydantic import BaseModel, RootModel
+from pydantic import BaseModel
 from pydantic import SecretBytes, SecretStr
 
 from beanie.odm.fields import Link, LinkTypes
 from beanie.odm import documents
-from beanie.odm.utils.pydantic import get_iterator
+from beanie.odm.utils.pydantic import get_iterator, IS_PYDANTIC_V2
+
+if IS_PYDANTIC_V2:
+    from pydantic import RootModel
 
 ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     timedelta: lambda td: td.total_seconds(),
@@ -209,7 +212,7 @@ class Encoder:
 
         if isinstance(obj, documents.Document):
             return self.encode_document(obj)
-        if isinstance(obj, RootModel):
+        if IS_PYDANTIC_V2 and isinstance(obj, RootModel):
             return self.encode_root_model(obj)
         if isinstance(obj, BaseModel):
             return self.encode_base_model(obj)

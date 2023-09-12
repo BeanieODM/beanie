@@ -30,8 +30,6 @@ from pydantic import (
     SecretBytes,
     SecretStr,
     ConfigDict,
-    RootModel,
-    validate_call,
 )
 from pydantic.fields import FieldInfo
 from pydantic_core import core_schema
@@ -55,6 +53,9 @@ from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
+if IS_PYDANTIC_V2:
+    from pydantic import RootModel, validate_call
+
 
 class Color:
     def __init__(self, value):
@@ -65,6 +66,18 @@ class Color:
 
     def as_hex(self):
         return self.value
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, value):
+        if isinstance(value, Color):
+            return value
+        if isinstance(value, dict):
+            return Color(value["value"])
+        return Color(value)
 
     @classmethod
     def __get_pydantic_core_schema__(
@@ -255,6 +268,15 @@ class DocumentWithCustomFiledsTypes(Document):
     tuple_type: Tuple[int, str]
     path: Path
 
+    if IS_PYDANTIC_V2:
+        model_config = ConfigDict(
+            arbitrary_types_allowed=True,
+        )
+    else:
+
+        class Config:
+            arbitrary_types_allowed = True
+
 
 class DocumentWithBsonEncodersFiledsTypes(Document):
     color: Color
@@ -265,6 +287,15 @@ class DocumentWithBsonEncodersFiledsTypes(Document):
             Color: lambda c: c.as_rgb(),
             datetime.datetime: lambda o: o.isoformat(timespec="microseconds"),
         }
+
+    if IS_PYDANTIC_V2:
+        model_config = ConfigDict(
+            arbitrary_types_allowed=True,
+        )
+    else:
+
+        class Config:
+            arbitrary_types_allowed = True
 
 
 class DocumentWithActions(Document):
@@ -951,7 +982,10 @@ class DocumentWithBsonBinaryField(Document):
     binary_field: BsonBinary
 
 
-Pets = RootModel[List[str]]
+if IS_PYDANTIC_V2:
+    Pets = RootModel[List[str]]
+else:
+    Pets = List[str]
 
 
 class DocumentWithRootModelAsAField(Document):
@@ -961,6 +995,8 @@ class DocumentWithRootModelAsAField(Document):
 class DocWithCallWrapper(Document):
     name: str
 
-    @validate_call
-    def foo(self, bar: str) -> None:
-        print(f"foo {bar}")
+    if IS_PYDANTIC_V2:
+
+        @validate_call
+        def foo(self, bar: str) -> None:
+            print(f"foo {bar}")

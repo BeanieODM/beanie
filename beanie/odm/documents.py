@@ -21,7 +21,6 @@ from pydantic import (
     PrivateAttr,
     Field,
     ConfigDict,
-    model_validator,
 )
 from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
@@ -98,6 +97,9 @@ from beanie.odm.utils.state import (
     swap_revision_after,
 )
 from beanie.odm.utils.typing import extract_id_class
+
+if IS_PYDANTIC_V2:
+    from pydantic import model_validator
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny

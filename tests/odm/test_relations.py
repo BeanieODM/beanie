@@ -6,7 +6,11 @@ from pydantic.fields import Field
 from beanie import init_beanie, Document
 from beanie.exceptions import DocumentWasNotSaved
 from beanie.odm.fields import DeleteRules, Link, WriteRules, BackLink
-from beanie.odm.utils.pydantic import parse_model, IS_PYDANTIC_V2
+from beanie.odm.utils.pydantic import (
+    parse_model,
+    IS_PYDANTIC_V2,
+    get_model_fields,
+)
 from tests.odm.models import (
     Door,
     House,
@@ -418,17 +422,17 @@ class TestOther:
 
         # Simple fields are initialized using the pydantic model_fields internal property
         # such fields are properly isolated when multi inheritance is involved.
-        assert set(RootDocument.model_fields.keys()) == SYS | {
+        assert set(get_model_fields(RootDocument).keys()) == SYS | {
             "name",
             "link_root",
         }
-        assert set(ADocument.model_fields.keys()) == SYS | {
+        assert set(get_model_fields(ADocument).keys()) == SYS | {
             "name",
             "link_root",
             "surname",
             "link_a",
         }
-        assert set(BDocument.model_fields.keys()) == SYS | {
+        assert set(get_model_fields(BDocument).keys()) == SYS | {
             "name",
             "link_root",
             "email",
@@ -512,7 +516,7 @@ class TestOther:
 
     async def test_with_extra_allow(self, houses):
         res = await House.find(fetch_links=True).to_list()
-        assert res[0].model_fields.keys() == {
+        assert get_model_fields(res[0]).keys() == {
             "id",
             "revision_id",
             "windows",
@@ -524,7 +528,7 @@ class TestOther:
         }
 
         res = await House.find_one(fetch_links=True)
-        assert res.model_fields.keys() == {
+        assert get_model_fields(res).keys() == {
             "id",
             "revision_id",
             "windows",
