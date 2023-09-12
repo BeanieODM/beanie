@@ -15,7 +15,7 @@ async def init():
         "mongodb://user:pass@host:27017"
     )
 
-    # Initialize beanie with the Product document class and a database
+    # Initialize beanie with the Sample document class and a database
     await init_beanie(database=client.db_name, document_models=[Sample])
 ```
 
