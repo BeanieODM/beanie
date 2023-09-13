@@ -1,5 +1,5 @@
 import asyncio
-from typing import ClassVar, AbstractSet
+from typing import ClassVar, AbstractSet, Iterable
 from typing import (
     Dict,
     Optional,
@@ -98,6 +98,9 @@ from beanie.odm.utils.state import (
 )
 from beanie.odm.utils.typing import extract_id_class
 
+if IS_PYDANTIC_V2:
+    from pydantic import model_validator
+
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
 
@@ -141,13 +144,6 @@ class Document(
     - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
-    # class Config:
-    #     json_encoders = {
-    #         ObjectId: lambda v: str(v),
-    #     }
-    #     allow_population_by_field_name = True
-    #     # fields = {"id": "_id"}
-
     if IS_PYDANTIC_V2:
         model_config = ConfigDict(
             json_schema_extra=json_schema_extra,
@@ -178,7 +174,12 @@ class Document(
     )
 
     # State
-    revision_id: Optional[UUID] = Field(default=None, hidden=True)
+    if IS_PYDANTIC_V2:
+        revision_id: Optional[UUID] = Field(
+            default=None, json_schema_extra={"hidden": True}
+        )
+    else:
+        revision_id: Optional[UUID] = Field(default=None, hidden=True)  # type: ignore
     _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
     _previous_saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
@@ -207,8 +208,8 @@ class Document(
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
 
-    @root_validator(pre=True)
-    def fill_back_refs(cls, values):
+    @classmethod
+    def _fill_back_refs(cls, values):
         if cls._link_fields:
             for field_name, link_info in cls._link_fields.items():
                 if (
@@ -230,6 +231,18 @@ class Document(
                         )
                     ]
         return values
+
+    if IS_PYDANTIC_V2:
+
+        @model_validator(mode="before")
+        def fill_back_refs(cls, values):
+            return cls._fill_back_refs(values)
+
+    else:
+
+        @root_validator(pre=True)
+        def fill_back_refs(cls, values):
+            return cls._fill_back_refs(values)
 
     @classmethod
     async def get(
@@ -373,7 +386,7 @@ class Document(
     @classmethod
     async def insert_many(
         cls: Type[DocType],
-        documents: List[DocType],
+        documents: Iterable[DocType],
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         **pymongo_kwargs,
@@ -483,6 +496,7 @@ class Document(
 
     @wrap_with_actions(EventTypes.SAVE)
     @save_state_after
+    @validate_self_before
     async def save(
         self: DocType,
         session: Optional[ClientSession] = None,
@@ -1057,46 +1071,91 @@ class Document(
             if get_extra_field_info(model_field, "hidden") is True
         )
 
-    def dict(
-        self,
-        *,
-        include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-        exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-        by_alias: bool = False,
-        skip_defaults: bool = False,
-        exclude_hidden: bool = True,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-    ) -> "DictStrAny":
-        """
-        Overriding of the respective method from Pydantic
-        Hides fields, marked as "hidden
-        """
-        if exclude_hidden:
-            if isinstance(exclude, AbstractSet):
-                exclude = {*self._hidden_fields, *exclude}
-            elif isinstance(exclude, Mapping):
-                exclude = dict(
-                    {k: True for k in self._hidden_fields}, **exclude
-                )  # type: ignore
-            elif exclude is None:
-                exclude = self._hidden_fields
+    if IS_PYDANTIC_V2:
 
-        kwargs = {
-            "include": include,
-            "exclude": exclude,
-            "by_alias": by_alias,
-            "exclude_unset": exclude_unset,
-            "exclude_defaults": exclude_defaults,
-            "exclude_none": exclude_none,
-        }
+        def model_dump(
+            self,
+            *,
+            mode="python",
+            include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+            exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+            by_alias: bool = False,
+            exclude_hidden: bool = True,
+            exclude_unset: bool = False,
+            exclude_defaults: bool = False,
+            exclude_none: bool = False,
+            round_trip: bool = False,
+            warnings: bool = True,
+        ) -> "DictStrAny":
+            """
+            Overriding of the respective method from Pydantic
+            Hides fields, marked as "hidden
+            """
+            if exclude_hidden:
+                if isinstance(exclude, AbstractSet):
+                    exclude = {*self._hidden_fields, *exclude}
+                elif isinstance(exclude, Mapping):
+                    exclude = dict(
+                        {k: True for k in self._hidden_fields}, **exclude
+                    )  # type: ignore
+                elif exclude is None:
+                    exclude = self._hidden_fields
 
-        # TODO: Remove this check when skip_defaults are no longer supported
-        if skip_defaults:
-            kwargs["skip_defaults"] = skip_defaults
+            kwargs = {
+                "include": include,
+                "exclude": exclude,
+                "by_alias": by_alias,
+                "exclude_unset": exclude_unset,
+                "exclude_defaults": exclude_defaults,
+                "exclude_none": exclude_none,
+                "round_trip": round_trip,
+                "warnings": warnings,
+            }
 
-        return super().dict(**kwargs)
+            return super().model_dump(**kwargs)
+
+    else:
+
+        def dict(
+            self,
+            *,
+            include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+            exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
+            by_alias: bool = False,
+            skip_defaults: bool = False,
+            exclude_hidden: bool = True,
+            exclude_unset: bool = False,
+            exclude_defaults: bool = False,
+            exclude_none: bool = False,
+        ) -> "DictStrAny":
+            """
+            Overriding of the respective method from Pydantic
+            Hides fields, marked as "hidden
+            """
+            if exclude_hidden:
+                if isinstance(exclude, AbstractSet):
+                    exclude = {*self._hidden_fields, *exclude}
+                elif isinstance(exclude, Mapping):
+                    exclude = dict(
+                        {k: True for k in self._hidden_fields}, **exclude
+                    )  # type: ignore
+                elif exclude is None:
+                    exclude = self._hidden_fields
+
+            kwargs = {
+                "include": include,
+                "exclude": exclude,
+                "by_alias": by_alias,
+                "exclude_unset": exclude_unset,
+                "exclude_defaults": exclude_defaults,
+                "exclude_none": exclude_none,
+            }
+
+            # TODO: Remove this check when skip_defaults are no longer supported
+            if skip_defaults:
+                kwargs["skip_defaults"] = skip_defaults
+
+            return super().dict(**kwargs)
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args, **kwargs):

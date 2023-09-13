@@ -430,7 +430,7 @@ class Initializer:
         if (
             document_settings.timeseries is not None
             and document_settings.name
-            not in await self.database.list_collection_names()
+            not in await self.database.list_collection_names(authorizedCollections=True, nameOnly=True)
         ):
             collection = await self.database.create_collection(
                 **document_settings.timeseries.build_query(
@@ -642,7 +642,7 @@ class Initializer:
         self.init_view_fields(cls)
         self.init_cache(cls)
 
-        collection_names = await self.database.list_collection_names()
+        collection_names = await self.database.list_collection_names(authorizedCollections=True, nameOnly=True)
         if self.recreate_views or cls._settings.name not in collection_names:
             if cls._settings.name in collection_names:
                 await cls.get_motor_collection().drop()

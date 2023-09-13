@@ -3,7 +3,7 @@ from beanie.odm.views import View
 from tests.odm.models import DocumentTestModel, DocumentTestModelWithLink
 
 
-class TestView(View):
+class ViewForTest(View):
     number: int
     string: str
 
@@ -16,7 +16,7 @@ class TestView(View):
         ]
 
 
-class TestViewWithLink(View):
+class ViewForTestWithLink(View):
     link: Link[DocumentTestModel]
 
     class Settings:
