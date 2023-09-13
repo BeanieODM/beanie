@@ -1,10 +1,14 @@
 from typing import Optional, List
 
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from pydantic import Field
 
 from beanie.odm.fields import IndexModelField
 from beanie.odm.settings.base import ItemSettings
 from beanie.odm.settings.timeseries import TimeSeriesConfig
+
+if IS_PYDANTIC_V2:
+    from pydantic import ConfigDict
 
 
 class DocumentSettings(ItemSettings):
@@ -23,5 +27,11 @@ class DocumentSettings(ItemSettings):
 
     keep_nulls: bool = True
 
-    class Config:
-        arbitrary_types_allowed = True
+    if IS_PYDANTIC_V2:
+        model_config = ConfigDict(
+            arbitrary_types_allowed=True,
+        )
+    else:
+
+        class Config:
+            arbitrary_types_allowed = True

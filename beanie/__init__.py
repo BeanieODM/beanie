@@ -15,6 +15,7 @@ from beanie.odm.actions import (
 )
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.custom_types import DecimalAnnotation
+from beanie.odm.custom_types.bson.binary import BsonBinary
 from beanie.odm.fields import (
     PydanticObjectId,
     Indexed,
@@ -23,13 +24,14 @@ from beanie.odm.fields import (
     WriteRules,
     DeleteRules,
 )
+from beanie.odm.queries.update import UpdateResponse
 from beanie.odm.settings.timeseries import TimeSeriesConfig, Granularity
 from beanie.odm.utils.init import init_beanie
 from beanie.odm.documents import Document
 from beanie.odm.views import View
 from beanie.odm.union_doc import UnionDoc
 
-__version__ = "1.21.0"
+__version__ = "1.22.0"
 __all__ = [
     # ODM
     "Document",
@@ -64,4 +66,7 @@ __all__ = [
     "DeleteRules",
     # Custom Types
     "DecimalAnnotation",
+    "BsonBinary",
+    # UpdateResponse
+    "UpdateResponse",
 ]

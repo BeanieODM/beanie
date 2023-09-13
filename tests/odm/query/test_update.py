@@ -3,6 +3,7 @@ import asyncio
 import pytest
 
 from beanie.odm.operators.update.general import Set, Max
+from beanie.odm.queries.update import UpdateResponse
 from tests.odm.models import Sample
 
 
@@ -188,6 +189,22 @@ async def test_update_one_upsert_without_insert(
     await Sample.find_one(Sample.integer > 1).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
+    new_docs = await Sample.find_many(
+        Sample.string == sample_doc_not_saved.string
+    ).to_list()
+    assert len(new_docs) == 0
+
+
+async def test_update_one_upsert_without_insert_return_doc(
+    preset_documents, sample_doc_not_saved
+):
+    result = await Sample.find_one(Sample.integer > 1).upsert(
+        Set({Sample.integer: 100}),
+        on_insert=sample_doc_not_saved,
+        response_type=UpdateResponse.NEW_DOCUMENT,
+    )
+    assert isinstance(result, Sample)
+
     new_docs = await Sample.find_many(
         Sample.string == sample_doc_not_saved.string
     ).to_list()
