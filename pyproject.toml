@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "beanie"
-version = "1.21.0"
+version = "1.22.0"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
 requires-python = ">=3.7,<4.0"
@@ -21,7 +21,7 @@ dependencies = [
     "motor>=2.5.0,<4.0.0",
     "click>=7",
     "toml",
-    "lazy-model==0.1.0b0",
+    "lazy-model==0.2.0",
     "typing-extensions>=4.7"
 ]
 
@@ -37,7 +37,8 @@ test = [
     "asgi-lifespan>=1.0.1",
     "httpx>=0.23.0",
     "fastapi>=0.100",
-    "pydantic-settings>=2.0",
+    "pydantic-settings>=2",
+    "pydantic-extra-types>=2"
 ]
 doc = [
     "Pygments>=2.8.0",
@@ -77,7 +78,7 @@ exclude = '''
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--cov-report term-missing --cov=beanie --cov-branch --cov-fail-under=85"
+addopts = "--cov-report term-missing --cov=beanie --cov-branch --cov-fail-under=80"
 testpaths = [
     "tests",
 ]

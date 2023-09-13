@@ -296,14 +296,15 @@ class Link(Generic[T]):
                         )
                 ids_to_fetch.append(link.ref.id)
 
-        fetched_models = await document_class.find(  # type: ignore
-            In("_id", ids_to_fetch),
-            with_children=True,
-            fetch_links=fetch_links,
-        ).to_list()
+        if ids_to_fetch:
+            fetched_models = await document_class.find(  # type: ignore
+                In("_id", ids_to_fetch),
+                with_children=True,
+                fetch_links=fetch_links,
+            ).to_list()
 
-        for model in fetched_models:
-            data[model.id] = model
+            for model in fetched_models:
+                data[model.id] = model
 
         return list(data.values())
 

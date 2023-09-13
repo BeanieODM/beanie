@@ -27,13 +27,15 @@ import bson
 from bson import ObjectId, DBRef, Binary, Decimal128, Regex
 from pydantic import BaseModel
 from pydantic import SecretBytes, SecretStr
-from pydantic.color import Color
 
 from beanie.odm.fields import Link, LinkTypes
 from beanie.odm import documents
+from beanie.odm.utils.pydantic import get_iterator, IS_PYDANTIC_V2
+
+if IS_PYDANTIC_V2:
+    from pydantic import RootModel
 
 ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
-    Color: str,
     timedelta: lambda td: td.total_seconds(),
     Decimal: Decimal128,
     deque: list,
@@ -110,7 +112,7 @@ class Encoder:
         if obj._inheritance_inited:
             obj_dict[obj.get_settings().class_id] = obj._class_id
 
-        for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
+        for k, o in get_iterator(obj, by_alias=self.by_alias):
             if k not in self.exclude and (
                 self.keep_nulls is True or o is not None
             ):
@@ -165,13 +167,19 @@ class Encoder:
         BaseModel case
         """
         obj_dict = {}
-        for k, o in obj._iter(to_dict=False, by_alias=self.by_alias):
+        for k, o in get_iterator(obj, by_alias=self.by_alias):
             if k not in self.exclude and (
                 self.keep_nulls is True or o is not None
             ):
                 obj_dict[k] = self._encode(o)
 
         return obj_dict
+
+    def encode_root_model(self, obj):
+        """
+        RootModel case
+        """
+        return self._encode(obj.root)
 
     def encode_dict(self, obj):
         """
@@ -204,6 +212,8 @@ class Encoder:
 
         if isinstance(obj, documents.Document):
             return self.encode_document(obj)
+        if IS_PYDANTIC_V2 and isinstance(obj, RootModel):
+            return self.encode_root_model(obj)
         if isinstance(obj, BaseModel):
             return self.encode_base_model(obj)
         if isinstance(obj, dict):
