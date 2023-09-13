@@ -2,12 +2,21 @@
 
 Beanie project
 
+## [1.22.1] - 2023-09-13
+        
+### Fix | List_Collection_Names Requires Unnecessary Privileges
+- Author - [Marina](https://github.com/marinashe)
+- PR <https://github.com/roman-right/beanie/pull/681>
+- Issues:
+  - [[BUG] Can't use a View if the user doesn't have full read privileges to all collections](https://github.com/roman-right/beanie/issues/680)
+            
+[1.22.1]: https://pypi.org/project/beanie/1.22.1
+
 ## [1.22.0] - 2023-09-13
         
 ### Fix | August 2023
 - Author - [Roman Right](https://github.com/roman-right)
 - PR <https://github.com/roman-right/beanie/pull/669>
-            
 - Issues:
                     
   - [[BUG] Issue with `List[Link[Type]]` when `fetch_all_links` is called](https://github.com/roman-right/beanie/issues/576) 
