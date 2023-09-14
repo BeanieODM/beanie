@@ -33,11 +33,6 @@ class AggregationQuery(
 ):
     """
     Aggregation Query
-
-    Inherited from:
-
-    - [SessionMethods](interfaces.md#sessionmethods)
-    - [BaseCursorQuery](query.md#basecursorquery)
     """
 
     def __init__(

@@ -63,11 +63,6 @@ class FindQuery(
 ):
     """
     Find Query base class
-
-    Inherited from:
-
-    - [SessionMethods](interfaces.md#sessionmethods)
-    - [UpdateMethods](interfaces.md#updatemethods)
     """
 
     UpdateQueryType: Union[
@@ -173,13 +168,6 @@ class FindMany(
 ):
     """
     Find Many query class
-
-    Inherited from:
-
-    - [FindQuery](query.md#findquery)
-    - [BaseCursorQuery](query.md#basecursorquery)
-    - [AggregateMethods](interfaces.md#aggregatemethods)
-
     """
 
     UpdateQueryType = UpdateMany
@@ -713,10 +701,6 @@ class FindMany(
 class FindOne(FindQuery[FindQueryResultType]):
     """
     Find One query class
-
-    Inherited from:
-
-    - [FindQuery](query.md#findquery)
     """
 
     UpdateQueryType = UpdateOne

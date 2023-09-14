@@ -44,11 +44,6 @@ class UpdateResponse(str, Enum):
 class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
     """
     Update Query base class
-
-    Inherited from:
-
-    - [UpdateMethods](interfaces.md#updatemethods)
-    - [SessionMethods](interfaces.md#sessionmethods)
     """
 
     def __init__(
@@ -109,10 +104,6 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
 class UpdateMany(UpdateQuery):
     """
     Update Many query class
-
-    Inherited from:
-
-    - [UpdateQuery](query.md#updatequery)
     """
 
     def update(
@@ -229,10 +220,6 @@ class UpdateMany(UpdateQuery):
 class UpdateOne(UpdateQuery):
     """
     Update One query class
-
-    Inherited from:
-
-    - [UpdateQuery](query.md#updatequery)
     """
 
     def __init__(self, *args, **kwargs):
