@@ -18,6 +18,10 @@ class CollectionWasNotInitialized(Exception):
     pass
 
 
+class DocumentIsReadOnly(Exception):
+    pass
+
+
 class MigrationException(Exception):
     pass
 

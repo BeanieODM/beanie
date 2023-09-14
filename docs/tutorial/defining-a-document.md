@@ -116,6 +116,7 @@ The inner class `Settings` is used to configure:
 - Use of state management
 - Validation on save
 - Configure if nulls should be saved to the database
+- read_only lets you configure Document for only reading from data base and is set to False by default
 
 ### Collection name
 

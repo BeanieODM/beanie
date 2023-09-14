@@ -39,6 +39,7 @@ from beanie.exceptions import (
     DocumentWasNotSaved,
     NotSupported,
     ReplaceError,
+    DocumentIsReadOnly,
 )
 from beanie.odm.actions import (
     EventTypes,
@@ -282,8 +283,12 @@ class Document(
         Insert the document (self) to the collection
         :return: Document
         """
+
         if self.get_settings().use_revision:
             self.revision_id = uuid4()
+
+        if self.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
         if link_rule == WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
@@ -328,6 +333,9 @@ class Document(
         The same as self.insert()
         :return: Document
         """
+
+        if self.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
         return await self.insert(session=session)
 
     @classmethod
@@ -346,6 +354,9 @@ class Document(
         :param link_rule: InsertRules - hot to manage link fields
         :return: DocType
         """
+
+        if cls.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
         if not isinstance(document, cls):
             raise TypeError(
                 "Inserting document must be of the original document class"
@@ -386,6 +397,8 @@ class Document(
         :param link_rule: InsertRules - how to manage link fields
         :return: InsertManyResult
         """
+        if cls.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
         if link_rule == WriteRules.WRITE:
             raise NotSupported(
                 "Cascade insert not supported for insert many method"
@@ -423,6 +436,8 @@ class Document(
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: self
         """
+        if self.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
         if self.id is None:
             raise ValueError("Document must have an id")
 
@@ -607,6 +622,8 @@ class Document(
         :param session: Optional[ClientSession] - pymongo session.
         :return: None
         """
+        if cls.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
         ids_list = [document.id for document in documents]
         if await cls.find(In(cls.id, ids_list)).count() != len(ids_list):
             raise ReplaceError(
@@ -642,6 +659,8 @@ class Document(
         """
 
         arguments = list(args)
+        if self.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
 
         if skip_sync is not None:
             raise DeprecationWarning(
@@ -692,6 +711,8 @@ class Document(
         :param **pymongo_kwargs: pymongo native parameters for find operation
         :return: UpdateMany query
         """
+        if cls.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
         return cls.find_all().update_many(
             *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
@@ -704,6 +725,7 @@ class Document(
         skip_sync: Optional[bool] = None,
         **kwargs,
     ):
+
         """
         Set values
 
@@ -792,6 +814,8 @@ class Document(
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
         :return: self
         """
+        if self.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
         return self.update(
             Inc(expression),
             session=session,
@@ -818,7 +842,8 @@ class Document(
         :param **pymongo_kwargs: pymongo native parameters for delete operation
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
-
+        if self.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
         if link_rule == DeleteRules.DELETE_LINKS:
             link_fields = self.get_link_fields()
             if link_fields is not None:
@@ -868,6 +893,8 @@ class Document(
         :param **pymongo_kwargs: pymongo native parameters for delete operation
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
+        if cls.get_settings().read_only is True:
+            raise DocumentIsReadOnly("Document is Read Only")
         return await cls.find_all().delete(
             session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )

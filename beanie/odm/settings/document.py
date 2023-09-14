@@ -19,6 +19,8 @@ class DocumentSettings(ItemSettings):
     merge_indexes: bool = False
     timeseries: Optional[TimeSeriesConfig] = None
 
+    read_only: bool = False
+
     lazy_parsing: bool = False
 
     keep_nulls: bool = True

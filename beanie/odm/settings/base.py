@@ -20,7 +20,7 @@ class ItemSettings(BaseModel):
     union_doc: Optional[Type] = None
     union_doc_alias: Optional[str] = None
     class_id: str = "_class_id"
-
+    read_only: bool = False
     is_root: bool = False
 
     class Config:
