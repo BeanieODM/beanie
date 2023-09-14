@@ -2,6 +2,17 @@
 
 Beanie project
 
+## [1.22.5] - 2023-09-13
+        
+### Fix: Unify Methods for Retrieving Field's Extra Parameters During Backlink Processing
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/703>
+            
+- Issues: 
+    - [[BUG] Optional[Backlink]](https://github.com/roman-right/beanie/issues/702)
+                        
+[1.22.5]: https://pypi.org/project/beanie/1.22.5
+
 ## [1.22.4] - 2023-09-13
         
 ### Fix Numpy Array Incompatability
