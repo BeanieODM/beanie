@@ -885,6 +885,18 @@ class DocumentWithBackLink(Document):
     i: int = 1
 
 
+class DocumentWithOptionalBackLink(Document):
+    if IS_PYDANTIC_V2:
+        back_link: Optional[BackLink[DocumentWithLink]] = Field(
+            json_schema_extra={"original_field": "link"},
+        )
+    else:
+        back_link: Optional[BackLink[DocumentWithLink]] = Field(
+            original_field="link"
+        )
+    i: int = 1
+
+
 class DocumentWithListLink(Document):
     link: List[Link["DocumentWithListBackLink"]]
     s: str = "TEST"
@@ -897,6 +909,18 @@ class DocumentWithListBackLink(Document):
         )
     else:
         back_link: List[BackLink[DocumentWithListLink]] = Field(
+            original_field="link"
+        )
+    i: int = 1
+
+
+class DocumentWithOptionalListBackLink(Document):
+    if IS_PYDANTIC_V2:
+        back_link: Optional[List[BackLink[DocumentWithListLink]]] = Field(
+            json_schema_extra={"original_field": "link"},
+        )
+    else:
+        back_link: Optional[List[BackLink[DocumentWithListLink]]] = Field(
             original_field="link"
         )
     i: int = 1

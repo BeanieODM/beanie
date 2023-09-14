@@ -273,9 +273,9 @@ class Initializer:
                     if cls is BackLink:
                         return LinkInfo(
                             field_name=field_name,
-                            lookup_field_name=field.json_schema_extra[  # type: ignore
-                                "original_field"
-                            ],
+                            lookup_field_name=get_extra_field_info(
+                                field, "original_field"
+                            ),
                             document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
                         )
@@ -296,9 +296,9 @@ class Initializer:
                     if cls is BackLink:
                         return LinkInfo(
                             field_name=field_name,
-                            lookup_field_name=field.json_schema_extra[  # type: ignore
-                                "original_field"
-                            ],
+                            lookup_field_name=get_extra_field_info(
+                                field, "original_field"
+                            ),
                             document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_LIST,
                         )
@@ -430,7 +430,9 @@ class Initializer:
         if (
             document_settings.timeseries is not None
             and document_settings.name
-            not in await self.database.list_collection_names(authorizedCollections=True, nameOnly=True)
+            not in await self.database.list_collection_names(
+                authorizedCollections=True, nameOnly=True
+            )
         ):
             collection = await self.database.create_collection(
                 **document_settings.timeseries.build_query(
@@ -642,7 +644,9 @@ class Initializer:
         self.init_view_fields(cls)
         self.init_cache(cls)
 
-        collection_names = await self.database.list_collection_names(authorizedCollections=True, nameOnly=True)
+        collection_names = await self.database.list_collection_names(
+            authorizedCollections=True, nameOnly=True
+        )
         if self.recreate_views or cls._settings.name not in collection_names:
             if cls._settings.name in collection_names:
                 await cls.get_motor_collection().drop()
