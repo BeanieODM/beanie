@@ -204,17 +204,17 @@ class UpdateMany(UpdateQuery):
         update_result = yield from self._update().__await__()
         if self.upsert_insert_doc is None:
             return update_result
-        else:
-            if update_result is not None and update_result.matched_count == 0:
-                return (
-                    yield from self.document_model.insert_one(
-                        document=self.upsert_insert_doc,
-                        session=self.session,
-                        bulk_writer=self.bulk_writer,
-                    ).__await__()
-                )
-            else:
-                return update_result
+
+        if update_result is not None and update_result.matched_count == 0:
+            return (
+                yield from self.document_model.insert_one(
+                    document=self.upsert_insert_doc,
+                    session=self.session,
+                    bulk_writer=self.bulk_writer,
+                ).__await__()
+            )
+
+        return update_result
 
 
 class UpdateOne(UpdateQuery):
@@ -352,21 +352,21 @@ class UpdateOne(UpdateQuery):
         update_result = yield from self._update().__await__()
         if self.upsert_insert_doc is None:
             return update_result
-        else:
-            if (
-                self.response_type == UpdateResponse.UPDATE_RESULT
-                and update_result is not None
-                and update_result.matched_count == 0
-            ) or (
-                self.response_type != UpdateResponse.UPDATE_RESULT
-                and update_result is None
-            ):
-                return (
-                    yield from self.document_model.insert_one(
-                        document=self.upsert_insert_doc,
-                        session=self.session,
-                        bulk_writer=self.bulk_writer,
-                    ).__await__()
-                )
-            else:
-                return update_result
+
+        if (
+            self.response_type == UpdateResponse.UPDATE_RESULT
+            and update_result is not None
+            and update_result.matched_count == 0
+        ) or (
+            self.response_type != UpdateResponse.UPDATE_RESULT
+            and update_result is None
+        ):
+            return (
+                yield from self.document_model.insert_one(
+                    document=self.upsert_insert_doc,
+                    session=self.session,
+                    bulk_writer=self.bulk_writer,
+                ).__await__()
+            )
+
+        return update_result

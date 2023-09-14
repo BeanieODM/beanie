@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.22.3] - 2023-09-13
+        
+### Refactor: Simplify UpdateMany And UpdateOne __await__ Method
+- Author - [Muzaffer Cikay](https://github.com/cikay)
+- PR <https://github.com/roman-right/beanie/pull/687>
+            
+[1.22.3]: https://pypi.org/project/beanie/1.22.3
+
 ## [1.22.2] - 2023-09-13
         
 ### Fix get_field_type & Generalize extract_id_class
