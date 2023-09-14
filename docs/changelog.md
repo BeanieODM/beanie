@@ -2,9 +2,17 @@
 
 Beanie project
 
+## [1.22.2] - 2023-09-13
+        
+### Fix get_field_type & Generalize extract_id_class
+- Author - [George Sakkis](https://github.com/gsakkis)
+- PR <https://github.com/roman-right/beanie/pull/657>
+            
+[1.22.2]: https://pypi.org/project/beanie/1.22.2
+
 ## [1.22.1] - 2023-09-13
         
-### Fix | List_Collection_Names Requires Unnecessary Privileges
+### Fix | list_collection_names Requires Unnecessary Privileges
 - Author - [Marina](https://github.com/marinashe)
 - PR <https://github.com/roman-right/beanie/pull/681>
 - Issues:
