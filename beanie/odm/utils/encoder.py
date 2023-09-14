@@ -156,7 +156,8 @@ class Encoder:
                 else:
                     obj_dict[k] = o
 
-                if obj_dict[k] == IGNORE:
+                if isinstance(obj_dict[k], Ignore) and obj_dict[k] == IGNORE:
+                    # Check the class, as direct comparison might not work, like with numpy arrays
                     del obj_dict[k]
                 else:
                     obj_dict[k] = encoder.encode(obj_dict[k])

@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.22.4] - 2023-09-13
+        
+### Fix Numpy Array Incompatability
+- Author - [Alex Lau](https://github.com/riven314)
+- PR <https://github.com/roman-right/beanie/pull/658>
+            
+[1.22.4]: https://pypi.org/project/beanie/1.22.4
+
 ## [1.22.3] - 2023-09-13
         
 ### Refactor: Simplify UpdateMany And UpdateOne __await__ Method
