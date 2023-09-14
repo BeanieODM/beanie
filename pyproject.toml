@@ -15,6 +15,12 @@ authors = [
 keywords = ["mongodb", "odm", "orm", "pydantic", "mongo", "async", "python"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
 ]
 dependencies = [
     "pydantic>=1.10,<3.0",
@@ -22,7 +28,7 @@ dependencies = [
     "click>=7",
     "toml",
     "lazy-model==0.2.0",
-    "typing-extensions>=4.7"
+    "typing-extensions>=4.7; python_version < '3.11'",
 ]
 
 [project.optional-dependencies]
