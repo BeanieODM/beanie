@@ -22,7 +22,7 @@ def get_field_type(field):
     if IS_PYDANTIC_V2:
         return field.annotation
     else:
-        return field.type_
+        return field.outer_type_
 
 
 def get_model_fields(model):
