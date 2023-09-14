@@ -44,11 +44,6 @@ class UpdateResponse(str, Enum):
 class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
     """
     Update Query base class
-
-    Inherited from:
-
-    - [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods)
-    - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
     def __init__(
@@ -109,10 +104,6 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
 class UpdateMany(UpdateQuery):
     """
     Update Many query class
-
-    Inherited from:
-
-    - [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
     """
 
     def update(
@@ -229,10 +220,6 @@ class UpdateMany(UpdateQuery):
 class UpdateOne(UpdateQuery):
     """
     Update One query class
-
-    Inherited from:
-
-    - [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
     """
 
     def __init__(self, *args, **kwargs):

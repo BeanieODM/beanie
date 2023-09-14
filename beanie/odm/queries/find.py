@@ -63,11 +63,6 @@ class FindQuery(
 ):
     """
     Find Query base class
-
-    Inherited from:
-
-    - [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods)
-    - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
     UpdateQueryType: Union[
@@ -173,13 +168,6 @@ class FindMany(
 ):
     """
     Find Many query class
-
-    Inherited from:
-
-    - [FindQuery](https://roman-right.github.io/beanie/api/queries/#findquery)
-    - [BaseCursorQuery](https://roman-right.github.io/beanie/api/queries/#basecursorquery) - async generator
-    - [AggregateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
-
     """
 
     UpdateQueryType = UpdateMany
@@ -487,11 +475,11 @@ class FindMany(
     ) -> UpdateMany:
         """
         Provide search criteria to the
-        [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
+        [UpdateMany](query.md#updatemany) query
 
         :param args: *Mapping[str,Any] - the modifications to apply.
         :param session: Optional[ClientSession]
-        :return: [UpdateMany](https://roman-right.github.io/beanie/api/queries/#updatemany) query
+        :return: [UpdateMany](query.md#updatemany) query
         """
         return cast(
             UpdateMany,
@@ -510,10 +498,10 @@ class FindMany(
         **pymongo_kwargs,
     ) -> DeleteMany:
         """
-        Provide search criteria to the [DeleteMany](https://roman-right.github.io/beanie/api/queries/#deletemany) query
+        Provide search criteria to the [DeleteMany](query.md#deletemany) query
 
         :param session:
-        :return: [DeleteMany](https://roman-right.github.io/beanie/api/queries/#deletemany) query
+        :return: [DeleteMany](query.md#deletemany) query
         """
         # We need to cast here to tell mypy that we are sure about the type.
         # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case
@@ -559,14 +547,14 @@ class FindMany(
         AggregationQuery[FindQueryProjectionType],
     ]:
         """
-        Provide search criteria to the [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
+        Provide search criteria to the [AggregationQuery](query.md#aggregationquery)
 
         :param aggregation_pipeline: list - aggregation pipeline. MongoDB doc:
         <https://docs.mongodb.com/manual/core/aggregation-pipeline/>
         :param projection_model: Type[BaseModel] - Projection Model
         :param session: Optional[ClientSession] - PyMongo session
         :param ignore_cache: bool
-        :return:[AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
+        :return:[AggregationQuery](query.md#aggregationquery)
         """
         self.set_session(session=session)
         find_query = self.get_filter_query()
@@ -713,10 +701,6 @@ class FindMany(
 class FindOne(FindQuery[FindQueryResultType]):
     """
     Find One query class
-
-    Inherited from:
-
-    - [FindQuery](https://roman-right.github.io/beanie/api/queries/#findquery)
     """
 
     UpdateQueryType = UpdateOne
@@ -882,12 +866,12 @@ class FindOne(FindQuery[FindQueryResultType]):
         **pymongo_kwargs,
     ) -> UpdateOne:
         """
-        Create [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query using modifications and
+        Create [UpdateOne](query.md#updateone) query using modifications and
         provide search criteria there
         :param args: *Mapping[str,Any] - the modifications to apply
         :param session: Optional[ClientSession] - PyMongo sessions
         :param response_type: Optional[UpdateResponse]
-        :return: [UpdateOne](https://roman-right.github.io/beanie/api/queries/#updateone) query
+        :return: [UpdateOne](query.md#updateone) query
         """
         return cast(
             UpdateOne,
@@ -907,9 +891,9 @@ class FindOne(FindQuery[FindQueryResultType]):
         **pymongo_kwargs,
     ) -> DeleteOne:
         """
-        Provide search criteria to the [DeleteOne](https://roman-right.github.io/beanie/api/queries/#deleteone) query
+        Provide search criteria to the [DeleteOne](query.md#deleteone) query
         :param session: Optional[ClientSession] - PyMongo sessions
-        :return: [DeleteOne](https://roman-right.github.io/beanie/api/queries/#deleteone) query
+        :return: [DeleteOne](query.md#deleteone) query
         """
         # We need to cast here to tell mypy that we are sure about the type.
         # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case

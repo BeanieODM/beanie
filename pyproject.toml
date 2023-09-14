@@ -51,7 +51,7 @@ doc = [
 queue = ["beanie-batteries-queue>=0.2"]
 
 [project.urls]
-homepage = "https://roman-right.github.io/beanie/"
+homepage = "https://beanie-odm.dev"
 repository = "https://github.com/roman-right/beanie"
 
 [project.scripts]

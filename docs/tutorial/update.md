@@ -49,7 +49,7 @@ More complex update operations can be performed by calling `update()` with an up
 await Product.find_one(Product.name == "Tony's").update(Set({Product.price: 3.33}))
 ```
 
-The whole list of the update query operators can be found [here](/api-documentation/operators/update).
+The whole list of the update query operators can be found [here](../api-documentation/operators/update.md).
 
 Native MongoDB syntax is also supported:
 
