@@ -16,7 +16,7 @@ jobs:
           stale-pr-message: 'This PR is stale because it has been open 45 days with no activity.'
           close-issue-message: 'This issue was closed because it has been stalled for 14 days with no activity.'
           close-pr-message: 'This PR was closed because it has been stalled for 14 days with no activity.'
-          exempt-issue-labels: 'bug,feature-request'
+          exempt-issue-labels: 'bug,feature-request,typing bug,feature request,doc,documentation'
           days-before-issue-stale: 30
           days-before-pr-stale: 45
           days-before-issue-close: 14

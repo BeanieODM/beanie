@@ -23,6 +23,11 @@ async def create_window(window: WindowAPI):
     return window
 
 
+@house_router.post("/windows_2/")
+async def create_window_2(window: WindowAPI):
+    return await window.save()
+
+
 @house_router.post("/houses/", response_model=HouseAPI)
 async def create_house(window: WindowAPI):
     house = HouseAPI(name="test_name", windows=[window])

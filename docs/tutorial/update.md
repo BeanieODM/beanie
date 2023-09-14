@@ -80,3 +80,12 @@ await Product.find_one(Product.name == "Milka").delete()
 
 await Product.find(Product.category.name == "Chocolate").delete()
 ```
+
+## Response Type
+
+For the object methods `update` and `upsert`, you can use the `response_type` parameter to specify the type of response.
+
+The options are:
+- `UpdateResponse.UPDATE_RESULT` - returns the result of the update operation.
+- `UpdateResponse.NEW_DOCUMENT` - returns the newly updated document.
+- `UpdateResponse.OLD_DOCUMENT` - returns the document before the update.

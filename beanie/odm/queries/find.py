@@ -622,8 +622,13 @@ class FindMany(
         aggregation_pipeline: List[Dict[str, Any]] = construct_lookup_queries(
             self.document_model
         )
+        filter_query = self.get_filter_query()
+        if "$text" in filter_query:
+            text_query = filter_query["$text"]
+            aggregation_pipeline.insert(0, {"$match": {"$text": text_query}})
+            del filter_query["$text"]
 
-        aggregation_pipeline.append({"$match": self.get_filter_query()})
+        aggregation_pipeline.append({"$match": filter_query})
 
         sort_pipeline = {"$sort": {i[0]: i[1] for i in self.sort_expressions}}
         if sort_pipeline["$sort"]:

@@ -69,16 +69,34 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
 
     @property
     def update_query(self) -> Dict[str, Any]:
-        query: Dict[str, Any] = {}
+        query: Union[Dict[str, Any], List[Dict[str, Any]], None] = None
         for expression in self.update_expressions:
             if isinstance(expression, BaseUpdateOperator):
+                if query is None:
+                    query = {}
+                if isinstance(query, list):
+                    raise TypeError("Wrong expression type")
                 query.update(expression.query)
             elif isinstance(expression, dict):
+                if query is None:
+                    query = {}
+                if isinstance(query, list):
+                    raise TypeError("Wrong expression type")
                 query.update(expression)
             elif isinstance(expression, SetRevisionId):
+                if query is None:
+                    query = {}
+                if isinstance(query, list):
+                    raise TypeError("Wrong expression type")
                 set_query = query.get("$set", {})
                 set_query.update(expression.query.get("$set", {}))
                 query["$set"] = set_query
+            elif isinstance(expression, list):
+                if query is None:
+                    query = []
+                if isinstance(query, dict):
+                    raise TypeError("Wrong expression type")
+                query.extend(expression)
             else:
                 raise TypeError("Wrong expression type")
         return Encoder(custom_encoders=self.encoders).encode(query)
