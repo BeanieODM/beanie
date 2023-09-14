@@ -154,12 +154,8 @@ class Encoder:
                 else:
                     obj_dict[k] = o
 
-                if hasattr(obj_dict[k], "all") or hasattr(obj_dict[k], "any"):
-                  is_ignore = False
-                else:
-                  is_ignore = obj_dict[k] == IGNORE
-
-                if is_ignore:
+                if isinstance(obj_dict[k], Ignore) and obj_dict[k] == IGNORE:
+                    # Check the class, as direct comparison might not work, like with numpy arrays
                     del obj_dict[k]
                 else:
                     obj_dict[k] = encoder.encode(obj_dict[k])
