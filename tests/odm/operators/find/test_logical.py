@@ -1,3 +1,5 @@
+import pytest
+
 from beanie.odm.operators.find.logical import And, Not, Nor, Or
 from tests.odm.models import Sample
 
@@ -10,9 +12,16 @@ async def test_and():
     assert q == {"$and": [{"integer": 1}, {"nested.integer": {"$gt": 3}}]}
 
 
-async def test_not():
+async def test_not(preset_documents):
     q = Not(Sample.integer == 1)
-    assert q == {"$not": {"integer": 1}}
+    assert q == {"integer": {"$not": {"$eq": 1}}}
+
+    docs = await Sample.find(q).to_list()
+    assert len(docs) == 7
+
+    with pytest.raises(AttributeError):
+        q = Not(And(Sample.integer == 1, Sample.nested.integer > 3))
+        await Sample.find(q).to_list()
 
 
 async def test_nor():

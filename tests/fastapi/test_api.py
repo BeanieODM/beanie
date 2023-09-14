@@ -35,3 +35,11 @@ async def test_create_house_2(api_client):
     resp = await api_client.post("/v1/houses_2/", json=payload)
     resp_json = resp.json()
     assert len(resp_json["windows"]) == 1
+
+
+async def test_revision_id(api_client):
+    payload = {"x": 10, "y": 20}
+    resp = await api_client.post("/v1/windows_2/", json=payload)
+    resp_json = resp.json()
+    assert "revision_id" not in resp_json
+    assert resp_json == {"x": 10, "y": 20, "_id": resp_json["_id"]}

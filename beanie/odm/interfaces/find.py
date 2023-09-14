@@ -91,7 +91,7 @@ class FindInterface:
     ) -> Union[FindOne["DocType"], FindOne["DocumentProjectionType"]]:
         """
         Find one document by criteria.
-        Returns [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) query object.
+        Returns [FindOne](query.md#findone) query object.
         When awaited this will either return a document or None if no document exists for the search criteria.
 
         :param args: *Mapping[str, Any] - search criteria
@@ -99,7 +99,7 @@ class FindInterface:
         :param session: Optional[ClientSession] - pymongo session instance
         :param ignore_cache: bool
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
-        :return: [FindOne](https://roman-right.github.io/beanie/api/queries/#findone) - find query instance
+        :return: [FindOne](query.md#findone) - find query instance
         """
         args = cls._add_class_id_filter(args, with_children)
         return cls._find_one_query_class(document_model=cls).find_one(
@@ -164,7 +164,7 @@ class FindInterface:
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
         Find many documents by criteria.
-        Returns [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) query object
+        Returns [FindMany](query.md#findmany) query object
 
         :param args: *Mapping[str, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
@@ -175,7 +175,7 @@ class FindInterface:
         :param ignore_cache: bool
         :param lazy_parse: bool
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
-        :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
+        :return: [FindMany](query.md#findmany) - query instance
         """
         args = cls._add_class_id_filter(args, with_children)
         return cls._find_many_query_class(document_model=cls).find_many(
@@ -313,7 +313,7 @@ class FindInterface:
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
-        :return: [FindMany](https://roman-right.github.io/beanie/api/queries/#findmany) - query instance
+        :return: [FindMany](query.md#findmany) - query instance
         """
         return cls.find_many(
             {},
