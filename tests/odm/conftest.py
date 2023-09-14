@@ -54,8 +54,8 @@ from tests.odm.models import (
     SampleLazyParsing,
     SampleWithMutableObjects,
     SubDocument,
-    Test2NonRoot,
-    TestNonRoot,
+    Doc2NonRoot,
+    DocNonRoot,
     Vehicle,
     Window,
     WindowWithRevision,
@@ -84,8 +84,14 @@ from tests.odm.models import (
     DocumentWithIndexMerging1,
     DocumentWithIndexMerging2,
     DocumentWithCustomInit,
+    DocumentWithTextIndexAndLink,
+    LinkDocumentForTextSeacrh,
+    DocumentWithList,
+    DocumentWithBsonBinaryField,
+    DocumentWithRootModelAsAField,
+    DocWithCallWrapper,
 )
-from tests.odm.views import TestView, TestViewWithLink
+from tests.odm.views import ViewForTest, ViewForTestWithLink
 
 
 @pytest.fixture
@@ -210,8 +216,8 @@ async def init(db):
         DocumentForEncodingTest,
         DocumentForEncodingTestDate,
         DocumentWithStringField,
-        TestView,
-        TestViewWithLink,
+        ViewForTest,
+        ViewForTestWithLink,
         DocumentMultiModelOne,
         DocumentMultiModelTwo,
         DocumentUnion,
@@ -227,8 +233,8 @@ async def init(db):
         Bus,
         Owner,
         SampleWithMutableObjects,
-        TestNonRoot,
-        Test2NonRoot,
+        DocNonRoot,
+        Doc2NonRoot,
         SampleLazyParsing,
         RootDocument,
         ADocument,
@@ -253,6 +259,12 @@ async def init(db):
         DocumentWithIndexMerging1,
         DocumentWithIndexMerging2,
         DocumentWithCustomInit,
+        DocumentWithTextIndexAndLink,
+        LinkDocumentForTextSeacrh,
+        DocumentWithList,
+        DocumentWithBsonBinaryField,
+        DocumentWithRootModelAsAField,
+        DocWithCallWrapper,
     ]
     await init_beanie(
         database=db,

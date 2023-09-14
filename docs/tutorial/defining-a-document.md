@@ -47,7 +47,7 @@ It uses all the same patterns of `BaseModel`. But also it has special types of f
 
 `id` field of the `Document` class reflects the unique `_id` field of the MongoDB document. 
 Each object of the `Document` type has this field. 
-The default type of this is [PydanticObjectId](/api-documentation/fields/#pydanticobjectid).
+The default type of this is [PydanticObjectId](../api-documentation/fields.md/#pydanticobjectid).
 
 ```python
 class Sample(Document):

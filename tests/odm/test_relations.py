@@ -6,7 +6,11 @@ from pydantic.fields import Field
 from beanie import init_beanie, Document
 from beanie.exceptions import DocumentWasNotSaved
 from beanie.odm.fields import DeleteRules, Link, WriteRules, BackLink
-from beanie.odm.utils.pydantic import parse_model, IS_PYDANTIC_V2
+from beanie.odm.utils.pydantic import (
+    parse_model,
+    IS_PYDANTIC_V2,
+    get_model_fields,
+)
 from tests.odm.models import (
     Door,
     House,
@@ -29,6 +33,8 @@ from tests.odm.models import (
     DocumentWithListLink,
     DocumentWithListOfLinks,
     DocumentToBeLinked,
+    DocumentWithTextIndexAndLink,
+    LinkDocumentForTextSeacrh,
 )
 
 
@@ -172,6 +178,9 @@ class TestInsert:
         for win in house.windows:
             assert isinstance(win, Window)
             assert win.id
+
+    async def test_fetch_after_insert(self, house_not_inserted):
+        await house_not_inserted.fetch_all_links()
 
 
 class TestFind:
@@ -332,6 +341,22 @@ class TestFind:
         for i in range(10):
             assert doc_with_links.links[i].id == docs[i].id
 
+    async def test_text_search(self):
+        doc = DocumentWithTextIndexAndLink(
+            s="hello world", link=LinkDocumentForTextSeacrh(i=1)
+        )
+        await doc.insert(link_rule=WriteRules.WRITE)
+
+        doc2 = DocumentWithTextIndexAndLink(
+            s="hi world", link=LinkDocumentForTextSeacrh(i=2)
+        )
+        await doc2.insert(link_rule=WriteRules.WRITE)
+
+        docs = await DocumentWithTextIndexAndLink.find(
+            {"$text": {"$search": "hello"}}, fetch_links=True
+        ).to_list()
+        assert len(docs) == 1
+
 
 class TestReplace:
     async def test_do_nothing(self, house):
@@ -395,19 +420,19 @@ class TestOther:
     async def test_query_composition(self):
         SYS = {"id", "revision_id"}
 
-        # Simple fields are initialized using the pydantic __fields__ internal property
+        # Simple fields are initialized using the pydantic model_fields internal property
         # such fields are properly isolated when multi inheritance is involved.
-        assert set(RootDocument.__fields__.keys()) == SYS | {
+        assert set(get_model_fields(RootDocument).keys()) == SYS | {
             "name",
             "link_root",
         }
-        assert set(ADocument.__fields__.keys()) == SYS | {
+        assert set(get_model_fields(ADocument).keys()) == SYS | {
             "name",
             "link_root",
             "surname",
             "link_a",
         }
-        assert set(BDocument.__fields__.keys()) == SYS | {
+        assert set(get_model_fields(BDocument).keys()) == SYS | {
             "name",
             "link_root",
             "email",
@@ -491,7 +516,7 @@ class TestOther:
 
     async def test_with_extra_allow(self, houses):
         res = await House.find(fetch_links=True).to_list()
-        assert res[0].__fields__.keys() == {
+        assert get_model_fields(res[0]).keys() == {
             "id",
             "revision_id",
             "windows",
@@ -503,7 +528,7 @@ class TestOther:
         }
 
         res = await House.find_one(fetch_links=True)
-        assert res.__fields__.keys() == {
+        assert get_model_fields(res).keys() == {
             "id",
             "revision_id",
             "windows",
@@ -664,14 +689,26 @@ class HouseForReversedOrderInit(Document):
 class DoorForReversedOrderInit(Document):
     height: int = 2
     width: int = 1
-    house: BackLink[HouseForReversedOrderInit] = Field(original_field="door")
+    if IS_PYDANTIC_V2:
+        house: BackLink[HouseForReversedOrderInit] = Field(
+            json_schema_extra={"original_field": "door"}
+        )
+    else:
+        house: BackLink[HouseForReversedOrderInit] = Field(
+            original_field="door"
+        )
 
 
 class PersonForReversedOrderInit(Document):
     name: str
-    house: List[BackLink[HouseForReversedOrderInit]] = Field(
-        original_field="owners"
-    )
+    if IS_PYDANTIC_V2:
+        house: List[BackLink[HouseForReversedOrderInit]] = Field(
+            json_schema_extra={"original_field": "owners"}
+        )
+    else:
+        house: List[BackLink[HouseForReversedOrderInit]] = Field(
+            original_field="owners"
+        )
 
 
 class TestDeleteBackLinks:

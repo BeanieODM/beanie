@@ -2,6 +2,47 @@
 
 Beanie project
 
+## [1.22.2] - 2023-09-13
+        
+### Fix get_field_type & Generalize extract_id_class
+- Author - [George Sakkis](https://github.com/gsakkis)
+- PR <https://github.com/roman-right/beanie/pull/657>
+            
+[1.22.2]: https://pypi.org/project/beanie/1.22.2
+
+## [1.22.1] - 2023-09-13
+        
+### Fix | list_collection_names Requires Unnecessary Privileges
+- Author - [Marina](https://github.com/marinashe)
+- PR <https://github.com/roman-right/beanie/pull/681>
+- Issues:
+  - [[BUG] Can't use a View if the user doesn't have full read privileges to all collections](https://github.com/roman-right/beanie/issues/680)
+            
+[1.22.1]: https://pypi.org/project/beanie/1.22.1
+
+## [1.22.0] - 2023-09-13
+        
+### Fix | August 2023
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/669>
+- Issues:
+                    
+  - [[BUG] Issue with `List[Link[Type]]` when `fetch_all_links` is called](https://github.com/roman-right/beanie/issues/576) 
+  - [Loosen type requirement for `insert_many()`?](https://github.com/roman-right/beanie/issues/591) 
+  - [[BUG] Updating documents with a frozen BaseModel as field raises TypeError](https://github.com/roman-right/beanie/issues/599) 
+  - [[BUG] Not operator cant be on top level](https://github.com/roman-right/beanie/issues/600)
+  - [[BUG] `Text` query doesn't work with `fetch_links=True`](https://github.com/roman-right/beanie/issues/606)
+  - [[BUG] List type fields in updated model record do not get update.](https://github.com/roman-right/beanie/issues/629)
+  - [[BUG] Undefined behavior when chaining update methods](https://github.com/roman-right/beanie/issues/646)
+  - [[BUG] Revision Id is in Responsemodel](https://github.com/roman-right/beanie/issues/648)
+  - [[BUG] Custom types like bson.Binary require `__get_pydantic_core_schema__`](https://github.com/roman-right/beanie/issues/651)
+  - [[BUG] `validate_on_save` doesn't work with `Document.save()`](https://github.com/roman-right/beanie/issues/664)
+  - [[BUG] Beanie persists `root` field](https://github.com/roman-right/beanie/issues/668)
+  - [Beanie 1.21 still triggers many deprecation warnings with Pydantic v2](https://github.com/roman-right/beanie/issues/676)
+  - [[BUG] TypeError: expected 1 argument, got 0 when beanie.Document has method wrapped in pydantic.validate_call](https://github.com/roman-right/beanie/issues/695)
+                        
+[1.22.0]: https://pypi.org/project/beanie/1.22.0
+
 ## [1.21.0] - 2023-08-03
         
 ### Pydantic bump | final
