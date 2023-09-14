@@ -137,11 +137,6 @@ class Document(
 
     - `id` - MongoDB document ObjectID "_id" field.
     Mapped to the PydanticObjectId class
-
-    Inherited from:
-
-    - Pydantic BaseModel
-    - [AggregateInterface](interfaces.md#aggregateinterface)
     """
 
     if IS_PYDANTIC_V2:
