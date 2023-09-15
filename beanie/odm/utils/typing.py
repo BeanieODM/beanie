@@ -5,8 +5,8 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import get_args, get_origin
 
-from typing import Type, Any
 import inspect
+from typing import Any, Type
 
 
 def extract_id_class(annotation) -> Type[Any]:

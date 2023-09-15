@@ -1,4 +1,4 @@
-from typing import ClassVar, Type, Dict, Optional
+from typing import ClassVar, Dict, Optional, Type
 
 from beanie.exceptions import UnionDocNotInited
 from beanie.odm.interfaces.aggregate import AggregateInterface

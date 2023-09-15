@@ -1,7 +1,7 @@
 import pytest
 from pydantic.main import BaseModel
 
-from beanie import init_beanie, Indexed
+from beanie import Indexed, init_beanie
 from beanie.executors.migrate import MigrationSettings, run_migrate
 from beanie.odm.documents import Document
 from beanie.odm.models import InspectionStatuses

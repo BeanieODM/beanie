@@ -1,10 +1,10 @@
 import asyncio
 from typing import Any, ClassVar, Dict, Optional, Union
-from beanie.odm.fields import Link, LinkInfo
 
 from pydantic import BaseModel
 
 from beanie.exceptions import ViewWasNotInitialized
+from beanie.odm.fields import Link, LinkInfo
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import DetectionInterface, ModelType
 from beanie.odm.interfaces.find import FindInterface

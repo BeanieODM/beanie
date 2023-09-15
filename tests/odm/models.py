@@ -10,45 +10,44 @@ from ipaddress import (
 )
 from pathlib import Path
 from typing import (
+    Any,
+    Callable,
+    ClassVar,
     Dict,
     List,
     Optional,
     Set,
     Tuple,
     Union,
-    ClassVar,
-    Any,
-    Callable,
 )
 from uuid import UUID, uuid4
 
 import pymongo
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
     PrivateAttr,
     SecretBytes,
     SecretStr,
-    ConfigDict,
 )
 from pydantic.fields import FieldInfo
 from pydantic_core import core_schema
-
 from pymongo import IndexModel
 
-from beanie import DecimalAnnotation
 from beanie import (
+    DecimalAnnotation,
     Document,
     Indexed,
     Insert,
     Replace,
+    Save,
     Update,
     ValidateOnSave,
-    Save,
 )
 from beanie.odm.actions import Delete, after_event, before_event
 from beanie.odm.custom_types.bson.binary import BsonBinary
-from beanie.odm.fields import Link, PydanticObjectId, BackLink
+from beanie.odm.fields import BackLink, Link, PydanticObjectId
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2

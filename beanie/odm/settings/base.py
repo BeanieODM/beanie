@@ -1,9 +1,10 @@
 from datetime import timedelta
-from typing import Optional, Dict, Any, Type
+from typing import Any, Dict, Optional, Type
+
+from motor.motor_asyncio import AsyncIOMotorCollection, AsyncIOMotorDatabase
+from pydantic import BaseModel, Field
 
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pydantic import BaseModel, Field
 
 if IS_PYDANTIC_V2:
     from pydantic import ConfigDict

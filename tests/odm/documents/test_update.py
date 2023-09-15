@@ -1,19 +1,18 @@
 import pytest
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
 from beanie.exceptions import (
     DocumentNotFound,
     ReplaceError,
 )
 from beanie.odm.fields import PydanticObjectId
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
     DocumentTestModel,
-    ModelWithOptionalField,
     DocumentWithKeepNullsFalse,
     DocumentWithList,
+    ModelWithOptionalField,
     Sample,
 )
-
 
 # REPLACE
 

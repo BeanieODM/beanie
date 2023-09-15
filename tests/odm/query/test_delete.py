@@ -1,6 +1,7 @@
 import pytest
-from tests.odm.models import Sample
+
 from beanie.odm.queries.delete import DeleteMany
+from tests.odm.models import Sample
 
 
 async def test_delete_many(preset_documents):

@@ -1,9 +1,9 @@
 import motor.motor_asyncio
-from beanie import init_beanie
 from fastapi import FastAPI
 
+from beanie import init_beanie
 from tests.conftest import Settings
-from tests.fastapi.models import HouseAPI, WindowAPI, DoorAPI, RoofAPI
+from tests.fastapi.models import DoorAPI, HouseAPI, RoofAPI, WindowAPI
 from tests.fastapi.routes import house_router
 
 app = FastAPI()

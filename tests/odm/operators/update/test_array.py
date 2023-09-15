@@ -1,8 +1,8 @@
 from beanie.odm.operators.update.array import (
     AddToSet,
+    Pop,
     Pull,
     PullAll,
-    Pop,
     Push,
 )
 from tests.odm.models import Sample

@@ -1,19 +1,20 @@
 from abc import abstractmethod
-from typing import (
-    Optional,
-    List,
-    Type,
-    Union,
-    Tuple,
-    Mapping,
-    Any,
-    overload,
-    ClassVar,
-    TypeVar,
-    Dict,
-    TYPE_CHECKING,
-)
 from collections.abc import Iterable
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    overload,
+)
+
 from pydantic import (
     BaseModel,
 )
@@ -21,7 +22,7 @@ from pymongo.client_session import ClientSession
 
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.detector import ModelType
-from beanie.odm.queries.find import FindOne, FindMany
+from beanie.odm.queries.find import FindMany, FindOne
 from beanie.odm.settings.base import ItemSettings
 
 if TYPE_CHECKING:

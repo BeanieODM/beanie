@@ -1,7 +1,7 @@
 from typing import Optional, Union
 
-from beanie.odm.utils.typing import extract_id_class
 from beanie import Document, Link
+from beanie.odm.utils.typing import extract_id_class
 
 
 class Lock(Document):

@@ -1,6 +1,6 @@
 import inspect
 from functools import wraps
-from typing import Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from beanie.exceptions import StateManagementIsTurnedOff, StateNotSaved
 

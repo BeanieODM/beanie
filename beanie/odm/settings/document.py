@@ -1,11 +1,11 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from pydantic import Field
 
 from beanie.odm.fields import IndexModelField
 from beanie.odm.settings.base import ItemSettings
 from beanie.odm.settings.timeseries import TimeSeriesConfig
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
 if IS_PYDANTIC_V2:
     from pydantic import ConfigDict

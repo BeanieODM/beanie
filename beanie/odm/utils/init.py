@@ -1,11 +1,11 @@
 import sys
 
 from beanie.odm.utils.pydantic import (
-    parse_model,
-    get_model_fields,
-    get_field_type,
-    get_extra_field_info,
     IS_PYDANTIC_V2,
+    get_extra_field_info,
+    get_field_type,
+    get_model_fields,
+    parse_model,
 )
 
 if sys.version_info >= (3, 8):
@@ -17,28 +17,27 @@ import importlib
 import inspect
 from copy import copy
 from typing import (  # type: ignore
-    Optional,
     List,
+    Optional,
     Type,
     Union,
     _GenericAlias,
 )
 
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 from pymongo import IndexModel
 
-from beanie.exceptions import MongoDBVersionError, Deprecation
+from beanie.exceptions import Deprecation, MongoDBVersionError
 from beanie.odm.actions import ActionRegistry
 from beanie.odm.cache import LRUCache
-from beanie.odm.documents import DocType
-from beanie.odm.documents import Document
+from beanie.odm.documents import DocType, Document
 from beanie.odm.fields import (
-    ExpressionField,
-    LinkInfo,
-    Link,
     BackLink,
+    ExpressionField,
+    Link,
+    LinkInfo,
     LinkTypes,
 )
 from beanie.odm.interfaces.detector import ModelType

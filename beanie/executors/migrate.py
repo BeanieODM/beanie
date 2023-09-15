@@ -11,7 +11,7 @@ import toml
 
 from beanie.migrations import template
 from beanie.migrations.database import DBHandler
-from beanie.migrations.models import RunningMode, RunningDirections
+from beanie.migrations.models import RunningDirections, RunningMode
 from beanie.migrations.runner import MigrationNode
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)

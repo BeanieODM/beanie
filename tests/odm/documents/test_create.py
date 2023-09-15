@@ -4,8 +4,8 @@ from pymongo.errors import DuplicateKeyError
 from beanie.odm.fields import PydanticObjectId
 from tests.odm.models import (
     DocumentTestModel,
-    ModelWithOptionalField,
     DocumentWithKeepNullsFalse,
+    ModelWithOptionalField,
 )
 
 

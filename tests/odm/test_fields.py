@@ -1,8 +1,8 @@
 import datetime
 from decimal import Decimal
-
 from pathlib import Path
-from typing import Mapping, AbstractSet
+from typing import AbstractSet, Mapping
+
 import pytest
 from pydantic import BaseModel, ValidationError
 
@@ -13,9 +13,9 @@ from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
-    DocumentWithCustomFiledsTypes,
-    DocumentWithBsonEncodersFiledsTypes,
     DocumentTestModel,
+    DocumentWithBsonEncodersFiledsTypes,
+    DocumentWithCustomFiledsTypes,
     Sample,
 )
 

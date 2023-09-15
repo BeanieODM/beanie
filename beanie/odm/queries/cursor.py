@@ -1,12 +1,12 @@
 from abc import abstractmethod
 from typing import (
-    Optional,
-    List,
-    TypeVar,
-    Type,
-    Dict,
     Any,
+    Dict,
     Generic,
+    List,
+    Optional,
+    Type,
+    TypeVar,
     cast,
 )
 

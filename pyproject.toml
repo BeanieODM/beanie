@@ -112,6 +112,7 @@ include = ["tests/typing", "beanie"]
 [tool.ruff]
 line-length = 79
 ignore = ["E501"]
+extend-select = ["I001"]
 fix = true
 
 # Allow unused variables when underscore-prefixed.

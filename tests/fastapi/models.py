@@ -1,6 +1,6 @@
 from typing import List
 
-from beanie import Document, Link, Indexed
+from beanie import Document, Indexed, Link
 
 
 class WindowAPI(Document):

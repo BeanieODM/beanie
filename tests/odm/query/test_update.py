@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from beanie.odm.operators.update.general import Set, Max
+from beanie.odm.operators.update.general import Max, Set
 from beanie.odm.queries.update import UpdateResponse
 from tests.odm.models import Sample
 

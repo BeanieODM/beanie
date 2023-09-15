@@ -1,5 +1,5 @@
 from beanie.odm.operators.find.array import All, ElemMatch, Size
-from tests.odm.models import Sample, PackageElemMatch
+from tests.odm.models import PackageElemMatch, Sample
 
 
 async def test_all():

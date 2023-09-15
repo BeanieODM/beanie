@@ -3,15 +3,15 @@ import sys
 from collections import OrderedDict
 from enum import Enum
 from typing import (
+    TYPE_CHECKING,
+    Any,
     Dict,
     Generic,
-    TypeVar,
-    Union,
-    Type,
     List,
     Optional,
-    Any,
-    TYPE_CHECKING,
+    Type,
+    TypeVar,
+    Union,
 )
 
 if sys.version_info >= (3, 8):
@@ -21,31 +21,27 @@ else:
 
 from typing import OrderedDict as OrderedDictType
 
-from bson import ObjectId, DBRef
+from bson import DBRef, ObjectId
 from bson.errors import InvalidId
 from pydantic import BaseModel
-
-from pymongo import ASCENDING
+from pymongo import ASCENDING, IndexModel
 
 from beanie.odm.enums import SortDirection
 from beanie.odm.operators.find.comparison import (
-    Eq,
     GT,
     GTE,
     LT,
     LTE,
     NE,
+    Eq,
     In,
 )
-from beanie.odm.utils.parsing import parse_obj
-from pymongo import IndexModel
-
 from beanie.odm.registry import DocsRegistry
-
+from beanie.odm.utils.parsing import parse_obj
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
-    get_model_fields,
     get_field_type,
+    get_model_fields,
     parse_object_as,
 )
 
@@ -56,10 +52,10 @@ if IS_PYDANTIC_V2:
         TypeAdapter,
     )
     from pydantic.json_schema import JsonSchemaValue
-    from pydantic_core import core_schema, CoreSchema
+    from pydantic_core import CoreSchema, core_schema
     from pydantic_core.core_schema import (
-        simple_ser_schema,
         ValidationInfo,
+        simple_ser_schema,
         str_schema,
     )
 else:
