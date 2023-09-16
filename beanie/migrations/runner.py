@@ -1,17 +1,17 @@
 import logging
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
-from typing import Type, Optional
+from typing import Optional, Type
 
-from beanie.odm.documents import Document
-from beanie.odm.utils.init import init_beanie
 from beanie.migrations.controllers.iterative import BaseMigrationController
 from beanie.migrations.database import DBHandler
 from beanie.migrations.models import (
     MigrationLog,
-    RunningMode,
     RunningDirections,
+    RunningMode,
 )
+from beanie.odm.documents import Document
+from beanie.odm.utils.init import init_beanie
 
 logger = logging.getLogger(__name__)
 

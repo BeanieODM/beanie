@@ -1,5 +1,5 @@
 from beanie.odm.operators.update.general import Max
-from beanie.odm.queries.update import UpdateQuery, UpdateMany
+from beanie.odm.queries.update import UpdateMany, UpdateQuery
 from tests.odm.models import Sample
 
 

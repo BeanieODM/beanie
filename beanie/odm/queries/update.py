@@ -1,34 +1,33 @@
 from abc import abstractmethod
 from enum import Enum
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Generator,
+    List,
+    Mapping,
+    Optional,
+    Type,
+    Union,
+)
+
+from pymongo import ReturnDocument
+from pymongo import UpdateMany as UpdateManyPyMongo
+from pymongo import UpdateOne as UpdateOnePyMongo
+from pymongo.client_session import ClientSession
+from pymongo.results import InsertOneResult, UpdateResult
 
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.interfaces.clone import CloneInterface
-from beanie.odm.operators.update.general import SetRevisionId
-from beanie.odm.utils.encoder import Encoder
-from typing import (
-    Callable,
-    List,
-    Type,
-    TYPE_CHECKING,
-    Optional,
-    Mapping,
-    Any,
-    Dict,
-    Union,
-    Generator,
-)
-
-from pymongo.client_session import ClientSession
-from pymongo.results import UpdateResult, InsertOneResult
-
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
 from beanie.odm.operators.update import BaseUpdateOperator
-from pymongo import UpdateOne as UpdateOnePyMongo, ReturnDocument
-from pymongo import UpdateMany as UpdateManyPyMongo
-
+from beanie.odm.operators.update.general import SetRevisionId
+from beanie.odm.utils.encoder import Encoder
 from beanie.odm.utils.parsing import parse_obj
 
 if TYPE_CHECKING:

@@ -1,26 +1,28 @@
 import asyncio
-from typing import ClassVar, AbstractSet, Iterable
 from typing import (
-    Dict,
-    Optional,
-    List,
-    Type,
-    Union,
-    Mapping,
-    TypeVar,
+    TYPE_CHECKING,
+    AbstractSet,
     Any,
+    ClassVar,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
     Set,
+    Type,
+    TypeVar,
+    Union,
 )
-from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from bson import DBRef, ObjectId
 from lazy_model import LazyModel
 from pydantic import (
-    ValidationError,
-    PrivateAttr,
-    Field,
     ConfigDict,
+    Field,
+    PrivateAttr,
+    ValidationError,
 )
 from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
@@ -35,27 +37,27 @@ from pymongo.results import (
 from beanie.exceptions import (
     CollectionWasNotInitialized,
     DocumentNotFound,
-    RevisionIdWasChanged,
     DocumentWasNotSaved,
     NotSupported,
     ReplaceError,
+    RevisionIdWasChanged,
 )
 from beanie.odm.actions import (
+    ActionDirections,
     EventTypes,
     wrap_with_actions,
-    ActionDirections,
 )
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.cache import LRUCache
 from beanie.odm.fields import (
-    PydanticObjectId,
+    BackLink,
+    DeleteRules,
     ExpressionField,
     Link,
     LinkInfo,
     LinkTypes,
+    PydanticObjectId,
     WriteRules,
-    DeleteRules,
-    BackLink,
 )
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import ModelType
@@ -64,36 +66,38 @@ from beanie.odm.interfaces.getters import OtherGettersInterface
 from beanie.odm.interfaces.inheritance import InheritanceInterface
 from beanie.odm.interfaces.setters import SettersInterface
 from beanie.odm.models import (
+    InspectionError,
     InspectionResult,
     InspectionStatuses,
-    InspectionError,
 )
 from beanie.odm.operators.find.comparison import In
 from beanie.odm.operators.update.general import (
     CurrentDate,
     Inc,
-    Set as SetOperator,
-    Unset,
     SetRevisionId,
+    Unset,
+)
+from beanie.odm.operators.update.general import (
+    Set as SetOperator,
 )
 from beanie.odm.queries.update import UpdateMany, UpdateResponse
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict, get_top_level_nones
 from beanie.odm.utils.parsing import merge_models
 from beanie.odm.utils.pydantic import (
-    parse_object_as,
-    get_field_type,
-    get_model_fields,
-    get_extra_field_info,
     IS_PYDANTIC_V2,
-    parse_model,
+    get_extra_field_info,
+    get_field_type,
     get_model_dump,
+    get_model_fields,
+    parse_model,
+    parse_object_as,
 )
 from beanie.odm.utils.self_validation import validate_self_before
 from beanie.odm.utils.state import (
-    saved_state_needed,
     previous_saved_state_needed,
     save_state_after,
+    saved_state_needed,
     swap_revision_after,
 )
 from beanie.odm.utils.typing import extract_id_class
@@ -102,7 +106,7 @@ if IS_PYDANTIC_V2:
     from pydantic import model_validator
 
 if TYPE_CHECKING:
-    from pydantic.typing import AbstractSetIntStr, MappingIntStrAny, DictStrAny
+    from pydantic.typing import AbstractSetIntStr, DictStrAny, MappingIntStrAny
 
 DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)

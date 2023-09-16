@@ -5,10 +5,10 @@ from pydantic import BaseModel
 
 from beanie.odm.enums import SortDirection
 from tests.odm.models import (
-    Sample,
+    Color,
     DocumentWithBsonEncodersFiledsTypes,
     House,
-    Color,
+    Sample,
 )
 
 

@@ -1,8 +1,8 @@
 from typing import (
-    Type,
-    Optional,
-    Dict,
     ClassVar,
+    Dict,
+    Optional,
+    Type,
 )
 
 

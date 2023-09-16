@@ -1,6 +1,6 @@
 import pytest
 
-from beanie.odm.operators.find.logical import And, Not, Nor, Or
+from beanie.odm.operators.find.logical import And, Nor, Not, Or
 from tests.odm.models import Sample
 
 

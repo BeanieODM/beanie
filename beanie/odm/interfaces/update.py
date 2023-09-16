@@ -1,14 +1,14 @@
 from abc import abstractmethod
-from typing import Dict, Mapping, Union, Any, Optional
+from typing import Any, Dict, Mapping, Optional, Union
 
 from pymongo.client_session import ClientSession
 
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import ExpressionField
 from beanie.odm.operators.update.general import (
-    Set,
     CurrentDate,
     Inc,
+    Set,
 )
 
 

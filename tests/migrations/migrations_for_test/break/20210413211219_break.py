@@ -1,6 +1,6 @@
 from pydantic.main import BaseModel
 
-from beanie import Document, iterative_migration, PydanticObjectId, Indexed
+from beanie import Document, Indexed, PydanticObjectId, iterative_migration
 
 
 class Tag(BaseModel):

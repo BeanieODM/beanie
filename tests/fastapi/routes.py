@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from beanie import WriteRules, PydanticObjectId
+from beanie import PydanticObjectId, WriteRules
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.fastapi.models import HouseAPI, WindowAPI
 

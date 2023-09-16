@@ -1,7 +1,7 @@
 from typing import (
-    Callable,
     TYPE_CHECKING,
     Any,
+    Callable,
     Coroutine,
     Dict,
     Generator,
@@ -18,14 +18,13 @@ from typing import (
 )
 
 from pydantic import BaseModel
+from pymongo import ReplaceOne
 from pymongo.client_session import ClientSession
 from pymongo.results import UpdateResult
 
-from pymongo import ReplaceOne
-
 from beanie.exceptions import DocumentNotFound
-from beanie.odm.cache import LRUCache
 from beanie.odm.bulk import BulkWriter, Operation
+from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.aggregation_methods import AggregateMethods
 from beanie.odm.interfaces.clone import CloneInterface
@@ -39,9 +38,9 @@ from beanie.odm.queries.delete import (
     DeleteOne,
 )
 from beanie.odm.queries.update import (
-    UpdateQuery,
     UpdateMany,
     UpdateOne,
+    UpdateQuery,
     UpdateResponse,
 )
 from beanie.odm.utils.dump import get_dict

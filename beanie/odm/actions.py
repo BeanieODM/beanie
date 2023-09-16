@@ -3,15 +3,15 @@ import inspect
 from enum import Enum
 from functools import wraps
 from typing import (
-    Callable,
-    List,
-    Union,
-    Dict,
     TYPE_CHECKING,
-    Type,
+    Any,
+    Callable,
+    Dict,
+    List,
     Optional,
     Tuple,
-    Any,
+    Type,
+    Union,
 )
 
 if TYPE_CHECKING:

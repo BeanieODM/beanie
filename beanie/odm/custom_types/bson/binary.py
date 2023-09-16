@@ -1,6 +1,7 @@
 from typing import Any, Callable
 
 import bson
+
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
 if IS_PYDANTIC_V2:

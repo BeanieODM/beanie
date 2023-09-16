@@ -1,5 +1,4 @@
-from typing import Any, Dict
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict
 
 from beanie.odm.fields import (
     ExpressionField,

@@ -1,18 +1,18 @@
 import re
-from datetime import datetime, date
+from datetime import date, datetime
 
 from bson import Binary, Regex
 
 from beanie.odm.utils.encoder import Encoder
 from tests.odm.models import (
+    Child,
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
-    DocumentWithStringField,
-    SampleWithMutableObjects,
-    Child,
     DocumentWithDecimalField,
     DocumentWithKeepNullsFalse,
+    DocumentWithStringField,
     ModelWithOptionalField,
+    SampleWithMutableObjects,
 )
 
 

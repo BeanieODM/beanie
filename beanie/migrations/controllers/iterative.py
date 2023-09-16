@@ -1,11 +1,10 @@
-from inspect import signature, isclass
-from typing import Type, Optional, Union, List
-
-from beanie.migrations.utils import update_dict
-from beanie.migrations.controllers.base import BaseMigrationController
-from beanie.odm.documents import Document
 import asyncio
+from inspect import isclass, signature
+from typing import List, Optional, Type, Union
 
+from beanie.migrations.controllers.base import BaseMigrationController
+from beanie.migrations.utils import update_dict
+from beanie.odm.documents import Document
 from beanie.odm.utils.pydantic import parse_model
 
 

@@ -1,7 +1,5 @@
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
-
 from tests.odm.models import DocumentWithRootModelAsAField
-
 
 if IS_PYDANTIC_V2:
 

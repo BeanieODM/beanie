@@ -1,17 +1,16 @@
 from typing import (
-    Type,
-    List,
-    Mapping,
-    Optional,
     TYPE_CHECKING,
     Any,
     Generic,
+    List,
+    Mapping,
+    Optional,
+    Type,
     TypeVar,
 )
 
-from pydantic import BaseModel
-
 from motor.core import AgnosticCommandCursor
+from pydantic import BaseModel
 
 from beanie.odm.cache import LRUCache
 from beanie.odm.interfaces.clone import CloneInterface

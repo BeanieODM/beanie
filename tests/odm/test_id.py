@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from tests.odm.models import DocumentWithCustomIdUUID, DocumentWithCustomIdInt
+from tests.odm.models import DocumentWithCustomIdInt, DocumentWithCustomIdUUID
 
 
 async def test_uuid_id():
