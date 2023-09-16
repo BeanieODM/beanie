@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.22.6] - 2023-09-16
+        
+### Update Precommit Hooks & CI
+- Author - [George Sakkis](https://github.com/gsakkis)
+- PR <https://github.com/roman-right/beanie/pull/673>
+            
+[1.22.6]: https://pypi.org/project/beanie/1.22.6
+
 ## [1.22.5] - 2023-09-13
         
 ### Fix: Unify Methods for Retrieving Field's Extra Parameters During Backlink Processing
