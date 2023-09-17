@@ -1,5 +1,5 @@
 repos:
-  - repo: https://github.com/ambv/black
+  - repo: https://github.com/psf/black
     rev: 23.9.1
     hooks:
     - id: black
@@ -16,4 +16,3 @@ repos:
           - types-click
           - types-toml
         exclude: ^tests/
-      
