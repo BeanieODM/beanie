@@ -46,5 +46,9 @@ async def test_validate_on_save_skip_action():
 async def test_validate_on_save_dbref():
     lock = Lock(k=1)
     await lock.insert()
-    window = WindowWithValidationOnSave(x=1, y=1, lock=lock.to_ref())
+    window = WindowWithValidationOnSave(
+        x=1,
+        y=1,
+        lock=lock.to_ref(),  # this is what exactly we want to test
+    )
     await window.insert()
