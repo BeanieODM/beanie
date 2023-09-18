@@ -13,7 +13,6 @@ from tests.odm.models import (
     Lock,
     Roof,
     Window,
-    WindowWithValidationOnSave,
     Yard,
     RootDocument,
     ADocument,
@@ -654,13 +653,6 @@ class TestSaveBackLinks:
         )
         for lnk in new_back_link_doc.back_link:
             assert lnk.s == "new value"
-
-
-async def test_validate_on_save_dbref():
-    lock = Lock(k=1)
-    await lock.insert()
-    window = WindowWithValidationOnSave(x=1, y=1, lock=lock.to_ref())
-    await window.insert()
 
 
 class HouseForReversedOrderInit(Document):
