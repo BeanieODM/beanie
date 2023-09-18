@@ -422,6 +422,15 @@ class Window(Document):
     lock: Optional[Link[Lock]] = None
 
 
+class WindowWithValidationOnSave(Document):
+    x: int
+    y: int
+    lock: Optional[Link[Lock]] = None
+
+    class Settings:
+        validate_on_save = True
+
+
 class Door(Document):
     t: int = 10
     window: Optional[Link[Window]] = None
