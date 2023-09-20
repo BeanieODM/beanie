@@ -14,7 +14,7 @@ import pydantic
 
 import beanie
 from beanie.odm.fields import Link, LinkTypes
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, get_model_fields
 
 DEFAULT_CUSTOM_ENCODERS: Mapping[type, Callable] = {
     ipaddress.IPv4Address: str,
@@ -127,28 +127,17 @@ class Encoder:
                 raise ValueError(errors)
         return self.encode(data)
 
-    if IS_PYDANTIC_V2:
-
-        def _iter_model_items(
-            self, obj: pydantic.BaseModel
-        ) -> Iterable[Tuple[str, Any]]:
-            exclude, keep_nulls = self.exclude, self.keep_nulls
-            for key, value in obj.__iter__():
-                field_info = obj.model_fields.get(key)
-                if field_info is not None:
-                    key = field_info.alias or key
-                if key not in exclude and (value is not None or keep_nulls):
-                    yield key, value
-
-    else:
-
-        def _iter_model_items(
-            self, obj: pydantic.BaseModel
-        ) -> Iterable[Tuple[str, Any]]:
-            exclude, keep_nulls = self.exclude, self.keep_nulls
-            for key, value in obj._iter(to_dict=False, by_alias=True):
-                if key not in exclude and (value is not None or keep_nulls):
-                    yield key, value
+    def _iter_model_items(
+        self, obj: pydantic.BaseModel
+    ) -> Iterable[Tuple[str, Any]]:
+        exclude, keep_nulls = self.exclude, self.keep_nulls
+        get_model_field = get_model_fields(obj).get
+        for key, value in obj.__iter__():
+            field_info = get_model_field(key)
+            if field_info is not None:
+                key = field_info.alias or key
+            if key not in exclude and (value is not None or keep_nulls):
+                yield key, value
 
 
 def _get_encoder(
