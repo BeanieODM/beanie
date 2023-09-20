@@ -106,7 +106,7 @@ async def test_custom_filed_types():
     )
 
 
-async def test_hidden(document):
+async def test_excluded(document):
     document = await DocumentTestModel.find_one()
     if IS_PYDANTIC_V2:
         assert "test_list" not in document.model_dump()
