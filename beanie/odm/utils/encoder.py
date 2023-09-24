@@ -16,7 +16,8 @@ import beanie
 from beanie.odm.fields import Link, LinkTypes
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, get_model_fields
 
-DEFAULT_CUSTOM_ENCODERS: Mapping[type, Callable] = {
+SingleArgCallable = Callable[[Any], Any]
+DEFAULT_CUSTOM_ENCODERS: Mapping[type, SingleArgCallable] = {
     ipaddress.IPv4Address: str,
     ipaddress.IPv4Interface: str,
     ipaddress.IPv4Network: str,
@@ -54,7 +55,9 @@ class Encoder:
     """
 
     exclude: Container[str] = frozenset()
-    custom_encoders: Mapping[type, Callable] = dc.field(default_factory=dict)
+    custom_encoders: Mapping[type, SingleArgCallable] = dc.field(
+        default_factory=dict
+    )
     to_db: bool = False
     keep_nulls: bool = True
 
@@ -141,8 +144,8 @@ class Encoder:
 
 
 def _get_encoder(
-    obj: Any, custom_encoders: Mapping[type, Callable]
-) -> Optional[Callable]:
+    obj: Any, custom_encoders: Mapping[type, SingleArgCallable]
+) -> Optional[SingleArgCallable]:
     encoder = custom_encoders.get(type(obj))
     if encoder is not None:
         return encoder
