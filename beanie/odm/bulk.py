@@ -80,6 +80,8 @@ class BulkWriter:
             return await obj_class.get_motor_collection().bulk_write(  # type: ignore
                 requests, session=self.session
             )
+            self.operations = []
+
         return None
 
     def add_operation(self, operation: Operation):
