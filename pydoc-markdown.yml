@@ -16,7 +16,7 @@ renderer:
   output_directory: docs/build
   mkdocs_config:
     site_name: Beanie Documentation
-    site_url: https://roman-right.github.io/beanie/
+    site_url: https://beanie-odm.dev/
     theme:
       name: material
       palette:

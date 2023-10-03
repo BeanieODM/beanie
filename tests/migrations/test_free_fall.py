@@ -1,5 +1,6 @@
 import pytest
 from pydantic.main import BaseModel
+
 from beanie import init_beanie
 from beanie.executors.migrate import MigrationSettings, run_migrate
 from beanie.migrations.models import RunningDirections

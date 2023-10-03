@@ -2,27 +2,37 @@ name: Tests
 on: [ pull_request ]
 
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - uses: pre-commit/action@v3.0.0
   run-tests:
     strategy:
       fail-fast: false
       matrix:
         python-version: [ 3.7, 3.8, 3.9, 3.10.6, 3.11 ]
         mongodb-version: [ 4.4, 5.0 ]
-        pydantic-version: [ 1.10.11, 2.0 ]
+        pydantic-version: [ 1.10.12, 2.3 ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.3.0
+        uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: test-rs
-      - name: install pydantic
-        run: pip install pydantic==${{ matrix.pydantic-version }}
       - name: install dependencies
         run: pip install .[test]
+      - name: install pydantic
+        run: pip install pydantic==${{ matrix.pydantic-version }}
       - name: run tests
-        run: pytest
+        run: pytest -v

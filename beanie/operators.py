@@ -6,14 +6,14 @@ from beanie.odm.operators.find.bitwise import (
     BitsAnySet,
 )
 from beanie.odm.operators.find.comparison import (
-    Eq,
     GT,
     GTE,
-    In,
-    NotIn,
     LT,
     LTE,
     NE,
+    Eq,
+    In,
+    NotIn,
 )
 from beanie.odm.operators.find.element import Exists, Type
 from beanie.odm.operators.find.evaluation import (
@@ -25,30 +25,30 @@ from beanie.odm.operators.find.evaluation import (
     Where,
 )
 from beanie.odm.operators.find.geospatial import (
-    GeoIntersects,
-    GeoWithinTypes,
-    GeoWithin,
     Box,
+    GeoIntersects,
+    GeoWithin,
+    GeoWithinTypes,
     Near,
     NearSphere,
 )
-from beanie.odm.operators.find.logical import Or, And, Nor, Not
+from beanie.odm.operators.find.logical import And, Nor, Not, Or
 from beanie.odm.operators.update.array import (
     AddToSet,
     Pop,
     Pull,
-    Push,
     PullAll,
+    Push,
 )
 from beanie.odm.operators.update.bitwise import Bit
 from beanie.odm.operators.update.general import (
-    Set,
     CurrentDate,
     Inc,
-    Min,
     Max,
+    Min,
     Mul,
     Rename,
+    Set,
     SetOnInsert,
     Unset,
 )

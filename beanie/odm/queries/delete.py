@@ -1,13 +1,13 @@
-from typing import Type, TYPE_CHECKING, Any, Mapping, Optional, Dict, Generator
+from typing import TYPE_CHECKING, Any, Dict, Generator, Mapping, Optional, Type
 
+from pymongo import DeleteMany as DeleteManyPyMongo
+from pymongo import DeleteOne as DeleteOnePyMongo
 from pymongo.client_session import ClientSession
 from pymongo.results import DeleteResult
 
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.interfaces.clone import CloneInterface
 from beanie.odm.interfaces.session import SessionMethods
-from pymongo import DeleteOne as DeleteOnePyMongo
-from pymongo import DeleteMany as DeleteManyPyMongo
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType

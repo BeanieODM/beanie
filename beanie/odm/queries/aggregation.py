@@ -1,17 +1,16 @@
 from typing import (
-    Type,
-    List,
-    Mapping,
-    Optional,
     TYPE_CHECKING,
     Any,
     Generic,
+    List,
+    Mapping,
+    Optional,
+    Type,
     TypeVar,
 )
 
-from pydantic import BaseModel
-
 from motor.core import AgnosticCommandCursor
+from pydantic import BaseModel
 
 from beanie.odm.cache import LRUCache
 from beanie.odm.interfaces.clone import CloneInterface
@@ -33,11 +32,6 @@ class AggregationQuery(
 ):
     """
     Aggregation Query
-
-    Inherited from:
-
-    - [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods) - session methods
-    - [BaseCursorQuery](https://roman-right.github.io/beanie/api/queries/#basecursorquery) - async generator
     """
 
     def __init__(

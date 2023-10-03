@@ -1,22 +1,22 @@
 import pytest
 from motor.motor_asyncio import AsyncIOMotorCollection
+from pymongo import IndexModel
 
-from beanie import Document, init_beanie, Indexed
+from beanie import Document, Indexed, init_beanie
 from beanie.exceptions import CollectionWasNotInitialized
 from beanie.odm.utils.projection import get_projection
 from tests.odm.models import (
     DocumentTestModel,
+    DocumentTestModelStringImport,
+    DocumentTestModelWithComplexIndex,
     DocumentTestModelWithCustomCollectionName,
+    DocumentTestModelWithDroppedIndex,
+    DocumentTestModelWithIndexFlags,
     DocumentTestModelWithIndexFlagsAliases,
     DocumentTestModelWithSimpleIndex,
-    DocumentTestModelWithIndexFlags,
-    DocumentTestModelWithComplexIndex,
-    DocumentTestModelStringImport,
-    DocumentTestModelWithDroppedIndex,
-    DocumentWithIndexMerging2,
     DocumentWithCustomInit,
+    DocumentWithIndexMerging2,
 )
-from pymongo import IndexModel
 
 
 async def test_init_collection_was_not_initialized():

@@ -8,14 +8,14 @@ from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, parse_model
 from tests.odm.models import (
     DocumentWithTurnedOffStateManagement,
     DocumentWithTurnedOnReplaceObjects,
-    DocumentWithTurnedOnStateManagement,
     DocumentWithTurnedOnSavePrevious,
+    DocumentWithTurnedOnStateManagement,
+    DocumentWithTurnedOnStateManagementWithCustomId,
     HouseWithRevision,
     InternalDoc,
     LockWithRevision,
-    WindowWithRevision,
     StateAndDecimalFieldModel,
-    DocumentWithTurnedOnStateManagementWithCustomId,
+    WindowWithRevision,
 )
 
 

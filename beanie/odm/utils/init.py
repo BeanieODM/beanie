@@ -1,11 +1,11 @@
 import sys
 
 from beanie.odm.utils.pydantic import (
-    parse_model,
-    get_model_fields,
-    get_field_type,
-    get_extra_field_info,
     IS_PYDANTIC_V2,
+    get_extra_field_info,
+    get_field_type,
+    get_model_fields,
+    parse_model,
 )
 
 if sys.version_info >= (3, 8):
@@ -17,28 +17,27 @@ import importlib
 import inspect
 from copy import copy
 from typing import (  # type: ignore
-    Optional,
     List,
+    Optional,
     Type,
     Union,
     _GenericAlias,
 )
 
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 from pymongo import IndexModel
 
-from beanie.exceptions import MongoDBVersionError, Deprecation
+from beanie.exceptions import Deprecation, MongoDBVersionError
 from beanie.odm.actions import ActionRegistry
 from beanie.odm.cache import LRUCache
-from beanie.odm.documents import DocType
-from beanie.odm.documents import Document
+from beanie.odm.documents import DocType, Document
 from beanie.odm.fields import (
-    ExpressionField,
-    LinkInfo,
-    Link,
     BackLink,
+    ExpressionField,
+    Link,
+    LinkInfo,
     LinkTypes,
 )
 from beanie.odm.interfaces.detector import ModelType
@@ -273,9 +272,9 @@ class Initializer:
                     if cls is BackLink:
                         return LinkInfo(
                             field_name=field_name,
-                            lookup_field_name=field.json_schema_extra[  # type: ignore
-                                "original_field"
-                            ],
+                            lookup_field_name=get_extra_field_info(
+                                field, "original_field"
+                            ),
                             document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
                         )
@@ -296,9 +295,9 @@ class Initializer:
                     if cls is BackLink:
                         return LinkInfo(
                             field_name=field_name,
-                            lookup_field_name=field.json_schema_extra[  # type: ignore
-                                "original_field"
-                            ],
+                            lookup_field_name=get_extra_field_info(
+                                field, "original_field"
+                            ),
                             document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_LIST,
                         )
@@ -430,7 +429,9 @@ class Initializer:
         if (
             document_settings.timeseries is not None
             and document_settings.name
-            not in await self.database.list_collection_names()
+            not in await self.database.list_collection_names(
+                authorizedCollections=True, nameOnly=True
+            )
         ):
             collection = await self.database.create_collection(
                 **document_settings.timeseries.build_query(
@@ -642,7 +643,9 @@ class Initializer:
         self.init_view_fields(cls)
         self.init_cache(cls)
 
-        collection_names = await self.database.list_collection_names()
+        collection_names = await self.database.list_collection_names(
+            authorizedCollections=True, nameOnly=True
+        )
         if self.recreate_views or cls._settings.name not in collection_names:
             if cls._settings.name in collection_names:
                 await cls.get_motor_collection().drop()

@@ -1,18 +1,25 @@
-from typing import Any, Type, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Type, Union
+
 from pydantic import BaseModel
 
 from beanie.exceptions import (
-    UnionHasNoRegisteredDocs,
     DocWasNotRegisteredInUnionClass,
+    UnionHasNoRegisteredDocs,
 )
 from beanie.odm.interfaces.detector import ModelType
-from beanie.odm.utils.pydantic import parse_model
+from beanie.odm.utils.pydantic import get_config_value, parse_model
 
 if TYPE_CHECKING:
     from beanie.odm.documents import Document
 
 
 def merge_models(left: BaseModel, right: BaseModel) -> None:
+    """
+    Merge two models
+    :param left: left model
+    :param right: right model
+    :return: None
+    """
     from beanie.odm.fields import Link
 
     if hasattr(left, "_previous_revision_id") and hasattr(
@@ -24,7 +31,10 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
         if isinstance(right_value, BaseModel) and isinstance(
             left_value, BaseModel
         ):
-            merge_models(left_value, right_value)
+            if get_config_value(left_value, "frozen"):
+                left.__setattr__(k, right_value)
+            else:
+                merge_models(left_value, right_value)
             continue
         if isinstance(right_value, list):
             links_found = False
@@ -34,6 +44,7 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
                     break
             if links_found:
                 continue
+            left.__setattr__(k, right_value)
         elif not isinstance(right_value, Link):
             left.__setattr__(k, right_value)
 

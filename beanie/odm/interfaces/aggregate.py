@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import TypeVar, Type, Optional, Union, Dict, Any, overload
+from typing import Any, Dict, Optional, Type, TypeVar, Union, overload
 
 from pydantic import BaseModel
 from pymongo.client_session import ClientSession
@@ -55,13 +55,13 @@ class AggregateInterface:
     ]:
         """
         Aggregate over collection.
-        Returns [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery) query object
+        Returns [AggregationQuery](query.md#aggregationquery) query object
         :param aggregation_pipeline: list - aggregation pipeline
         :param projection_model: Type[BaseModel]
         :param session: Optional[ClientSession]
         :param ignore_cache: bool
         :param **pymongo_kwargs: pymongo native parameters for aggregate operation
-        :return: [AggregationQuery](https://roman-right.github.io/beanie/api/queries/#aggregationquery)
+        :return: [AggregationQuery](query.md#aggregationquery)
         """
         return cls.find_all().aggregate(
             aggregation_pipeline=aggregation_pipeline,

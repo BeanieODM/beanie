@@ -1,8 +1,13 @@
 from datetime import timedelta
-from typing import Optional, Dict, Any, Type
+from typing import Any, Dict, Optional, Type
 
-from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
+from motor.motor_asyncio import AsyncIOMotorCollection, AsyncIOMotorDatabase
 from pydantic import BaseModel, Field
+
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
+
+if IS_PYDANTIC_V2:
+    from pydantic import ConfigDict
 
 
 class ItemSettings(BaseModel):
@@ -23,5 +28,11 @@ class ItemSettings(BaseModel):
 
     is_root: bool = False
 
-    class Config:
-        arbitrary_types_allowed = True
+    if IS_PYDANTIC_V2:
+        model_config = ConfigDict(
+            arbitrary_types_allowed=True,
+        )
+    else:
+
+        class Config:
+            arbitrary_types_allowed = True

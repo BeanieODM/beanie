@@ -1,4 +1,4 @@
-from typing import Type, Any
+from typing import Any, Type
 
 import pydantic
 from pydantic import BaseModel
@@ -22,7 +22,7 @@ def get_field_type(field):
     if IS_PYDANTIC_V2:
         return field.annotation
     else:
-        return field.type_
+        return field.outer_type_
 
 
 def get_model_fields(model):
@@ -60,3 +60,25 @@ def get_model_dump(model):
         return model.model_dump()
     else:
         return model.dict()
+
+
+def get_iterator(model, by_alias=False):
+    if IS_PYDANTIC_V2:
+
+        def _get_alias(model, k):
+            v = model.model_fields.get(k)
+            if v is not None:
+                return v.alias or k
+            else:
+                return k
+
+        def _iter(model, by_alias=False):
+            for k, v in model.__iter__():
+                if by_alias:
+                    yield _get_alias(model, k), v
+                else:
+                    yield k, v
+
+        return _iter(model, by_alias=by_alias)
+    else:
+        return model._iter(to_dict=False, by_alias=by_alias)

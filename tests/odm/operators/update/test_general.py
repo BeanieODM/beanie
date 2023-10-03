@@ -1,13 +1,13 @@
 from beanie.odm.operators.update.general import (
-    Set,
     CurrentDate,
     Inc,
-    Unset,
-    SetOnInsert,
-    Rename,
-    Mul,
     Max,
     Min,
+    Mul,
+    Rename,
+    Set,
+    SetOnInsert,
+    Unset,
 )
 from tests.odm.models import Sample
 

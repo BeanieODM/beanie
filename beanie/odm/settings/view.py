@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Union, Type
+from typing import Any, Dict, List, Type, Union
 
 from beanie.odm.settings.base import ItemSettings
 

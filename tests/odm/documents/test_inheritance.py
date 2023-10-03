@@ -1,13 +1,13 @@
 from beanie import Link
 from tests.odm.models import (
-    Vehicle,
     Bicycle,
     Bike,
-    Car,
     Bus,
+    Car,
+    Doc2NonRoot,
+    DocNonRoot,
     Owner,
-    TestNonRoot,
-    Test2NonRoot,
+    Vehicle,
 )
 
 
@@ -104,11 +104,11 @@ class TestInheritance:
             await e.delete()
 
     def test_non_root_inheritance(self):
-        assert TestNonRoot._class_id is None
-        assert Test2NonRoot._class_id is None
+        assert DocNonRoot._class_id is None
+        assert Doc2NonRoot._class_id is None
 
-        assert TestNonRoot.get_collection_name() == "TestNonRoot"
-        assert Test2NonRoot.get_collection_name() == "Test2NonRoot"
+        assert DocNonRoot.get_collection_name() == "DocNonRoot"
+        assert Doc2NonRoot.get_collection_name() == "Doc2NonRoot"
 
     def test_class_ids(self):
         assert Vehicle._class_id == "Vehicle"

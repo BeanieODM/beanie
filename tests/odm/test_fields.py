@@ -1,8 +1,8 @@
 import datetime
 from decimal import Decimal
-
 from pathlib import Path
-from typing import Mapping, AbstractSet
+from typing import AbstractSet, Mapping
+
 import pytest
 from pydantic import BaseModel, ValidationError
 
@@ -13,9 +13,9 @@ from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
-    DocumentWithCustomFiledsTypes,
-    DocumentWithBsonEncodersFiledsTypes,
     DocumentTestModel,
+    DocumentWithBsonEncodersFiledsTypes,
+    DocumentWithCustomFiledsTypes,
     Sample,
 )
 
@@ -108,8 +108,10 @@ async def test_custom_filed_types():
 
 async def test_hidden(document):
     document = await DocumentTestModel.find_one()
-
-    assert "test_list" not in document.dict()
+    if IS_PYDANTIC_V2:
+        assert "test_list" not in document.model_dump()
+    else:
+        assert "test_list" not in document.dict()
 
 
 def test_revision_id_not_in_schema():
@@ -135,8 +137,10 @@ def test_revision_id_not_in_schema():
 @pytest.mark.parametrize("exclude", [{"test_int"}, {"test_doc": {"test_int"}}])
 async def test_param_exclude(document, exclude):
     document = await DocumentTestModel.find_one()
-
-    doc_dict = document.dict(exclude=exclude)
+    if IS_PYDANTIC_V2:
+        doc_dict = document.model_dump(exclude=exclude)
+    else:
+        doc_dict = document.dict(exclude=exclude)
     if isinstance(exclude, AbstractSet):
         for k in exclude:
             assert k not in doc_dict

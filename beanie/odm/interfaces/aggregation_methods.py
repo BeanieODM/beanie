@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Optional, Union, List, Dict, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 from pymongo.client_session import ClientSession
 

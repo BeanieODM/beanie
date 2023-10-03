@@ -1,34 +1,33 @@
 from abc import abstractmethod
 from enum import Enum
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Generator,
+    List,
+    Mapping,
+    Optional,
+    Type,
+    Union,
+)
+
+from pymongo import ReturnDocument
+from pymongo import UpdateMany as UpdateManyPyMongo
+from pymongo import UpdateOne as UpdateOnePyMongo
+from pymongo.client_session import ClientSession
+from pymongo.results import InsertOneResult, UpdateResult
 
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.interfaces.clone import CloneInterface
-from beanie.odm.operators.update.general import SetRevisionId
-from beanie.odm.utils.encoder import Encoder
-from typing import (
-    Callable,
-    List,
-    Type,
-    TYPE_CHECKING,
-    Optional,
-    Mapping,
-    Any,
-    Dict,
-    Union,
-    Generator,
-)
-
-from pymongo.client_session import ClientSession
-from pymongo.results import UpdateResult, InsertOneResult
-
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (
     UpdateMethods,
 )
 from beanie.odm.operators.update import BaseUpdateOperator
-from pymongo import UpdateOne as UpdateOnePyMongo, ReturnDocument
-from pymongo import UpdateMany as UpdateManyPyMongo
-
+from beanie.odm.operators.update.general import SetRevisionId
+from beanie.odm.utils.encoder import Encoder
 from beanie.odm.utils.parsing import parse_obj
 
 if TYPE_CHECKING:
@@ -44,11 +43,6 @@ class UpdateResponse(str, Enum):
 class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
     """
     Update Query base class
-
-    Inherited from:
-
-    - [SessionMethods](https://roman-right.github.io/beanie/api/interfaces/#sessionmethods)
-    - [UpdateMethods](https://roman-right.github.io/beanie/api/interfaces/#aggregatemethods)
     """
 
     def __init__(
@@ -69,16 +63,34 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
 
     @property
     def update_query(self) -> Dict[str, Any]:
-        query: Dict[str, Any] = {}
+        query: Union[Dict[str, Any], List[Dict[str, Any]], None] = None
         for expression in self.update_expressions:
             if isinstance(expression, BaseUpdateOperator):
+                if query is None:
+                    query = {}
+                if isinstance(query, list):
+                    raise TypeError("Wrong expression type")
                 query.update(expression.query)
             elif isinstance(expression, dict):
+                if query is None:
+                    query = {}
+                if isinstance(query, list):
+                    raise TypeError("Wrong expression type")
                 query.update(expression)
             elif isinstance(expression, SetRevisionId):
+                if query is None:
+                    query = {}
+                if isinstance(query, list):
+                    raise TypeError("Wrong expression type")
                 set_query = query.get("$set", {})
                 set_query.update(expression.query.get("$set", {}))
                 query["$set"] = set_query
+            elif isinstance(expression, list):
+                if query is None:
+                    query = []
+                if isinstance(query, dict):
+                    raise TypeError("Wrong expression type")
+                query.extend(expression)
             else:
                 raise TypeError("Wrong expression type")
         return Encoder(custom_encoders=self.encoders).encode(query)
@@ -91,10 +103,6 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
 class UpdateMany(UpdateQuery):
     """
     Update Many query class
-
-    Inherited from:
-
-    - [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
     """
 
     def update(
@@ -195,26 +203,22 @@ class UpdateMany(UpdateQuery):
         update_result = yield from self._update().__await__()
         if self.upsert_insert_doc is None:
             return update_result
-        else:
-            if update_result is not None and update_result.matched_count == 0:
-                return (
-                    yield from self.document_model.insert_one(
-                        document=self.upsert_insert_doc,
-                        session=self.session,
-                        bulk_writer=self.bulk_writer,
-                    ).__await__()
-                )
-            else:
-                return update_result
+
+        if update_result is not None and update_result.matched_count == 0:
+            return (
+                yield from self.document_model.insert_one(
+                    document=self.upsert_insert_doc,
+                    session=self.session,
+                    bulk_writer=self.bulk_writer,
+                ).__await__()
+            )
+
+        return update_result
 
 
 class UpdateOne(UpdateQuery):
     """
     Update One query class
-
-    Inherited from:
-
-    - [UpdateQuery](https://roman-right.github.io/beanie/api/queries/#updatequery)
     """
 
     def __init__(self, *args, **kwargs):
@@ -347,21 +351,21 @@ class UpdateOne(UpdateQuery):
         update_result = yield from self._update().__await__()
         if self.upsert_insert_doc is None:
             return update_result
-        else:
-            if (
-                self.response_type == UpdateResponse.UPDATE_RESULT
-                and update_result is not None
-                and update_result.matched_count == 0
-            ) or (
-                self.response_type != UpdateResponse.UPDATE_RESULT
-                and update_result is None
-            ):
-                return (
-                    yield from self.document_model.insert_one(
-                        document=self.upsert_insert_doc,
-                        session=self.session,
-                        bulk_writer=self.bulk_writer,
-                    ).__await__()
-                )
-            else:
-                return update_result
+
+        if (
+            self.response_type == UpdateResponse.UPDATE_RESULT
+            and update_result is not None
+            and update_result.matched_count == 0
+        ) or (
+            self.response_type != UpdateResponse.UPDATE_RESULT
+            and update_result is None
+        ):
+            return (
+                yield from self.document_model.insert_one(
+                    document=self.upsert_insert_doc,
+                    session=self.session,
+                    bulk_writer=self.bulk_writer,
+                ).__await__()
+            )
+
+        return update_result

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from beanie import WriteRules, PydanticObjectId
+from beanie import PydanticObjectId, WriteRules
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.fastapi.models import HouseAPI, WindowAPI
 
@@ -21,6 +21,11 @@ class WindowInput(BaseModel):
 async def create_window(window: WindowAPI):
     await window.create()
     return window
+
+
+@house_router.post("/windows_2/")
+async def create_window_2(window: WindowAPI):
+    return await window.save()
 
 
 @house_router.post("/houses/", response_model=HouseAPI)
