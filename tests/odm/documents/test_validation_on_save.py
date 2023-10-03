@@ -2,8 +2,8 @@ import pytest
 from pydantic import ValidationError
 
 from tests.odm.models import (
-    Lock,
     DocumentWithValidationOnSave,
+    Lock,
     WindowWithValidationOnSave,
 )
 

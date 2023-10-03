@@ -89,8 +89,8 @@ from tests.odm.models import (
     UsersAddresses,
     Vehicle,
     Window,
-    WindowWithValidationOnSave,
     WindowWithRevision,
+    WindowWithValidationOnSave,
     Yard,
     YardWithRevision,
 )
