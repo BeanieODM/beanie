@@ -2,6 +2,7 @@ import re
 from datetime import date, datetime
 
 from bson import Binary, Regex
+from pydantic_core import Url
 
 from beanie.odm.utils.encoder import Encoder
 from tests.odm.models import (
@@ -9,6 +10,7 @@ from tests.odm.models import (
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
     DocumentWithDecimalField,
+    DocumentWithHttpUrlField,
     DocumentWithKeepNullsFalse,
     DocumentWithStringField,
     ModelWithOptionalField,
@@ -125,3 +127,15 @@ def test_keep_nulls_false():
     encoder = Encoder(keep_nulls=False, to_db=True)
     encoded_doc = encoder.encode(doc)
     assert encoded_doc == {"m": {"i": 10}}
+
+
+async def test_url():
+    doc = DocumentWithHttpUrlField(url_field="https://example.com")
+    assert isinstance(doc.url_field, Url)
+    await doc.save()
+
+    new_doc = await DocumentWithHttpUrlField.find_one(
+        DocumentWithHttpUrlField.id == doc.id
+    )
+    assert isinstance(new_doc.url_field, Url)
+    assert new_doc.url_field == doc.url_field

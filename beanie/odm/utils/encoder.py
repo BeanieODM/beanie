@@ -29,6 +29,7 @@ from uuid import UUID
 import bson
 from bson import Binary, DBRef, Decimal128, ObjectId, Regex
 from pydantic import BaseModel, SecretBytes, SecretStr
+from pydantic_core import Url
 
 from beanie.odm import documents
 from beanie.odm.fields import Link, LinkTypes
@@ -55,6 +56,7 @@ ENCODERS_BY_TYPE: Dict[Type[Any], Callable[[Any], Any]] = {
     bytes: lambda b: b if isinstance(b, Binary) else Binary(b),
     UUID: lambda u: bson.Binary.from_uuid(u),
     re.Pattern: Regex.from_native,
+    Url: str,
 }
 
 
