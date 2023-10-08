@@ -15,6 +15,8 @@ from pydantic.fields import FieldInfo
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema
 
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
+
 
 class DecimalCustomAnnotation:
     @classmethod
@@ -28,7 +30,10 @@ class DecimalCustomAnnotation:
                 return value.to_decimal()
             return value
 
-        python_schema = core_schema.general_plain_validator_function(validate)  # type: ignore
+        if IS_PYDANTIC_V2:
+            python_schema = core_schema.with_info_plain_validator_function(validate)  # type: ignore
+        else:
+            python_schema = core_schema.general_plain_validator_function(validate)  # type: ignore
 
         return core_schema.json_or_python_schema(
             json_schema=core_schema.float_schema(),

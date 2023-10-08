@@ -91,7 +91,14 @@ class Color:
                 return Color(value["value"])
             return Color(value)
 
-        python_schema = core_schema.general_plain_validator_function(validate)
+        if IS_PYDANTIC_V2:
+            python_schema = core_schema.with_info_plain_validator_function(
+                validate
+            )
+        else:
+            python_schema = core_schema.general_plain_validator_function(
+                validate
+            )
 
         return core_schema.json_or_python_schema(
             json_schema=core_schema.str_schema(),

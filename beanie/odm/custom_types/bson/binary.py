@@ -31,7 +31,7 @@ class BsonBinary(bson.Binary):
                     "Value must be bytes or bson.Binary or BsonBinary"
                 )
 
-            python_schema = core_schema.general_plain_validator_function(validate)  # type: ignore
+            python_schema = core_schema.with_info_plain_validator_function(validate)  # type: ignore
 
             return core_schema.json_or_python_schema(
                 json_schema=core_schema.float_schema(),
