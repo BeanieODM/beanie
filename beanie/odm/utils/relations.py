@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Dict
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, Dict, Mapping as MappingType
 
 from beanie.odm.fields import (
     ExpressionField,
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
 
 
 def convert_ids(
-    query: Dict[str, Any], doc: "Document", fetch_links: bool
+    query: MappingType[str, Any], doc: "Document", fetch_links: bool
 ) -> Dict[str, Any]:
     # TODO add all the cases
     new_query = {}
@@ -32,8 +33,15 @@ def convert_ids(
         else:
             new_k = k
 
-        if isinstance(v, dict):
+        if isinstance(v, Mapping):
             new_v = convert_ids(v, doc, fetch_links)
+        elif isinstance(v, list):
+            new_v = [
+                convert_ids(ele, doc, fetch_links)
+                if isinstance(ele, Mapping)
+                else ele
+                for ele in v
+            ]
         else:
             new_v = v
 
