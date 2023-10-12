@@ -91,6 +91,7 @@ from tests.odm.models import (
     Vehicle,
     Window,
     WindowWithRevision,
+    WindowWithValidationOnSave,
     Yard,
     YardWithRevision,
 )
@@ -212,6 +213,7 @@ async def init(db):
         DocumentWithHttpUrlField,
         House,
         Window,
+        WindowWithValidationOnSave,
         Door,
         Roof,
         Yard,
