@@ -1,7 +1,11 @@
 import pytest
 from pydantic import ValidationError
 
-from tests.odm.models import DocumentWithValidationOnSave
+from tests.odm.models import (
+    DocumentWithValidationOnSave,
+    Lock,
+    WindowWithValidationOnSave,
+)
 
 
 async def test_validate_on_insert():
@@ -37,3 +41,14 @@ async def test_validate_on_save_skip_action():
     doc = DocumentWithValidationOnSave(num_1=1, num_2=2)
     await doc.insert(skip_actions=["num_2_plus_1"])
     assert doc.num_2 == 2
+
+
+async def test_validate_on_save_dbref():
+    lock = Lock(k=1)
+    await lock.insert()
+    window = WindowWithValidationOnSave(
+        x=1,
+        y=1,
+        lock=lock.to_ref(),  # this is what exactly we want to test
+    )
+    await window.insert()

@@ -90,6 +90,7 @@ from tests.odm.models import (
     Vehicle,
     Window,
     WindowWithRevision,
+    WindowWithValidationOnSave,
     Yard,
     YardWithRevision,
 )
@@ -210,6 +211,7 @@ async def init(db):
         DocumentWithRevisionTurnedOn,
         House,
         Window,
+        WindowWithValidationOnSave,
         Door,
         Roof,
         Yard,
