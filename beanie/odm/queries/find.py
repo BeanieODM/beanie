@@ -556,18 +556,11 @@ class FindMany(
         :return:[AggregationQuery](query.md#aggregationquery)
         """
         self.set_session(session=session)
-        find_query = self.get_filter_query()
-        if self.fetch_links:
-            find_aggregation_pipeline = self.build_aggregation_pipeline()
-            aggregation_pipeline = (
-                find_aggregation_pipeline + aggregation_pipeline
-            )
-            find_query = {}
         return self.AggregationQueryType(
-            aggregation_pipeline=aggregation_pipeline,
-            document_model=self.document_model,
+            self.document_model,
+            self.build_aggregation_pipeline(*aggregation_pipeline),
+            find_query={},
             projection_model=projection_model,
-            find_query=find_query,
             ignore_cache=ignore_cache,
             **pymongo_kwargs,
         ).set_session(session=self.session)
@@ -605,7 +598,7 @@ class FindMany(
                 self._cache_key, data
             )
 
-    def build_aggregation_pipeline(self):
+    def build_aggregation_pipeline(self, *extra_stages):
         aggregation_pipeline: List[Dict[str, Any]] = construct_lookup_queries(
             self.document_model
         )
@@ -614,9 +607,10 @@ class FindMany(
             text_query = filter_query["$text"]
             aggregation_pipeline.insert(0, {"$match": {"$text": text_query}})
             del filter_query["$text"]
-
-        aggregation_pipeline.append({"$match": filter_query})
-
+        if filter_query:
+            aggregation_pipeline.append({"$match": filter_query})
+        if extra_stages:
+            aggregation_pipeline.extend(extra_stages)
         sort_pipeline = {"$sort": {i[0]: i[1] for i in self.sort_expressions}}
         if sort_pipeline["$sort"]:
             aggregation_pipeline.append(sort_pipeline)
