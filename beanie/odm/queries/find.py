@@ -940,9 +940,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 Operation(
                     operation=ReplaceOne,
                     first_query=self.get_filter_query(),
-                    second_query=Encoder(
-                        by_alias=True, exclude={"_id"}
-                    ).encode(document),
+                    second_query=Encoder(exclude={"_id"}).encode(document),
                     object_class=self.document_model,
                     pymongo_kwargs=self.pymongo_kwargs,
                 )
