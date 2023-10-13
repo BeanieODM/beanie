@@ -1,6 +1,7 @@
 import re
 from datetime import date, datetime
 
+import pydantic
 from bson import Binary, Regex
 from pydantic_core import Url
 
@@ -130,12 +131,27 @@ def test_keep_nulls_false():
 
 
 async def test_url():
-    doc = DocumentWithHttpUrlField(url_field="https://example.com")
-    assert isinstance(doc.url_field, Url)
-    await doc.save()
+    # same logic from encoder.py IS_PYDANTIC_V2
+    is_pydantic_v2 = int(pydantic.VERSION.split(".")[0]) >= 2
+    if is_pydantic_v2:
+        doc = DocumentWithHttpUrlField(url_field="https://example.com")
+        assert isinstance(doc.url_field, Url)
+        await doc.save()
 
-    new_doc = await DocumentWithHttpUrlField.find_one(
-        DocumentWithHttpUrlField.id == doc.id
-    )
-    assert isinstance(new_doc.url_field, Url)
-    assert new_doc.url_field == doc.url_field
+        new_doc = await DocumentWithHttpUrlField.find_one(
+            DocumentWithHttpUrlField.id == doc.id
+        )
+
+        assert isinstance(new_doc.url_field, Url)
+        assert new_doc.url_field == doc.url_field
+    else:
+        doc = DocumentWithHttpUrlField(url_field="https://example.com")
+        assert isinstance(doc.url_field, str)
+        await doc.save()
+
+        new_doc = await DocumentWithHttpUrlField.find_one(
+            DocumentWithHttpUrlField.id == doc.id
+        )
+
+        assert isinstance(new_doc.url_field, str)
+        assert new_doc.url_field == doc.url_field
