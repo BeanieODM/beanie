@@ -7,18 +7,26 @@ import operator
 import pathlib
 import re
 import uuid
-from typing import Any, Callable, Container, Iterable, Mapping, Optional, Tuple
+from typing import (
+    Any,
+    Callable,
+    Container,
+    Iterable,
+    Mapping,
+    MutableMapping,
+    Optional,
+    Tuple,
+)
 
 import bson
 import pydantic
-from pydantic_core import Url
 
 import beanie
 from beanie.odm.fields import Link, LinkTypes
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, get_model_fields
 
 SingleArgCallable = Callable[[Any], Any]
-DEFAULT_CUSTOM_ENCODERS: Mapping[type, SingleArgCallable] = {
+DEFAULT_CUSTOM_ENCODERS: MutableMapping[type, SingleArgCallable] = {
     ipaddress.IPv4Address: str,
     ipaddress.IPv4Interface: str,
     ipaddress.IPv4Network: str,
@@ -35,8 +43,12 @@ DEFAULT_CUSTOM_ENCODERS: Mapping[type, SingleArgCallable] = {
     decimal.Decimal: bson.Decimal128,
     uuid.UUID: bson.Binary.from_uuid,
     re.Pattern: bson.Regex.from_native,
-    Url: str,
 }
+if IS_PYDANTIC_V2:
+    from pydantic_core import Url
+
+    DEFAULT_CUSTOM_ENCODERS[Url] = str
+
 BSON_SCALAR_TYPES = (
     type(None),
     str,
