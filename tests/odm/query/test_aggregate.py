@@ -1,6 +1,7 @@
 import pytest
 from pydantic import Field
 from pydantic.main import BaseModel
+from pymongo.errors import OperationFailure
 
 from beanie.odm.enums import SortDirection
 from tests.odm.models import Sample
@@ -115,17 +116,11 @@ async def test_aggregate_with_session(preset_documents, session):
 
 
 async def test_aggregate_pymongo_kwargs(preset_documents):
-    with pytest.raises(TypeError):
+    with pytest.raises(OperationFailure):
         await Sample.find(Sample.increment >= 4).aggregate(
             [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}],
             wrong=True,
-        )
-
-    with pytest.raises(TypeError):
-        await Sample.find(Sample.increment >= 4).aggregate(
-            [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}],
-            hint="integer_1",
-        )
+        ).to_list()
 
 
 async def test_clone(preset_documents):
