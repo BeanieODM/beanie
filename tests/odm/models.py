@@ -27,6 +27,7 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    HttpUrl,
     PrivateAttr,
     SecretBytes,
     SecretStr,
@@ -1032,3 +1033,7 @@ class DocWithCallWrapper(Document):
         @validate_call
         def foo(self, bar: str) -> None:
             print(f"foo {bar}")
+
+
+class DocumentWithHttpUrlField(Document):
+    url_field: HttpUrl
