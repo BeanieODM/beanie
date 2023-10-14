@@ -653,8 +653,6 @@ class Document(
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: None
         """
-        print("update")
-
         arguments = list(args)
 
         if skip_sync is not None:
