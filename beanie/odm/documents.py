@@ -280,8 +280,8 @@ class Document(
         )
 
     @wrap_with_actions(EventTypes.INSERT)
-    @save_state_after
     @swap_revision_after
+    @save_state_after
     @validate_self_before
     async def insert(
         self: DocType,
@@ -415,8 +415,8 @@ class Document(
         )
 
     @wrap_with_actions(EventTypes.REPLACE)
-    @save_state_after
     @swap_revision_after
+    @save_state_after
     @validate_self_before
     async def replace(
         self: DocType,
@@ -653,7 +653,6 @@ class Document(
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: None
         """
-
         arguments = list(args)
 
         if skip_sync is not None:
@@ -921,7 +920,10 @@ class Document(
                 self._previous_saved_state = self._saved_state
 
             self._saved_state = get_dict(
-                self, to_db=True, keep_nulls=self.get_settings().keep_nulls
+                self,
+                to_db=True,
+                keep_nulls=self.get_settings().keep_nulls,
+                exclude={"revision_id", "_previous_revision_id"},
             )
 
     def get_saved_state(self) -> Optional[Dict[str, Any]]:
@@ -942,7 +944,10 @@ class Document(
     @saved_state_needed
     def is_changed(self) -> bool:
         if self._saved_state == get_dict(
-            self, to_db=True, keep_nulls=self.get_settings().keep_nulls
+            self,
+            to_db=True,
+            keep_nulls=self.get_settings().keep_nulls,
+            exclude={"revision_id", "_previous_revision_id"},
         ):
             return False
         return True
