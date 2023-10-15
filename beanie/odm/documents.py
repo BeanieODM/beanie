@@ -1,4 +1,5 @@
 import asyncio
+import warnings
 from typing import (
     Any,
     ClassVar,
@@ -83,6 +84,7 @@ from beanie.odm.utils.dump import get_dict, get_top_level_nones
 from beanie.odm.utils.parsing import merge_models
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
+    get_extra_field_info,
     get_field_type,
     get_model_dump,
     get_model_fields,
@@ -1047,6 +1049,30 @@ class Document(
                     )
                 )
         return inspection_result
+
+    @classmethod
+    def check_hidden_fields(cls):
+        hidden_fields = [
+            (name, field)
+            for name, field in get_model_fields(cls).items()
+            if get_extra_field_info(field, "hidden") is True
+        ]
+        if not hidden_fields:
+            return
+        warnings.warn(
+            f"{cls.__name__}: 'hidden=True' is deprecated, please use 'exclude=True'",
+            DeprecationWarning,
+        )
+        if IS_PYDANTIC_V2:
+            for name, field in hidden_fields:
+                field.exclude = True
+                del field.json_schema_extra["hidden"]
+            cls.model_rebuild(force=True)
+        else:
+            for name, field in hidden_fields:
+                field.field_info.exclude = True
+                del field.field_info.extra["hidden"]
+                cls.__exclude_fields__[name] = True
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args, **kwargs):

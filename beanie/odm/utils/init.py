@@ -373,6 +373,8 @@ class Initializer:
                 cls._link_fields[k] = link_info
                 check_nested_links(link_info, prev_models=[])
 
+        cls.check_hidden_fields()
+
     @staticmethod
     def init_actions(cls):
         """

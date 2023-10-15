@@ -16,6 +16,7 @@ from tests.odm.models import (
     DocumentTestModel,
     DocumentWithBsonEncodersFiledsTypes,
     DocumentWithCustomFiledsTypes,
+    DocumentWithDeprecatedHiddenField,
     Sample,
 )
 
@@ -112,6 +113,16 @@ async def test_excluded(document):
         assert "test_list" not in document.model_dump()
     else:
         assert "test_list" not in document.dict()
+
+
+async def test_hidden():
+    document = DocumentWithDeprecatedHiddenField(test_hidden=["abc", "def"])
+    await document.insert()
+    document = await DocumentWithDeprecatedHiddenField.find_one()
+    if IS_PYDANTIC_V2:
+        assert "test_hidden" not in document.model_dump()
+    else:
+        assert "test_hidden" not in document.dict()
 
 
 def test_revision_id_not_in_schema():

@@ -236,6 +236,13 @@ class DocumentTestModelFailInspection(Document):
         name = "DocumentTestModel"
 
 
+class DocumentWithDeprecatedHiddenField(Document):
+    if IS_PYDANTIC_V2:
+        test_hidden: List[str] = Field(json_schema_extra={"hidden": True})
+    else:
+        test_hidden: List[str] = Field(hidden=True)
+
+
 class DocumentWithCustomIdUUID(Document):
     id: UUID = Field(default_factory=uuid4)
     name: str
