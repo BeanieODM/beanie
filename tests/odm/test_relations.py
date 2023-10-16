@@ -11,7 +11,7 @@ from beanie.odm.utils.pydantic import (
     get_model_fields,
     parse_model,
 )
-from beanie.operators import Or, In
+from beanie.operators import In, Or
 from tests.odm.models import (
     AddressView,
     ADocument,

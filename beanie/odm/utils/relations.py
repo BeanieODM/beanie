@@ -1,5 +1,6 @@
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, Dict, Mapping as MappingType
+from typing import TYPE_CHECKING, Any, Dict
+from typing import Mapping as MappingType
 
 from beanie.odm.fields import (
     ExpressionField,
@@ -32,7 +33,7 @@ def convert_ids(
                 new_k = f"{k_splitted[0]}.$id"
         else:
             new_k = k
-
+        new_v: Any
         if isinstance(v, Mapping):
             new_v = convert_ids(v, doc, fetch_links)
         elif isinstance(v, list):
