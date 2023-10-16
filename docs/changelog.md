@@ -2,6 +2,50 @@
 
 Beanie project
 
+## [1.23.0] - 2023-10-15
+        
+### Refactor Encoder
+- Author - [George Sakkis](https://github.com/gsakkis)
+- PR <https://github.com/roman-right/beanie/pull/584>
+            
+### Preserve Sort/Skip/Limit For Aggregations
+- Author - [George Sakkis](https://github.com/gsakkis)
+- PR <https://github.com/roman-right/beanie/pull/711>
+            
+### Update Pre-Commit Hooks
+- Author - [SADIK KUZU](https://github.com/sadikkuzu)
+- PR <https://github.com/roman-right/beanie/pull/712>
+            
+### Fixed Link Validation
+- Author - [Evgeniy Goncharuck](https://github.com/iterlace)
+- PR <https://github.com/roman-right/beanie/pull/714>
+            
+### Fix: pydantic_core._pydantic_core.Url object is not iterable
+- Author - [Tomohiro Hiratsuka](https://github.com/tomohirohiratsuka)
+- PR <https://github.com/roman-right/beanie/pull/730>
+            
+### Simplify And Fix DecimalAnnotation
+- Author - [George Sakkis](https://github.com/gsakkis)
+- PR <https://github.com/roman-right/beanie/pull/738>
+            
+- Issues:
+                    
+    - [[BUG] Validation Error on parsing retrieved document's BSON Decimal128 field](https://github.com/roman-right/beanie/issues/691)
+                        
+### Simplify BsonBinary
+- Author - [George Sakkis](https://github.com/gsakkis)
+- PR <https://github.com/roman-right/beanie/pull/739>
+            
+### Minor Fixes
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/745>
+            
+### Replace Encoder With get_dict In The replace_one Method
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/747>
+            
+[1.23.0]: https://pypi.org/project/beanie/1.23.0
+
 ## [1.22.6] - 2023-09-16
         
 ### Update Precommit Hooks & CI
