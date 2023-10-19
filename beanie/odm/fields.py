@@ -86,6 +86,12 @@ def Indexed(typ, index_type=ASCENDING, **kwargs):
             def __get_pydantic_core_schema__(
                 cls, _source_type: Any, _handler: GetCoreSchemaHandler
             ) -> core_schema.CoreSchema:
+                custom_type = getattr(
+                    typ, "__get_pydantic_core_schema__", None
+                )
+                if custom_type is not None:
+                    return custom_type(_source_type, _handler)
+
                 return core_schema.no_info_after_validator_function(
                     lambda v: v,
                     simple_ser_schema(typ.__name__),
