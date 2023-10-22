@@ -146,13 +146,7 @@ class DocumentTestModel(Document):
     test_int: int
     test_doc: SubDocument
     test_str: str
-
-    if IS_PYDANTIC_V2:
-        test_list: List[SubDocument] = Field(
-            json_schema_extra={"hidden": True}
-        )
-    else:
-        test_list: List[SubDocument] = Field(hidden=True)
+    test_list: List[SubDocument] = Field(exclude=True)
 
     class Settings:
         use_cache = True
@@ -240,6 +234,13 @@ class DocumentTestModelFailInspection(Document):
 
     class Settings:
         name = "DocumentTestModel"
+
+
+class DocumentWithDeprecatedHiddenField(Document):
+    if IS_PYDANTIC_V2:
+        test_hidden: List[str] = Field(json_schema_extra={"hidden": True})
+    else:
+        test_hidden: List[str] = Field(hidden=True)
 
 
 class DocumentWithCustomIdUUID(Document):
@@ -534,10 +535,7 @@ class House(Document):
     roof: Optional[Link[Roof]] = None
     yards: Optional[List[Link[Yard]]] = None
     height: Indexed(int) = 2
-    if IS_PYDANTIC_V2:
-        name: Indexed(str) = Field(json_schema_extra={"hidden": True})
-    else:
-        name: Indexed(str) = Field(hidden=True)
+    name: Indexed(str) = Field(exclude=True)
 
     if IS_PYDANTIC_V2:
         model_config = ConfigDict(

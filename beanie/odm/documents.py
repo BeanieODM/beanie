@@ -1,7 +1,6 @@
 import asyncio
+import warnings
 from typing import (
-    TYPE_CHECKING,
-    AbstractSet,
     Any,
     ClassVar,
     Dict,
@@ -9,7 +8,6 @@ from typing import (
     List,
     Mapping,
     Optional,
-    Set,
     Type,
     TypeVar,
     Union,
@@ -105,19 +103,23 @@ from beanie.odm.utils.typing import extract_id_class
 if IS_PYDANTIC_V2:
     from pydantic import model_validator
 
-if TYPE_CHECKING:
-    from pydantic.typing import AbstractSetIntStr, DictStrAny, MappingIntStrAny
 
 DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
 def json_schema_extra(schema: Dict[str, Any], model: Type["Document"]) -> None:
-    props = {}
-    for k, v in schema.get("properties", {}).items():
-        if not v.get("hidden", False):
-            props[k] = v
-    schema["properties"] = props
+    # remove excluded fields from the json schema
+    properties = schema.get("properties")
+    if not properties:
+        return
+    for k, field in get_model_fields(model).items():
+        k = field.alias or k
+        if k not in properties:
+            continue
+        field_info = field if IS_PYDANTIC_V2 else field.field_info
+        if field_info.exclude:
+            del properties[k]
 
 
 def document_alias_generator(s: str) -> str:
@@ -152,33 +154,17 @@ class Document(
     else:
 
         class Config:
-            json_encoders = {
-                ObjectId: lambda v: str(v),
-            }
+            json_encoders = {ObjectId: str}
             allow_population_by_field_name = True
             fields = {"id": "_id"}
-
-            @staticmethod
-            def schema_extra(
-                schema: Dict[str, Any], model: Type["Document"]
-            ) -> None:
-                props = {}
-                for k, v in schema.get("properties", {}).items():
-                    if not v.get("hidden", False):
-                        props[k] = v
-                schema["properties"] = props
+            schema_extra = staticmethod(json_schema_extra)
 
     id: Optional[PydanticObjectId] = Field(
         default=None, description="MongoDB document ObjectID"
     )
 
     # State
-    if IS_PYDANTIC_V2:
-        revision_id: Optional[UUID] = Field(
-            default=None, json_schema_extra={"hidden": True}
-        )
-    else:
-        revision_id: Optional[UUID] = Field(default=None, hidden=True)  # type: ignore
+    revision_id: Optional[UUID] = Field(default=None, exclude=True)
     _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
     _previous_saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
@@ -194,9 +180,6 @@ class Document(
 
     # Database
     _database_major_version: ClassVar[int] = 4
-
-    # Other
-    _hidden_fields: ClassVar[Set[str]] = set()
 
     def _swap_revision(self):
         if self.get_settings().use_revision:
@@ -1068,98 +1051,28 @@ class Document(
         return inspection_result
 
     @classmethod
-    def get_hidden_fields(cls):
-        return set(
-            attribute_name
-            for attribute_name, model_field in get_model_fields(cls).items()
-            if get_extra_field_info(model_field, "hidden") is True
+    def check_hidden_fields(cls):
+        hidden_fields = [
+            (name, field)
+            for name, field in get_model_fields(cls).items()
+            if get_extra_field_info(field, "hidden") is True
+        ]
+        if not hidden_fields:
+            return
+        warnings.warn(
+            f"{cls.__name__}: 'hidden=True' is deprecated, please use 'exclude=True'",
+            DeprecationWarning,
         )
-
-    if IS_PYDANTIC_V2:
-
-        def model_dump(
-            self,
-            *,
-            mode="python",
-            include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-            exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-            by_alias: bool = False,
-            exclude_hidden: bool = True,
-            exclude_unset: bool = False,
-            exclude_defaults: bool = False,
-            exclude_none: bool = False,
-            round_trip: bool = False,
-            warnings: bool = True,
-        ) -> "DictStrAny":
-            """
-            Overriding of the respective method from Pydantic
-            Hides fields, marked as "hidden
-            """
-            if exclude_hidden:
-                if isinstance(exclude, AbstractSet):
-                    exclude = {*self._hidden_fields, *exclude}
-                elif isinstance(exclude, Mapping):
-                    exclude = dict(
-                        {k: True for k in self._hidden_fields}, **exclude
-                    )  # type: ignore
-                elif exclude is None:
-                    exclude = self._hidden_fields
-
-            kwargs = {
-                "include": include,
-                "exclude": exclude,
-                "by_alias": by_alias,
-                "exclude_unset": exclude_unset,
-                "exclude_defaults": exclude_defaults,
-                "exclude_none": exclude_none,
-                "round_trip": round_trip,
-                "warnings": warnings,
-            }
-
-            return super().model_dump(**kwargs)
-
-    else:
-
-        def dict(
-            self,
-            *,
-            include: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-            exclude: Union["AbstractSetIntStr", "MappingIntStrAny"] = None,
-            by_alias: bool = False,
-            skip_defaults: bool = False,
-            exclude_hidden: bool = True,
-            exclude_unset: bool = False,
-            exclude_defaults: bool = False,
-            exclude_none: bool = False,
-        ) -> "DictStrAny":
-            """
-            Overriding of the respective method from Pydantic
-            Hides fields, marked as "hidden
-            """
-            if exclude_hidden:
-                if isinstance(exclude, AbstractSet):
-                    exclude = {*self._hidden_fields, *exclude}
-                elif isinstance(exclude, Mapping):
-                    exclude = dict(
-                        {k: True for k in self._hidden_fields}, **exclude
-                    )  # type: ignore
-                elif exclude is None:
-                    exclude = self._hidden_fields
-
-            kwargs = {
-                "include": include,
-                "exclude": exclude,
-                "by_alias": by_alias,
-                "exclude_unset": exclude_unset,
-                "exclude_defaults": exclude_defaults,
-                "exclude_none": exclude_none,
-            }
-
-            # TODO: Remove this check when skip_defaults are no longer supported
-            if skip_defaults:
-                kwargs["skip_defaults"] = skip_defaults
-
-            return super().dict(**kwargs)
+        if IS_PYDANTIC_V2:
+            for name, field in hidden_fields:
+                field.exclude = True
+                del field.json_schema_extra["hidden"]
+            cls.model_rebuild(force=True)
+        else:
+            for name, field in hidden_fields:
+                field.field_info.exclude = True
+                del field.field_info.extra["hidden"]
+                cls.__exclude_fields__[name] = True
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args, **kwargs):
