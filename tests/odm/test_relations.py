@@ -11,6 +11,7 @@ from beanie.odm.utils.pydantic import (
     get_model_fields,
     parse_model,
 )
+from beanie.operators import In, Or
 from tests.odm.models import (
     AddressView,
     ADocument,
@@ -314,6 +315,31 @@ class TestFind:
         )
         assert house_1 is not None
         assert house_2 is not None
+
+    async def test_find_by_id_list_of_the_linked_docs(self, houses):
+        items = (
+            await House.find(House.height < 3, fetch_links=True)
+            .sort(House.height)
+            .to_list()
+        )
+        assert len(items) == 3
+
+        house_lst_1 = await House.find(
+            Or(
+                House.door.id == items[0].door.id,
+                In(House.door.id, [items[1].door.id, items[2].door.id]),
+            )
+        ).to_list()
+        house_lst_2 = await House.find(
+            Or(
+                House.door.id == items[0].door.id,
+                In(House.door.id, [items[1].door.id, items[2].door.id]),
+            ),
+            fetch_links=True,
+        ).to_list()
+
+        assert len(house_lst_1) == 3
+        assert len(house_lst_2) == 3
 
     async def test_fetch_list_with_some_prefetched(self):
         docs = []
