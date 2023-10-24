@@ -2,6 +2,22 @@
 
 Beanie project
 
+## [1.23.1] - 2023-10-23
+        
+### Fix: Issue #631
+- Author - [IterableTrucks](https://github.com/IterableTrucks)
+- PR <https://github.com/roman-right/beanie/pull/734>
+            
+### Replace Custom 'Hidden=True' Field Attribute With Builtin 'Exclude=True'
+- Author - [George Sakkis](https://github.com/gsakkis)
+- PR <https://github.com/roman-right/beanie/pull/741>
+            
+### Add Support For Indexed Custom Pydantic Fields
+- Author - [Adam Asay](https://github.com/aasay)
+- PR <https://github.com/roman-right/beanie/pull/754>
+            
+[1.23.1]: https://pypi.org/project/beanie/1.23.0
+
 ## [1.23.0] - 2023-10-15
         
 ### Refactor Encoder
