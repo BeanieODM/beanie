@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type
 
 from beanie.odm.fields import LinkInfo, LinkTypes
 
@@ -325,3 +325,34 @@ def construct_query(
             queries.append(lookup_step)
 
     return queries
+
+
+def split_text_query(
+    query: Dict[str, Any]
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Divide query into text and non-text matches
+
+    :param query: Dict[str, Any] - query dict
+    :return: Tuple[Dict[str, Any], Dict[str, Any]] - text and non-text queries,
+        respectively
+    """
+
+    root_text_query_args: Dict[str, Any] = query.get("$text", None)
+    root_non_text_queries: Dict[str, Any] = {
+        k: v for k, v in query.items() if k not in {"$text", "$and"}
+    }
+
+    text_queries: List[Dict[str, Any]] = (
+        [{"$text": root_text_query_args}] if root_text_query_args else []
+    )
+    non_text_queries: List[Dict[str, Any]] = (
+        [root_non_text_queries] if root_non_text_queries else []
+    )
+
+    for match_case in query.get("$and", []):
+        if "$text" in match_case:
+            text_queries.append(match_case)
+        else:
+            non_text_queries.append(match_case)
+
+    return text_queries, non_text_queries

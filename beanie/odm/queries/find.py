@@ -45,7 +45,7 @@ from beanie.odm.queries.update import (
 )
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
-from beanie.odm.utils.find import construct_lookup_queries
+from beanie.odm.utils.find import construct_lookup_queries, split_text_query
 from beanie.odm.utils.parsing import parse_obj
 from beanie.odm.utils.projection import get_projection
 from beanie.odm.utils.relations import convert_ids
@@ -603,12 +603,33 @@ class FindMany(
             self.document_model
         )
         filter_query = self.get_filter_query()
-        if "$text" in filter_query:
-            text_query = filter_query["$text"]
-            aggregation_pipeline.insert(0, {"$match": {"$text": text_query}})
-            del filter_query["$text"]
+
         if filter_query:
-            aggregation_pipeline.append({"$match": filter_query})
+            text_queries, non_text_queries = split_text_query(filter_query)
+
+            if text_queries:
+                aggregation_pipeline.insert(
+                    0,
+                    {
+                        "$match": (
+                            {"$and": text_queries}
+                            if len(text_queries) > 1
+                            else text_queries[0]
+                        )
+                    },
+                )
+
+            if non_text_queries:
+                aggregation_pipeline.append(
+                    {
+                        "$match": (
+                            {"$and": non_text_queries}
+                            if len(non_text_queries) > 1
+                            else non_text_queries[0]
+                        )
+                    }
+                )
+
         if extra_stages:
             aggregation_pipeline.extend(extra_stages)
         sort_pipeline = {"$sort": {i[0]: i[1] for i in self.sort_expressions}}

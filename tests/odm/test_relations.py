@@ -540,6 +540,35 @@ class TestOther:
 
         assert addresses_count[0] == {"count": 10}
 
+    async def test_with_chaining_aggregation_and_text_search(self):
+        linked_document = LinkDocumentForTextSeacrh(i=1)
+        await linked_document.insert()
+
+        for i in range(10):
+            await DocumentWithTextIndexAndLink(
+                s="lower" if i < 5 else "UPPER", link=linked_document
+            ).insert()
+
+        linked_document_2 = LinkDocumentForTextSeacrh(i=2)
+        await linked_document_2.insert()
+
+        for i in range(10):
+            await DocumentWithTextIndexAndLink(
+                s="lower" if i < 5 else "UPPER", link=linked_document_2
+            ).insert()
+
+        document_count = (
+            await DocumentWithTextIndexAndLink.find(
+                {"$text": {"$search": "lower"}},
+                DocumentWithTextIndexAndLink.link.i == 1,
+                fetch_links=True,
+            )
+            .aggregate([{"$count": "count"}])
+            .to_list()
+        )
+
+        assert document_count[0] == {"count": 5}
+
     async def test_with_extra_allow(self, houses):
         res = await House.find(fetch_links=True).to_list()
         assert get_model_fields(res[0]).keys() == {
