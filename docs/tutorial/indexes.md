@@ -12,7 +12,7 @@ from beanie import Document, Indexed
 
 
 class Sample(Document):
-    num: Indexed(int)
+    num: Annotated[int, Indexed()]
     description: str
 ```
 
@@ -25,12 +25,22 @@ from beanie import Document, Indexed
 
 
 class Sample(Document):
-    description: Indexed(str, index_type=pymongo.TEXT)
+    description: Annotated[str, Indexed(index_type=pymongo.TEXT)]
 ```
 
 The `Indexed` function also supports PyMongo's `IndexModel` kwargs arguments (see the [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel) for details). 
  
 For example, to create a `unique` index:
+
+```python
+from beanie import Document, Indexed
+
+
+class Sample(Document):
+    name: Annotated[str, Indexed(unique=True)]
+```
+
+The `Indexed` function can also be used directly in the type annotation, by giving it the wrapped type as the first argument. Note that this might not work with some Pydantic V2 types, such as `UUID4` or `EmailStr`.
 
 ```python
 from beanie import Document, Indexed
