@@ -81,7 +81,7 @@ class CurrentDate(BaseUpdateGeneralOperator):
     class Sample(Document):
         ts: datetime
 
-    CurrentDate({Sample.ts, True})
+    CurrentDate({Sample.ts: True})
     ```
 
     Will return query object like
@@ -107,7 +107,7 @@ class Inc(BaseUpdateGeneralOperator):
     class Sample(Document):
         one: int
 
-    Inc({Sample.one, 2})
+    Inc({Sample.one: 2})
     ```
 
     Will return query object like
@@ -133,7 +133,7 @@ class Min(BaseUpdateGeneralOperator):
     class Sample(Document):
         one: int
 
-    Min({Sample.one, 2})
+    Min({Sample.one: 2})
     ```
 
     Will return query object like
@@ -159,7 +159,7 @@ class Max(BaseUpdateGeneralOperator):
     class Sample(Document):
         one: int
 
-    Max({Sample.one, 2})
+    Max({Sample.one: 2})
     ```
 
     Will return query object like
@@ -185,7 +185,7 @@ class Mul(BaseUpdateGeneralOperator):
     class Sample(Document):
         one: int
 
-    Mul({Sample.one, 2})
+    Mul({Sample.one: 2})
     ```
 
     Will return query object like
