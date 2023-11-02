@@ -22,7 +22,7 @@ class AddToSet(BaseUpdateArrayOperator):
     class Sample(Document):
         results: List[int]
 
-    AddToSet({Sample.results, 2})
+    AddToSet({Sample.results: 2})
     ```
 
     Will return query object like
@@ -48,7 +48,7 @@ class Pop(BaseUpdateArrayOperator):
     class Sample(Document):
         results: List[int]
 
-    Pop({Sample.results, 2})
+    Pop({Sample.results: 2})
     ```
 
     Will return query object like
@@ -74,7 +74,7 @@ class Pull(BaseUpdateArrayOperator):
     class Sample(Document):
         results: List[int]
 
-    Pull(In(Sample.result, [1,2,3,4,5])
+    Pull(In(Sample.result: [1,2,3,4,5])
     ```
 
     Will return query object like
