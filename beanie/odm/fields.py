@@ -1,6 +1,7 @@
 import asyncio
 import sys
 from collections import OrderedDict
+from dataclasses import dataclass
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
@@ -20,6 +21,7 @@ else:
     from typing_extensions import get_args
 
 from typing import OrderedDict as OrderedDictType
+from typing import Tuple
 
 from bson import DBRef, ObjectId
 from bson.errors import InvalidId
@@ -66,13 +68,32 @@ if TYPE_CHECKING:
     from beanie.odm.documents import DocType
 
 
-def Indexed(typ, index_type=ASCENDING, **kwargs):
+@dataclass(frozen=True)
+class IndexedAnnotation:
+    _indexed: Tuple[int, Dict[str, Any]]
+
+
+def Indexed(typ=None, index_type=ASCENDING, **kwargs):
     """
-    Returns a subclass of `typ` with an extra attribute `_indexed` as a tuple:
+    If `typ` is defined, returns a subclass of `typ` with an extra attribute
+    `_indexed` as a tuple:
     - Index 0: `index_type` such as `pymongo.ASCENDING`
     - Index 1: `kwargs` passed to `IndexModel`
     When instantiated the type of the result will actually be `typ`.
+
+    When `typ` is not defined, returns an `IndexedAnnotation` instance, to be
+    used as metadata in `Annotated` fields.
+
+    Example:
+    ```py
+    # Both fields would have the same behavior
+    class MyModel(BaseModel):
+        field1: Indexed(str, unique=True)
+        field2: Annotated[str, Indexed(unique=True)]
+    ```
     """
+    if typ is None:
+        return IndexedAnnotation(_indexed=(index_type, kwargs))
 
     class NewType(typ):
         _indexed = (index_type, kwargs)

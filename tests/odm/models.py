@@ -24,6 +24,7 @@ from uuid import UUID, uuid4
 
 import pymongo
 from pydantic import (
+    UUID4,
     BaseModel,
     ConfigDict,
     Field,
@@ -35,6 +36,7 @@ from pydantic import (
 from pydantic.fields import FieldInfo
 from pydantic_core import core_schema
 from pymongo import IndexModel
+from typing_extensions import Annotated
 
 from beanie import (
     DecimalAnnotation,
@@ -191,6 +193,17 @@ class DocumentTestModelWithIndexFlagsAliases(Document):
     test_str: Indexed(str, index_type=pymongo.DESCENDING, unique=True) = Field(
         alias="testStr"
     )
+
+
+class DocumentTestModelIndexFlagsAnnotated(Document):
+    str_index: Indexed(str, index_type=pymongo.TEXT)
+    str_index_annotated: Indexed(str, index_type=pymongo.ASCENDING)
+    uuid_index_annotated: Annotated[UUID4, Indexed(unique=True)]
+
+    if not IS_PYDANTIC_V2:
+        # The UUID4 type raises a ValueError with the current
+        # implementation of Indexed when using Pydantic v2.
+        uuid_index: Indexed(UUID4, unique=True)
 
 
 class DocumentTestModelWithComplexIndex(Document):

@@ -3,10 +3,10 @@ import sys
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
     get_extra_field_info,
-    get_field_type,
     get_model_fields,
     parse_model,
 )
+from beanie.odm.utils.typing import get_index_attributes
 
 if sys.version_info >= (3, 8):
     from typing import get_args, get_origin
@@ -458,21 +458,24 @@ class Initializer:
         new_indexes = []
 
         # Indexed field wrapped with Indexed()
+        indexed_fields = (
+            (k, fvalue, get_index_attributes(fvalue))
+            for k, fvalue in get_model_fields(cls).items()
+        )
         found_indexes = [
             IndexModelField(
                 IndexModel(
                     [
                         (
                             fvalue.alias or k,
-                            fvalue.annotation._indexed[0],
+                            indexed_attrs[0],
                         )
                     ],
-                    **fvalue.annotation._indexed[1],
+                    **indexed_attrs[1],
                 )
             )
-            for k, fvalue in get_model_fields(cls).items()
-            if hasattr(get_field_type(fvalue), "_indexed")
-            and get_field_type(fvalue)._indexed
+            for k, fvalue, indexed_attrs in indexed_fields
+            if indexed_attrs is not None
         ]
 
         if document_settings.merge_indexes:
