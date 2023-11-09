@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.23.3] - 2023-11-08
+        
+### Fix Id Notation
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/772>
+            
+[1.23.3]: https://pypi.org/project/beanie/1.23.3
+
 ## [1.23.2] - 2023-11-08
         
 ### Fix Aggregations With Text Queries
