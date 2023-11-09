@@ -822,3 +822,28 @@ class TestDeleteBackLinks:
                 PersonForReversedOrderInit,
             ],
         )
+
+
+class TestBuildAggregations:
+    async def test_find_aggregate_without_fetch_links(self, houses):
+        door = await Door.find_one()
+        aggregation = House.find(House.door.id == door.id).aggregate(
+            [
+                {"$group": {"_id": "$height", "count": {"$sum": 1}}},
+            ]
+        )
+        assert aggregation.get_aggregation_pipeline() == [
+            {"$match": {"door._id": door.id}},
+            {"$group": {"_id": "$height", "count": {"$sum": 1}}},
+        ]
+
+    async def test_find_aggregate_with_fetch_links(self, houses):
+        door = await Door.find_one()
+        aggregation = House.find(
+            House.door.id == door.id, fetch_links=True
+        ).aggregate(
+            [
+                {"$group": {"_id": "$height", "count": {"$sum": 1}}},
+            ]
+        )
+        assert len(aggregation.get_aggregation_pipeline()) == 12

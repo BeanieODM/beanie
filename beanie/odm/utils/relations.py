@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 def convert_ids(
-    query: MappingType[str, Any], doc: "Document", fetch_links: bool
+    query: MappingType[str, Any], doc: "Document", for_aggregation: bool
 ) -> Dict[str, Any]:
     # TODO add all the cases
     new_query = {}
@@ -27,7 +27,7 @@ def convert_ids(
             and k_splitted[0] in doc.get_link_fields().keys()  # type: ignore
             and k_splitted[1] == "id"
         ):
-            if fetch_links:
+            if for_aggregation:
                 new_k = f"{k_splitted[0]}._id"
             else:
                 new_k = f"{k_splitted[0]}.$id"
@@ -35,10 +35,10 @@ def convert_ids(
             new_k = k
         new_v: Any
         if isinstance(v, Mapping):
-            new_v = convert_ids(v, doc, fetch_links)
+            new_v = convert_ids(v, doc, for_aggregation)
         elif isinstance(v, list):
             new_v = [
-                convert_ids(ele, doc, fetch_links)
+                convert_ids(ele, doc, for_aggregation)
                 if isinstance(ele, Mapping)
                 else ele
                 for ele in v
