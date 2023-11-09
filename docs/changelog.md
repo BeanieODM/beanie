@@ -2,6 +2,26 @@
 
 Beanie project
 
+## [1.23.2] - 2023-11-08
+        
+### Fix Aggregations With Text Queries
+- Author - [Benjamin Earle](https://github.com/MrEarle)
+- PR <https://github.com/roman-right/beanie/pull/752>
+            
+### Handle Annotated Indexes
+- Author - [Benjamin Earle](https://github.com/MrEarle)
+- PR <https://github.com/roman-right/beanie/pull/762>
+            
+### Fix Docstring
+- Author - [Andrew Grinevich](https://github.com/Derfirm)
+- PR <https://github.com/roman-right/beanie/pull/766>
+            
+### Build Aggregation Pipeline From Find Query Without Fetch
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/770>
+            
+[1.23.2]: https://pypi.org/project/beanie/1.23.2
+
 ## [1.23.1] - 2023-10-23
         
 ### Fix: Issue #631
