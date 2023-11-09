@@ -5,7 +5,12 @@ from pydantic.fields import Field
 
 from beanie import Document, init_beanie
 from beanie.exceptions import DocumentWasNotSaved
-from beanie.odm.fields import BackLink, DeleteRules, Link, WriteRules
+from beanie.odm.fields import (
+    BackLink,
+    DeleteRules,
+    Link,
+    WriteRules,
+)
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
     get_model_fields,
@@ -833,9 +838,11 @@ class TestBuildAggregations:
             ]
         )
         assert aggregation.get_aggregation_pipeline() == [
-            {"$match": {"door._id": door.id}},
+            {"$match": {"door.$id": door.id}},
             {"$group": {"_id": "$height", "count": {"$sum": 1}}},
         ]
+        result = await aggregation.to_list()
+        assert result == [{"_id": 0, "count": 1}]
 
     async def test_find_aggregate_with_fetch_links(self, houses):
         door = await Door.find_one()
@@ -847,3 +854,9 @@ class TestBuildAggregations:
             ]
         )
         assert len(aggregation.get_aggregation_pipeline()) == 12
+        assert aggregation.get_aggregation_pipeline()[10:] == [
+            {"$match": {"door._id": door.id}},
+            {"$group": {"_id": "$height", "count": {"$sum": 1}}},
+        ]
+        result = await aggregation.to_list()
+        assert result == [{"_id": 0, "count": 1}]
