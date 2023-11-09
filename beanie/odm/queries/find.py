@@ -84,25 +84,22 @@ class FindQuery(
         self.pymongo_kwargs: Dict[str, Any] = {}
         self.lazy_parse = False
 
-    def prepare_find_expressions(self, for_aggregation: bool = False):
-        for_aggregation = for_aggregation or self.fetch_links
+    def prepare_find_expressions(self):
         if self.document_model.get_link_fields() is not None:
             for i, query in enumerate(self.find_expressions):
                 self.find_expressions[i] = convert_ids(
                     query,
                     doc=self.document_model,  # type: ignore
-                    for_aggregation=for_aggregation,
+                    fetch_links=self.fetch_links,
                 )
 
-    def get_filter_query(
-        self, for_aggregation: bool = False
-    ) -> Mapping[str, Any]:
+    def get_filter_query(self) -> Mapping[str, Any]:
         """
 
         Returns: MongoDB filter query
 
         """
-        self.prepare_find_expressions(for_aggregation=for_aggregation)
+        self.prepare_find_expressions()
         if self.find_expressions:
             return Encoder(custom_encoders=self.encoders).encode(
                 And(*self.find_expressions).query
@@ -608,7 +605,7 @@ class FindMany(
             ] = construct_lookup_queries(self.document_model)
         else:
             aggregation_pipeline = []
-        filter_query = self.get_filter_query(for_aggregation=True)
+        filter_query = self.get_filter_query()
 
         if filter_query:
             text_queries, non_text_queries = split_text_query(filter_query)
