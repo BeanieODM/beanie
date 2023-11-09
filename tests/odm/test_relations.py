@@ -822,3 +822,200 @@ class TestDeleteBackLinks:
                 PersonForReversedOrderInit,
             ],
         )
+
+
+class TestBuildAggregations:
+    async def test_find_aggregate_without_fetch_links(self, houses):
+        door = await Door.find_one()
+        aggregation = House.find(House.door.id == door.id).aggregate(
+            [
+                {"$group": {"_id": "$height", "count": {"$sum": 1}}},
+            ]
+        )
+        assert aggregation.get_aggregation_pipeline() == [
+            {"$match": {"door._id": door.id}},
+            {"$group": {"_id": "$height", "count": {"$sum": 1}}},
+        ]
+
+    async def test_find_aggregate_with_fetch_links(self, houses):
+        door = await Door.find_one()
+        aggregation = House.find(
+            House.door.id == door.id, fetch_links=True
+        ).aggregate(
+            [
+                {"$group": {"_id": "$height", "count": {"$sum": 1}}},
+            ]
+        )
+        assert aggregation.get_aggregation_pipeline() == [
+            {
+                "$lookup": {
+                    "as": "windows",
+                    "foreignField": "_id",
+                    "from": "Window",
+                    "localField": "windows.$id",
+                    "pipeline": [
+                        {
+                            "$lookup": {
+                                "as": "_link_lock",
+                                "foreignField": "_id",
+                                "from": "Lock",
+                                "localField": "lock.$id",
+                            }
+                        },
+                        {
+                            "$unwind": {
+                                "path": "$_link_lock",
+                                "preserveNullAndEmptyArrays": True,
+                            }
+                        },
+                        {
+                            "$set": {
+                                "lock": {
+                                    "$cond": {
+                                        "else": "$lock",
+                                        "if": {
+                                            "$ifNull": ["$_link_lock", False]
+                                        },
+                                        "then": "$_link_lock",
+                                    }
+                                }
+                            }
+                        },
+                        {"$unset": "_link_lock"},
+                    ],
+                }
+            },
+            {
+                "$lookup": {
+                    "as": "_link_door",
+                    "foreignField": "_id",
+                    "from": "Door",
+                    "localField": "door.$id",
+                    "pipeline": [
+                        {
+                            "$lookup": {
+                                "as": "_link_window",
+                                "foreignField": "_id",
+                                "from": "Window",
+                                "localField": "window.$id",
+                                "pipeline": [
+                                    {
+                                        "$lookup": {
+                                            "as": "_link_lock",
+                                            "foreignField": "_id",
+                                            "from": "Lock",
+                                            "localField": "lock.$id",
+                                        }
+                                    },
+                                    {
+                                        "$unwind": {
+                                            "path": "$_link_lock",
+                                            "preserveNullAndEmptyArrays": True,
+                                        }
+                                    },
+                                    {
+                                        "$set": {
+                                            "lock": {
+                                                "$cond": {
+                                                    "else": "$lock",
+                                                    "if": {
+                                                        "$ifNull": [
+                                                            "$_link_lock",
+                                                            False,
+                                                        ]
+                                                    },
+                                                    "then": "$_link_lock",
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {"$unset": "_link_lock"},
+                                ],
+                            }
+                        },
+                        {
+                            "$unwind": {
+                                "path": "$_link_window",
+                                "preserveNullAndEmptyArrays": True,
+                            }
+                        },
+                        {
+                            "$set": {
+                                "window": {
+                                    "$cond": {
+                                        "else": "$window",
+                                        "if": {
+                                            "$ifNull": ["$_link_window", False]
+                                        },
+                                        "then": "$_link_window",
+                                    }
+                                }
+                            }
+                        },
+                        {"$unset": "_link_window"},
+                        {
+                            "$lookup": {
+                                "as": "locks",
+                                "foreignField": "_id",
+                                "from": "Lock",
+                                "localField": "locks.$id",
+                            }
+                        },
+                    ],
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$_link_door",
+                    "preserveNullAndEmptyArrays": True,
+                }
+            },
+            {
+                "$set": {
+                    "door": {
+                        "$cond": {
+                            "else": "$door",
+                            "if": {"$ifNull": ["$_link_door", False]},
+                            "then": "$_link_door",
+                        }
+                    }
+                }
+            },
+            {"$unset": "_link_door"},
+            {
+                "$lookup": {
+                    "as": "_link_roof",
+                    "foreignField": "_id",
+                    "from": "Roof",
+                    "localField": "roof.$id",
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$_link_roof",
+                    "preserveNullAndEmptyArrays": True,
+                }
+            },
+            {
+                "$set": {
+                    "roof": {
+                        "$cond": {
+                            "else": "$roof",
+                            "if": {"$ifNull": ["$_link_roof", False]},
+                            "then": "$_link_roof",
+                        }
+                    }
+                }
+            },
+            {"$unset": "_link_roof"},
+            {
+                "$lookup": {
+                    "as": "yards",
+                    "foreignField": "_id",
+                    "from": "Yard",
+                    "localField": "yards.$id",
+                }
+            },
+            {"$match": {"door._id": door.id}},
+            {"$group": {"_id": "$height", "count": {"$sum": 1}}},
+        ]
