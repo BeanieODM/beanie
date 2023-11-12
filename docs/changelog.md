@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.23.4] - 2023-11-12
+        
+### Args For `get_model_dump`
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/780>
+            
+[1.23.4]: https://pypi.org/project/beanie/1.23.4
+
 ## [1.23.3] - 2023-11-08
         
 ### Fix Id Notation

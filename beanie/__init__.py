@@ -32,7 +32,7 @@ from beanie.odm.union_doc import UnionDoc
 from beanie.odm.utils.init import init_beanie
 from beanie.odm.views import View
 
-__version__ = "1.23.3"
+__version__ = "1.23.4"
 __all__ = [
     # ODM
     "Document",
