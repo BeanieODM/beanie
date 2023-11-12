@@ -55,8 +55,8 @@ def get_config_value(model, parameter: str):
         return getattr(model.Config, parameter, None)
 
 
-def get_model_dump(model):
+def get_model_dump(model, *args, **kwargs):
     if IS_PYDANTIC_V2:
-        return model.model_dump()
+        return model.model_dump(*args, **kwargs)
     else:
-        return model.dict()
+        return model.dict(*args, **kwargs)

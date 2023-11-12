@@ -17,6 +17,7 @@ from beanie.odm.bulk import BulkWriter
 from beanie.odm.custom_types import DecimalAnnotation
 from beanie.odm.custom_types.bson.binary import BsonBinary
 from beanie.odm.documents import Document
+from beanie.odm.enums import SortDirection
 from beanie.odm.fields import (
     BackLink,
     DeleteRules,
@@ -31,7 +32,7 @@ from beanie.odm.union_doc import UnionDoc
 from beanie.odm.utils.init import init_beanie
 from beanie.odm.views import View
 
-__version__ = "1.23.3"
+__version__ = "1.23.4"
 __all__ = [
     # ODM
     "Document",
@@ -42,6 +43,7 @@ __all__ = [
     "Indexed",
     "TimeSeriesConfig",
     "Granularity",
+    "SortDirection",
     # Actions
     "before_event",
     "after_event",
