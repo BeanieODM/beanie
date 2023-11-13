@@ -1,3 +1,4 @@
+import asyncio
 import sys
 
 from beanie.odm.utils.pydantic import (
@@ -104,7 +105,7 @@ class Initializer:
         self.database: AsyncIOMotorDatabase = database
 
         if multiprocessing_mode:
-            self.database.client.get_io_loop = self.database.get_io_loop
+            self.database.client.get_io_loop = asyncio.get_running_loop
 
         sort_order = {
             ModelType.UnionDoc: 0,

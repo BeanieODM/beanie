@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.23.6] - 2023-11-12
+        
+### Fix Multiprocessing Mode
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/782>
+            
+[1.23.6]: https://pypi.org/project/beanie/1.23.6
+
 ## [1.23.5] - 2023-11-12
         
 ### Multiprocessing Mode For Init
