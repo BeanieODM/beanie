@@ -64,6 +64,7 @@ class Initializer:
         ] = None,
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
+        multiprocessing_mode: bool = False,
     ):
         """
         Beanie initializer
@@ -74,8 +75,12 @@ class Initializer:
         or strings with dot separated paths
         :param allow_index_dropping: bool - if index dropping is allowed.
         Default False
+        :param recreate_views: bool - if views should be recreated. Default False
+        :param multiprocessing_mode: bool - if multiprocessing mode is on
+        it will patch the motor client to use process's event loop.
         :return: None
         """
+
         self.inited_classes: List[Type] = []
         self.allow_index_dropping = allow_index_dropping
         self.recreate_views = recreate_views
@@ -97,6 +102,9 @@ class Initializer:
             ).get_default_database()
 
         self.database: AsyncIOMotorDatabase = database
+
+        if multiprocessing_mode:
+            self.database.client.get_io_loop = self.database.get_io_loop
 
         sort_order = {
             ModelType.UnionDoc: 0,
@@ -725,6 +733,7 @@ async def init_beanie(
     ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
+    multiprocessing_mode: bool = False,
 ):
     """
     Beanie initialization
@@ -735,6 +744,9 @@ async def init_beanie(
     or strings with dot separated paths
     :param allow_index_dropping: bool - if index dropping is allowed.
     Default False
+    :param recreate_views: bool - if views should be recreated. Default False
+    :param multiprocessing_mode: bool - if multiprocessing mode is on
+        it will patch the motor client to use process's event loop. Default False
     :return: None
     """
 
@@ -744,4 +756,5 @@ async def init_beanie(
         document_models=document_models,
         allow_index_dropping=allow_index_dropping,
         recreate_views=recreate_views,
+        multiprocessing_mode=multiprocessing_mode,
     )

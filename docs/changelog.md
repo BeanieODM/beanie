@@ -2,6 +2,14 @@
 
 Beanie project
 
+## [1.23.5] - 2023-11-12
+        
+### Multiprocessing Mode For Init
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/781>
+            
+[1.23.5]: https://pypi.org/project/beanie/1.23.5
+
 ## [1.23.4] - 2023-11-12
         
 ### Args For `get_model_dump`
