@@ -34,6 +34,7 @@ from tests.odm.models import (
     DocumentWithBackLink,
     DocumentWithBsonBinaryField,
     DocumentWithBsonEncodersFiledsTypes,
+    DocumentWithComplexDictKey,
     DocumentWithCustomFiledsTypes,
     DocumentWithCustomIdInt,
     DocumentWithCustomIdUUID,
@@ -277,6 +278,7 @@ async def init(db):
         DocWithCallWrapper,
         DocumentWithOptionalBackLink,
         DocumentWithOptionalListBackLink,
+        DocumentWithComplexDictKey,
     ]
     await init_beanie(
         database=db,
