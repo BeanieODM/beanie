@@ -730,7 +730,7 @@ async def init_beanie(
     database: AsyncIOMotorDatabase = None,
     connection_string: Optional[str] = None,
     document_models: Optional[
-        List[Union[Type["DocType"], Type["View"], str]]
+        List[Union[Type[Document], Type["View"], str]]
     ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
