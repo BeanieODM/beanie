@@ -19,6 +19,7 @@ from beanie.odm.custom_types.bson.binary import BsonBinary
 from beanie.odm.documents import Document
 from beanie.odm.fields import (
     BackLink,
+    BeanieObjectId,
     DeleteRules,
     Indexed,
     Link,
@@ -39,6 +40,7 @@ __all__ = [
     "UnionDoc",
     "init_beanie",
     "PydanticObjectId",
+    "BeanieObjectId",
     "Indexed",
     "TimeSeriesConfig",
     "Granularity",
