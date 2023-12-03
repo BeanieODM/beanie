@@ -1048,3 +1048,7 @@ class DocWithCallWrapper(Document):
 
 class DocumentWithHttpUrlField(Document):
     url_field: HttpUrl
+
+
+class DocumentWithComplexDictKey(Document):
+    dict_field: Dict[UUID, datetime.datetime]

@@ -130,7 +130,7 @@ class Encoder:
             items = self._iter_model_items(obj)
             return {key: self.encode(value) for key, value in items}
         if isinstance(obj, Mapping):
-            return {key: self.encode(value) for key, value in obj.items()}
+            return {str(key): self.encode(value) for key, value in obj.items()}
         if isinstance(obj, Iterable):
             return [self.encode(value) for value in obj]
 
