@@ -28,7 +28,7 @@ class TimeSeriesConfig(BaseModel):
 
     def build_query(self, collection_name: str) -> Dict[str, Any]:
         res: Dict[str, Any] = {"name": collection_name}
-        timeseries = {"timeField": self.time_field}
+        timeseries: Dict[str, Any] = {"timeField": self.time_field}
         if self.meta_field is not None:
             timeseries["metaField"] = self.meta_field
         if self.granularity is not None:
