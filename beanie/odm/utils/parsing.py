@@ -22,10 +22,6 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
     """
     from beanie.odm.fields import Link
 
-    if hasattr(left, "_previous_revision_id") and hasattr(
-        right, "_previous_revision_id"
-    ):
-        left._previous_revision_id = right._previous_revision_id  # type: ignore
     for k, right_value in right.__iter__():
         left_value = getattr(left, k)
         if isinstance(right_value, BaseModel) and isinstance(
@@ -49,11 +45,9 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
             left.__setattr__(k, right_value)
 
 
-def save_state_swap_revision(item: BaseModel):
+def save_state(item: BaseModel):
     if hasattr(item, "_save_state"):
         item._save_state()  # type: ignore
-    if hasattr(item, "_swap_revision"):
-        item._swap_revision()  # type: ignore
 
 
 def parse_obj(
@@ -108,5 +102,5 @@ def parse_obj(
         o._saved_state = {"_id": o.id}
         return o
     result = parse_model(model, data)
-    save_state_swap_revision(result)
+    save_state(result)
     return result
