@@ -1084,7 +1084,8 @@ class Document(
     async def validate_self(self, *args, **kwargs):
         # TODO: it can be sync, but needs some actions controller improvements
         if self.get_settings().validate_on_save:
-            parse_model(self.__class__, get_model_dump(self))
+            new_model = parse_model(self.__class__, get_model_dump(self))
+            merge_models(self, new_model)
 
     def to_ref(self):
         if self.id is None:

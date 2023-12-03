@@ -191,6 +191,8 @@ if not IS_PYDANTIC_V2:
         PydanticObjectId
     ] = str  # it is a workaround to force pydantic make json schema for this field
 
+BeanieObjectId = PydanticObjectId
+
 
 class ExpressionField(str):
     def __getitem__(self, item):

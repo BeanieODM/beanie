@@ -463,6 +463,7 @@ class DocumentWithTurnedOffStateManagement(Document):
 class DocumentWithValidationOnSave(Document):
     num_1: int
     num_2: int
+    related: PydanticObjectId = Field(default_factory=PydanticObjectId)
 
     @after_event(ValidateOnSave)
     def num_2_plus_1(self):
