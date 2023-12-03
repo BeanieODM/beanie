@@ -27,6 +27,7 @@ from pydantic import (
     UUID4,
     BaseModel,
     ConfigDict,
+    EmailStr,
     Field,
     HttpUrl,
     PrivateAttr,
@@ -1053,3 +1054,9 @@ class DocumentWithHttpUrlField(Document):
 
 class DocumentWithComplexDictKey(Document):
     dict_field: Dict[UUID, datetime.datetime]
+
+
+class DocumentWithIndexedObjectId(Document):
+    pyid: Indexed(PydanticObjectId)
+    uuid: Annotated[UUID4, Indexed(unique=True)]
+    email: Annotated[EmailStr, Indexed(unique=True)]
