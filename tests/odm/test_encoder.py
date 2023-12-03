@@ -161,7 +161,7 @@ async def test_dict_with_complex_key():
 
     uuid = uuid4()
     # reset microseconds, because it looses by mongo
-    dt = datetime.now().replace(microsecond=0)  
+    dt = datetime.now().replace(microsecond=0)
 
     doc = DocumentWithComplexDictKey(dict_field={uuid: dt})
     await doc.insert()
