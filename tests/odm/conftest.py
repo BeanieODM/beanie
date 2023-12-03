@@ -43,6 +43,7 @@ from tests.odm.models import (
     DocumentWithDeprecatedHiddenField,
     DocumentWithExtras,
     DocumentWithHttpUrlField,
+    DocumentWithIndexedObjectId,
     DocumentWithIndexMerging1,
     DocumentWithIndexMerging2,
     DocumentWithKeepNullsFalse,
@@ -279,6 +280,7 @@ async def init(db):
         DocumentWithOptionalBackLink,
         DocumentWithOptionalListBackLink,
         DocumentWithComplexDictKey,
+        DocumentWithIndexedObjectId,
     ]
     await init_beanie(
         database=db,
