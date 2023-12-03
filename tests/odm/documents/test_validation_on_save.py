@@ -5,6 +5,7 @@ from bson import ObjectId
 from pydantic import BaseModel, ValidationError
 
 from beanie import PydanticObjectId
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
     DocumentWithValidationOnSave,
     Lock,
@@ -43,7 +44,10 @@ async def test_validate_on_save_keep_the_id_type():
     doc = DocumentWithValidationOnSave(num_1=1, num_2=2)
     await doc.insert()
     update = UpdateModel(related=PydanticObjectId())
-    doc = doc.model_copy(update=update.model_dump(exclude_unset=True))
+    if IS_PYDANTIC_V2:
+        doc = doc.model_copy(update=update.model_dump(exclude_unset=True))
+    else:
+        doc = doc.copy(update=update.dict(exclude_unset=True))
     doc.num_2 = 1000
     await doc.save()
     in_db = await DocumentWithValidationOnSave.get_motor_collection().find_one(
