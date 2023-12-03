@@ -988,7 +988,13 @@ class Document(
     @saved_state_needed
     def get_changes(self) -> Dict[str, Any]:
         return self._collect_updates(
-            self._saved_state, get_dict(self, to_db=True, keep_nulls=self.get_settings().keep_nulls)  # type: ignore
+            self._saved_state,  # type: ignore
+            get_dict(
+                self,
+                to_db=True,
+                keep_nulls=self.get_settings().keep_nulls,
+                exclude={"revision_id", "_previous_revision_id"},
+            ),
         )
 
     @saved_state_needed
