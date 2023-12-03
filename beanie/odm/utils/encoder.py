@@ -58,6 +58,8 @@ BSON_SCALAR_TYPES = (
     bson.Binary,
     bson.DBRef,
     bson.Decimal128,
+    bson.MaxKey,
+    bson.MinKey,
     bson.ObjectId,
 )
 
