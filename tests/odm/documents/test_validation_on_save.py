@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pytest
 from bson import ObjectId
 from pydantic import BaseModel, ValidationError
@@ -35,8 +37,8 @@ async def test_validate_on_save_changes():
 
 async def test_validate_on_save_keep_the_id_type():
     class UpdateModel(BaseModel):
-        num_1: int | None = None
-        related: PydanticObjectId | None = None
+        num_1: Optional[int] = None
+        related: Optional[PydanticObjectId] = None
 
     doc = DocumentWithValidationOnSave(num_1=1, num_2=2)
     await doc.insert()
