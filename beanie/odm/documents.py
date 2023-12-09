@@ -104,7 +104,7 @@ if IS_PYDANTIC_V2:
     from pydantic import model_validator
 
 
-DocType = TypeVar("DocType", bound="Document")
+DocType = TypeVar("DocType", bound=Union["Document", "UnionDoc"])
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
