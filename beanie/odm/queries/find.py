@@ -408,7 +408,7 @@ class FindMany(
             self.limit_number = n
         return self
 
-    def update(
+    async def update(
         self,
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
@@ -434,7 +434,7 @@ class FindMany(
             .set_session(session=self.session)
         )
 
-    def upsert(
+    async def upsert(
         self,
         *args: Mapping[str, Any],
         on_insert: "DocType",
@@ -807,7 +807,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self.pymongo_kwargs.update(pymongo_kwargs)
         return self
 
-    def update(
+    async def update(
         self,
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
@@ -840,7 +840,7 @@ class FindOne(FindQuery[FindQueryResultType]):
             .set_session(session=self.session)
         )
 
-    def upsert(
+    async def upsert(
         self,
         *args: Mapping[str, Any],
         on_insert: "DocType",
