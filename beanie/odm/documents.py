@@ -13,6 +13,7 @@ from typing import (
     Union,
 )
 from uuid import UUID, uuid4
+from beanie import UnionDoc
 
 from bson import DBRef, ObjectId
 from lazy_model import LazyModel
