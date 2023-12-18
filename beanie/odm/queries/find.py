@@ -174,18 +174,18 @@ class FindMany(
 
     def __init__(self, document_model: Type["DocType"]):
         super(FindMany, self).__init__(document_model=document_model)
-        self.sort_expressions: List[Tuple[str, SortDirection]] = []
+        self.sort_expressions: List[Tuple[Any, SortDirection]] = []
         self.skip_number: int = 0
         self.limit_number: int = 0
 
     @overload
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -197,11 +197,11 @@ class FindMany(
     @overload
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -212,11 +212,11 @@ class FindMany(
 
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -228,10 +228,10 @@ class FindMany(
         """
         Find many documents by criteria
 
-        :param args: *Mapping[str, Any] - search criteria
+        :param args: *Mapping[Any, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
+        :param sort: Union[None, str, List[Tuple[Any, SortDirection]]] - A key
         or a list of (key, direction) pairs specifying the sort order
         for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
@@ -288,11 +288,11 @@ class FindMany(
     @overload
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -304,11 +304,11 @@ class FindMany(
     @overload
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -319,11 +319,11 @@ class FindMany(
 
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -352,14 +352,14 @@ class FindMany(
         self,
         *args: Optional[
             Union[
-                str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
+                str, Tuple[Any, SortDirection], List[Tuple[Any, SortDirection]]
             ]
         ],
     ) -> "FindMany[FindQueryResultType]":
         """
         Add sort parameters
-        :param args: Union[str, Tuple[str, SortDirection],
-        List[Tuple[str, SortDirection]]] - A key or a tuple (key, direction)
+        :param args: Union[str, Tuple[Any, SortDirection],
+        List[Tuple[Any, SortDirection]]] - A key or a tuple (key, direction)
         or a list of (key, direction) pairs specifying
         the sort order for this query.
         :return: self
@@ -408,9 +408,10 @@ class FindMany(
             self.limit_number = n
         return self
 
-    def update(
+    @overload
+    async def update(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
@@ -419,7 +420,7 @@ class FindMany(
         Create Update with modifications query
         and provide search criteria there
 
-        :param args: *Mapping[str,Any] - the modifications to apply.
+        :param args: *Mapping[Any,Any] - the modifications to apply.
         :param session: Optional[ClientSession]
         :param bulk_writer: Optional[BulkWriter]
         :return: UpdateMany query
@@ -434,9 +435,36 @@ class FindMany(
             .set_session(session=self.session)
         )
 
-    def upsert(
+    def update(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
+    ):
+        """
+        Create Update with modifications query
+        and provide search criteria there
+
+        :param args: *Mapping[Any,Any] - the modifications to apply.
+        :param session: Optional[ClientSession]
+        :param bulk_writer: Optional[BulkWriter]
+        :return: UpdateMany query
+        """
+        self.set_session(session)
+        return (
+            self.UpdateQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+            )
+            .update(*args, bulk_writer=bulk_writer, **pymongo_kwargs)
+            .set_session(session=self.session)
+        )
+
+    @overload
+    async def upsert(
+        self,
+        *args: Mapping[Any, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         **pymongo_kwargs,
@@ -445,7 +473,38 @@ class FindMany(
         Create Update with modifications query
         and provide search criteria there
 
-        :param args: *Mapping[str,Any] - the modifications to apply.
+        :param args: *Mapping[Any,Any] - the modifications to apply.
+        :param on_insert: DocType - document to insert if there is no matched
+        document in the collection
+        :param session: Optional[ClientSession]
+        :return: UpdateMany query
+        """
+        self.set_session(session)
+        return (
+            self.UpdateQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+            )
+            .upsert(
+                *args,
+                on_insert=on_insert,
+                **pymongo_kwargs,
+            )
+            .set_session(session=self.session)
+        )
+
+    def upsert(
+        self,
+        *args: Mapping[Any, Any],
+        on_insert: "DocType",
+        session: Optional[ClientSession] = None,
+        **pymongo_kwargs,
+    ):
+        """
+        Create Update with modifications query
+        and provide search criteria there
+
+        :param args: *Mapping[Any,Any] - the modifications to apply.
         :param on_insert: DocType - document to insert if there is no matched
         document in the collection
         :param session: Optional[ClientSession]
@@ -467,7 +526,7 @@ class FindMany(
 
     def update_many(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
@@ -476,7 +535,7 @@ class FindMany(
         Provide search criteria to the
         [UpdateMany](query.md#updatemany) query
 
-        :param args: *Mapping[str,Any] - the modifications to apply.
+        :param args: *Mapping[Any,Any] - the modifications to apply.
         :param session: Optional[ClientSession]
         :return: [UpdateMany](query.md#updatemany) query
         """
@@ -757,7 +816,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -769,7 +828,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Type[FindQueryProjectionType],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -780,7 +839,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -792,7 +851,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         Find one document by criteria
 
-        :param args: *Mapping[str, Any] - search criteria
+        :param args: *Mapping[Any, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
@@ -807,9 +866,10 @@ class FindOne(FindQuery[FindQueryResultType]):
         self.pymongo_kwargs.update(pymongo_kwargs)
         return self
 
-    def update(
+    @overload
+    async def update(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
@@ -819,7 +879,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         Create Update with modifications query
         and provide search criteria there
 
-        :param args: *Mapping[str,Any] - the modifications to apply.
+        :param args: *Mapping[Any,Any] - the modifications to apply.
         :param session: Optional[ClientSession]
         :param bulk_writer: Optional[BulkWriter]
         :param response_type: Optional[UpdateResponse]
@@ -840,9 +900,43 @@ class FindOne(FindQuery[FindQueryResultType]):
             .set_session(session=self.session)
         )
 
-    def upsert(
+    def update(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        response_type: Optional[UpdateResponse] = None,
+        **pymongo_kwargs,
+    ):
+        """
+        Create Update with modifications query
+        and provide search criteria there
+
+        :param args: *Mapping[Any,Any] - the modifications to apply.
+        :param session: Optional[ClientSession]
+        :param bulk_writer: Optional[BulkWriter]
+        :param response_type: Optional[UpdateResponse]
+        :return: UpdateMany query
+        """
+        self.set_session(session)
+        return (
+            self.UpdateQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+            )
+            .update(
+                *args,
+                bulk_writer=bulk_writer,
+                response_type=response_type,
+                **pymongo_kwargs,
+            )
+            .set_session(session=self.session)
+        )
+
+    @overload
+    async def upsert(
+        self,
+        *args: Mapping[Any, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         response_type: Optional[UpdateResponse] = None,
@@ -852,7 +946,41 @@ class FindOne(FindQuery[FindQueryResultType]):
         Create Update with modifications query
         and provide search criteria there
 
-        :param args: *Mapping[str,Any] - the modifications to apply.
+        :param args: *Mapping[Any,Any] - the modifications to apply.
+        :param on_insert: DocType - document to insert if there is no matched
+        document in the collection
+        :param session: Optional[ClientSession]
+        :param response_type: Optional[UpdateResponse]
+        :return: UpdateMany query
+        """
+        self.set_session(session)
+        return (
+            self.UpdateQueryType(
+                document_model=self.document_model,
+                find_query=self.get_filter_query(),
+            )
+            .upsert(
+                *args,
+                on_insert=on_insert,
+                response_type=response_type,
+                **pymongo_kwargs,
+            )
+            .set_session(session=self.session)
+        )
+
+    def upsert(
+        self,
+        *args: Mapping[Any, Any],
+        on_insert: "DocType",
+        session: Optional[ClientSession] = None,
+        response_type: Optional[UpdateResponse] = None,
+        **pymongo_kwargs,
+    ):
+        """
+        Create Update with modifications query
+        and provide search criteria there
+
+        :param args: *Mapping[Any,Any] - the modifications to apply.
         :param on_insert: DocType - document to insert if there is no matched
         document in the collection
         :param session: Optional[ClientSession]
@@ -876,7 +1004,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def update_one(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
@@ -885,7 +1013,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         Create [UpdateOne](query.md#updateone) query using modifications and
         provide search criteria there
-        :param args: *Mapping[str,Any] - the modifications to apply
+        :param args: *Mapping[Any,Any] - the modifications to apply
         :param session: Optional[ClientSession] - PyMongo sessions
         :param response_type: Optional[UpdateResponse]
         :return: [UpdateOne](query.md#updateone) query

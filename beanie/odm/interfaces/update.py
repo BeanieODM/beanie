@@ -29,7 +29,7 @@ class UpdateMethods:
 
     def set(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -86,7 +86,7 @@ class UpdateMethods:
 
     def inc(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
