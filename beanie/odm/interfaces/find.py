@@ -55,7 +55,7 @@ class FindInterface:
     @classmethod
     def find_one(  # type: ignore
         cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -69,7 +69,7 @@ class FindInterface:
     @classmethod
     def find_one(  # type: ignore
         cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Type["DocumentProjectionType"],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -82,7 +82,7 @@ class FindInterface:
     @classmethod
     def find_one(  # type: ignore
         cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -95,7 +95,7 @@ class FindInterface:
         Returns [FindOne](query.md#findone) query object.
         When awaited this will either return a document or None if no document exists for the search criteria.
 
-        :param args: *Mapping[str, Any] - search criteria
+        :param args: *Mapping[Any, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session instance
         :param ignore_cache: bool
@@ -116,11 +116,11 @@ class FindInterface:
     @classmethod
     def find_many(  # type: ignore
         cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -134,11 +134,11 @@ class FindInterface:
     @classmethod
     def find_many(  # type: ignore
         cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -151,11 +151,11 @@ class FindInterface:
     @classmethod
     def find_many(  # type: ignore
         cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -167,10 +167,10 @@ class FindInterface:
         Find many documents by criteria.
         Returns [FindMany](query.md#findmany) query object
 
-        :param args: *Mapping[str, Any] - search criteria
+        :param args: *Mapping[Any, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
+        :param sort: Union[None, Any, List[Tuple[Any, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
@@ -196,11 +196,11 @@ class FindInterface:
     @classmethod
     def find(  # type: ignore
         cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -214,11 +214,11 @@ class FindInterface:
     @classmethod
     def find(  # type: ignore
         cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Type["DocumentProjectionType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -231,11 +231,11 @@ class FindInterface:
     @classmethod
     def find(  # type: ignore
         cls: Type["DocType"],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -266,7 +266,7 @@ class FindInterface:
         cls: Type["DocType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         projection_model: None = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -282,7 +282,7 @@ class FindInterface:
         cls: Type["DocType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -297,7 +297,7 @@ class FindInterface:
         cls: Type["DocType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -310,7 +310,7 @@ class FindInterface:
 
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
+        :param sort: Union[None, Any, List[Tuple[Any, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
@@ -336,7 +336,7 @@ class FindInterface:
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
@@ -352,7 +352,7 @@ class FindInterface:
         projection_model: Type["DocumentProjectionType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
@@ -367,7 +367,7 @@ class FindInterface:
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, Any, List[Tuple[Any, SortDirection]]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
