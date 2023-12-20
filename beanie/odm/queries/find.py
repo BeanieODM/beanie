@@ -416,24 +416,7 @@ class FindMany(
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
     ):
-        """
-        Create Update with modifications query
-        and provide search criteria there
-
-        :param args: *Mapping[Any,Any] - the modifications to apply.
-        :param session: Optional[ClientSession]
-        :param bulk_writer: Optional[BulkWriter]
-        :return: UpdateMany query
-        """
-        self.set_session(session)
-        return (
-            self.UpdateQueryType(
-                document_model=self.document_model,
-                find_query=self.get_filter_query(),
-            )
-            .update(*args, bulk_writer=bulk_writer, **pymongo_kwargs)
-            .set_session(session=self.session)
-        )
+        ...
 
     def update(
         self,
@@ -469,29 +452,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         **pymongo_kwargs,
     ):
-        """
-        Create Update with modifications query
-        and provide search criteria there
-
-        :param args: *Mapping[str,Any] - the modifications to apply.
-        :param on_insert: DocType - document to insert if there is no matched
-        document in the collection
-        :param session: Optional[ClientSession]
-        :return: UpdateMany query
-        """
-        self.set_session(session)
-        return (
-            self.UpdateQueryType(
-                document_model=self.document_model,
-                find_query=self.get_filter_query(),
-            )
-            .upsert(
-                *args,
-                on_insert=on_insert,
-                **pymongo_kwargs,
-            )
-            .set_session(session=self.session)
-        )
+        ...
 
     def upsert(
         self,
@@ -875,30 +836,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         response_type: UpdateResponse,
         **pymongo_kwargs,
     ) -> UpdateResponse:
-        """
-        Create Update with modifications query
-        and provide search criteria there
-
-        :param args: *Mapping[str,Any] - the modifications to apply.
-        :param session: Optional[ClientSession]
-        :param bulk_writer: Optional[BulkWriter]
-        :param response_type: UpdateResponse
-        :return: UpdateMany query
-        """
-        self.set_session(session)
-        return (
-            self.UpdateQueryType(
-                document_model=self.document_model,
-                find_query=self.get_filter_query(),
-            )
-            .update(
-                *args,
-                bulk_writer=bulk_writer,
-                response_type=response_type,
-                **pymongo_kwargs,
-            )
-            .set_session(session=self.session)
-        )
+        ...
 
     @overload
     async def update(
@@ -909,30 +847,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         response_type: None = None,
         **pymongo_kwargs,
     ) -> UpdateMany:
-        """
-        Create Update with modifications query
-        and provide search criteria there
-
-        :param args: *Mapping[str,Any] - the modifications to apply.
-        :param session: Optional[ClientSession]
-        :param bulk_writer: Optional[BulkWriter]
-        :param response_type: Optional[None]
-        :return: UpdateMany query
-        """
-        self.set_session(session)
-        return (
-            self.UpdateQueryType(
-                document_model=self.document_model,
-                find_query=self.get_filter_query(),
-            )
-            .update(
-                *args,
-                bulk_writer=bulk_writer,
-                response_type=response_type,
-                **pymongo_kwargs,
-            )
-            .set_session(session=self.session)
-        )
+        ...
 
     def update(
         self,
@@ -976,31 +891,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         response_type: UpdateResponse,
         **pymongo_kwargs,
     ) -> UpdateResponse:
-        """
-        Create Update with modifications query
-        and provide search criteria there
-
-        :param args: *Mapping[str,Any] - the modifications to apply.
-        :param on_insert: DocType - document to insert if there is no matched
-        document in the collection
-        :param session: Optional[ClientSession]
-        :param response_type: UpdateResponse
-        :return: UpdateResponse query
-        """
-        self.set_session(session)
-        return (
-            self.UpdateQueryType(
-                document_model=self.document_model,
-                find_query=self.get_filter_query(),
-            )
-            .upsert(
-                *args,
-                on_insert=on_insert,
-                response_type=response_type,
-                **pymongo_kwargs,
-            )
-            .set_session(session=self.session)
-        )
+        ...
 
     @overload
     async def upsert(
@@ -1011,31 +902,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         response_type: None = None,
         **pymongo_kwargs,
     ) -> UpdateMany:
-        """
-        Create Update with modifications query
-        and provide search criteria there
-
-        :param args: *Mapping[str,Any] - the modifications to apply.
-        :param on_insert: DocType - document to insert if there is no matched
-        document in the collection
-        :param session: Optional[ClientSession]
-        :param response_type: Optional[None]
-        :return: UpdateMany query
-        """
-        self.set_session(session)
-        return (
-            self.UpdateQueryType(
-                document_model=self.document_model,
-                find_query=self.get_filter_query(),
-            )
-            .upsert(
-                *args,
-                on_insert=on_insert,
-                response_type=response_type,
-                **pymongo_kwargs,
-            )
-            .set_session(session=self.session)
-        )
+        ...
 
     def upsert(
         self,
