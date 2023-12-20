@@ -1174,7 +1174,7 @@ class Document(
     async def distinct(
         cls,
         key: Any,
-        filter: Optional[Mapping[str, Any]] = None,
+        filter: Optional[Mapping[Any, Any]] = None,
         session: Optional[ClientSession] = None,
         **kwargs: Any,
     ) -> list[Any]:

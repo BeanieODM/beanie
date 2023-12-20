@@ -415,7 +415,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
-    ):
+    ) -> UpdateQuery:
         ...
 
     def update(
@@ -424,7 +424,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
-    ):
+    ) -> UpdateQuery:
         """
         Create Update with modifications query
         and provide search criteria there
@@ -451,7 +451,7 @@ class FindMany(
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         **pymongo_kwargs,
-    ):
+    ) -> UpdateQuery:
         ...
 
     def upsert(
@@ -460,7 +460,7 @@ class FindMany(
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         **pymongo_kwargs,
-    ):
+    ) -> UpdateQuery:
         """
         Create Update with modifications query
         and provide search criteria there
@@ -856,7 +856,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
         **pymongo_kwargs,
-    ):
+    ) -> Union[UpdateMany, UpdateResponse]:
         """
         Create Update with modifications query
         and provide search criteria there
@@ -911,7 +911,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         session: Optional[ClientSession] = None,
         response_type: Optional[UpdateResponse] = None,
         **pymongo_kwargs,
-    ):
+    ) -> Union[UpdateMany, UpdateResponse]:
         """
         Create Update with modifications query
         and provide search criteria there
