@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, Mapping, Optional, Union
+from typing import Any, Dict, Mapping, Optional, overload, Union
 
 from pymongo.client_session import ClientSession
 
@@ -11,6 +11,7 @@ from beanie.odm.operators.update.general import (
     Set,
 )
 from datetime import datetime
+from pymongo.results import UpdateResult
 
 
 class UpdateMethods:
@@ -28,13 +29,23 @@ class UpdateMethods:
     ):
         return self
 
+    @overload
+    async def set(
+        self,
+        expression: Dict[Union[ExpressionField, Any, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **kwargs,
+    ) -> UpdateResult:
+        ...
+
     def set(
         self,
         expression: Dict[Union[ExpressionField, Any, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
-    ):
+    ) -> UpdateResult:
         """
         Set values
 
@@ -61,13 +72,23 @@ class UpdateMethods:
             Set(expression), session=session, bulk_writer=bulk_writer, **kwargs
         )
 
+    @overload
+    async def current_date(
+        self,
+        expression: Dict[Union[ExpressionField, datetime, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **kwargs,
+    ) -> UpdateResult:
+        ...
+
     def current_date(
         self,
         expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
-    ):
+    ) -> UpdateResult:
         """
         Set current date
 
@@ -84,6 +105,16 @@ class UpdateMethods:
             bulk_writer=bulk_writer,
             **kwargs,
         )
+
+    @overload
+    async def inc(
+        self,
+        expression: Dict[Union[ExpressionField, int, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **kwargs,
+    ) -> UpdateResult:
+        ...
 
     def inc(
         self,
