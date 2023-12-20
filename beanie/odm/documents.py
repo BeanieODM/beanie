@@ -8,9 +8,11 @@ from typing import (
     List,
     Mapping,
     Optional,
+    Self,
     Type,
     TypeVar,
     Union,
+    overload,
 )
 from uuid import UUID, uuid4
 
@@ -99,7 +101,8 @@ from beanie.odm.utils.state import (
     swap_revision_after,
 )
 from beanie.odm.utils.typing import extract_id_class
-from datetime import datetime
+from beanie.odm.union_doc import UnionDoc
+import datetime
 
 if IS_PYDANTIC_V2:
     from pydantic import model_validator
@@ -638,7 +641,7 @@ class Document(
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
         **pymongo_kwargs,
-    ) -> DocType:
+    ) -> Self:
         """
         Partially update the document in the database
 
@@ -704,6 +707,17 @@ class Document(
             *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
 
+    @overload
+    async def set(
+        self,
+        expression: Dict[Union[ExpressionField, Any, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: Optional[bool] = None,
+        **kwargs,
+    ) -> Self:
+        ...
+
     def set(
         self,
         expression: Dict[Union[ExpressionField, Any, str], Any],
@@ -711,7 +725,7 @@ class Document(
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ):
+    ) -> Self:
         """
         Set values
 
@@ -743,14 +757,25 @@ class Document(
             **kwargs,
         )
 
-    def current_date(
+    @overload
+    async def current_date(
         self,
-        expression: Dict[Union[ExpressionField, datetime, str], Any],
+        expression: Dict[Union[ExpressionField, datetime.datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ):
+    ) -> Self:
+        ...
+
+    def current_date(
+        self,
+        expression: Dict[Union[ExpressionField, datetime.datetime, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: Optional[bool] = None,
+        **kwargs,
+    ) -> Self:
         """
         Set current date
 
@@ -770,14 +795,25 @@ class Document(
             **kwargs,
         )
 
-    def inc(
+    @overload
+    async def inc(
         self,
         expression: Dict[Union[ExpressionField, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ):
+    ) -> Self:
+        ...
+
+    async def inc(
+        self,
+        expression: Dict[Union[ExpressionField, int, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: Optional[bool] = None,
+        **kwargs,
+    ) -> Self:
         """
         Increment
 
@@ -1137,11 +1173,11 @@ class Document(
     @classmethod
     async def distinct(
         cls,
-        key: str,
+        key: Any,
         filter: Optional[Mapping[str, Any]] = None,
         session: Optional[ClientSession] = None,
         **kwargs: Any,
-    ) -> list:
+    ) -> list[Any]:
         return await cls.get_motor_collection().distinct(
             key, filter, session, **kwargs
         )
