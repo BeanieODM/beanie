@@ -806,7 +806,7 @@ class Document(
     ) -> Self:
         ...
 
-    async def inc(
+    def inc(
         self,
         expression: Dict[Union[ExpressionField, int, str], Any],
         session: Optional[ClientSession] = None,
