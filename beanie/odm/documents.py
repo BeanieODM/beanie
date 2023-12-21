@@ -186,7 +186,7 @@ class Document(
             self._previous_revision_id = self.revision_id
             self.revision_id = uuid4()
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
 
