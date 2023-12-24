@@ -2,6 +2,54 @@
 
 Beanie project
 
+## [1.24.0] - 2023-12-24
+        
+### Exclude revision_id From The get_changes Method
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/759>
+            
+### Add Support For Custom Bucket Fields In Time Series
+- Author - [Lucas Hardt](https://github.com/Luc1412)
+- PR <https://github.com/roman-right/beanie/pull/760>
+            
+### Add Bson Maxkey And Minkey
+- Author - [Noah Witt](https://github.com/noah-witt)
+- PR <https://github.com/roman-right/beanie/pull/768>
+            
+### Update Model During Save Validation
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/776>
+            
+### Fix init_beanie document_models Type Hint
+- Author - [Capi Etheriel](https://github.com/barraponto)
+- PR <https://github.com/roman-right/beanie/pull/784>
+            
+### Fix Encoding Keys In `Mapping` Branch Of `Encoder`
+- Author - [Rubikoid](https://github.com/Rubikoid)
+- PR <https://github.com/roman-right/beanie/pull/785>
+            
+### Improve Write Performances
+- Author - [Thibault Djaballah](https://github.com/tdjaballah)
+- PR <https://github.com/roman-right/beanie/pull/786>
+            
+### Doc Update: Queue
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/794>
+            
+### Tests For Indexed Fields
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/795>
+            
+### Rework Revision
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/797>
+            
+### Add Missing Type Signature To `Document` Constructor
+- Author - [None](https://github.com/johnthagen)
+- PR <https://github.com/roman-right/beanie/pull/813>
+            
+[1.24.0]: https://pypi.org/project/beanie/1.24.0
+
 ## [1.23.6] - 2023-11-12
         
 ### Fix Multiprocessing Mode
