@@ -149,7 +149,7 @@ class DocumentTestModel(Document):
     test_int: int
     test_doc: SubDocument
     test_str: str
-    test_list: List[SubDocument] = Field(exclude=True)
+    test_list: List[SubDocument] = Field(exclude=True, default_factory=list)
 
     class Settings:
         use_cache = True

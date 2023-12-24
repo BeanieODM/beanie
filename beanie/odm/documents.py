@@ -164,7 +164,7 @@ class Document(
     )
 
     # State
-    revision_id: Optional[UUID] = Field(default=None, exclude=True)
+    revision_id: Optional[UUID] = Field(default=None, hidden=True)
     _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
     _previous_saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)

@@ -23,7 +23,10 @@ import pydantic
 
 import beanie
 from beanie.odm.fields import Link, LinkTypes
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, get_model_fields
+from beanie.odm.utils.pydantic import (
+    IS_PYDANTIC_V2,
+    get_model_fields,
+)
 
 SingleArgCallable = Callable[[Any], Any]
 DEFAULT_CUSTOM_ENCODERS: MutableMapping[type, SingleArgCallable] = {
@@ -153,6 +156,8 @@ class Encoder:
         get_model_field = get_model_fields(obj).get
         for key, value in obj.__iter__():
             field_info = get_model_field(key)
+            if field_info.exclude:
+                continue
             if field_info is not None:
                 key = field_info.alias or key
             if key not in exclude and (value is not None or keep_nulls):

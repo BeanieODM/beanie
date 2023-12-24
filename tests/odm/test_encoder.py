@@ -12,6 +12,7 @@ from tests.odm.models import (
     Child,
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
+    DocumentTestModel,
     DocumentWithComplexDictKey,
     DocumentWithDecimalField,
     DocumentWithHttpUrlField,
@@ -19,6 +20,7 @@ from tests.odm.models import (
     DocumentWithStringField,
     ModelWithOptionalField,
     SampleWithMutableObjects,
+    SubDocument,
 )
 
 
@@ -169,3 +171,23 @@ async def test_dict_with_complex_key():
 
     assert isinstance(new_doc.dict_field, dict)
     assert new_doc.dict_field.get(uuid) == dt
+
+
+async def test_exclude():
+    doc = DocumentTestModel(
+        test_int=1,
+        test_doc=SubDocument(test_str="test"),
+        test_str="test",
+        test_list=[SubDocument(test_str="test")],
+    )
+    res = Encoder().encode(doc)
+    assert res == {
+        "_id": None,
+        "revision_id": None,
+        "test_doc": {"test_int": 42, "test_str": "test"},
+        "test_int": 1,
+        "test_str": "test",
+    }
+    await doc.insert()
+    new_doc = await DocumentTestModel.get(doc.id)
+    assert new_doc.test_list == []

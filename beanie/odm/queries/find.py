@@ -1,3 +1,4 @@
+import json
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -655,7 +656,7 @@ class FindMany(
 
             if projection is not None:
                 aggregation_pipeline.append({"$project": projection})
-
+            print(json.dumps(aggregation_pipeline, default=str))
             return self.document_model.get_motor_collection().aggregate(
                 aggregation_pipeline,
                 session=self.session,
