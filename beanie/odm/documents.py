@@ -96,13 +96,11 @@ from beanie.odm.utils.state import (
     previous_saved_state_needed,
     save_state_after,
     saved_state_needed,
-    swap_revision_after,
 )
 from beanie.odm.utils.typing import extract_id_class
 
 if IS_PYDANTIC_V2:
     from pydantic import model_validator
-
 
 DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
@@ -165,7 +163,6 @@ class Document(
 
     # State
     revision_id: Optional[UUID] = Field(default=None, exclude=True)
-    _previous_revision_id: Optional[UUID] = PrivateAttr(default=None)
     _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
     _previous_saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
 
@@ -180,11 +177,6 @@ class Document(
 
     # Database
     _database_major_version: ClassVar[int] = 4
-
-    def _swap_revision(self):
-        if self.get_settings().use_revision:
-            self._previous_revision_id = self.revision_id
-            self.revision_id = uuid4()
 
     def __init__(self, *args, **kwargs):
         super(Document, self).__init__(*args, **kwargs)
@@ -263,7 +255,6 @@ class Document(
         )
 
     @wrap_with_actions(EventTypes.INSERT)
-    @swap_revision_after
     @save_state_after
     @validate_self_before
     async def insert(
@@ -402,7 +393,6 @@ class Document(
         )
 
     @wrap_with_actions(EventTypes.REPLACE)
-    @swap_revision_after
     @save_state_after
     @validate_self_before
     async def replace(
@@ -470,7 +460,8 @@ class Document(
         find_query: Dict[str, Any] = {"_id": self.id}
 
         if use_revision_id and not ignore_revision:
-            find_query["revision_id"] = self._previous_revision_id
+            find_query["revision_id"] = self.revision_id
+            self.revision_id = uuid4()
         try:
             await self.find_one(find_query).replace_one(
                 self,
@@ -662,10 +653,11 @@ class Document(
             find_query = {"_id": PydanticObjectId()}
 
         if use_revision_id and not ignore_revision:
-            find_query["revision_id"] = self._previous_revision_id
+            find_query["revision_id"] = self.revision_id
 
         if use_revision_id:
-            arguments.append(SetRevisionId(self.revision_id))
+            new_revision_id = uuid4()
+            arguments.append(SetRevisionId(new_revision_id))
         try:
             result = await self.find_one(find_query).update(
                 *arguments,
@@ -922,7 +914,7 @@ class Document(
                 self,
                 to_db=True,
                 keep_nulls=self.get_settings().keep_nulls,
-                exclude={"revision_id", "_previous_revision_id"},
+                exclude={"revision_id"},
             )
 
     def get_saved_state(self) -> Optional[Dict[str, Any]]:
@@ -946,7 +938,7 @@ class Document(
             self,
             to_db=True,
             keep_nulls=self.get_settings().keep_nulls,
-            exclude={"revision_id", "_previous_revision_id"},
+            exclude={"revision_id"},
         ):
             return False
         return True
@@ -1009,7 +1001,7 @@ class Document(
                 self,
                 to_db=True,
                 keep_nulls=self.get_settings().keep_nulls,
-                exclude={"revision_id", "_previous_revision_id"},
+                exclude={"revision_id"},
             ),
         )
 

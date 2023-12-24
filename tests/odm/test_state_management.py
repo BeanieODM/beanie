@@ -431,9 +431,7 @@ class TestStateManagement:
             assert saved_doc_previous.get_saved_state()["num_1"] == 100
             assert saved_doc_previous.get_previous_saved_state()["num_1"] == 1
 
-        async def test_exclude_revision_id_and_previous_revision_id(
-            self, saved_doc_previous
-        ):
+        async def test_exclude_revision_id(self, saved_doc_previous):
             saved_doc_previous.num_1 = 100
             await saved_doc_previous.replace()
 
