@@ -178,7 +178,7 @@ class Document(
     # Database
     _database_major_version: ClassVar[int] = 4
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
 
