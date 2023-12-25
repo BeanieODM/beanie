@@ -101,14 +101,13 @@ from beanie.odm.utils.state import (
     swap_revision_after,
 )
 from beanie.odm.utils.typing import extract_id_class
-from beanie.odm.union_doc import UnionDoc
 import datetime
 
 if IS_PYDANTIC_V2:
     from pydantic import model_validator
 
 
-DocType = TypeVar("DocType", bound=Union["Document", "UnionDoc"])
+DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
