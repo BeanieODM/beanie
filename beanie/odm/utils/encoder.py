@@ -36,6 +36,7 @@ DEFAULT_CUSTOM_ENCODERS: MutableMapping[type, SingleArgCallable] = {
     pathlib.PurePath: str,
     pydantic.SecretBytes: pydantic.SecretBytes.get_secret_value,
     pydantic.SecretStr: pydantic.SecretStr.get_secret_value,
+    datetime.date: lambda d: datetime.datetime.combine(d, datetime.time.min),
     datetime.timedelta: operator.methodcaller("total_seconds"),
     enum.Enum: operator.attrgetter("value"),
     Link: operator.attrgetter("ref"),

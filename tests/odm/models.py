@@ -581,19 +581,6 @@ class DocumentWithStringField(Document):
 class DocumentForEncodingTestDate(Document):
     date_field: datetime.date = Field(default_factory=datetime.date.today)
 
-    class Settings:
-        name = "test_date"
-        bson_encoders = {
-            datetime.date: lambda dt: datetime.datetime(
-                year=dt.year,
-                month=dt.month,
-                day=dt.day,
-                hour=0,
-                minute=0,
-                second=0,
-            )
-        }
-
 
 class DocumentUnion(UnionDoc):
     class Settings:
