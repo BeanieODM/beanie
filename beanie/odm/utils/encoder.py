@@ -135,17 +135,7 @@ class Encoder:
         if isinstance(obj, Iterable):
             return [self.encode(value) for value in obj]
 
-        errors = []
-        try:
-            data = dict(obj)
-        except Exception as e:
-            errors.append(e)
-            try:
-                data = vars(obj)
-            except Exception as e:
-                errors.append(e)
-                raise ValueError(errors)
-        return self.encode(data)
+        raise ValueError(f"Cannot encode {obj!r}")
 
     def _iter_model_items(
         self, obj: pydantic.BaseModel

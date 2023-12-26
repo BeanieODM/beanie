@@ -283,6 +283,9 @@ class DocumentWithCustomFiledsTypes(Document):
     tuple_type: Tuple[int, str]
     path: Path
 
+    class Settings:
+        bson_encoders = {Color: vars}
+
     if IS_PYDANTIC_V2:
         model_config = ConfigDict(
             arbitrary_types_allowed=True,
