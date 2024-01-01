@@ -130,7 +130,7 @@ class Document(
     LazyModel,
     SettersInterface,
     InheritanceInterface,
-    FindInterface,
+    FindInterface[DocType],
     AggregateInterface,
     OtherGettersInterface,
 ):
