@@ -557,33 +557,43 @@ class TestOther:
         assert addresses_count[0] == {"count": 10}
 
     async def test_with_chaining_aggregation_and_text_search(self):
+        # ARRANGE
+        NUM_DOCS = 10
+        NUM_WITH_LOWER = 5
         linked_document = LinkDocumentForTextSeacrh(i=1)
         await linked_document.insert()
 
-        for i in range(10):
+        for i in range(NUM_DOCS):
             await DocumentWithTextIndexAndLink(
-                s="lower" if i < 5 else "UPPER", link=linked_document
+                s="lower" if i < NUM_WITH_LOWER else "UPPER",
+                link=linked_document,
             ).insert()
 
         linked_document_2 = LinkDocumentForTextSeacrh(i=2)
         await linked_document_2.insert()
 
-        for i in range(10):
+        for i in range(NUM_DOCS):
             await DocumentWithTextIndexAndLink(
-                s="lower" if i < 5 else "UPPER", link=linked_document_2
+                s="lower" if i < NUM_WITH_LOWER else "UPPER",
+                link=linked_document_2,
             ).insert()
 
-        document_count = (
-            await DocumentWithTextIndexAndLink.find(
-                {"$text": {"$search": "lower"}},
-                DocumentWithTextIndexAndLink.link.i == 1,
-                fetch_links=True,
-            )
-            .aggregate([{"$count": "count"}])
-            .to_list()
+        # ACT
+        query = DocumentWithTextIndexAndLink.find(
+            {"$text": {"$search": "lower"}},
+            DocumentWithTextIndexAndLink.link.i == 1,
+            fetch_links=True,
         )
 
-        assert document_count[0] == {"count": 5}
+        # Test both aggregation and count methods
+        document_count_aggregation = await query.aggregate(
+            [{"$count": "count"}]
+        ).to_list()
+        document_count = await query.count()
+
+        # ASSERT
+        assert document_count_aggregation[0] == {"count": NUM_WITH_LOWER}
+        assert document_count == NUM_WITH_LOWER
 
     async def test_with_extra_allow(self, houses):
         res = await House.find(fetch_links=True).to_list()
