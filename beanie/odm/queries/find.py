@@ -689,14 +689,7 @@ class FindMany(
         if self.fetch_links:
             aggregation_pipeline: List[
                 Dict[str, Any]
-            ] = construct_lookup_queries(self.document_model)
-
-            aggregation_pipeline.append({"$match": self.get_filter_query()})
-
-            if self.skip_number != 0:
-                aggregation_pipeline.append({"$skip": self.skip_number})
-            if self.limit_number != 0:
-                aggregation_pipeline.append({"$limit": self.limit_number})
+            ] = self.build_aggregation_pipeline()
 
             aggregation_pipeline.append({"$count": "count"})
 
