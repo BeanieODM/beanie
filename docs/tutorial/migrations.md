@@ -1,6 +1,5 @@
 ## Attention!
 
-Migrations use transactions inside. They work only with **MongoDB replica sets**
 
 ## Create
 
@@ -17,6 +16,8 @@ Each one contains instructions to roll migration respectively forward and backwa
 
 ## Run
 
+**Attention**: By default, migrations use transactions. This approach only works with  **MongoDB replica sets**. If you prefer to run migrations without transactions, pass the `--no-use-transaction` flag to the `migrate` command. However, be aware that this approach is risky, as there is no way to roll back migrations without transactions.
+
 To roll one forward migration, run:
 
 ```shell
@@ -26,7 +27,7 @@ beanie migrate -uri 'mongodb+srv://user:pass@host/db' -p relative/path/to/migrat
 To roll all forward migrations, run:
 
 ```shell
-beanie migrate -uri 'mongodb+srv://user:pass@host/db' -p relative/path/to/migrations/directory/
+beanie migrate -uri 'mongodb://user:pass@host' -db db -p relative/path/to/migrations/directory/
 ```
 
 To roll one backward migration, run:
