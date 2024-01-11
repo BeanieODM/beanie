@@ -4,7 +4,11 @@ from pymongo.errors import BulkWriteError
 from beanie import BulkWriter
 from beanie.exceptions import RevisionIdWasChanged
 from beanie.odm.operators.update.general import Inc
-from tests.odm.models import DocumentWithRevisionTurnedOn
+from tests.odm.models import (
+    DocumentWithRevisionTurnedOn,
+    LockWithRevision,
+    WindowWithRevision,
+)
 
 
 async def test_replace():
@@ -22,7 +26,7 @@ async def test_replace():
         found_doc.num_1 += 1
         await found_doc.replace()
 
-    doc._previous_revision_id = "wrong"
+    doc.revision_id = "wrong"
     doc.num_1 = 4
     with pytest.raises(RevisionIdWasChanged):
         await doc.replace()
@@ -43,7 +47,7 @@ async def test_update():
         found_doc = await DocumentWithRevisionTurnedOn.get(doc.id)
         await found_doc.update(Inc({DocumentWithRevisionTurnedOn.num_1: 1}))
 
-    doc._previous_revision_id = "wrong"
+    doc.revision_id = "wrong"
     with pytest.raises(RevisionIdWasChanged):
         await doc.update(Inc({DocumentWithRevisionTurnedOn.num_1: 1}))
 
@@ -68,7 +72,7 @@ async def test_save_changes():
         found_doc.num_1 += 1
         await found_doc.save_changes()
 
-    doc._previous_revision_id = "wrong"
+    doc.revision_id = "wrong"
     doc.num_1 = 4
     with pytest.raises(RevisionIdWasChanged):
         await doc.save_changes()
@@ -91,7 +95,7 @@ async def test_save():
         found_doc.num_1 += 1
         await found_doc.save()
 
-    doc._previous_revision_id = "wrong"
+    doc.revision_id = "wrong"
     doc.num_1 = 4
     with pytest.raises(RevisionIdWasChanged):
         await doc.save()
@@ -122,7 +126,7 @@ async def test_update_bulk_writer():
         async with BulkWriter() as bulk_writer:
             await found_doc.save(bulk_writer=bulk_writer)
 
-    doc._previous_revision_id = "wrong"
+    doc.revision_id = "wrong"
     doc.num_1 = 4
     with pytest.raises(BulkWriteError):
         async with BulkWriter() as bulk_writer:
@@ -144,11 +148,21 @@ async def test_save_changes_when_there_were_no_changes():
     doc = DocumentWithRevisionTurnedOn(num_1=1, num_2=2)
     await doc.insert()
     revision = doc.revision_id
-    old_revision = doc._previous_revision_id
 
     await doc.save_changes()
     assert doc.revision_id == revision
-    assert doc._previous_revision_id == old_revision
 
-    doc = await DocumentWithRevisionTurnedOn.get(doc.id)
-    assert doc._previous_revision_id == old_revision
+    await DocumentWithRevisionTurnedOn.get(doc.id)
+    assert doc.revision_id == revision
+
+
+async def test_revision_id_for_link():
+    lock = LockWithRevision(k=1)
+    await lock.insert()
+
+    lock_rev_id = lock.revision_id
+
+    window = WindowWithRevision(x=0, y=0, lock=lock)
+
+    await window.insert()
+    assert lock.revision_id == lock_rev_id
