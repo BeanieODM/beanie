@@ -8,7 +8,6 @@ from typing import (
     List,
     Mapping,
     Optional,
-    Self,
     Type,
     TypeVar,
     Union,
@@ -623,7 +622,7 @@ class Document(
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
     async def update(
-        self,
+        self: DocType,
         *args,
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
@@ -631,7 +630,7 @@ class Document(
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
         **pymongo_kwargs,
-    ) -> Self:
+    ) -> DocType:
         """
         Partially update the document in the database
 
@@ -700,23 +699,23 @@ class Document(
 
     @overload
     async def set(
-        self,
+        self: DocType,
         expression: Dict[Union[ExpressionField, Any, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ) -> Self:
+    ) -> DocType:
         ...
 
-    def set(
-        self,
+    def set(  # type: ignore
+        self: DocType,
         expression: Dict[Union[ExpressionField, Any, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ) -> Self:
+    ) -> DocType:
         """
         Set values
 
@@ -750,23 +749,23 @@ class Document(
 
     @overload
     async def current_date(
-        self,
+        self: DocType,
         expression: Dict[Union[ExpressionField, datetime.datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ) -> Self:
+    ) -> DocType:
         ...
 
-    def current_date(
-        self,
+    def current_date(  # type: ignore
+        self: DocType,
         expression: Dict[Union[ExpressionField, datetime.datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ) -> Self:
+    ) -> DocType:
         """
         Set current date
 
@@ -788,23 +787,23 @@ class Document(
 
     @overload
     async def inc(
-        self,
+        self: DocType,
         expression: Dict[Union[ExpressionField, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ) -> Self:
+    ) -> DocType:
         ...
 
-    def inc(
-        self,
+    def inc(  # type: ignore
+        self: DocType,
         expression: Dict[Union[ExpressionField, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ) -> Self:
+    ) -> DocType:
         """
         Increment
 
