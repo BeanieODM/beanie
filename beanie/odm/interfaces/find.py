@@ -3,7 +3,6 @@ from collections.abc import Iterable
 from typing import (
     TYPE_CHECKING,
     Any,
-    Generic,
     ClassVar,
     Dict,
     List,
@@ -27,13 +26,14 @@ from beanie.odm.queries.find import FindMany, FindOne
 from beanie.odm.settings.base import ItemSettings
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import DocType
-    from beanie.odm.views import ViewType
+    from beanie.odm.documents import Document
+    from beanie.odm.views import View
 
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
-FindType = TypeVar("FindType", bound=Union["DocType", "ViewType"])
+FindType = TypeVar("FindType", bound=Union["Document", "View"])
 
-class FindInterface(Generic[FindType]):
+
+class FindInterface:
     # Customization
     # Query builders could be replaced in the inherited classes
     _find_one_query_class: ClassVar[Type] = FindOne

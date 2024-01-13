@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, ClassVar, Dict, Optional, Union, TypeVar
+from typing import Any, ClassVar, Dict, Optional, Union
 
 from pydantic import BaseModel
 
@@ -11,11 +11,10 @@ from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
 from beanie.odm.settings.view import ViewSettings
 
-ViewType = TypeVar("ViewType", bound="View")
 
 class View(
     BaseModel,
-    FindInterface[ViewType],
+    FindInterface,
     AggregateInterface,
     OtherGettersInterface,
     DetectionInterface,
