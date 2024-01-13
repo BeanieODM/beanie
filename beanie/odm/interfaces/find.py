@@ -19,14 +19,14 @@ from pydantic import (
     BaseModel,
 )
 from pymongo.client_session import ClientSession
-
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.queries.find import FindMany, FindOne
 from beanie.odm.settings.base import ItemSettings
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import DocType
+    # only used as type hint
+    DocType = TypeVar("DocType", bound=Union["Document", "UnionDoc"])  # type: ignore
 
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
