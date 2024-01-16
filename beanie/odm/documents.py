@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import warnings
 from typing import (
     Any,
@@ -8,6 +9,7 @@ from typing import (
     List,
     Mapping,
     Optional,
+    Sequence,
     Type,
     TypeVar,
     Union,
@@ -99,13 +101,13 @@ from beanie.odm.utils.state import (
     saved_state_needed,
 )
 from beanie.odm.utils.typing import extract_id_class
-import datetime
 
 if IS_PYDANTIC_V2:
     from pydantic import model_validator
 
 DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
+distinct_type = TypeVar("distinct_type")
 
 
 def json_schema_extra(schema: Dict[str, Any], model: Type["Document"]) -> None:
@@ -750,7 +752,7 @@ class Document(
     @overload
     async def current_date(
         self: DocType,
-        expression: Dict[Union[ExpressionField, datetime.datetime, str], Any],
+        expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -760,7 +762,7 @@ class Document(
 
     def current_date(  # type: ignore
         self: DocType,
-        expression: Dict[Union[ExpressionField, datetime.datetime, str], Any],
+        expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -1163,11 +1165,11 @@ class Document(
     @classmethod
     async def distinct(
         cls,
-        key: Any,
+        key: distinct_type,
         filter: Optional[Mapping[Any, Any]] = None,
         session: Optional[ClientSession] = None,
         **kwargs: Any,
-    ) -> list[Any]:
+    ) -> Sequence[distinct_type]:
         return await cls.get_motor_collection().distinct(
             key, filter, session, **kwargs
         )

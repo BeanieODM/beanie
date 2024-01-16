@@ -1,7 +1,9 @@
 from abc import abstractmethod
+from datetime import datetime
 from typing import Any, Dict, Mapping, Optional, overload, Union
 
 from pymongo.client_session import ClientSession
+from pymongo.results import UpdateResult
 
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import ExpressionField
@@ -10,8 +12,6 @@ from beanie.odm.operators.update.general import (
     Inc,
     Set,
 )
-from datetime import datetime
-from pymongo.results import UpdateResult
 
 
 class UpdateMethods:
