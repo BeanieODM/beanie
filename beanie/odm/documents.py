@@ -107,7 +107,7 @@ if IS_PYDANTIC_V2:
 
 DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
-distinct_type = TypeVar("distinct_type")
+DistinctType = TypeVar("DistinctType")
 
 
 def json_schema_extra(schema: Dict[str, Any], model: Type["Document"]) -> None:
@@ -1165,13 +1165,13 @@ class Document(
     @classmethod
     async def distinct(
         cls,
-        key: distinct_type,
+        key: DistinctType,
         filter: Optional[Mapping[Any, Any]] = None,
         session: Optional[ClientSession] = None,
         **kwargs: Any,
-    ) -> Sequence[distinct_type]:
+    ) -> Sequence[DistinctType]:
         return await cls.get_motor_collection().distinct(
-            key, filter, session, **kwargs
+            key, filter, session, **kwargs  # type: ignore
         )
 
     @classmethod
