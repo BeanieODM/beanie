@@ -16,7 +16,7 @@ from beanie.odm.actions import (
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.custom_types import DecimalAnnotation
 from beanie.odm.custom_types.bson.binary import BsonBinary
-from beanie.odm.documents import Document
+from beanie.odm.documents import Document, MergeStrategy
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import (
     BackLink,
@@ -46,6 +46,7 @@ __all__ = [
     "TimeSeriesConfig",
     "Granularity",
     "SortDirection",
+    "MergeStrategy",
     # Actions
     "before_event",
     "after_event",

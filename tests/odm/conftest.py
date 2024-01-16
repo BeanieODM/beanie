@@ -28,6 +28,7 @@ from tests.odm.models import (
     DocumentTestModelWithLink,
     DocumentTestModelWithSimpleIndex,
     DocumentToBeLinked,
+    DocumentToTestSync,
     DocumentUnion,
     DocumentWithActions,
     DocumentWithActions2,
@@ -281,6 +282,7 @@ async def init(db):
         DocumentWithOptionalListBackLink,
         DocumentWithComplexDictKey,
         DocumentWithIndexedObjectId,
+        DocumentToTestSync,
     ]
     await init_beanie(
         database=db,

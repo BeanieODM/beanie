@@ -68,3 +68,7 @@ class DocWasNotRegisteredInUnionClass(Exception):
 
 class Deprecation(Exception):
     pass
+
+
+class ApplyChangesException(Exception):
+    pass
