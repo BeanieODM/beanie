@@ -277,6 +277,7 @@ class LinkInfo(BaseModel):
     document_class: Type[BaseModel]  # Document class
     link_type: LinkTypes
     nested_links: Optional[Dict] = None
+    is_fetchable: bool = True
 
 
 T = TypeVar("T")

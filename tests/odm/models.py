@@ -812,13 +812,21 @@ class SelfLinked(Document):
     item: Optional[Link["SelfLinked"]] = None
     s: str
 
+    class Settings:
+        max_nesting_depth = 2
+
 
 class LoopedLinksA(Document):
-    b: "LoopedLinksB"
+    b: Link["LoopedLinksB"]
+    s: str
+
+    class Settings:
+        nesting_depths = {"b": 2}
 
 
 class LoopedLinksB(Document):
-    a: Optional[LoopedLinksA] = None
+    a: Optional[Link[LoopedLinksA]] = None
+    s: str
 
 
 class DocWithCollectionInnerClass(Document):
@@ -1050,3 +1058,31 @@ class DocumentWithIndexedObjectId(Document):
     pyid: Indexed(PydanticObjectId)
     uuid: Annotated[UUID4, Indexed(unique=True)]
     email: Annotated[EmailStr, Indexed(unique=True)]
+
+
+class DocumentWithLinkForNesting(Document):
+    link: Link["DocumentWithBackLinkForNesting"]
+    s: str
+
+    class Settings:
+        nesting_depths = {"link": 0}
+
+
+class DocumentWithBackLinkForNesting(Document):
+    if IS_PYDANTIC_V2:
+        back_link: BackLink[DocumentWithLinkForNesting] = Field(
+            json_schema_extra={"original_field": "link"},
+        )
+    else:
+        back_link: BackLink[DocumentWithLink] = Field(original_field="link")
+    i: int
+
+    class Settings:
+        nesting_depths = {"back_link": 5}
+
+
+class LongSelfLink(Document):
+    link: Optional[Link["LongSelfLink"]] = None
+
+    class Settings:
+        max_nesting_depth = 50

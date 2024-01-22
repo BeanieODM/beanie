@@ -32,6 +32,7 @@ from tests.odm.models import (
     DocumentWithActions,
     DocumentWithActions2,
     DocumentWithBackLink,
+    DocumentWithBackLinkForNesting,
     DocumentWithBsonBinaryField,
     DocumentWithBsonEncodersFiledsTypes,
     DocumentWithComplexDictKey,
@@ -48,6 +49,7 @@ from tests.odm.models import (
     DocumentWithIndexMerging2,
     DocumentWithKeepNullsFalse,
     DocumentWithLink,
+    DocumentWithLinkForNesting,
     DocumentWithList,
     DocumentWithListBackLink,
     DocumentWithListLink,
@@ -75,6 +77,7 @@ from tests.odm.models import (
     LinkDocumentForTextSeacrh,
     Lock,
     LockWithRevision,
+    LongSelfLink,
     LoopedLinksA,
     LoopedLinksB,
     Nested,
@@ -281,6 +284,9 @@ async def init(db):
         DocumentWithOptionalListBackLink,
         DocumentWithComplexDictKey,
         DocumentWithIndexedObjectId,
+        DocumentWithLinkForNesting,
+        DocumentWithBackLinkForNesting,
+        LongSelfLink,
     ]
     await init_beanie(
         database=db,
