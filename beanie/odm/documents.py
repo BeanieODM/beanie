@@ -1012,7 +1012,8 @@ class Document(
             return {}
 
         return self._collect_updates(
-            self._previous_saved_state, self._saved_state  # type: ignore
+            self._previous_saved_state,
+            self._saved_state,  # type: ignore
         )
 
     @saved_state_needed
