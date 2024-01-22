@@ -1074,7 +1074,9 @@ class DocumentWithBackLinkForNesting(Document):
             json_schema_extra={"original_field": "link"},
         )
     else:
-        back_link: BackLink[DocumentWithLink] = Field(original_field="link")
+        back_link: BackLink[DocumentWithLinkForNesting] = Field(
+            original_field="link"
+        )
     i: int
 
     class Settings:
