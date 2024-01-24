@@ -1,7 +1,9 @@
 [![Beanie](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/white_bg.svg)](https://github.com/roman-right/beanie)
 
-[![shields badge](https://shields.io/badge/-docs-blue)](https://roman-right.github.io/beanie/)
+[![shields badge](https://shields.io/badge/-docs-blue)](https://beanie-odm.dev)
 [![pypi](https://img.shields.io/pypi/v/beanie.svg)](https://pypi.python.org/pypi/beanie)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G0PS833)
 
 ## Overview
 
@@ -85,7 +87,7 @@ if __name__ == "__main__":
 
 ### Documentation
 
-- **[Doc](https://roman-right.github.io/beanie/)** - Tutorial, API documentation, and development guidelines.
+- **[Doc](https://beanie-odm.dev/)** - Tutorial, API documentation, and development guidelines.
 
 ### Example Projects
 
@@ -109,7 +111,7 @@ Iliya Hosseini](https://github.com/IHosseini083)
 
 - **[GitHub](https://github.com/roman-right/beanie)** - GitHub page of the
   project
-- **[Changelog](https://roman-right.github.io/beanie/changelog)** - list of all
+- **[Changelog](https://beanie-odm.dev/changelog)** - list of all
   the valuable changes
 - **[Discord](https://discord.gg/29mMrEBvr4)** - ask your questions, share
   ideas or just say `Hello!!`

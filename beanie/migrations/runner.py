@@ -1,7 +1,9 @@
 import logging
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
-from typing import Optional, Type
+from typing import List, Optional, Type
+
+from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
 
 from beanie.migrations.controllers.iterative import BaseMigrationController
 from beanie.migrations.database import DBHandler
@@ -55,7 +57,12 @@ class MigrationNode:
         await self.clean_current_migration()
         await MigrationLog(is_current=True, name=self.name).insert()
 
-    async def run(self, mode: RunningMode, allow_index_dropping: bool):
+    async def run(
+        self,
+        mode: RunningMode,
+        allow_index_dropping: bool,
+        use_transaction: bool,
+    ):
         """
         Migrate
 
@@ -71,7 +78,8 @@ class MigrationNode:
                 logger.info("Running migrations forward without limit")
                 while True:
                     await migration_node.run_forward(
-                        allow_index_dropping=allow_index_dropping
+                        allow_index_dropping=allow_index_dropping,
+                        use_transaction=use_transaction,
                     )
                     migration_node = migration_node.next_migration
                     if migration_node is None:
@@ -80,7 +88,8 @@ class MigrationNode:
                 logger.info(f"Running {mode.distance} migrations forward")
                 for i in range(mode.distance):
                     await migration_node.run_forward(
-                        allow_index_dropping=allow_index_dropping
+                        allow_index_dropping=allow_index_dropping,
+                        use_transaction=use_transaction,
                     )
                     migration_node = migration_node.next_migration
                     if migration_node is None:
@@ -91,7 +100,8 @@ class MigrationNode:
                 logger.info("Running migrations backward without limit")
                 while True:
                     await migration_node.run_backward(
-                        allow_index_dropping=allow_index_dropping
+                        allow_index_dropping=allow_index_dropping,
+                        use_transaction=use_transaction,
                     )
                     migration_node = migration_node.prev_migration
                     if migration_node is None:
@@ -100,30 +110,41 @@ class MigrationNode:
                 logger.info(f"Running {mode.distance} migrations backward")
                 for i in range(mode.distance):
                     await migration_node.run_backward(
-                        allow_index_dropping=allow_index_dropping
+                        allow_index_dropping=allow_index_dropping,
+                        use_transaction=use_transaction,
                     )
                     migration_node = migration_node.prev_migration
                     if migration_node is None:
                         break
 
-    async def run_forward(self, allow_index_dropping):
+    async def run_forward(
+        self, allow_index_dropping: bool, use_transaction: bool
+    ):
         if self.forward_class is not None:
             await self.run_migration_class(
-                self.forward_class, allow_index_dropping=allow_index_dropping
+                self.forward_class,
+                allow_index_dropping=allow_index_dropping,
+                use_transaction=use_transaction,
             )
         await self.update_current_migration()
 
-    async def run_backward(self, allow_index_dropping):
+    async def run_backward(
+        self, allow_index_dropping: bool, use_transaction: bool
+    ):
         if self.backward_class is not None:
             await self.run_migration_class(
-                self.backward_class, allow_index_dropping=allow_index_dropping
+                self.backward_class,
+                allow_index_dropping=allow_index_dropping,
+                use_transaction=use_transaction,
             )
         if self.prev_migration is not None:
             await self.prev_migration.update_current_migration()
         else:
             await self.clean_current_migration()
 
-    async def run_migration_class(self, cls: Type, allow_index_dropping: bool):
+    async def run_migration_class(
+        self, cls: Type, allow_index_dropping: bool, use_transaction: bool
+    ):
         """
         Run Backward or Forward migration class
 
@@ -142,19 +163,35 @@ class MigrationNode:
         if client is None:
             raise RuntimeError("client must not be None")
         async with await client.start_session() as s:
-            async with s.start_transaction():
-                for migration in migrations:
-                    for model in migration.models:
-                        await init_beanie(
-                            database=db,
-                            document_models=[model],  # type: ignore
-                            allow_index_dropping=allow_index_dropping,
-                        )  # TODO this is slow
-                    logger.info(
-                        f"Running migration {migration.function.__name__} "
-                        f"from module {self.name}"
+            if use_transaction:
+                async with s.start_transaction():
+                    await self.run_migrations(
+                        migrations, db, allow_index_dropping, s
                     )
-                    await migration.run(session=s)
+            else:
+                await self.run_migrations(
+                    migrations, db, allow_index_dropping, s
+                )
+
+    async def run_migrations(
+        self,
+        migrations: List[BaseMigrationController],
+        db: AsyncIOMotorDatabase,
+        allow_index_dropping: bool,
+        session: AsyncIOMotorClientSession,
+    ) -> None:
+        for migration in migrations:
+            for model in migration.models:
+                await init_beanie(
+                    database=db,
+                    document_models=[model],  # type: ignore
+                    allow_index_dropping=allow_index_dropping,
+                )  # TODO this is slow
+            logger.info(
+                f"Running migration {migration.function.__name__} "
+                f"from module {self.name}"
+            )
+            await migration.run(session=session)
 
     @classmethod
     async def build(cls, path: Path):

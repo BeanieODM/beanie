@@ -1060,6 +1060,19 @@ class DocumentWithIndexedObjectId(Document):
     email: Annotated[EmailStr, Indexed(unique=True)]
 
 
+class DocumentToTestSync(Document):
+    s: str = "TEST"
+    i: int = 1
+    n: Nested = Nested(
+        integer=1, option_1=Option1(s="test"), union=Option1(s="test")
+    )
+    o: Optional[Option2] = None
+    d: Dict[str, Any] = {}
+
+    class Settings:
+        use_state_management = True
+
+
 class DocumentWithLinkForNesting(Document):
     link: Link["DocumentWithBackLinkForNesting"]
     s: str
