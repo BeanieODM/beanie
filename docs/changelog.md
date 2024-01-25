@@ -2,6 +2,34 @@
 
 Beanie project
 
+## [1.25.0] - 2024-01-24
+        
+### Encode Date Objects
+- Author - [George Sakkis](https://github.com/gsakkis)
+- PR <https://github.com/roman-right/beanie/pull/816>
+            
+### Fix: Findinterface Type-Hints Break On View Models
+- Author - [Guy Tsitsiashvili](https://github.com/GuyGooL5)
+- PR <https://github.com/roman-right/beanie/pull/819>
+            
+### Fix: Count With Text Queries And Links
+- Author - [Benjamin Earle](https://github.com/MrEarle)
+- PR <https://github.com/roman-right/beanie/pull/826>
+            
+### Update Migration Command To Enable/Disable Transactions
+- Author - [Mahmoud Mabrouk](https://github.com/mmabrouk)
+- PR <https://github.com/roman-right/beanie/pull/828>
+            
+### Sync Method
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/831>
+            
+### Limit Nesting Level Of Linked Documents
+- Author - [Roman Right](https://github.com/roman-right)
+- PR <https://github.com/roman-right/beanie/pull/834>
+            
+[1.25.0]: https://pypi.org/project/beanie/1.25.0
+
 ## [1.24.0] - 2023-12-24
         
 ### Exclude revision_id From The get_changes Method
