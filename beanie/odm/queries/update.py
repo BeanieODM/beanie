@@ -122,7 +122,7 @@ class UpdateMany(UpdateQuery):
         :return: UpdateMany query
         """
         self.set_session(session=session)
-        self.update_expressions += args
+        self.update_expressions += args  # type: ignore
         if bulk_writer:
             self.bulk_writer = bulk_writer
         self.pymongo_kwargs.update(pymongo_kwargs)
@@ -244,7 +244,7 @@ class UpdateOne(UpdateQuery):
         :return: UpdateMany query
         """
         self.set_session(session=session)
-        self.update_expressions += args
+        self.update_expressions += args  # type: ignore
         if response_type is not None:
             self.response_type = response_type
         if bulk_writer:
