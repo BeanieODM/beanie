@@ -23,7 +23,9 @@ from tests.odm.models import (
     BDocument,
     DocumentToBeLinked,
     DocumentWithBackLink,
+    DocumentWithBackLinkForNesting,
     DocumentWithLink,
+    DocumentWithLinkForNesting,
     DocumentWithListBackLink,
     DocumentWithListLink,
     DocumentWithListOfLinks,
@@ -32,6 +34,7 @@ from tests.odm.models import (
     House,
     LinkDocumentForTextSeacrh,
     Lock,
+    LongSelfLink,
     LoopedLinksA,
     LoopedLinksB,
     Region,
@@ -394,6 +397,37 @@ class TestFind:
         ).to_list()
         assert len(docs) == 1
 
+    async def test_self_nesting_find_parameters(self):
+        self_linked_doc = LongSelfLink()
+        await self_linked_doc.insert(link_rule=WriteRules.WRITE)
+        self_linked_doc.link = self_linked_doc
+        await self_linked_doc.save()
+
+        self_linked_doc = await LongSelfLink.find_one(
+            nesting_depth=4, fetch_links=True
+        )
+        assert self_linked_doc.link.link.link.link.id == self_linked_doc.id
+        assert isinstance(self_linked_doc.link.link.link.link.link, Link)
+
+        self_linked_doc = await LongSelfLink.find_one(
+            nesting_depth=0, fetch_links=True
+        )
+        assert isinstance(self_linked_doc.link, Link)
+
+    async def test_nesting_find_parameters(self):
+        back_link_doc = DocumentWithBackLinkForNesting(i=1)
+        await back_link_doc.insert()
+        link_doc = DocumentWithLinkForNesting(link=back_link_doc, s="TEST")
+        await link_doc.insert()
+
+        doc = await DocumentWithBackLinkForNesting.find_one(
+            DocumentWithBackLinkForNesting.i == 1,
+            fetch_links=True,
+            nesting_depths_per_field={"back_link": 2},
+        )
+        assert doc.back_link.link.id == doc.id
+        assert isinstance(doc.back_link.link.back_link, BackLink)
+
 
 class TestReplace:
     async def test_do_nothing(self, house):
@@ -524,14 +558,35 @@ class TestOther:
 
     async def test_looped_links(self):
         await LoopedLinksA(
-            b=LoopedLinksB(a=LoopedLinksA(b=LoopedLinksB()))
+            b=LoopedLinksB(
+                a=LoopedLinksA(
+                    b=LoopedLinksB(
+                        s="4",
+                    ),
+                    s="3",
+                ),
+                s="2",
+            ),
+            s="1",
         ).insert(link_rule=WriteRules.WRITE)
-        res = await LoopedLinksA.find_one(fetch_links=True)
+        res = await LoopedLinksA.find_one(
+            LoopedLinksA.s == "1", fetch_links=True
+        )
         assert isinstance(res, LoopedLinksA)
         assert isinstance(res.b, LoopedLinksB)
         assert isinstance(res.b.a, LoopedLinksA)
-        assert isinstance(res.b.a.b, LoopedLinksB)
-        assert res.b.a.b.a is None
+        assert isinstance(res.b.a.b, Link)
+
+        await LoopedLinksA(
+            b=LoopedLinksB(s="a2"),
+            s="a1",
+        ).insert(link_rule=WriteRules.WRITE)
+        res = await LoopedLinksA.find_one(
+            LoopedLinksA.s == "a1", fetch_links=True
+        )
+        assert isinstance(res, LoopedLinksA)
+        assert isinstance(res.b, LoopedLinksB)
+        assert res.b.a is None
 
     async def test_with_chaining_aggregation(self):
         region = Region()
@@ -655,6 +710,30 @@ class TestFindBackLinks:
         )
         assert back_link_doc.back_link[0].id == link_doc.id
         assert back_link_doc.back_link[0].link[0].id == back_link_doc.id
+
+    async def test_nesting(self):
+        back_link_doc = DocumentWithBackLinkForNesting(i=1)
+        await back_link_doc.insert()
+        link_doc = DocumentWithLinkForNesting(link=back_link_doc, s="TEST")
+        await link_doc.insert()
+
+        doc = await DocumentWithLinkForNesting.get(
+            link_doc.id, fetch_links=True
+        )
+        assert isinstance(doc.link, Link)
+        doc.link = await doc.link.fetch()
+        assert doc.link.i == 1
+
+        back_link_doc = await DocumentWithBackLinkForNesting.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert (
+            back_link_doc.back_link.link.back_link.link.back_link.id
+            == link_doc.id
+        )
+        assert isinstance(
+            back_link_doc.back_link.link.back_link.link.back_link.link, Link
+        )
 
 
 class TestReplaceBackLinks:

@@ -116,6 +116,7 @@ The inner class `Settings` is used to configure:
 - Use of state management
 - Validation on save
 - Configure if nulls should be saved to the database
+- Configure nesting depth for linked documents on the fetch operation
 
 ### Collection name
 
@@ -226,3 +227,33 @@ class Sample(Document):
         keep_nulls = False
 ```
 
+### Nested Documents Depth
+
+It is possible to define nested linked documents with Beanie. Sometimes this can lead to infinite recursion. To prevent this, or to decrease the database load, you can limit the maximum nesting depth. By default, it is set to 3, which means it will fetch up to 3 levels of nested documents.
+You can configure:
+- maximum depth for all linked documents
+- depth for a specific linked document
+
+Maximum:
+```python
+class Sample(Document):
+    num: int
+    category: Link[Category]
+
+    class Settings:
+        max_nesting_depth = 2  # Maximum nesting depth for all linked documents of this model
+```
+
+Specific:
+```python
+class Sample(Document):
+    num: int
+    category: Link[Category]
+
+    class Settings:
+        max_nesting_depths_per_field = {
+            "category": 1  # Nesting depth for a specific field
+        }
+```
+
+Also, you can limit the nesting depth during find operations. You can read more about this [here](tutorial/relations.md#nested-links).

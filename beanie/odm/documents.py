@@ -232,6 +232,8 @@ class Document(
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Optional["DocType"]:
         """
@@ -257,6 +259,8 @@ class Document(
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
             with_children=with_children,
+            nesting_depth=nesting_depth,
+            nesting_depths_per_field=nesting_depths_per_field,
             **pymongo_kwargs,
         )
 

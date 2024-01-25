@@ -185,6 +185,46 @@ houses = await House.find(
 
 It works the same way with `fetch_links` equal to `True` and `False` and for `find_many` and `find_one` methods.
 
+#### Nested links
+
+With Beanie you can set up nested links. Document can even link to itself. This can lead to infinite recursion. To prevent this, or to decrease the database load, you can limit the nesting depth during find operations.
+
+```python
+from beanie import Document, Link
+from typing import Optional
+
+class SelfLinkedSample(Document):
+    name: str
+    left: Optional[Link["SelfLinkedSample"]]
+    right: Optional[Link["SelfLinkedSample"]]
+```
+
+You can set up depth for all linked documents independently of the field:
+
+```python
+
+await SelfLinkedSample.find(
+    SelfLinkedSample.name == "test",
+    fetch_links=True,
+    nesting_depth=2
+).to_list()
+```
+
+Or you can set up depth for a specific field:
+
+```python
+await SelfLinkedSample.find(
+    SelfLinkedSample.name == "test",
+    fetch_links=True,
+    nesting_depths_per_field={
+        "left": 1,
+        "right": 2
+    }
+).to_list()
+```
+
+Also, you can set up the maximum nesting depth on the document definition level. You can read more about this [here](tutorial/defining-a-document.md#nested-documents-depth).
+
 ### On-demand fetch
 
 If you don't use prefetching, linked documents will be presented as objects of the `Link` class. 
