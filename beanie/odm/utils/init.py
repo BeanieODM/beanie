@@ -372,7 +372,9 @@ class Initializer:
             setattr(cls, k, ExpressionField(path))
 
             link_info = self.detect_link(v, k)
-            depth_level = cls.get_settings().nesting_depths.get(k, None)
+            depth_level = cls.get_settings().max_nesting_depths_per_field.get(
+                k, None
+            )
             if depth_level is None:
                 depth_level = cls.get_settings().max_nesting_depth
             if link_info is not None:
@@ -604,7 +606,9 @@ class Initializer:
             path = v.alias or k
             setattr(cls, k, ExpressionField(path))
             link_info = self.detect_link(v, k)
-            depth_level = cls.get_settings().nesting_depths.get(k, None)
+            depth_level = cls.get_settings().max_nesting_depths_per_field.get(
+                k, None
+            )
             if depth_level is None:
                 depth_level = cls.get_settings().max_nesting_depth
             if link_info is not None:

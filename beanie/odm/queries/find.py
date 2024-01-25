@@ -83,8 +83,8 @@ class FindQuery(
         self.fetch_links: bool = False
         self.pymongo_kwargs: Dict[str, Any] = {}
         self.lazy_parse = False
-        self.max_nesting_depth: Optional[int] = None
-        self.nesting_depths: Optional[Dict[str, int]] = None
+        self.nesting_depth: Optional[int] = None
+        self.nesting_depths_per_field: Optional[Dict[str, int]] = None
 
     def prepare_find_expressions(self):
         if self.document_model.get_link_fields() is not None:
@@ -192,8 +192,8 @@ class FindMany(
         ignore_cache: bool = False,
         fetch_links: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryResultType]":
         ...
@@ -210,8 +210,8 @@ class FindMany(
         ignore_cache: bool = False,
         fetch_links: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
@@ -227,8 +227,8 @@ class FindMany(
         ignore_cache: bool = False,
         fetch_links: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
@@ -257,8 +257,8 @@ class FindMany(
         self.ignore_cache = ignore_cache
         self.fetch_links = fetch_links
         self.pymongo_kwargs.update(pymongo_kwargs)
-        self.max_nesting_depth = max_nesting_depth
-        self.nesting_depths = nesting_depths
+        self.nesting_depth = nesting_depth
+        self.nesting_depths_per_field = nesting_depths_per_field
         if lazy_parse is True:
             self.lazy_parse = lazy_parse
         return self
@@ -307,8 +307,8 @@ class FindMany(
         ignore_cache: bool = False,
         fetch_links: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryResultType]":
         ...
@@ -325,8 +325,8 @@ class FindMany(
         ignore_cache: bool = False,
         fetch_links: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> "FindMany[FindQueryProjectionType]":
         ...
@@ -342,8 +342,8 @@ class FindMany(
         ignore_cache: bool = False,
         fetch_links: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
@@ -361,8 +361,8 @@ class FindMany(
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
             lazy_parse=lazy_parse,
-            max_nesting_depth=max_nesting_depth,
-            nesting_depths=nesting_depths,
+            nesting_depth=nesting_depth,
+            nesting_depths_per_field=nesting_depths_per_field,
             **pymongo_kwargs,
         )
 
@@ -622,8 +622,8 @@ class FindMany(
                 Dict[str, Any]
             ] = construct_lookup_queries(
                 self.document_model,
-                max_nesting_depth=self.max_nesting_depth,
-                nesting_depths=self.nesting_depths,
+                nesting_depth=self.nesting_depth,
+                nesting_depths_per_field=self.nesting_depths_per_field,
             )
         else:
             aggregation_pipeline = []
@@ -777,8 +777,8 @@ class FindOne(FindQuery[FindQueryResultType]):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> "FindOne[FindQueryResultType]":
         ...
@@ -791,8 +791,8 @@ class FindOne(FindQuery[FindQueryResultType]):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> "FindOne[FindQueryProjectionType]":
         ...
@@ -804,8 +804,8 @@ class FindOne(FindQuery[FindQueryResultType]):
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[
         "FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"
@@ -826,8 +826,8 @@ class FindOne(FindQuery[FindQueryResultType]):
         self.ignore_cache = ignore_cache
         self.fetch_links = fetch_links
         self.pymongo_kwargs.update(pymongo_kwargs)
-        self.max_nesting_depth = max_nesting_depth
-        self.nesting_depths = nesting_depths
+        self.nesting_depth = nesting_depth
+        self.nesting_depths_per_field = nesting_depths_per_field
         return self
 
     def update(
@@ -1000,8 +1000,8 @@ class FindOne(FindQuery[FindQueryResultType]):
                 session=self.session,
                 fetch_links=self.fetch_links,
                 projection_model=self.projection_model,
-                max_nesting_depth=self.max_nesting_depth,
-                nesting_depths=self.nesting_depths,
+                nesting_depth=self.nesting_depth,
+                nesting_depths_per_field=self.nesting_depths_per_field,
                 **self.pymongo_kwargs,
             ).first_or_none()
         return await self.document_model.get_motor_collection().find_one(

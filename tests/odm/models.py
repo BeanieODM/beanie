@@ -821,7 +821,7 @@ class LoopedLinksA(Document):
     s: str
 
     class Settings:
-        nesting_depths = {"b": 2}
+        max_nesting_depths_per_field = {"b": 2}
 
 
 class LoopedLinksB(Document):
@@ -1078,7 +1078,7 @@ class DocumentWithLinkForNesting(Document):
     s: str
 
     class Settings:
-        nesting_depths = {"link": 0}
+        max_nesting_depths_per_field = {"link": 0}
 
 
 class DocumentWithBackLinkForNesting(Document):
@@ -1093,7 +1093,7 @@ class DocumentWithBackLinkForNesting(Document):
     i: int
 
     class Settings:
-        nesting_depths = {"back_link": 5}
+        max_nesting_depths_per_field = {"back_link": 5}
 
 
 class LongSelfLink(Document):

@@ -9,5 +9,5 @@ class ViewSettings(ItemSettings):
     source: Union[str, Type]
     pipeline: List[Dict[str, Any]]
 
-    nesting_depths: dict = Field(default_factory=dict)
+    max_nesting_depths_per_field: dict = Field(default_factory=dict)
     max_nesting_depth: int = 3

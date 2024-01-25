@@ -229,7 +229,7 @@ class Sample(Document):
 
 ### Nested Documents Depth
 
-It is possible to define nested linked documents with Beanie. Sometimes this can lead to infinite recursion. To prevent this, or to decrease the database load, you can limit the nesting depth. By default, it is set to 3, which means it will fetch up to 3 levels of nested documents.
+It is possible to define nested linked documents with Beanie. Sometimes this can lead to infinite recursion. To prevent this, or to decrease the database load, you can limit the maximum nesting depth. By default, it is set to 3, which means it will fetch up to 3 levels of nested documents.
 You can configure:
 - maximum depth for all linked documents
 - depth for a specific linked document
@@ -251,7 +251,9 @@ class Sample(Document):
     category: Link[Category]
 
     class Settings:
-        nesting_depths = {
+        max_nesting_depths_per_field = {
             "category": 1  # Nesting depth for a specific field
         }
 ```
+
+Also, you can limit the nesting depth during find operations. You can read more about this [here](tutorial/relations.md#nested-links).

@@ -404,13 +404,13 @@ class TestFind:
         await self_linked_doc.save()
 
         self_linked_doc = await LongSelfLink.find_one(
-            max_nesting_depth=4, fetch_links=True
+            nesting_depth=4, fetch_links=True
         )
         assert self_linked_doc.link.link.link.link.id == self_linked_doc.id
         assert isinstance(self_linked_doc.link.link.link.link.link, Link)
 
         self_linked_doc = await LongSelfLink.find_one(
-            max_nesting_depth=0, fetch_links=True
+            nesting_depth=0, fetch_links=True
         )
         assert isinstance(self_linked_doc.link, Link)
 
@@ -423,7 +423,7 @@ class TestFind:
         doc = await DocumentWithBackLinkForNesting.find_one(
             DocumentWithBackLinkForNesting.i == 1,
             fetch_links=True,
-            nesting_depths={"back_link": 2},
+            nesting_depths_per_field={"back_link": 2},
         )
         assert doc.back_link.link.id == doc.id
         assert isinstance(doc.back_link.link.back_link, BackLink)

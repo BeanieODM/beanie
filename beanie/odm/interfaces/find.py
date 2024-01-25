@@ -63,8 +63,8 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> FindOne[FindType]:
         ...
@@ -79,8 +79,8 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> FindOne["DocumentProjectionType"]:
         ...
@@ -94,8 +94,8 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[FindOne[FindType], FindOne["DocumentProjectionType"]]:
         """
@@ -117,8 +117,8 @@ class FindInterface:
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
-            max_nesting_depth=max_nesting_depth,
-            nesting_depths=nesting_depths,
+            nesting_depth=nesting_depth,
+            nesting_depths_per_field=nesting_depths_per_field,
             **pymongo_kwargs,
         )
 
@@ -136,8 +136,8 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> FindMany[FindType]:
         ...
@@ -156,8 +156,8 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
@@ -175,8 +175,8 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
         """
@@ -205,8 +205,8 @@ class FindInterface:
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
             lazy_parse=lazy_parse,
-            max_nesting_depth=max_nesting_depth,
-            nesting_depths=nesting_depths,
+            nesting_depth=nesting_depth,
+            nesting_depths_per_field=nesting_depths_per_field,
             **pymongo_kwargs,
         )
 
@@ -224,8 +224,8 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> FindMany[FindType]:
         ...
@@ -244,8 +244,8 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
@@ -263,8 +263,8 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
         """
@@ -281,8 +281,8 @@ class FindInterface:
             fetch_links=fetch_links,
             with_children=with_children,
             lazy_parse=lazy_parse,
-            max_nesting_depth=max_nesting_depth,
-            nesting_depths=nesting_depths,
+            nesting_depth=nesting_depth,
+            nesting_depths_per_field=nesting_depths_per_field,
             **pymongo_kwargs,
         )
 
@@ -298,8 +298,8 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> FindMany[FindType]:
         ...
@@ -316,8 +316,8 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
@@ -333,8 +333,8 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
         """
@@ -358,8 +358,8 @@ class FindInterface:
             ignore_cache=ignore_cache,
             with_children=with_children,
             lazy_parse=lazy_parse,
-            max_nesting_depth=max_nesting_depth,
-            nesting_depths=nesting_depths,
+            nesting_depth=nesting_depth,
+            nesting_depths_per_field=nesting_depths_per_field,
             **pymongo_kwargs,
         )
 
@@ -375,8 +375,8 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> FindMany[FindType]:
         ...
@@ -393,8 +393,8 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> FindMany["DocumentProjectionType"]:
         ...
@@ -410,8 +410,8 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        max_nesting_depth: Optional[int] = None,
-        nesting_depths: Optional[Dict[str, int]] = None,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
         """
@@ -426,8 +426,8 @@ class FindInterface:
             ignore_cache=ignore_cache,
             with_children=with_children,
             lazy_parse=lazy_parse,
-            max_nesting_depth=max_nesting_depth,
-            nesting_depths=nesting_depths,
+            nesting_depth=nesting_depth,
+            nesting_depths_per_field=nesting_depths_per_field,
             **pymongo_kwargs,
         )
 

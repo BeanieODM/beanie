@@ -199,14 +199,14 @@ class SelfLinkedSample(Document):
     right: Optional[Link["SelfLinkedSample"]]
 ```
 
-You can set up maximum depth for all linked documents:
+You can set up depth for all linked documents independently of the field:
 
 ```python
 
 await SelfLinkedSample.find(
     SelfLinkedSample.name == "test",
     fetch_links=True,
-    max_nesting_depth=2
+    nesting_depth=2
 ).to_list()
 ```
 
@@ -216,12 +216,14 @@ Or you can set up depth for a specific field:
 await SelfLinkedSample.find(
     SelfLinkedSample.name == "test",
     fetch_links=True,
-    nesting_depths={
+    nesting_depths_per_field={
         "left": 1,
         "right": 2
     }
 ).to_list()
 ```
+
+Also, you can set up the maximum nesting depth on the document definition level. You can read more about this [here](tutorial/defining-a-document.md#nested-documents-depth).
 
 ### On-demand fetch
 

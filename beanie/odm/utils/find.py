@@ -12,25 +12,25 @@ if TYPE_CHECKING:
 
 def construct_lookup_queries(
     cls: Type["Document"],
-    max_nesting_depth: Optional[int] = None,
-    nesting_depths: Optional[Dict[str, int]] = None,
+    nesting_depth: Optional[int] = None,
+    nesting_depths_per_field: Optional[Dict[str, int]] = None,
 ) -> List[Dict[str, Any]]:
     queries: List = []
     link_fields = cls.get_link_fields()
     if link_fields is not None:
         for link_info in link_fields.values():
-            nesting_depth = (
-                nesting_depths.get(link_info.field_name, None)
-                if nesting_depths is not None
+            final_nesting_depth = (
+                nesting_depths_per_field.get(link_info.field_name, None)
+                if nesting_depths_per_field is not None
                 else None
             )
-            if nesting_depth is None:
-                nesting_depth = max_nesting_depth
+            if final_nesting_depth is None:
+                final_nesting_depth = nesting_depth
             construct_query(
                 link_info=link_info,
                 queries=queries,
                 database_major_version=cls._database_major_version,
-                current_depth=nesting_depth,
+                current_depth=final_nesting_depth,
             )
     return queries
 
