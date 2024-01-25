@@ -25,6 +25,9 @@ Beanie project
 - PR <https://github.com/roman-right/beanie/pull/831>
             
 ### Limit Nesting Level Of Linked Documents
+
+*WARNING: This is a breaking change. Please, read [the docs](https://beanie-odm.dev/tutorial/defining-a-document/#nested-documents-depth) before updating.*
+
 - Author - [Roman Right](https://github.com/roman-right)
 - PR <https://github.com/roman-right/beanie/pull/834>
             
