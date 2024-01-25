@@ -223,12 +223,14 @@ await SelfLinkedSample.find(
 ).to_list()
 ```
 
-Also, you can set up the maximum nesting depth on the document definition level. You can read more about this [here](tutorial/defining-a-document.md#nested-documents-depth).
+Also, you can set up the maximum nesting depth on the document definition level. You can read more about this [here](/tutorial/defining-a-document/#nested-documents-depth).
 
 ### On-demand fetch
 
 If you don't use prefetching, linked documents will be presented as objects of the `Link` class. 
+
 You can fetch them manually afterwards.
+
 To fetch all the linked documents, you can use the `fetch_all_links` method
 
 ```python
