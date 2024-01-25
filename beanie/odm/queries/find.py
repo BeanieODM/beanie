@@ -411,7 +411,7 @@ class FindMany(
 
     def update(
         self,
-        *args: Mapping[str, Any] | Sequence[Mapping[str, Any]],
+        *args: Union[Mapping[str, Any], Sequence[Mapping[str, Any]]],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
@@ -437,7 +437,7 @@ class FindMany(
 
     def upsert(
         self,
-        *args: Mapping[str, Any] | Sequence[Mapping[str, Any]],
+        *args: Union[Mapping[str, Any], Sequence[Mapping[str, Any]]],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         **pymongo_kwargs,
@@ -468,7 +468,7 @@ class FindMany(
 
     def update_many(
         self,
-        *args: Mapping[str, Any] | Sequence[Mapping[str, Any]],
+        *args: Union[Mapping[str, Any], Sequence[Mapping[str, Any]]],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
@@ -803,7 +803,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def update(
         self,
-        *args: Mapping[str, Any] | Sequence[Mapping[str, Any]],
+        *args: Union[Mapping[str, Any], Sequence[Mapping[str, Any]]],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
@@ -836,7 +836,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def upsert(
         self,
-        *args: Mapping[str, Any] | Sequence[Mapping[str, Any]],
+        *args: Union[Mapping[str, Any], Sequence[Mapping[str, Any]]],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         response_type: Optional[UpdateResponse] = None,
@@ -870,7 +870,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def update_one(
         self,
-        *args: Mapping[str, Any] | Sequence[Mapping[str, Any]],
+        *args: Union[Mapping[str, Any], Sequence[Mapping[str, Any]]],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
