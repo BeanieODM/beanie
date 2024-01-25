@@ -107,7 +107,7 @@ class UpdateMany(UpdateQuery):
 
     def update(
         self,
-        *args: Mapping[str, Any],
+        *args: Union[Mapping[str, Any], List[Mapping[str, Any]]],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
@@ -115,14 +115,14 @@ class UpdateMany(UpdateQuery):
         """
         Provide modifications to the update query.
 
-        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param args: *Union[Mapping[str, Any], List[Mapping[str, Any]]] - the modifications to apply.
         :param session: Optional[ClientSession]
         :param bulk_writer: Optional[BulkWriter]
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: UpdateMany query
         """
         self.set_session(session=session)
-        self.update_expressions += args
+        self.update_expressions += args  # type: ignore
         if bulk_writer:
             self.bulk_writer = bulk_writer
         self.pymongo_kwargs.update(pymongo_kwargs)
@@ -130,7 +130,7 @@ class UpdateMany(UpdateQuery):
 
     def upsert(
         self,
-        *args: Mapping[str, Any],
+        *args: Union[Mapping[str, Any], List[Mapping[str, Any]]],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         **pymongo_kwargs,
@@ -138,7 +138,7 @@ class UpdateMany(UpdateQuery):
         """
         Provide modifications to the upsert query.
 
-        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param args: *Union[Mapping[str, Any], List[Mapping[str, Any]]] - the modifications to apply.
         :param on_insert: DocType - document to insert if there is no matched
         document in the collection
         :param session: Optional[ClientSession]
@@ -151,7 +151,7 @@ class UpdateMany(UpdateQuery):
 
     def update_many(
         self,
-        *args: Mapping[str, Any],
+        *args: Union[Mapping[str, Any], List[Mapping[str, Any]]],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
@@ -159,7 +159,7 @@ class UpdateMany(UpdateQuery):
         """
         Provide modifications to the update query
 
-        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param args: *Union[Mapping[str, Any], List[Mapping[str, Any]]] - the modifications to apply.
         :param session: Optional[ClientSession]
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param pymongo_kwargs: pymongo native parameters for update operation
@@ -227,7 +227,7 @@ class UpdateOne(UpdateQuery):
 
     def update(
         self,
-        *args: Mapping[str, Any],
+        *args: Union[Mapping[str, Any], List[Mapping[str, Any]]],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
@@ -236,7 +236,7 @@ class UpdateOne(UpdateQuery):
         """
         Provide modifications to the update query.
 
-        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param args: *Union[Mapping[str, Any], List[Mapping[str, Any]]] - the modifications to apply.
         :param session: Optional[ClientSession]
         :param bulk_writer: Optional[BulkWriter]
         :param response_type: UpdateResponse
@@ -244,7 +244,7 @@ class UpdateOne(UpdateQuery):
         :return: UpdateMany query
         """
         self.set_session(session=session)
-        self.update_expressions += args
+        self.update_expressions += args  # type: ignore
         if response_type is not None:
             self.response_type = response_type
         if bulk_writer:
@@ -254,7 +254,7 @@ class UpdateOne(UpdateQuery):
 
     def upsert(
         self,
-        *args: Mapping[str, Any],
+        *args: Union[Mapping[str, Any], List[Mapping[str, Any]]],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         response_type: Optional[UpdateResponse] = None,
@@ -263,7 +263,7 @@ class UpdateOne(UpdateQuery):
         """
         Provide modifications to the upsert query.
 
-        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param args: *Union[Mapping[str, Any], List[Mapping[str, Any]]] - the modifications to apply.
         :param on_insert: DocType - document to insert if there is no matched
         document in the collection
         :param session: Optional[ClientSession]
@@ -282,7 +282,7 @@ class UpdateOne(UpdateQuery):
 
     def update_one(
         self,
-        *args: Mapping[str, Any],
+        *args: Union[Mapping[str, Any], List[Mapping[str, Any]]],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
@@ -291,7 +291,7 @@ class UpdateOne(UpdateQuery):
         """
         Provide modifications to the update query. The same as `update()`
 
-        :param args: *Union[dict, Mapping] - the modifications to apply.
+        :param args: *Union[Mapping[str, Any], List[Mapping[str, Any]]] - the modifications to apply.
         :param session: Optional[ClientSession]
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param response_type: Optional[UpdateResponse]
