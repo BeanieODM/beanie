@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, Mapping, Optional, Union
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 from pymongo.client_session import ClientSession
 
@@ -20,7 +20,7 @@ class UpdateMethods:
     @abstractmethod
     def update(
         self,
-        *args: Mapping[str, Any],
+        *args: Union[Mapping[str, Any], List[Mapping[str, Any]]],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
