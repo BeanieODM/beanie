@@ -543,8 +543,7 @@ class IndexModelField:
             if (
                 fields
                 and isinstance(fields[0][1], float)
-                and fields[0][1] == 1.0
-                or fields[0][1] == -1.0
+                and (fields[0][1] == 1.0 or fields[0][1] == -1.0)
             ):
                 fields = [(fields[0][0], int(fields[0][1]))]
 
