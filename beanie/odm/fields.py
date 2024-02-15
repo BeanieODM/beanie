@@ -139,7 +139,7 @@ class PydanticObjectId(ObjectId):
                 v = v.decode("utf-8")
             try:
                 return PydanticObjectId(v)
-            except InvalidId:
+            except (InvalidId, TypeError):
                 raise ValueError("Id must be of type PydanticObjectId")
 
         @classmethod
