@@ -130,7 +130,7 @@ await Vehicle.get(bus_2.id, with_children=True)
 To delete all Documents in an inheritance tree, `with_children=True` can be passed to `delete_all()`:
 
 ```python
-await Vehicle.delete_all(with_children=true)
+await Vehicle.delete_all(with_children=True)
 # will delete documents matching Vehicle, Car, Bus, etc ..
 # use with care!
 ```
