@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 
 import pytest
 from pydantic import BaseModel
@@ -399,3 +400,19 @@ def test_find_clone():
         ("string", SortDirection.ASCENDING),
     ]
     assert new_q.limit_number == 10
+
+
+async def test_find_many_with_enum_in_query(preset_documents):
+    class TestEnum(str, Enum):
+        INTEGER = Sample.integer
+        SAMPLE_NESTED_OPTIONAL = Sample.nested.optional
+        CONST = "const"
+        CONST_VALUE = "TEST"
+
+    filter_query = {
+        TestEnum.INTEGER: {"$gt": 1},
+        TestEnum.SAMPLE_NESTED_OPTIONAL: {"$type": "null"},
+        TestEnum.CONST: TestEnum.CONST_VALUE,
+    }
+    result = await Sample.find_many(filter_query).to_list()
+    assert len(result) == 2
