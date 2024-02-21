@@ -3,6 +3,8 @@ import warnings
 from enum import Enum
 from typing import (
     Any,
+    Awaitable,
+    Callable,
     ClassVar,
     Dict,
     Iterable,
@@ -32,6 +34,7 @@ from pymongo.results import (
     DeleteResult,
     InsertManyResult,
 )
+from typing_extensions import Concatenate, ParamSpec, TypeAlias
 
 from beanie.exceptions import (
     CollectionWasNotInitialized,
@@ -104,6 +107,10 @@ if IS_PYDANTIC_V2:
     from pydantic import model_validator
 
 DocType = TypeVar("DocType", bound="Document")
+P = ParamSpec("P")
+R = TypeVar("R")
+SyncDocMethod: TypeAlias = Callable[Concatenate[DocType, P], R]
+AsyncDocMethod: TypeAlias = Callable[Concatenate[DocType, P], Awaitable[R]]
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
@@ -529,7 +536,7 @@ class Document(
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         ignore_revision: bool = False,
         **kwargs,
-    ) -> None:
+    ) -> DocType:
         """
         Update an existing model in the database or
         insert it if it does not yet exist.
@@ -605,12 +612,12 @@ class Document(
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
     @validate_self_before
     async def save_changes(
-        self,
+        self: DocType,
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-    ) -> None:
+    ) -> Optional[DocType]:
         """
         Save changes.
         State management usage must be turned on
@@ -632,7 +639,7 @@ class Document(
             )
         else:
             return await self.set(
-                changes,  # type: ignore #TODO fix typing
+                changes,
                 ignore_revision=ignore_revision,
                 session=session,
                 bulk_writer=bulk_writer,
@@ -741,13 +748,13 @@ class Document(
         )
 
     def set(
-        self,
+        self: DocType,
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ):
+    ) -> Awaitable[DocType]:
         """
         Set values
 
