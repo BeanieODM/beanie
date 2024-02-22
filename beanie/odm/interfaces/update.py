@@ -25,7 +25,7 @@ class UpdateMethods:
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         return self
 
@@ -35,16 +35,15 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, Any, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
-    ) -> UpdateResult:
-        ...
+        **kwargs: Any,
+    ) -> UpdateResult: ...
 
     def set(
         self,
         expression: Dict[Union[ExpressionField, Any, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> UpdateResult:
         """
         Set values
@@ -78,16 +77,15 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
-    ) -> UpdateResult:
-        ...
+        **kwargs: Any,
+    ) -> UpdateResult: ...
 
     def current_date(
         self,
         expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> UpdateResult:
         """
         Set current date
@@ -112,16 +110,15 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
-    ) -> UpdateResult:
-        ...
+        **kwargs: Any,
+    ) -> UpdateResult: ...
 
     def inc(
         self,
         expression: Dict[Union[ExpressionField, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Increment

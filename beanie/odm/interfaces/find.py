@@ -61,9 +61,8 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
-        **pymongo_kwargs,
-    ) -> FindOne["DocType"]:
-        ...
+        **pymongo_kwargs: Any,
+    ) -> FindOne["DocType"]: ...
 
     @overload
     @classmethod
@@ -75,9 +74,8 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
-        **pymongo_kwargs,
-    ) -> FindOne["DocumentProjectionType"]:
-        ...
+        **pymongo_kwargs: Any,
+    ) -> FindOne["DocumentProjectionType"]: ...
 
     @classmethod
     def find_one(  # type: ignore
@@ -88,7 +86,7 @@ class FindInterface:
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Union[FindOne["DocType"], FindOne["DocumentProjectionType"]]:
         """
         Find one document by criteria.
@@ -126,9 +124,8 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany["DocType"]:
-        ...
+        **pymongo_kwargs: Any,
+    ) -> FindMany["DocType"]: ...
 
     @overload
     @classmethod
@@ -144,9 +141,8 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany["DocumentProjectionType"]:
-        ...
+        **pymongo_kwargs: Any,
+    ) -> FindMany["DocumentProjectionType"]: ...
 
     @classmethod
     def find_many(  # type: ignore
@@ -161,7 +157,7 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
         Find many documents by criteria.
@@ -206,9 +202,8 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany["DocType"]:
-        ...
+        **pymongo_kwargs: Any,
+    ) -> FindMany["DocType"]: ...
 
     @overload
     @classmethod
@@ -224,9 +219,8 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany["DocumentProjectionType"]:
-        ...
+        **pymongo_kwargs: Any,
+    ) -> FindMany["DocumentProjectionType"]: ...
 
     @classmethod
     def find(  # type: ignore
@@ -241,7 +235,7 @@ class FindInterface:
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
         The same as find_many
@@ -272,9 +266,8 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany["DocType"]:
-        ...
+        **pymongo_kwargs: Any,
+    ) -> FindMany["DocType"]: ...
 
     @overload
     @classmethod
@@ -288,9 +281,8 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany["DocumentProjectionType"]:
-        ...
+        **pymongo_kwargs: Any,
+    ) -> FindMany["DocumentProjectionType"]: ...
 
     @classmethod
     def find_all(  # type: ignore
@@ -303,7 +295,7 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
         Get all the documents
@@ -341,9 +333,8 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany["DocType"]:
-        ...
+        **pymongo_kwargs: Any,
+    ) -> FindMany["DocType"]: ...
 
     @overload
     @classmethod
@@ -357,9 +348,8 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
-    ) -> FindMany["DocumentProjectionType"]:
-        ...
+        **pymongo_kwargs: Any,
+    ) -> FindMany["DocumentProjectionType"]: ...
 
     @classmethod
     def all(  # type: ignore
@@ -372,7 +362,7 @@ class FindInterface:
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Union[FindMany["DocType"], FindMany["DocumentProjectionType"]]:
         """
         the same as find_all

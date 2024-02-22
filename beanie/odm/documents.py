@@ -230,7 +230,7 @@ class Document(
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional["DocType"]:
         """
         Get document by id, returns None if document does not exist
@@ -370,7 +370,7 @@ class Document(
         documents: Iterable[DocType],
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> InsertManyResult:
         """
         Insert many documents to the collection
@@ -487,7 +487,7 @@ class Document(
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         ignore_revision: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """
         Update an existing model in the database or
@@ -631,7 +631,7 @@ class Document(
         bulk_writer: Optional[BulkWriter] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> DocType:
         """
         Partially update the document in the database
@@ -684,7 +684,7 @@ class Document(
         *args: Union[dict, Mapping],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> UpdateMany:
         """
         Partially update all the documents
@@ -706,9 +706,8 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
-    ) -> DocType:
-        ...
+        **kwargs: Any,
+    ) -> DocType: ...
 
     def set(  # type: ignore
         self: DocType,
@@ -716,7 +715,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> DocType:
         """
         Set values
@@ -756,9 +755,8 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
-    ) -> DocType:
-        ...
+        **kwargs: Any,
+    ) -> DocType: ...
 
     def current_date(  # type: ignore
         self: DocType,
@@ -766,7 +764,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> DocType:
         """
         Set current date
@@ -794,9 +792,8 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
-    ) -> DocType:
-        ...
+        **kwargs: Any,
+    ) -> DocType: ...
 
     def inc(  # type: ignore
         self: DocType,
@@ -804,7 +801,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> DocType:
         """
         Increment
@@ -843,7 +840,7 @@ class Document(
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         """
         Delete the document
@@ -898,7 +895,7 @@ class Document(
         cls,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         """
         Delete all the documents
