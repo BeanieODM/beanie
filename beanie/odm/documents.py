@@ -906,7 +906,7 @@ class Document(
         cls,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        with_children: bool = False
+        with_children: bool = False,
         **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         """
