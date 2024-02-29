@@ -221,7 +221,7 @@ def wrap_with_actions(
     ) -> "AsyncDocMethod[DocType, P, R]":
         @wraps(f)
         async def wrapper(
-            self: "Document",
+            self: "DocType",
             *args: P.args,
             skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
             **kwargs: P.kwargs,

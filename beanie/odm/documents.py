@@ -6,6 +6,7 @@ from typing import (
     Awaitable,
     Callable,
     ClassVar,
+    Coroutine,
     Dict,
     Iterable,
     List,
@@ -109,8 +110,12 @@ if IS_PYDANTIC_V2:
 DocType = TypeVar("DocType", bound="Document")
 P = ParamSpec("P")
 R = TypeVar("R")
-SyncDocMethod: TypeAlias = Callable[Concatenate[DocType, P], R]
-AsyncDocMethod: TypeAlias = Callable[Concatenate[DocType, P], Awaitable[R]]
+# can describe both sync and async, where R itself is a coroutine
+AnyDocMethod: TypeAlias = Callable[Concatenate[DocType, P], R]
+# describes only async
+AsyncDocMethod: TypeAlias = Callable[
+    Concatenate[DocType, P], Coroutine[Any, Any, R]
+]
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
@@ -983,7 +988,7 @@ class Document(
         """
         return self._previous_saved_state
 
-    @property  # type: ignore
+    @property
     @saved_state_needed
     def is_changed(self) -> bool:
         if self._saved_state == get_dict(
@@ -995,7 +1000,7 @@ class Document(
             return False
         return True
 
-    @property  # type: ignore
+    @property
     @saved_state_needed
     @previous_saved_state_needed
     def has_changed(self) -> bool:
