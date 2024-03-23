@@ -139,7 +139,7 @@ class PydanticObjectId(ObjectId):
                 v = v.decode("utf-8")
             try:
                 return PydanticObjectId(v)
-            except InvalidId:
+            except (InvalidId, TypeError):
                 raise ValueError("Id must be of type PydanticObjectId")
 
         @classmethod
@@ -277,6 +277,7 @@ class LinkInfo(BaseModel):
     document_class: Type[BaseModel]  # Document class
     link_type: LinkTypes
     nested_links: Optional[Dict] = None
+    is_fetchable: bool = True
 
 
 T = TypeVar("T")

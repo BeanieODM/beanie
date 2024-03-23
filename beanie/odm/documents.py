@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime
 import warnings
+from enum import Enum
 from typing import (
     Any,
     ClassVar,
@@ -84,7 +85,7 @@ from beanie.odm.operators.update.general import (
 from beanie.odm.queries.update import UpdateMany, UpdateResponse
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict, get_top_level_nones
-from beanie.odm.utils.parsing import merge_models
+from beanie.odm.utils.parsing import apply_changes, merge_models
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
     get_extra_field_info,
@@ -128,6 +129,11 @@ def document_alias_generator(s: str) -> str:
     if s == "id":
         return "_id"
     return s
+
+
+class MergeStrategy(str, Enum):
+    local = "local"
+    remote = "remote"
 
 
 class Document(
@@ -230,6 +236,8 @@ class Document(
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Optional["DocType"]:
         """
@@ -255,8 +263,45 @@ class Document(
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
             with_children=with_children,
+            nesting_depth=nesting_depth,
+            nesting_depths_per_field=nesting_depths_per_field,
             **pymongo_kwargs,
         )
+
+    async def sync(self, merge_strategy: MergeStrategy = MergeStrategy.remote):
+        """
+        Sync the document with the database
+
+        :param merge_strategy: MergeStrategy - how to merge the document
+        :return: None
+        """
+        if (
+            merge_strategy == MergeStrategy.local
+            and self.get_settings().use_state_management is False
+        ):
+            raise ValueError(
+                "State management must be turned on to use local merge strategy"
+            )
+        if self.id is None:
+            raise DocumentWasNotSaved
+        document = await self.find_one({"_id": self.id})
+        if document is None:
+            raise DocumentNotFound
+
+        if merge_strategy == MergeStrategy.local:
+            original_changes = self.get_changes()
+            new_state = document.get_saved_state()
+            if new_state is None:
+                raise DocumentWasNotSaved
+            changes_to_apply = self._collect_updates(
+                new_state, original_changes
+            )
+            merge_models(self, document)
+            apply_changes(changes_to_apply, self)
+        elif merge_strategy == MergeStrategy.remote:
+            merge_models(self, document)
+        else:
+            raise ValueError("Invalid merge strategy")
 
     @wrap_with_actions(EventTypes.INSERT)
     @save_state_after
@@ -1046,7 +1091,8 @@ class Document(
             return {}
 
         return self._collect_updates(
-            self._previous_saved_state, self._saved_state  # type: ignore
+            self._previous_saved_state,
+            self._saved_state,  # type: ignore
         )
 
     @saved_state_needed

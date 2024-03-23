@@ -16,7 +16,6 @@ else:
 
 import importlib
 import inspect
-from copy import copy
 from typing import (  # type: ignore
     List,
     Optional,
@@ -312,6 +311,22 @@ class Initializer:
                         )
         return None
 
+    def check_nested_links(self, link_info: LinkInfo, current_depth: int):
+        if current_depth == 1:
+            return
+        for k, v in get_model_fields(link_info.document_class).items():
+            nested_link_info = self.detect_link(v, k)
+            if nested_link_info is None:
+                continue
+
+            if link_info.nested_links is None:
+                link_info.nested_links = {}
+            link_info.nested_links[k] = nested_link_info
+            new_depth = (
+                current_depth - 1 if current_depth is not None else None
+            )
+            self.check_nested_links(nested_link_info, current_depth=new_depth)
+
     # Document
 
     @staticmethod
@@ -350,27 +365,6 @@ class Initializer:
         if not IS_PYDANTIC_V2:
             self.update_forward_refs(cls)
 
-        def check_nested_links(
-            link_info: LinkInfo, prev_models: List[Type[BaseModel]]
-        ):
-            if link_info.document_class in prev_models:
-                return
-            if not IS_PYDANTIC_V2:
-                self.update_forward_refs(link_info.document_class)
-            for k, v in get_model_fields(link_info.document_class).items():
-                nested_link_info = self.detect_link(v, k)
-                if nested_link_info is None:
-                    continue
-
-                if link_info.nested_links is None:
-                    link_info.nested_links = {}
-                link_info.nested_links[k] = nested_link_info
-                new_prev_models = copy(prev_models)
-                new_prev_models.append(link_info.document_class)
-                check_nested_links(
-                    nested_link_info, prev_models=new_prev_models
-                )
-
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
@@ -378,9 +372,20 @@ class Initializer:
             setattr(cls, k, ExpressionField(path))
 
             link_info = self.detect_link(v, k)
+            depth_level = cls.get_settings().max_nesting_depths_per_field.get(
+                k, None
+            )
+            if depth_level is None:
+                depth_level = cls.get_settings().max_nesting_depth
             if link_info is not None:
-                cls._link_fields[k] = link_info
-                check_nested_links(link_info, prev_models=[])
+                if depth_level > 0 or depth_level is None:
+                    cls._link_fields[k] = link_info
+                    self.check_nested_links(
+                        link_info, current_depth=depth_level
+                    )
+                elif depth_level <= 0:
+                    link_info.is_fetchable = False
+                    cls._link_fields[k] = link_info
 
         cls.check_hidden_fields()
 
@@ -595,35 +600,26 @@ class Initializer:
         :return: None
         """
 
-        def check_nested_links(
-            link_info: LinkInfo, prev_models: List[Type[BaseModel]]
-        ):
-            if link_info.document_class in prev_models:
-                return
-            for k, v in get_model_fields(link_info.document_class).items():
-                nested_link_info = self.detect_link(v, k)
-                if nested_link_info is None:
-                    continue
-
-                if link_info.nested_links is None:
-                    link_info.nested_links = {}
-                link_info.nested_links[k] = nested_link_info
-                new_prev_models = copy(prev_models)
-                new_prev_models.append(link_info.document_class)
-                check_nested_links(
-                    nested_link_info, prev_models=new_prev_models
-                )
-
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
             path = v.alias or k
             setattr(cls, k, ExpressionField(path))
-
             link_info = self.detect_link(v, k)
+            depth_level = cls.get_settings().max_nesting_depths_per_field.get(
+                k, None
+            )
+            if depth_level is None:
+                depth_level = cls.get_settings().max_nesting_depth
             if link_info is not None:
-                cls._link_fields[k] = link_info
-                check_nested_links(link_info, prev_models=[])
+                if depth_level > 0:
+                    cls._link_fields[k] = link_info
+                    self.check_nested_links(
+                        link_info, current_depth=depth_level
+                    )
+                elif depth_level <= 0:
+                    link_info.is_fetchable = False
+                    cls._link_fields[k] = link_info
 
     def init_view_collection(self, cls):
         """

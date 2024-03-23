@@ -77,6 +77,38 @@ you can use the [find_one](../api-documentation/interfaces.md/#findinterfacefind
 bar = await Product.find_one(Product.name == "Peanut Bar")
 ```
 
+## Syncing from the Database
+
+If you wish to apply changes from the database to the document, utilize the [sync](../api-documentation/document.md/#documentsync) method:
+
+```python
+await bar.sync()
+```
+
+Two merging strategies are available: `local` and `remote`.
+
+### Remote Merge Strategy
+
+The remote merge strategy replaces the local document with the one from the database, disregarding local changes:
+
+```python
+from beanie import MergeStrategy
+
+await bar.sync(merge_strategy=MergeStrategy.remote)
+```
+The remote merge strategy is the default.
+
+### Local Merge Strategy
+
+The local merge strategy retains changes made locally to the document and updates other fields from the database.
+**BE CAREFUL**: it may raise an `ApplyChangesException` in case of a merging conflict.
+
+```python
+from beanie import MergeStrategy
+
+await bar.sync(merge_strategy=MergeStrategy.local)
+```
+
 ## More complex queries
 
 ### Multiple search criteria
