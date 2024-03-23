@@ -812,13 +812,21 @@ class SelfLinked(Document):
     item: Optional[Link["SelfLinked"]] = None
     s: str
 
+    class Settings:
+        max_nesting_depth = 2
+
 
 class LoopedLinksA(Document):
-    b: "LoopedLinksB"
+    b: Link["LoopedLinksB"]
+    s: str
+
+    class Settings:
+        max_nesting_depths_per_field = {"b": 2}
 
 
 class LoopedLinksB(Document):
-    a: Optional[LoopedLinksA] = None
+    a: Optional[Link[LoopedLinksA]] = None
+    s: str
 
 
 class DocWithCollectionInnerClass(Document):
@@ -1050,3 +1058,46 @@ class DocumentWithIndexedObjectId(Document):
     pyid: Indexed(PydanticObjectId)
     uuid: Annotated[UUID4, Indexed(unique=True)]
     email: Annotated[EmailStr, Indexed(unique=True)]
+
+
+class DocumentToTestSync(Document):
+    s: str = "TEST"
+    i: int = 1
+    n: Nested = Nested(
+        integer=1, option_1=Option1(s="test"), union=Option1(s="test")
+    )
+    o: Optional[Option2] = None
+    d: Dict[str, Any] = {}
+
+    class Settings:
+        use_state_management = True
+
+
+class DocumentWithLinkForNesting(Document):
+    link: Link["DocumentWithBackLinkForNesting"]
+    s: str
+
+    class Settings:
+        max_nesting_depths_per_field = {"link": 0}
+
+
+class DocumentWithBackLinkForNesting(Document):
+    if IS_PYDANTIC_V2:
+        back_link: BackLink[DocumentWithLinkForNesting] = Field(
+            json_schema_extra={"original_field": "link"},
+        )
+    else:
+        back_link: BackLink[DocumentWithLinkForNesting] = Field(
+            original_field="link"
+        )
+    i: int
+
+    class Settings:
+        max_nesting_depths_per_field = {"back_link": 5}
+
+
+class LongSelfLink(Document):
+    link: Optional[Link["LongSelfLink"]] = None
+
+    class Settings:
+        max_nesting_depth = 50

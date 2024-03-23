@@ -53,6 +53,7 @@ class MigrationSettings:
             or self.get_from_toml("allow_index_dropping")
             or False
         )
+        self.use_transaction = bool(kwargs.get("use_transaction"))
 
     @staticmethod
     def get_env_value(field_name) -> Any:
@@ -111,7 +112,9 @@ async def run_migrate(settings: MigrationSettings):
         direction=settings.direction, distance=settings.distance
     )
     await root.run(
-        mode=mode, allow_index_dropping=settings.allow_index_dropping
+        mode=mode,
+        allow_index_dropping=settings.allow_index_dropping,
+        use_transaction=settings.use_transaction,
     )
 
 
@@ -160,6 +163,15 @@ async def run_migrate(settings: MigrationSettings):
     default=False,
     help="if allow-index-dropping is set, Beanie will drop indexes from your collection",
 )
+@click.option(
+    "--use-transaction/--no-use-transaction",
+    required=False,
+    default=True,
+    help="Enable or disable the use of transactions during migration. "
+    "When enabled (--use-transaction), Beanie uses transactions for migration, "
+    "which necessitates a replica set. When disabled (--no-use-transaction), "
+    "migrations occur without transactions.",
+)
 def migrate(
     direction,
     distance,
@@ -167,6 +179,7 @@ def migrate(
     database_name,
     path,
     allow_index_dropping,
+    use_transaction,
 ):
     settings_kwargs = {}
     if direction:
@@ -181,6 +194,7 @@ def migrate(
         settings_kwargs["path"] = path
     if allow_index_dropping:
         settings_kwargs["allow_index_dropping"] = allow_index_dropping
+    settings_kwargs["use_transaction"] = use_transaction
     settings = MigrationSettings(**settings_kwargs)
 
     asyncio.run(run_migrate(settings))

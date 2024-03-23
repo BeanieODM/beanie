@@ -27,6 +27,9 @@ class DocumentSettings(ItemSettings):
 
     keep_nulls: bool = True
 
+    max_nesting_depths_per_field: dict = Field(default_factory=dict)
+    max_nesting_depth: int = 3
+
     if IS_PYDANTIC_V2:
         model_config = ConfigDict(
             arbitrary_types_allowed=True,
