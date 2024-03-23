@@ -42,6 +42,7 @@ from typing_extensions import Annotated
 from beanie import (
     DecimalAnnotation,
     Document,
+    DocumentWithSoftDelete,
     Indexed,
     Insert,
     Replace,
@@ -138,6 +139,11 @@ class Sample(Document):
     union: Union[Option1, Option2]
     geo: GeoObject
     const: str = "TEST"
+
+
+class DocumentTestModelWithSoftDelete(DocumentWithSoftDelete):
+    test_int: int
+    test_str: str
 
 
 class SubDocument(BaseModel):

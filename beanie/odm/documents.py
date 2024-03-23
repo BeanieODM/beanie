@@ -1202,7 +1202,7 @@ class DocumentWithSoftDelete(Document):
     deleted_at: Optional[datetime] = None
 
     def is_deleted(self) -> bool:
-        return self.deleted_at is None
+        return self.deleted_at is not None
 
     async def hard_delete(
         self,
