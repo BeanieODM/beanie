@@ -3,6 +3,7 @@ import warnings
 from datetime import datetime
 from enum import Enum
 from typing import (
+    TYPE_CHECKING,
     Any,
     ClassVar,
     Dict,
@@ -10,9 +11,10 @@ from typing import (
     List,
     Mapping,
     Optional,
+    Tuple,
     Type,
     TypeVar,
-    Union, Tuple,
+    Union,
 )
 from uuid import UUID, uuid4
 
@@ -49,6 +51,7 @@ from beanie.odm.actions import (
 )
 from beanie.odm.bulk import BulkWriter, Operation
 from beanie.odm.cache import LRUCache
+from beanie.odm.enums import SortDirection
 from beanie.odm.fields import (
     BackLink,
     DeleteRules,
@@ -80,6 +83,7 @@ from beanie.odm.operators.update.general import (
 from beanie.odm.operators.update.general import (
     Set as SetOperator,
 )
+from beanie.odm.queries.find import FindMany, FindOne
 from beanie.odm.queries.update import UpdateMany, UpdateResponse
 from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict, get_top_level_nones
@@ -99,12 +103,13 @@ from beanie.odm.utils.state import (
     save_state_after,
     saved_state_needed,
 )
-from beanie.odm.queries.find import FindMany, FindOne
 from beanie.odm.utils.typing import extract_id_class
-from beanie.odm.enums import SortDirection
 
 if IS_PYDANTIC_V2:
     from pydantic import model_validator
+
+if TYPE_CHECKING:
+    from beanie.odm.views import View
 
 FindType = TypeVar("FindType", bound=Union["Document", "View"])
 DocType = TypeVar("DocType", bound="Document")
@@ -1200,12 +1205,12 @@ class DocumentWithSoftDelete(Document):
         return self.deleted_at is None
 
     async def hard_delete(
-            self,
-            session: Optional[ClientSession] = None,
-            bulk_writer: Optional[BulkWriter] = None,
-            link_rule: DeleteRules = DeleteRules.DO_NOTHING,
-            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-            **pymongo_kwargs,
+        self,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        link_rule: DeleteRules = DeleteRules.DO_NOTHING,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         return await super().delete(
             session=session,
@@ -1216,35 +1221,35 @@ class DocumentWithSoftDelete(Document):
         )
 
     async def delete(
-            self,
-            session: Optional[ClientSession] = None,
-            bulk_writer: Optional[BulkWriter] = None,
-            link_rule: DeleteRules = DeleteRules.DO_NOTHING,
-            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-            **pymongo_kwargs,
+        self,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        link_rule: DeleteRules = DeleteRules.DO_NOTHING,
+        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         self.deleted_at = datetime.utcnow()
         await self.save()
-        return
+        return None
 
     @classmethod
-    def find_many_in_all(
-            cls: Type[FindType],
-            *args: Union[Mapping[str, Any], bool],
-            projection_model: None = None,
-            skip: Optional[int] = None,
-            limit: Optional[int] = None,
-            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-            session: Optional[ClientSession] = None,
-            ignore_cache: bool = False,
-            fetch_links: bool = False,
-            with_children: bool = False,
-            lazy_parse: bool = False,
-            nesting_depth: Optional[int] = None,
-            nesting_depths_per_field: Optional[Dict[str, int]] = None,
-            **pymongo_kwargs,
+    def find_many_in_all(  # type: ignore
+        cls: Type[FindType],
+        *args: Union[Mapping[str, Any], bool],
+        projection_model: None = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
+        fetch_links: bool = False,
+        with_children: bool = False,
+        lazy_parse: bool = False,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
+        **pymongo_kwargs,
     ) -> FindMany[FindType]:
-        return super().find_many(
+        return Document.find_many(
             *args,
             sort=sort,
             skip=skip,
@@ -1261,23 +1266,25 @@ class DocumentWithSoftDelete(Document):
         )
 
     @classmethod
-    def find_many(
-            cls: Type[FindType],
-            *args: Union[Mapping[str, Any], bool],
-            projection_model: None = None,
-            skip: Optional[int] = None,
-            limit: Optional[int] = None,
-            sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-            session: Optional[ClientSession] = None,
-            ignore_cache: bool = False,
-            fetch_links: bool = False,
-            with_children: bool = False,
-            lazy_parse: bool = False,
-            nesting_depth: Optional[int] = None,
-            nesting_depths_per_field: Optional[Dict[str, int]] = None,
-            **pymongo_kwargs,
-    ) -> FindMany[FindType]:
-        args = cls._add_class_id_filter(args, with_children) + ({'deleted_at': None},)
+    def find_many(  # type: ignore
+        cls: Type[FindType],
+        *args: Union[Mapping[str, Any], bool],
+        projection_model: Optional[Type["DocumentProjectionType"]] = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
+        fetch_links: bool = False,
+        with_children: bool = False,
+        lazy_parse: bool = False,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
+        **pymongo_kwargs,
+    ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
+        args = cls._add_class_id_filter(args, with_children) + (
+            {"deleted_at": None},
+        )
         return cls._find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
@@ -1294,19 +1301,21 @@ class DocumentWithSoftDelete(Document):
         )
 
     @classmethod
-    def find_one(
-            cls: Type[FindType],
-            *args: Union[Mapping[str, Any], bool],
-            projection_model: None = None,
-            session: Optional[ClientSession] = None,
-            ignore_cache: bool = False,
-            fetch_links: bool = False,
-            with_children: bool = False,
-            nesting_depth: Optional[int] = None,
-            nesting_depths_per_field: Optional[Dict[str, int]] = None,
-            **pymongo_kwargs,
-    ) -> FindOne[FindType]:
-        args = cls._add_class_id_filter(args, with_children) + ({'deleted_at': None},)
+    def find_one(  # type: ignore
+        cls: Type[FindType],
+        *args: Union[Mapping[str, Any], bool],
+        projection_model: Optional[Type["DocumentProjectionType"]] = None,
+        session: Optional[ClientSession] = None,
+        ignore_cache: bool = False,
+        fetch_links: bool = False,
+        with_children: bool = False,
+        nesting_depth: Optional[int] = None,
+        nesting_depths_per_field: Optional[Dict[str, int]] = None,
+        **pymongo_kwargs,
+    ) -> Union[FindOne[FindType], FindOne["DocumentProjectionType"]]:
+        args = cls._add_class_id_filter(args, with_children) + (
+            {"deleted_at": None},
+        )
         return cls._find_one_query_class(document_model=cls).find_one(
             *args,
             projection_model=projection_model,
