@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import warnings
 from enum import Enum
 from typing import (
@@ -9,9 +10,11 @@ from typing import (
     List,
     Mapping,
     Optional,
+    Sequence,
     Type,
     TypeVar,
     Union,
+    overload,
 )
 from uuid import UUID, uuid4
 
@@ -105,6 +108,7 @@ if IS_PYDANTIC_V2:
 
 DocType = TypeVar("DocType", bound="Document")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
+DistinctType = TypeVar("DistinctType")
 
 
 def json_schema_extra(schema: Dict[str, Any], model: Type["Document"]) -> None:
@@ -234,7 +238,7 @@ class Document(
         with_children: bool = False,
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional["DocType"]:
         """
         Get document by id, returns None if document does not exist
@@ -411,7 +415,7 @@ class Document(
         documents: Iterable[DocType],
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> InsertManyResult:
         """
         Insert many documents to the collection
@@ -528,7 +532,7 @@ class Document(
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         ignore_revision: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """
         Update an existing model in the database or
@@ -665,14 +669,14 @@ class Document(
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
     async def update(
-        self,
+        self: DocType,
         *args,
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> DocType:
         """
         Partially update the document in the database
@@ -725,7 +729,7 @@ class Document(
         *args: Union[dict, Mapping],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> UpdateMany:
         """
         Partially update all the documents
@@ -740,14 +744,24 @@ class Document(
             *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
 
-    def set(
-        self,
-        expression: Dict[Union[ExpressionField, str], Any],
+    @overload
+    async def set(
+        self: DocType,
+        expression: Dict[Union[ExpressionField, Any, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> DocType: ...
+
+    def set(  # type: ignore
+        self: DocType,
+        expression: Dict[Union[ExpressionField, Any, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: Optional[bool] = None,
+        **kwargs: Any,
+    ) -> DocType:
         """
         Set values
 
@@ -764,7 +778,7 @@ class Document(
 
         Uses [Set operator](operators/update.md#set)
 
-        :param expression: Dict[Union[ExpressionField, str], Any] - keys and
+        :param expression: Dict[Union[ExpressionField, Any, str], Any] - keys and
         values to set
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
@@ -779,20 +793,30 @@ class Document(
             **kwargs,
         )
 
-    def current_date(
-        self,
-        expression: Dict[Union[ExpressionField, str], Any],
+    @overload
+    async def current_date(
+        self: DocType,
+        expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> DocType: ...
+
+    def current_date(  # type: ignore
+        self: DocType,
+        expression: Dict[Union[ExpressionField, datetime, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: Optional[bool] = None,
+        **kwargs: Any,
+    ) -> DocType:
         """
         Set current date
 
         Uses [CurrentDate operator](operators/update.md#currentdate)
 
-        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param expression: Dict[Union[ExpressionField, datetime, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
@@ -806,14 +830,24 @@ class Document(
             **kwargs,
         )
 
-    def inc(
-        self,
-        expression: Dict[Union[ExpressionField, str], Any],
+    @overload
+    async def inc(
+        self: DocType,
+        expression: Dict[Union[ExpressionField, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> DocType: ...
+
+    def inc(  # type: ignore
+        self: DocType,
+        expression: Dict[Union[ExpressionField, int, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: Optional[bool] = None,
+        **kwargs: Any,
+    ) -> DocType:
         """
         Increment
 
@@ -830,7 +864,7 @@ class Document(
 
         Uses [Inc operator](operators/update.md#inc)
 
-        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param expression: Dict[Union[ExpressionField, int, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
@@ -851,7 +885,7 @@ class Document(
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         """
         Delete the document
@@ -906,7 +940,7 @@ class Document(
         cls,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         """
         Delete all the documents
@@ -1174,13 +1208,13 @@ class Document(
     @classmethod
     async def distinct(
         cls,
-        key: str,
-        filter: Optional[Mapping[str, Any]] = None,
+        key: DistinctType,
+        filter: Optional[Mapping[Any, Any]] = None,
         session: Optional[ClientSession] = None,
         **kwargs: Any,
-    ) -> list:
+    ) -> Sequence[DistinctType]:
         return await cls.get_motor_collection().distinct(
-            key, filter, session, **kwargs
+            key, filter, session, **kwargs  # type: ignore
         )
 
     @classmethod
