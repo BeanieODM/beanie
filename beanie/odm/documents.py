@@ -16,7 +16,6 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    overload,
 )
 from uuid import UUID, uuid4
 
@@ -755,17 +754,7 @@ class Document(
             *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
 
-    @overload
     async def set(
-        self: DocType,
-        expression: Dict[Union[ExpressionField, Any, str], Any],
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        skip_sync: Optional[bool] = None,
-        **kwargs: Any,
-    ) -> DocType: ...
-
-    def set(  # type: ignore
         self: DocType,
         expression: Dict[Union[ExpressionField, Any, str], Any],
         session: Optional[ClientSession] = None,
@@ -796,7 +785,7 @@ class Document(
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
         :return: self
         """
-        return self.update(
+        return await self.update(
             SetOperator(expression),
             session=session,
             bulk_writer=bulk_writer,
@@ -804,17 +793,7 @@ class Document(
             **kwargs,
         )
 
-    @overload
     async def current_date(
-        self: DocType,
-        expression: Dict[Union[ExpressionField, datetime, str], Any],
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        skip_sync: Optional[bool] = None,
-        **kwargs: Any,
-    ) -> DocType: ...
-
-    def current_date(  # type: ignore
         self: DocType,
         expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
@@ -833,7 +812,7 @@ class Document(
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
         :return: self
         """
-        return self.update(
+        return await self.update(
             CurrentDate(expression),
             session=session,
             bulk_writer=bulk_writer,
@@ -841,17 +820,7 @@ class Document(
             **kwargs,
         )
 
-    @overload
     async def inc(
-        self: DocType,
-        expression: Dict[Union[ExpressionField, int, str], Any],
-        session: Optional[ClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        skip_sync: Optional[bool] = None,
-        **kwargs: Any,
-    ) -> DocType: ...
-
-    def inc(  # type: ignore
         self: DocType,
         expression: Dict[Union[ExpressionField, int, str], Any],
         session: Optional[ClientSession] = None,
@@ -881,7 +850,7 @@ class Document(
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
         :return: self
         """
-        return self.update(
+        return await self.update(
             Inc(expression),
             session=session,
             bulk_writer=bulk_writer,
