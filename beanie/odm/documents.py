@@ -4,7 +4,9 @@ import warnings
 from enum import Enum
 from typing import (
     Any,
+    Callable,
     ClassVar,
+    Coroutine,
     Dict,
     Iterable,
     List,
@@ -35,6 +37,7 @@ from pymongo.results import (
     DeleteResult,
     InsertManyResult,
 )
+from typing_extensions import Concatenate, ParamSpec, TypeAlias
 
 from beanie.exceptions import (
     CollectionWasNotInitialized,
@@ -107,6 +110,14 @@ if IS_PYDANTIC_V2:
     from pydantic import model_validator
 
 DocType = TypeVar("DocType", bound="Document")
+P = ParamSpec("P")
+R = TypeVar("R")
+# can describe both sync and async, where R itself is a coroutine
+AnyDocMethod: TypeAlias = Callable[Concatenate[DocType, P], R]
+# describes only async
+AsyncDocMethod: TypeAlias = Callable[
+    Concatenate[DocType, P], Coroutine[Any, Any, R]
+]
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 DistinctType = TypeVar("DistinctType")
 
@@ -533,7 +544,7 @@ class Document(
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         ignore_revision: bool = False,
         **kwargs: Any,
-    ) -> None:
+    ) -> DocType:
         """
         Update an existing model in the database or
         insert it if it does not yet exist.
@@ -609,12 +620,12 @@ class Document(
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
     @validate_self_before
     async def save_changes(
-        self,
+        self: DocType,
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-    ) -> None:
+    ) -> Optional[DocType]:
         """
         Save changes.
         State management usage must be turned on
