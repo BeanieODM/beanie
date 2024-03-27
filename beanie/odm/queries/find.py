@@ -183,7 +183,7 @@ class FindMany(
     @overload
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -195,13 +195,12 @@ class FindMany(
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
-    ) -> "FindMany[FindQueryResultType]":
-        ...
+    ) -> "FindMany[FindQueryResultType]": ...
 
     @overload
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -213,12 +212,11 @@ class FindMany(
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
-    ) -> "FindMany[FindQueryProjectionType]":
-        ...
+    ) -> "FindMany[FindQueryProjectionType]": ...
 
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -236,7 +234,7 @@ class FindMany(
         """
         Find many documents by criteria
 
-        :param args: *Mapping[str, Any] - search criteria
+        :param args: *Mapping[Any, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, Any, List[Tuple[Any, SortDirection]]] - A key
@@ -296,7 +294,7 @@ class FindMany(
     @overload
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -308,13 +306,12 @@ class FindMany(
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
-    ) -> "FindMany[FindQueryResultType]":
-        ...
+    ) -> "FindMany[FindQueryResultType]": ...
 
     @overload
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -326,12 +323,11 @@ class FindMany(
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
-    ) -> "FindMany[FindQueryProjectionType]":
-        ...
+    ) -> "FindMany[FindQueryProjectionType]": ...
 
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -462,7 +458,7 @@ class FindMany(
     @overload
     async def upsert(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         **pymongo_kwargs: Any,
@@ -470,7 +466,7 @@ class FindMany(
 
     def upsert(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         **pymongo_kwargs: Any,
@@ -501,7 +497,7 @@ class FindMany(
 
     def update_many(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs: Any,
@@ -632,12 +628,12 @@ class FindMany(
 
     def build_aggregation_pipeline(self, *extra_stages):
         if self.fetch_links:
-            aggregation_pipeline: List[
-                Dict[str, Any]
-            ] = construct_lookup_queries(
-                self.document_model,
-                nesting_depth=self.nesting_depth,
-                nesting_depths_per_field=self.nesting_depths_per_field,
+            aggregation_pipeline: List[Dict[str, Any]] = (
+                construct_lookup_queries(
+                    self.document_model,
+                    nesting_depth=self.nesting_depth,
+                    nesting_depths_per_field=self.nesting_depths_per_field,
+                )
             )
         else:
             aggregation_pipeline = []
@@ -784,7 +780,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -792,13 +788,12 @@ class FindOne(FindQuery[FindQueryResultType]):
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
-    ) -> "FindOne[FindQueryResultType]":
-        ...
+    ) -> "FindOne[FindQueryResultType]": ...
 
     @overload
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Type[FindQueryProjectionType],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -806,12 +801,11 @@ class FindOne(FindQuery[FindQueryResultType]):
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
-    ) -> "FindOne[FindQueryProjectionType]":
-        ...
+    ) -> "FindOne[FindQueryProjectionType]": ...
 
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
@@ -825,7 +819,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         Find one document by criteria
 
-        :param args: *Mapping[str, Any] - search criteria
+        :param args: *Mapping[Any, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
@@ -845,7 +839,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     async def update(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: UpdateResponse,
@@ -855,7 +849,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     async def update(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: None = None,
@@ -864,7 +858,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def update(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
@@ -898,7 +892,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     async def upsert(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         response_type: UpdateResponse,
@@ -908,7 +902,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     async def upsert(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         response_type: None = None,
@@ -917,7 +911,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def upsert(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         response_type: Optional[UpdateResponse] = None,
@@ -951,7 +945,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def update_one(
         self,
-        *args: Mapping[str, Any],
+        *args: Mapping[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
