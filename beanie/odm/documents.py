@@ -15,6 +15,7 @@ from typing import (
     TypeVar,
     Union,
 )
+from datetime import datetime
 from uuid import UUID, uuid4
 
 from bson import DBRef, ObjectId
@@ -153,9 +154,7 @@ class Document(
 ):
     """
     Document Mapping class.
-
     Fields:
-
     - `id` - MongoDB document ObjectID "_id" field.
     Mapped to the PydanticObjectId class
     """
@@ -249,7 +248,6 @@ class Document(
     ) -> Optional["DocType"]:
         """
         Get document by id, returns None if document does not exist
-
         :param document_id: PydanticObjectId - document id
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool - ignore cache (if it is turned on)
@@ -278,7 +276,6 @@ class Document(
     async def sync(self, merge_strategy: MergeStrategy = MergeStrategy.remote):
         """
         Sync the document with the database
-
         :param merge_strategy: MergeStrategy - how to merge the document
         :return: None
         """
@@ -426,7 +423,6 @@ class Document(
     ) -> InsertManyResult:
         """
         Insert many documents to the collection
-
         :param documents:  List["Document"] - documents to insert
         :param session: ClientSession - pymongo session
         :param link_rule: InsertRules - how to manage link fields
@@ -461,7 +457,6 @@ class Document(
     ) -> Self:
         """
         Fully update the document in the database
-
         :param session: Optional[ClientSession] - pymongo session.
         :param ignore_revision: bool - do force replace.
             Used when revision based protection is turned on.
@@ -544,7 +539,6 @@ class Document(
         """
         Update an existing model in the database or
         insert it if it does not yet exist.
-
         :param session: Optional[ClientSession] - pymongo session.
         :param link_rule: WriteRules - rules how to deal with links on writing
         :param ignore_revision: bool - do force save.
@@ -625,7 +619,6 @@ class Document(
         """
         Save changes.
         State management usage must be turned on
-
         :param ignore_revision: bool - ignore revision id, if revision is turned on
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: Document
@@ -657,7 +650,6 @@ class Document(
     ) -> None:
         """
         Replace list of documents
-
         :param documents: List["Document"]
         :param session: Optional[ClientSession] - pymongo session.
         :return: None
@@ -687,7 +679,6 @@ class Document(
     ) -> Self:
         """
         Partially update the document in the database
-
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
         :param ignore_revision: bool - force update. Will update even if revision id is not the same, as stored
@@ -740,7 +731,6 @@ class Document(
     ) -> UpdateMany:
         """
         Partially update all the documents
-
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param session: ClientSession - pymongo session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
@@ -753,7 +743,7 @@ class Document(
 
     def set(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -761,21 +751,14 @@ class Document(
     ):
         """
         Set values
-
         Example:
-
         ```python
-
         class Sample(Document):
             one: int
-
         await Document.find(Sample.one == 1).set({Sample.one: 100})
-
         ```
-
         Uses [Set operator](operators/update.md#set)
-
-        :param expression: Dict[Union[ExpressionField, str], Any] - keys and
+        :param expression: Dict[Union[ExpressionField, Any], Any] - keys and
         values to set
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
@@ -792,7 +775,7 @@ class Document(
 
     def current_date(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -800,10 +783,8 @@ class Document(
     ):
         """
         Set current date
-
         Uses [CurrentDate operator](operators/update.md#currentdate)
-
-        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param expression: Dict[Union[ExpressionField, datetime, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
@@ -819,7 +800,7 @@ class Document(
 
     def inc(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -827,21 +808,14 @@ class Document(
     ):
         """
         Increment
-
         Example:
-
         ```python
-
         class Sample(Document):
             one: int
-
         await Document.find(Sample.one == 1).inc({Sample.one: 100})
-
         ```
-
         Uses [Inc operator](operators/update.md#inc)
-
-        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param expression: Dict[Union[ExpressionField, float, int, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
@@ -866,7 +840,6 @@ class Document(
     ) -> Optional[DeleteResult]:
         """
         Delete the document
-
         :param session: Optional[ClientSession] - pymongo session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param link_rule: DeleteRules - rules for link fields
@@ -921,7 +894,6 @@ class Document(
     ) -> Optional[DeleteResult]:
         """
         Delete all the documents
-
         :param session: Optional[ClientSession] - pymongo session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param **pymongo_kwargs: pymongo native parameters for delete operation
@@ -1018,9 +990,7 @@ class Document(
         Args:
             old_dict: dict1
             new_dict: dict2
-
         Returns: dictionary with updates
-
         """
         updates = {}
         if old_dict.keys() - new_dict.keys():
@@ -1088,7 +1058,6 @@ class Document(
         """
         Get document settings, which was created on
         the initialization step
-
         :return: DocumentSettings class
         """
         if cls._document_settings is None:
@@ -1102,7 +1071,6 @@ class Document(
         """
         Check, if documents, stored in the MongoDB collection
         are compatible with the Document schema
-
         :return: InspectionResult
         """
         inspection_result = InspectionResult()
@@ -1185,11 +1153,11 @@ class Document(
     @classmethod
     async def distinct(
         cls,
-        key: str,
-        filter: Optional[Mapping[str, Any]] = None,
+        key: Any,
+        filter: Optional[Mapping[Any, Any]] = None,
         session: Optional[ClientSession] = None,
         **kwargs: Any,
-    ) -> list:
+    ) -> list[Any]:
         return await cls.get_motor_collection().distinct(
             key, filter, session, **kwargs
         )
