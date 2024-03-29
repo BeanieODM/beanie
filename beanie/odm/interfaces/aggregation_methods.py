@@ -18,12 +18,11 @@ class AggregateMethods:
         projection_model=None,
         session=None,
         ignore_cache: bool = False,
-    ):
-        ...
+    ): ...
 
     async def sum(
         self,
-        field: Union[str, ExpressionField],
+        field: Union[float, int, str, ExpressionField],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
@@ -42,7 +41,7 @@ class AggregateMethods:
 
         ```
 
-        :param field: Union[str, ExpressionField]
+        :param field: Union[float, int, str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
         :return: float - sum. None if there are no items.
@@ -67,7 +66,7 @@ class AggregateMethods:
 
     async def avg(
         self,
-        field,
+        field: Union[float, int, str, ExpressionField],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
@@ -85,7 +84,7 @@ class AggregateMethods:
         avg_count = await Document.find(Sample.price <= 100).avg(Sample.count)
         ```
 
-        :param field: Union[str, ExpressionField]
+        :param field: Union[float, int, str, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
         :return: Optional[float] - avg. None if there are no items.
@@ -109,7 +108,7 @@ class AggregateMethods:
 
     async def max(
         self,
-        field: Union[str, ExpressionField],
+        field: Union[Any, ExpressionField],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
@@ -127,7 +126,7 @@ class AggregateMethods:
         max_count = await Document.find(Sample.price <= 100).max(Sample.count)
         ```
 
-        :param field: Union[str, ExpressionField]
+        :param field: Union[Any, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
         :return: float - max. None if there are no items.
         """
@@ -150,7 +149,7 @@ class AggregateMethods:
 
     async def min(
         self,
-        field: Union[str, ExpressionField],
+        field: Union[Any, ExpressionField],
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
@@ -168,7 +167,7 @@ class AggregateMethods:
         min_count = await Document.find(Sample.price <= 100).min(Sample.count)
         ```
 
-        :param field: Union[str, ExpressionField]
+        :param field: Union[Any, ExpressionField]
         :param session: Optional[ClientSession] - pymongo session
         :return: float - min. None if there are no items.
         """
