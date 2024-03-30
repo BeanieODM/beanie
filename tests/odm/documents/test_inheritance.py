@@ -18,8 +18,9 @@ class TestInheritance:
         bicycle_2 = await Bicycle(color="red", frame=52, wheels=28).insert()
         car_1 = await Car(color="grey", body="sedan", fuel="gasoline").insert()
         # 3 children
-        assert not await Vehicle.delete_all(
-            with_children=False
+        delete_result = await Vehicle.delete_all(with_children=False)
+        assert (
+            delete_result and delete_result.deleted_count == 0
         )  # ensure it didnt delete children
         await Vehicle.delete_all(with_children=True)
         assert not await Vehicle.find_all(
