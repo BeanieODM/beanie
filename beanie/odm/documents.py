@@ -16,6 +16,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    overload,
 )
 from typing_extensions import Self
 from datetime import datetime
@@ -755,14 +756,24 @@ class Document(
             *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
         )
 
-    def set(
-        self: Self,
+    @overload
+    async def set(  # type: ignore
+        self: DocType,
         expression: Dict[Union[ExpressionField, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ) -> Awaitable[Self]:
+    ) -> DocType: ...
+
+    def set(
+        self: DocType,
+        expression: Dict[Union[ExpressionField, Any], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: Optional[bool] = None,
+        **kwargs,
+    ) -> Awaitable[DocType]:
         """
         Set values
 
@@ -794,14 +805,24 @@ class Document(
             **kwargs,
         )
 
-    def current_date(
-        self,
+    @overload
+    async def current_date(  # type: ignore
+        self: DocType,
         expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ):
+    ) -> DocType: ...
+
+    def current_date(
+        self: DocType,
+        expression: Dict[Union[ExpressionField, datetime, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: Optional[bool] = None,
+        **kwargs,
+    ) -> Awaitable[DocType]:
         """
         Set current date
 
@@ -821,14 +842,24 @@ class Document(
             **kwargs,
         )
 
-    def inc(
-        self,
+    @overload
+    async def inc(  # type: ignore
+        self: DocType,
         expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ):
+    ) -> DocType: ...
+
+    def inc(
+        self: DocType,
+        expression: Dict[Union[ExpressionField, float, int, str], Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        skip_sync: Optional[bool] = None,
+        **kwargs,
+    ) -> Awaitable[DocType]:
         """
         Increment
 
