@@ -17,6 +17,7 @@ from typing import (
     TypeVar,
     Union,
 )
+from datetime import datetime
 from uuid import UUID, uuid4
 
 from bson import DBRef, ObjectId
@@ -794,7 +795,7 @@ class Document(
 
     def current_date(
         self,
-        expression: Dict[Union[ExpressionField, Any], Any],
+        expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -805,7 +806,7 @@ class Document(
 
         Uses [CurrentDate operator](operators/update.md#currentdate)
 
-        :param expression: Dict[Union[ExpressionField, Any], Any]
+        :param expression: Dict[Union[ExpressionField, datetime, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
@@ -821,7 +822,7 @@ class Document(
 
     def inc(
         self,
-        expression: Dict[Union[ExpressionField, Any], Any],
+        expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -843,7 +844,7 @@ class Document(
 
         Uses [Inc operator](operators/update.md#inc)
 
-        :param expression: Dict[Union[ExpressionField, Any], Any]
+        :param expression: Dict[Union[ExpressionField, float, int, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only

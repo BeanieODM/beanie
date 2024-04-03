@@ -81,7 +81,7 @@ class UpdateMethods:
     @overload
     async def current_date(  # type: ignore
         self,
-        expression: Dict[Union[ExpressionField, datetime, Any], Any],
+        expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -89,7 +89,7 @@ class UpdateMethods:
 
     def current_date(
         self,
-        expression: Dict[Union[ExpressionField, datetime, Any], Any],
+        expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -99,7 +99,7 @@ class UpdateMethods:
 
         Uses [CurrentDate operator](operators/update.md#currentdate)
 
-        :param expression: Dict[Union[ExpressionField, datetime, Any], Any]
+        :param expression: Dict[Union[ExpressionField, datetime, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
@@ -114,7 +114,7 @@ class UpdateMethods:
     @overload
     async def inc(  # type: ignore
         self,
-        expression: Dict[Union[ExpressionField, Any], Any],
+        expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -122,7 +122,7 @@ class UpdateMethods:
 
     def inc(
         self,
-        expression: Dict[Union[ExpressionField, Any], Any],
+        expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -143,7 +143,7 @@ class UpdateMethods:
 
         Uses [Inc operator](operators/update.md#inc)
 
-        :param expression: Dict[Union[ExpressionField, Any], Any]
+        :param expression: Dict[Union[ExpressionField, float, int, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
