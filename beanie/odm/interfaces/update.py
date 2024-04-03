@@ -8,6 +8,7 @@ from typing import (
     Union,
     overload,
 )
+from datetime import datetime
 
 from pymongo.client_session import ClientSession
 from pymongo.results import UpdateResult
@@ -38,7 +39,7 @@ class UpdateMethods:
     @overload
     async def set(  # type: ignore
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -46,7 +47,7 @@ class UpdateMethods:
 
     def set(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -67,7 +68,7 @@ class UpdateMethods:
 
         Uses [Set operator](operators/update.md#set)
 
-        :param expression: Dict[Union[ExpressionField, str], Any] - keys and
+        :param expression: Dict[Union[ExpressionField, Any], Any] - keys and
         values to set
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
@@ -80,7 +81,7 @@ class UpdateMethods:
     @overload
     async def current_date(  # type: ignore
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, datetime, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -88,7 +89,7 @@ class UpdateMethods:
 
     def current_date(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, datetime, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -98,7 +99,7 @@ class UpdateMethods:
 
         Uses [CurrentDate operator](operators/update.md#currentdate)
 
-        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param expression: Dict[Union[ExpressionField, datetime, Any], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
@@ -113,7 +114,7 @@ class UpdateMethods:
     @overload
     async def inc(  # type: ignore
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -121,7 +122,7 @@ class UpdateMethods:
 
     def inc(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs,
@@ -142,7 +143,7 @@ class UpdateMethods:
 
         Uses [Inc operator](operators/update.md#inc)
 
-        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param expression: Dict[Union[ExpressionField, Any], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
