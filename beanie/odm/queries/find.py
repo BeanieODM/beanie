@@ -1,6 +1,7 @@
 from typing import (
     TYPE_CHECKING,
     Any,
+    Awaitable,
     Callable,
     Coroutine,
     Dict,
@@ -420,13 +421,22 @@ class FindMany(
             self.limit_number = n
         return self
 
+    @overload
+    async def update(  # type: ignore
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
+    ) -> UpdateResult: ...
+
     def update(
         self,
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
-    ):
+    ) -> Awaitable[UpdateResult]:
         """
         Create Update with modifications query
         and provide search criteria there
@@ -443,8 +453,17 @@ class FindMany(
                 find_query=self.get_filter_query(),
             )
             .update(*args, bulk_writer=bulk_writer, **pymongo_kwargs)
-            .set_session(session=self.session)
+            .set_session(session=self.session)  # type: ignore
         )
+
+    @overload
+    async def upsert(  # type: ignore
+        self,
+        *args: Mapping[str, Any],
+        on_insert: "DocType",
+        session: Optional[ClientSession] = None,
+        **pymongo_kwargs,
+    ) -> UpdateResult: ...
 
     def upsert(
         self,
@@ -452,7 +471,7 @@ class FindMany(
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         **pymongo_kwargs,
-    ):
+    ) -> Awaitable[UpdateResult]:
         """
         Create Update with modifications query
         and provide search criteria there
@@ -469,7 +488,7 @@ class FindMany(
                 document_model=self.document_model,
                 find_query=self.get_filter_query(),
             )
-            .upsert(
+            .upsert(  # type: ignore
                 *args,
                 on_insert=on_insert,
                 **pymongo_kwargs,
@@ -477,13 +496,22 @@ class FindMany(
             .set_session(session=self.session)
         )
 
+    @overload
+    async def update_many(
+        self,
+        *args: Mapping[str, Any],
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
+    ) -> UpdateResult: ...
+
     def update_many(
         self,
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
-    ) -> UpdateMany:
+    ) -> Awaitable[UpdateResult]:
         """
         Provide search criteria to the
         [UpdateMany](query.md#updatemany) query
@@ -500,14 +528,22 @@ class FindMany(
                 bulk_writer=bulk_writer,
                 **pymongo_kwargs,
             ),
-        )
+        )  # type: ignore
+
+    @overload
+    async def delete_many(  # type: ignore
+        self,
+        session: Optional[ClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **pymongo_kwargs,
+    ) -> DeleteMany: ...
 
     def delete_many(
         self,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
-    ) -> DeleteMany:
+    ) -> Awaitable[DeleteMany]:
         """
         Provide search criteria to the [DeleteMany](query.md#deletemany) query
 
@@ -522,7 +558,7 @@ class FindMany(
             self.delete(
                 session=session, bulk_writer=bulk_writer, **pymongo_kwargs
             ),
-        )
+        )  # type: ignore
 
     @overload
     def aggregate(
