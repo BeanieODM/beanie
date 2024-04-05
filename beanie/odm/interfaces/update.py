@@ -32,7 +32,7 @@ class UpdateMethods:
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Awaitable[UpdateResult]:
         return self
 
@@ -42,7 +42,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> UpdateResult: ...
 
     def set(
@@ -50,7 +50,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Set values
@@ -84,7 +84,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> UpdateResult: ...
 
     def current_date(
@@ -92,7 +92,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, datetime, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Set current date
@@ -117,7 +117,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> UpdateResult: ...
 
     def inc(
@@ -125,7 +125,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Increment

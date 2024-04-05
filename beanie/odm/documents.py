@@ -544,7 +544,7 @@ class Document(
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         ignore_revision: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> Self:
         """
         Update an existing model in the database or
@@ -763,7 +763,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> DocType: ...
 
     def set(
@@ -772,7 +772,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Awaitable[DocType]:
         """
         Set values
@@ -812,7 +812,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> DocType: ...
 
     def current_date(
@@ -821,7 +821,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Awaitable[DocType]:
         """
         Set current date
@@ -849,7 +849,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> DocType: ...
 
     def inc(
@@ -858,7 +858,7 @@ class Document(
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Awaitable[DocType]:
         """
         Increment
