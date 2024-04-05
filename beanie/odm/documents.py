@@ -250,7 +250,7 @@ class Document(
         with_children: bool = False,
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional["DocType"]:
         """
         Get document by id, returns None if document does not exist
@@ -277,7 +277,7 @@ class Document(
             with_children=with_children,
             nesting_depth=nesting_depth,
             nesting_depths_per_field=nesting_depths_per_field,
-            **pymongo_kwargs,
+            **pymongo_kwargs: Any,
         )
 
     async def sync(self, merge_strategy: MergeStrategy = MergeStrategy.remote):
@@ -427,7 +427,7 @@ class Document(
         documents: Iterable[DocType],
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> InsertManyResult:
         """
         Insert many documents to the collection
@@ -688,7 +688,7 @@ class Document(
         bulk_writer: Optional[BulkWriter] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Self:
         """
         Partially update the document in the database
@@ -741,7 +741,7 @@ class Document(
         *args: Union[dict, Mapping],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> UpdateMany:
         """
         Partially update all the documents
@@ -897,7 +897,7 @@ class Document(
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         """
         Delete the document
@@ -952,7 +952,7 @@ class Document(
         cls,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         """
         Delete all the documents
