@@ -277,7 +277,7 @@ class Document(
             with_children=with_children,
             nesting_depth=nesting_depth,
             nesting_depths_per_field=nesting_depths_per_field,
-            **pymongo_kwargs: Any,
+            **pymongo_kwargs,
         )
 
     async def sync(self, merge_strategy: MergeStrategy = MergeStrategy.remote):
