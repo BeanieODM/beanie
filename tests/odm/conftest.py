@@ -344,6 +344,19 @@ def document_soft_delete_not_inserted():
 
 
 @pytest.fixture
+def documents_soft_delete_not_inserted():
+    docs = []
+    for i in range(3):
+        docs.append(
+            DocumentTestModelWithSoftDelete(
+                test_int=randint(0, 1000000),
+                test_str="kipasa",
+            )
+        )
+    return docs
+
+
+@pytest.fixture
 async def document(document_not_inserted) -> DocumentTestModel:
     return await document_not_inserted.insert()
 

@@ -21,3 +21,21 @@ async def test_insert_one_and_delete_one(document_soft_delete_not_inserted):
     document = await DocumentTestModelWithSoftDelete.get(document_id=result.id)
 
     assert document is None
+
+
+async def test_find_many(documents_soft_delete_not_inserted):
+    # insert 2 documents
+    item_1 = await documents_soft_delete_not_inserted[0].insert()
+    item_2 = await documents_soft_delete_not_inserted[1].insert()
+
+    # use `.find_many()` to get them all
+    results = await DocumentTestModelWithSoftDelete.find_many().to_list()
+    assert len(results) == 2
+
+    # delete one of them
+    await item_1.delete()
+
+    results = await DocumentTestModelWithSoftDelete.find_many().to_list()
+
+    assert len(results) == 1
+    assert results[0].id == item_2.id
