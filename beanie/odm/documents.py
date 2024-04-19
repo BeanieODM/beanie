@@ -1248,8 +1248,8 @@ class DocumentWithSoftDelete(Document):
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindMany[FindType]:
-        return Document.find_many(
+    ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
+        return cls._find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
             skip=skip,
@@ -1259,7 +1259,6 @@ class DocumentWithSoftDelete(Document):
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
             lazy_parse=lazy_parse,
-            with_children=with_children,
             nesting_depth=nesting_depth,
             nesting_depths_per_field=nesting_depths_per_field,
             **pymongo_kwargs,
