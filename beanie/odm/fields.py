@@ -474,7 +474,7 @@ class BackLink(Generic[T]):
         def __get_pydantic_core_schema__(
             cls, source_type: Any, handler: GetCoreSchemaHandler
         ) -> CoreSchema:  # type: ignore
-            return core_schema.general_plain_validator_function(
+            return core_schema.with_info_plain_validator_function(
                 cls.build_validation(handler, source_type)
             )
 
