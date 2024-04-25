@@ -27,7 +27,7 @@ class Operation(BaseModel):
         Type[UpdateOne],
         Type[UpdateMany],
     ]
-    first_query: Mapping[str, Any]
+    first_query: Mapping[Any, Any]
     second_query: Optional[Dict[str, Any]] = None
     pymongo_kwargs: Dict[str, Any] = Field(default_factory=dict)
     object_class: Type

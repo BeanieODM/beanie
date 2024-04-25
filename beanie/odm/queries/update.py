@@ -96,8 +96,7 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
         return Encoder(custom_encoders=self.encoders).encode(query)
 
     @abstractmethod
-    async def _update(self) -> UpdateResult:
-        ...
+    async def _update(self) -> UpdateResult: ...
 
 
 class UpdateMany(UpdateQuery):
@@ -110,7 +109,7 @@ class UpdateMany(UpdateQuery):
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
         Provide modifications to the update query.
@@ -133,7 +132,7 @@ class UpdateMany(UpdateQuery):
         *args: Mapping[str, Any],
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
         Provide modifications to the upsert query.
@@ -154,7 +153,7 @@ class UpdateMany(UpdateQuery):
         *args: Mapping[str, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ):
         """
         Provide modifications to the update query
@@ -231,7 +230,7 @@ class UpdateOne(UpdateQuery):
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
         Provide modifications to the update query.
@@ -258,7 +257,7 @@ class UpdateOne(UpdateQuery):
         on_insert: "DocType",
         session: Optional[ClientSession] = None,
         response_type: Optional[UpdateResponse] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
         Provide modifications to the upsert query.
@@ -286,7 +285,7 @@ class UpdateOne(UpdateQuery):
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ):
         """
         Provide modifications to the update query. The same as `update()`
@@ -320,9 +319,11 @@ class UpdateOne(UpdateQuery):
                     self.find_query,
                     self.update_query,
                     session=self.session,
-                    return_document=ReturnDocument.BEFORE
-                    if self.response_type == UpdateResponse.OLD_DOCUMENT
-                    else ReturnDocument.AFTER,
+                    return_document=(
+                        ReturnDocument.BEFORE
+                        if self.response_type == UpdateResponse.OLD_DOCUMENT
+                        else ReturnDocument.AFTER
+                    ),
                     **self.pymongo_kwargs,
                 )
                 if result is not None:
