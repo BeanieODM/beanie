@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Check compatibility
         if: matrix.python-version == '3.7' && matrix.pydantic-version == '2.7.1'
-        run: echo "Skipping tests due to incompatibility" && exit 1
+        run: echo "Skipping tests due to incompatibility" && exit 0
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
