@@ -2,6 +2,38 @@
 
 Beanie project
 
+## [1.26.0] - 2024-05-01
+        
+### Feature: soft delete
+- Author - [Ali Moradi](https://github.com/alm0ra)
+- PR <https://github.com/roman-right/beanie/pull/901>
+            
+### Update deprecated call of general_plain_validator_function (#676)
+- Author - [dslemusp](https://github.com/dslemusp)
+- PR <https://github.com/roman-right/beanie/pull/897>
+            
+### Annotate decorators that wrap `document` methods (#679)
+- Author - [Maxim](https://github.com/bedlamzd)
+- PR <https://github.com/roman-right/beanie/pull/886>
+            
+### Update relations docs to indicate that backlinks are virtual.
+- Author - [Josh Borrow](https://github.com/JBorrow)
+- PR <https://github.com/roman-right/beanie/pull/904>
+            
+### Docs: fix typo (#869)
+- Author - [Valentin Oliver Loftsson](https://github.com/valentinoli)
+- PR <https://github.com/roman-right/beanie/pull/899>
+            
+### Add possibility of leveraging enum in find query
+- Author - [Danil](https://github.com/damikhai)
+- PR <https://github.com/roman-right/beanie/pull/868>
+            
+### Handle typeerror in validator of pydanticobjectid
+- Author - [Christian Grotheer](https://github.com/grthr)
+- PR <https://github.com/roman-right/beanie/pull/861>
+            
+[1.26.0]: https://pypi.org/project/beanie/1.26.0
+
 ## [1.25.0] - 2024-01-24
         
 ### Encode Date Objects
