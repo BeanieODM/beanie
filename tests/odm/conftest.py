@@ -27,6 +27,7 @@ from tests.odm.models import (
     DocumentTestModelWithIndexFlagsAliases,
     DocumentTestModelWithLink,
     DocumentTestModelWithSimpleIndex,
+    DocumentTestModelWithSoftDelete,
     DocumentToBeLinked,
     DocumentToTestSync,
     DocumentUnion,
@@ -199,6 +200,7 @@ async def init(db):
         DocumentWithExtras,
         DocumentWithPydanticConfig,
         DocumentTestModel,
+        DocumentTestModelWithSoftDelete,
         DocumentTestModelWithLink,
         DocumentTestModelWithCustomCollectionName,
         DocumentTestModelWithSimpleIndex,
@@ -331,6 +333,27 @@ def documents_not_inserted():
         ]
 
     return generate_documents
+
+
+@pytest.fixture
+def document_soft_delete_not_inserted():
+    return DocumentTestModelWithSoftDelete(
+        test_int=randint(0, 1000000),
+        test_str="kipasa",
+    )
+
+
+@pytest.fixture
+def documents_soft_delete_not_inserted():
+    docs = []
+    for i in range(3):
+        docs.append(
+            DocumentTestModelWithSoftDelete(
+                test_int=randint(0, 1000000),
+                test_str="kipasa",
+            )
+        )
+    return docs
 
 
 @pytest.fixture

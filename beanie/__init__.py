@@ -16,7 +16,11 @@ from beanie.odm.actions import (
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.custom_types import DecimalAnnotation
 from beanie.odm.custom_types.bson.binary import BsonBinary
-from beanie.odm.documents import Document, MergeStrategy
+from beanie.odm.documents import (
+    Document,
+    DocumentWithSoftDelete,
+    MergeStrategy,
+)
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import (
     BackLink,
@@ -37,6 +41,7 @@ __version__ = "1.25.0"
 __all__ = [
     # ODM
     "Document",
+    "DocumentWithSoftDelete",
     "View",
     "UnionDoc",
     "init_beanie",
