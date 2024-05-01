@@ -5,6 +5,19 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G0PS833)
 
+## 📢 Important Update 📢
+
+We are excited to announce that Beanie is transitioning from solo development to a team-based approach! This move will help us enhance the project with new features and more collaborative development.
+
+At this moment we are establishing a board of members that will decide all the future steps of the project. We are looking for contributors and maintainers to join the board.
+
+### Join Us
+If you are interested in contributing or want to stay updated, please join our Discord channel. We're looking forward to your ideas and contributions!
+
+[Join our Discord](https://discord.gg/AwwTrbCASP)
+
+Let’s make Beanie better, together!
+
 ## Overview
 
 [Beanie](https://github.com/roman-right/beanie) - is an asynchronous Python object-document mapper (ODM) for MongoDB. Data models are based on [Pydantic](https://pydantic-docs.helpmanual.io/).
@@ -113,7 +126,7 @@ Iliya Hosseini](https://github.com/IHosseini083)
   project
 - **[Changelog](https://beanie-odm.dev/changelog)** - list of all
   the valuable changes
-- **[Discord](https://discord.gg/29mMrEBvr4)** - ask your questions, share
+- **[Discord](https://discord.gg/AwwTrbCASP)** - ask your questions, share
   ideas or just say `Hello!!`
 
 ----
