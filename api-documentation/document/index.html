@@ -1,0 +1,2135 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://beanie-odm.dev/api-documentation/document/">
+      
+      
+        <link rel="prev" href="../../batteries/queue/">
+      
+      
+        <link rel="next" href="../query/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.20">
+    
+    
+      
+        <title>Document - Beanie Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/color_scheme.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#beanieodmdocuments" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Beanie Documentation" class="md-header__button md-logo" aria-label="Beanie Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Beanie Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Document
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Beanie Documentation" class="md-nav__button md-logo" aria-label="Beanie Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Beanie Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorial
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/defining-a-document/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining a document
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/initialization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Initialization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/inserting-into-the-database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inserting into the database
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/finding-documents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Finding documents
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/lazy-parsing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lazy parsing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/updating-%26-deleting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Updating & Deleting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/indexes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Indexes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/multi-model-pattern/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multi-model pattern
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/inheritance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inheritance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/aggregation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Aggregation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/relations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Relations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/time-series/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Time Series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/event-based-actions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event-based actions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/cache/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cache
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/revision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Revision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/state-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    State Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/on-save-validation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    On save validation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Batteries
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Batteries
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../batteries/queue/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Queue
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Document
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Document
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmdocuments" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.documents
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.documents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#document" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Document">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentget" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.get
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentsync" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.sync
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentinsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.insert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentcreate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.create
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentinsert_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.insert_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentinsert_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.insert_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentreplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.replace
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentsave" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.save
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentsave_changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.save_changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentreplace_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.replace_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentupdate_all" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.update_all
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.set
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentcurrent_date" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.current_date
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentinc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.inc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentdelete" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.delete
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentdelete_all" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.delete_all
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentuse_state_management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.use_state_management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentstate_management_save_previous" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.state_management_save_previous
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentstate_management_replace_objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.state_management_replace_objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentget_saved_state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.get_saved_state
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentget_previous_saved_state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.get_previous_saved_state
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentget_settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.get_settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentinspect_collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.inspect_collection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interfaces/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Interfaces
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Operators
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Operators
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operators/find/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Find
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operators/update/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Update
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fields/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fields
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-of-conduct/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmdocuments" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.documents
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.documents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#document" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Document">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentget" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.get
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentsync" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.sync
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentinsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.insert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentcreate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.create
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentinsert_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.insert_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentinsert_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.insert_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentreplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.replace
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentsave" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.save
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentsave_changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.save_changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentreplace_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.replace_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentupdate_all" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.update_all
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.set
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentcurrent_date" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.current_date
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentinc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.inc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentdelete" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.delete
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentdelete_all" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.delete_all
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentuse_state_management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.use_state_management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentstate_management_save_previous" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.state_management_save_previous
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentstate_management_replace_objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.state_management_replace_objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentget_saved_state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.get_saved_state
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentget_previous_saved_state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.get_previous_saved_state
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentget_settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.get_settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentinspect_collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.inspect_collection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Document</h1>
+
+<p><a id="beanie.odm.documents"></a></p>
+<h2 id="beanieodmdocuments">beanie.odm.documents</h2>
+<p><a id="beanie.odm.documents.Document"></a></p>
+<h3 id="document">Document</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">LazyModel</span><span class="p">,</span> <span class="n">SettersInterface</span><span class="p">,</span> <span class="n">InheritanceInterface</span><span class="p">,</span>
+               <span class="n">FindInterface</span><span class="p">,</span> <span class="n">AggregateInterface</span><span class="p">,</span> <span class="n">OtherGettersInterface</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Document Mapping class.</p>
+<p>Fields:</p>
+<ul>
+<li><code>id</code> - MongoDB document ObjectID "_id" field.
+Mapped to the PydanticObjectId class</li>
+</ul>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.get"></a></p>
+<h4 id="documentget">Document.get</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocType&quot;</span><span class="p">],</span>
+              <span class="n">document_id</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+              <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+              <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+              <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+              <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;DocType&quot;</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Get document by id, returns None if document does not exist</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>document_id</code>: PydanticObjectId - document id</li>
+<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>ignore_cache</code>: bool - ignore cache (if it is turned on)</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>Union["Document", None]</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.sync"></a></p>
+<h4 id="documentsync">Document.sync</h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">sync</span><span class="p">(</span><span class="n">merge_strategy</span><span class="p">:</span> <span class="n">MergeStrategy</span> <span class="o">=</span> <span class="n">MergeStrategy</span><span class="o">.</span><span class="n">remote</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Sync the document with the database</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>merge_strategy</code>: MergeStrategy - how to merge the document</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.insert"></a></p>
+<h4 id="documentinsert">Document.insert</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@wrap_with_actions</span><span class="p">(</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">INSERT</span><span class="p">)</span>
+<span class="nd">@save_state_after</span>
+<span class="nd">@validate_self_before</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">link_rule</span><span class="p">:</span> <span class="n">WriteRules</span> <span class="o">=</span> <span class="n">WriteRules</span><span class="o">.</span><span class="n">DO_NOTHING</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skip_actions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ActionDirections</span><span class="p">,</span>
+                                      <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocType</span>
+</code></pre></div>
+<blockquote>
+<p>Insert the document (self) to the collection</p>
+<p><strong>Returns</strong>:</p>
+<p>Document</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.create"></a></p>
+<h4 id="documentcreate">Document.create</h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocType</span>
+</code></pre></div>
+<blockquote>
+<p>The same as self.insert()</p>
+<p><strong>Returns</strong>:</p>
+<p>Document</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.insert_one"></a></p>
+<h4 id="documentinsert_one">Document.insert_one</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">insert_one</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocType</span><span class="p">],</span>
+        <span class="n">document</span><span class="p">:</span> <span class="n">DocType</span><span class="p">,</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;BulkWriter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">link_rule</span><span class="p">:</span> <span class="n">WriteRules</span> <span class="o">=</span> <span class="n">WriteRules</span><span class="o">.</span><span class="n">DO_NOTHING</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocType</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Insert one document to the collection</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>document</code>: Document - document to insert</li>
+<li><code>session</code>: ClientSession - pymongo session</li>
+<li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
+<li><code>link_rule</code>: InsertRules - hot to manage link fields</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>DocType</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.insert_many"></a></p>
+<h4 id="documentinsert_many">Document.insert_many</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">insert_many</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocType</span><span class="p">],</span>
+                      <span class="n">documents</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">DocType</span><span class="p">],</span>
+                      <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">link_rule</span><span class="p">:</span> <span class="n">WriteRules</span> <span class="o">=</span> <span class="n">WriteRules</span><span class="o">.</span><span class="n">DO_NOTHING</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InsertManyResult</span>
+</code></pre></div>
+<blockquote>
+<p>Insert many documents to the collection</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>documents</code>: List["Document"] - documents to insert</li>
+<li><code>session</code>: ClientSession - pymongo session</li>
+<li><code>link_rule</code>: InsertRules - how to manage link fields</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>InsertManyResult</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.replace"></a></p>
+<h4 id="documentreplace">Document.replace</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@wrap_with_actions</span><span class="p">(</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">REPLACE</span><span class="p">)</span>
+<span class="nd">@save_state_after</span>
+<span class="nd">@validate_self_before</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span>
+    <span class="n">ignore_revision</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">link_rule</span><span class="p">:</span> <span class="n">WriteRules</span> <span class="o">=</span> <span class="n">WriteRules</span><span class="o">.</span><span class="n">DO_NOTHING</span><span class="p">,</span>
+    <span class="n">skip_actions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ActionDirections</span><span class="p">,</span>
+                                      <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocType</span>
+</code></pre></div>
+<blockquote>
+<p>Fully update the document in the database</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>session</code>: Optional[ClientSession] - pymongo session.</li>
+<li><code>ignore_revision</code>: bool - do force replace.
+Used when revision based protection is turned on.</li>
+<li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>self</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.save"></a></p>
+<h4 id="documentsave">Document.save</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@wrap_with_actions</span><span class="p">(</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SAVE</span><span class="p">)</span>
+<span class="nd">@save_state_after</span>
+<span class="nd">@validate_self_before</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">link_rule</span><span class="p">:</span> <span class="n">WriteRules</span> <span class="o">=</span> <span class="n">WriteRules</span><span class="o">.</span><span class="n">DO_NOTHING</span><span class="p">,</span>
+               <span class="n">ignore_revision</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocType</span>
+</code></pre></div>
+<blockquote>
+<p>Update an existing model in the database or</p>
+<p>insert it if it does not yet exist.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>session</code>: Optional[ClientSession] - pymongo session.</li>
+<li><code>link_rule</code>: WriteRules - rules how to deal with links on writing</li>
+<li><code>ignore_revision</code>: bool - do force save.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.save_changes"></a></p>
+<h4 id="documentsave_changes">Document.save_changes</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@saved_state_needed</span>
+<span class="nd">@wrap_with_actions</span><span class="p">(</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SAVE_CHANGES</span><span class="p">)</span>
+<span class="nd">@validate_self_before</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">save_changes</span><span class="p">(</span>
+    <span class="n">ignore_revision</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skip_actions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ActionDirections</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocType</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Save changes.</p>
+<p>State management usage must be turned on</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>ignore_revision</code>: bool - ignore revision id, if revision is turned on</li>
+<li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.replace_many"></a></p>
+<h4 id="documentreplace_many">Document.replace_many</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">replace_many</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocType</span><span class="p">],</span>
+                       <span class="n">documents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DocType</span><span class="p">],</span>
+                       <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+<blockquote>
+<p>Replace list of documents</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>documents</code>: List["Document"]</li>
+<li><code>session</code>: Optional[ClientSession] - pymongo session.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.update"></a></p>
+<h4 id="documentupdate">Document.update</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@wrap_with_actions</span><span class="p">(</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">UPDATE</span><span class="p">)</span>
+<span class="nd">@save_state_after</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span>
+                 <span class="n">ignore_revision</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">skip_actions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ActionDirections</span><span class="p">,</span>
+                                                   <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">skip_sync</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocType</span>
+</code></pre></div>
+<blockquote>
+<p>Partially update the document in the database</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
+<li><code>session</code>: ClientSession - pymongo session.</li>
+<li><code>ignore_revision</code>: bool - force update. Will update even if revision id is not the same, as stored</li>
+<li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
+<li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.update_all"></a></p>
+<h4 id="documentupdate_all">Document.update_all</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">update_all</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+               <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">],</span>
+               <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateMany</span>
+</code></pre></div>
+<blockquote>
+<p>Partially update all the documents</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
+<li><code>session</code>: ClientSession - pymongo session.</li>
+<li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.set"></a></p>
+<h4 id="documentset">Document.set</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_sync</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">DocType</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Set values</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Sample</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">one</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="k">await</span> <span class="n">Document</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">Sample</span><span class="o">.</span><span class="n">one</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">({</span><span class="n">Sample</span><span class="o">.</span><span class="n">one</span><span class="p">:</span> <span class="mi">100</span><span class="p">})</span>
+</code></pre></div>
+<p>Uses <a href="../operators/update/#set">Set operator</a></p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>expression</code>: Dict[Union[ExpressionField, str], Any] - keys and
+values to set</li>
+<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>bulk_writer</code>: Optional[BulkWriter] - bulk writer</li>
+<li><code>skip_sync</code>: bool - skip doc syncing. Available for the direct instances only</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>self</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.current_date"></a></p>
+<h4 id="documentcurrent_date">Document.current_date</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">current_date</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
+                 <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">skip_sync</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Set current date</p>
+<p>Uses <a href="../operators/update/#currentdate">CurrentDate operator</a></p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>expression</code>: Dict[Union[ExpressionField, str], Any]</li>
+<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>bulk_writer</code>: Optional[BulkWriter] - bulk writer</li>
+<li><code>skip_sync</code>: bool - skip doc syncing. Available for the direct instances only</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>self</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.inc"></a></p>
+<h4 id="documentinc">Document.inc</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_sync</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Increment</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Sample</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">one</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="k">await</span> <span class="n">Document</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">Sample</span><span class="o">.</span><span class="n">one</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">inc</span><span class="p">({</span><span class="n">Sample</span><span class="o">.</span><span class="n">one</span><span class="p">:</span> <span class="mi">100</span><span class="p">})</span>
+</code></pre></div>
+<p>Uses <a href="../operators/update/#inc">Inc operator</a></p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>expression</code>: Dict[Union[ExpressionField, str], Any]</li>
+<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>bulk_writer</code>: Optional[BulkWriter] - bulk writer</li>
+<li><code>skip_sync</code>: bool - skip doc syncing. Available for the direct instances only</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>self</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.delete"></a></p>
+<h4 id="documentdelete">Document.delete</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@wrap_with_actions</span><span class="p">(</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">DELETE</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">link_rule</span><span class="p">:</span> <span class="n">DeleteRules</span> <span class="o">=</span> <span class="n">DeleteRules</span><span class="o">.</span><span class="n">DO_NOTHING</span><span class="p">,</span>
+                 <span class="n">skip_actions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ActionDirections</span><span class="p">,</span>
+                                                   <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DeleteResult</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Delete the document</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>session</code>: Optional[ClientSession] - pymongo session.</li>
+<li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
+<li><code>link_rule</code>: DeleteRules - rules for link fields</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for delete operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>Optional[DeleteResult] - pymongo DeleteResult instance.</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.delete_all"></a></p>
+<h4 id="documentdelete_all">Document.delete_all</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">delete_all</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                     <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DeleteResult</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Delete all the documents</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>session</code>: Optional[ClientSession] - pymongo session.</li>
+<li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for delete operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>Optional[DeleteResult] - pymongo DeleteResult instance.</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.use_state_management"></a></p>
+<h4 id="documentuse_state_management">Document.use_state_management</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">use_state_management</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+<blockquote>
+<p>Is state management turned on</p>
+<p><strong>Returns</strong>:</p>
+<p>bool</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.state_management_save_previous"></a></p>
+<h4 id="documentstate_management_save_previous">Document.state_management_save_previous</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">state_management_save_previous</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+<blockquote>
+<p>Should we save the previous state after a commit to database</p>
+<p><strong>Returns</strong>:</p>
+<p>bool</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.state_management_replace_objects"></a></p>
+<h4 id="documentstate_management_replace_objects">Document.state_management_replace_objects</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">state_management_replace_objects</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+<blockquote>
+<p>Should objects be replaced when using state management</p>
+<p><strong>Returns</strong>:</p>
+<p>bool</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.get_saved_state"></a></p>
+<h4 id="documentget_saved_state">Document.get_saved_state</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_saved_state</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<p>Saved state getter. It is protected property.</p>
+<p><strong>Returns</strong>:</p>
+<p>Optional[Dict[str, Any]] - saved state</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.get_previous_saved_state"></a></p>
+<h4 id="documentget_previous_saved_state">Document.get_previous_saved_state</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_previous_saved_state</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<p>Previous state getter. It is a protected property.</p>
+<p><strong>Returns</strong>:</p>
+<p>Optional[Dict[str, Any]] - previous state</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.get_settings"></a></p>
+<h4 id="documentget_settings">Document.get_settings</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">get_settings</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocumentSettings</span>
+</code></pre></div>
+<blockquote>
+<p>Get document settings, which was created on</p>
+<p>the initialization step</p>
+<p><strong>Returns</strong>:</p>
+<p>DocumentSettings class</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.inspect_collection"></a></p>
+<h4 id="documentinspect_collection">Document.inspect_collection</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">inspect_collection</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                             <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                             <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InspectionResult</span>
+</code></pre></div>
+<blockquote>
+<p>Check, if documents, stored in the MongoDB collection</p>
+<p>are compatible with the Document schema</p>
+<p><strong>Returns</strong>:</p>
+<p>InspectionResult</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      
+    
+  </body>
+</html>

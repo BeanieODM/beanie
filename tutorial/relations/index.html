@@ -1,0 +1,1611 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://beanie-odm.dev/tutorial/relations/">
+      
+      
+        <link rel="prev" href="../aggregation/">
+      
+      
+        <link rel="next" href="../views/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.20">
+    
+    
+      
+        <title>Relations - Beanie Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/color_scheme.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#relations" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Beanie Documentation" class="md-header__button md-logo" aria-label="Beanie Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Beanie Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Relations
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Beanie Documentation" class="md-nav__button md-logo" aria-label="Beanie Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Beanie Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorial
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../defining-a-document/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining a document
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../initialization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Initialization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inserting-into-the-database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inserting into the database
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../finding-documents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Finding documents
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lazy-parsing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lazy parsing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updating-%26-deleting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Updating & Deleting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../indexes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Indexes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-model-pattern/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multi-model pattern
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inheritance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inheritance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aggregation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Aggregation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Relations
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Relations
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#write" class="md-nav__link">
+    <span class="md-ellipsis">
+      Write
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fetch
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fetch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prefetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prefetch
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prefetch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#search-by-linked-documents-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Search by linked documents fields
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nested-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nested links
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-demand-fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      On-demand fetch
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      Delete
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#back-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Back Links
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitations
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../time-series/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Time Series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../event-based-actions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event-based actions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cache/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cache
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../revision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Revision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../state-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    State Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../on-save-validation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    On save validation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Batteries
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Batteries
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../batteries/queue/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Queue
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/document/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Document
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/interfaces/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Interfaces
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Operators
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Operators
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/operators/find/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Find
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/operators/update/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Update
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/fields/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fields
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-of-conduct/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#write" class="md-nav__link">
+    <span class="md-ellipsis">
+      Write
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fetch
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fetch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prefetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prefetch
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prefetch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#search-by-linked-documents-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Search by linked documents fields
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nested-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nested links
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-demand-fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      On-demand fetch
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      Delete
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#back-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Back Links
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitations
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="relations">Relations</h1>
+<p>The document can contain links to other documents in their fields.</p>
+<p><em>Only top-level fields are fully supported for now.</em></p>
+<p>The following field types are supported:</p>
+<ul>
+<li><code>Link[...]</code></li>
+<li><code>Optional[Link[...]]</code></li>
+<li><code>List[Link[...]]</code></li>
+<li><code>Optional[List[Link[...]]]</code></li>
+</ul>
+<p>Also, backward links are supported:</p>
+<ul>
+<li><code>BackLink[...]</code></li>
+<li><code>Optional[BackLink[...]]</code></li>
+<li><code>List[BackLink[...]]</code></li>
+<li><code>Optional[List[BackLink[...]]]</code></li>
+</ul>
+<p>Direct link to the document:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Link</span>
+
+
+<span class="k">class</span> <span class="nc">Door</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<span class="k">class</span> <span class="nc">House</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">door</span><span class="p">:</span> <span class="n">Link</span><span class="p">[</span><span class="n">Door</span><span class="p">]</span>
+</code></pre></div>
+<p>Optional direct link to the document:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">beanie</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Link</span>
+
+
+<span class="k">class</span> <span class="nc">Door</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<span class="k">class</span> <span class="nc">House</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">door</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Link</span><span class="p">[</span><span class="n">Door</span><span class="p">]]</span>
+</code></pre></div>
+<p>List of the links:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">beanie</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Link</span>
+
+
+<span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+
+
+<span class="k">class</span> <span class="nc">House</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">door</span><span class="p">:</span> <span class="n">Link</span><span class="p">[</span><span class="n">Door</span><span class="p">]</span>
+    <span class="n">windows</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Link</span><span class="p">[</span><span class="n">Window</span><span class="p">]]</span>
+</code></pre></div>
+<p>Optional list of the links:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">beanie</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Link</span>
+
+<span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="k">class</span> <span class="nc">Yard</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">v</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="k">class</span> <span class="nc">House</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">door</span><span class="p">:</span> <span class="n">Link</span><span class="p">[</span><span class="n">Door</span><span class="p">]</span>
+    <span class="n">windows</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Link</span><span class="p">[</span><span class="n">Window</span><span class="p">]]</span>
+    <span class="n">yards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Link</span><span class="p">[</span><span class="n">Yard</span><span class="p">]]]</span>
+</code></pre></div>
+<p>Other link patterns are not supported at this moment. If you need something more specific for your use-case, 
+please open an issue on the GitHub page - <a href="https://github.com/roman-right/beanie">https://github.com/roman-right/beanie</a></p>
+<h2 id="write">Write</h2>
+<p>The following write methods support relations:</p>
+<ul>
+<li><code>insert(...)</code></li>
+<li><code>replace(...)</code></li>
+<li><code>save(...)</code></li>
+</ul>
+<p>To apply a write method to the linked documents, you should pass the respective <code>link_rule</code> argument</p>
+<div class="highlight"><pre><span></span><code><span class="n">house</span><span class="o">.</span><span class="n">windows</span> <span class="o">=</span> <span class="p">[</span><span class="n">Window</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">100</span><span class="p">)]</span>
+<span class="n">house</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;NEW NAME&quot;</span>
+
+<span class="c1"># The next call will insert a new window object and replace the house instance with updated data</span>
+<span class="k">await</span> <span class="n">house</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">link_rule</span><span class="o">=</span><span class="n">WriteRules</span><span class="o">.</span><span class="n">WRITE</span><span class="p">)</span>
+
+<span class="c1"># `insert` and `replace` methods will work the same way</span>
+</code></pre></div>
+<p>Otherwise, Beanie can ignore internal links with the <code>link_rule</code> parameter <code>WriteRules.DO_NOTHING</code></p>
+<div class="highlight"><pre><span></span><code><span class="n">house</span><span class="o">.</span><span class="n">door</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">house</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;NEW NAME&quot;</span>
+
+<span class="c1"># The next call will just replace the house instance with new data, but the linked door object will not be synced</span>
+<span class="k">await</span> <span class="n">house</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">link_rule</span><span class="o">=</span><span class="n">WriteRules</span><span class="o">.</span><span class="n">DO_NOTHING</span><span class="p">)</span>
+
+<span class="c1"># `insert` and `save` methods will work the same way</span>
+</code></pre></div>
+<h2 id="fetch">Fetch</h2>
+<h3 id="prefetch">Prefetch</h3>
+<p>You can fetch linked documents on the find query step using the <code>fetch_links</code> parameter </p>
+<p><div class="highlight"><pre><span></span><code><span class="n">houses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">House</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+    <span class="n">House</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> 
+    <span class="n">fetch_links</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+</code></pre></div>
+Supported find methods:
+- <code>find</code>
+- <code>find_one</code>
+- <code>get</code></p>
+<p>Beanie uses the single aggregation query under the hood to fetch all the linked documents. 
+This operation is very effective.</p>
+<p>If a direct link is referred to a non-existent document, 
+after fetching it will remain the object of the <code>Link</code> class.</p>
+<p>Fetching will ignore non-existent documents for the list of links fields.</p>
+<h4 id="search-by-linked-documents-fields">Search by linked documents fields</h4>
+<p>If the <code>fetch_links</code> parameter is set to <code>True</code>, search by linked documents fields is available.</p>
+<p>By field of the direct link:</p>
+<div class="highlight"><pre><span></span><code><span class="n">houses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">House</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+    <span class="n">House</span><span class="o">.</span><span class="n">door</span><span class="o">.</span><span class="n">height</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">fetch_links</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+</code></pre></div>
+<p>By list of links:</p>
+<div class="highlight"><pre><span></span><code><span class="n">houses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">House</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+    <span class="n">House</span><span class="o">.</span><span class="n">windows</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">fetch_links</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+</code></pre></div>
+<p>Search by <code>id</code> of the linked documents works using the following syntax:</p>
+<div class="highlight"><pre><span></span><code><span class="n">houses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">House</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+    <span class="n">House</span><span class="o">.</span><span class="n">door</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;DOOR_ID_HERE&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+</code></pre></div>
+<p>It works the same way with <code>fetch_links</code> equal to <code>True</code> and <code>False</code> and for <code>find_many</code> and <code>find_one</code> methods.</p>
+<h4 id="nested-links">Nested links</h4>
+<p>With Beanie you can set up nested links. Document can even link to itself. This can lead to infinite recursion. To prevent this, or to decrease the database load, you can limit the nesting depth during find operations.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Link</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="k">class</span> <span class="nc">SelfLinkedSample</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">left</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Link</span><span class="p">[</span><span class="s2">&quot;SelfLinkedSample&quot;</span><span class="p">]]</span>
+    <span class="n">right</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Link</span><span class="p">[</span><span class="s2">&quot;SelfLinkedSample&quot;</span><span class="p">]]</span>
+</code></pre></div>
+<p>You can set up depth for all linked documents independently of the field:</p>
+<div class="highlight"><pre><span></span><code><span class="k">await</span> <span class="n">SelfLinkedSample</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+    <span class="n">SelfLinkedSample</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+    <span class="n">fetch_links</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">nesting_depth</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+</code></pre></div>
+<p>Or you can set up depth for a specific field:</p>
+<div class="highlight"><pre><span></span><code><span class="k">await</span> <span class="n">SelfLinkedSample</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+    <span class="n">SelfLinkedSample</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+    <span class="n">fetch_links</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">nesting_depths_per_field</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="p">}</span>
+<span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+</code></pre></div>
+<p>Also, you can set up the maximum nesting depth on the document definition level. You can read more about this <a href="/tutorial/defining-a-document/#nested-documents-depth">here</a>.</p>
+<h3 id="on-demand-fetch">On-demand fetch</h3>
+<p>If you don't use prefetching, linked documents will be presented as objects of the <code>Link</code> class. </p>
+<p>You can fetch them manually afterwards.</p>
+<p>To fetch all the linked documents, you can use the <code>fetch_all_links</code> method</p>
+<div class="highlight"><pre><span></span><code><span class="k">await</span> <span class="n">house</span><span class="o">.</span><span class="n">fetch_all_links</span><span class="p">()</span>
+</code></pre></div>
+<p>It will fetch all the linked documents and replace <code>Link</code> objects with them.</p>
+<p>Otherwise, you can fetch a single field:</p>
+<div class="highlight"><pre><span></span><code><span class="k">await</span> <span class="n">house</span><span class="o">.</span><span class="n">fetch_link</span><span class="p">(</span><span class="n">House</span><span class="o">.</span><span class="n">door</span><span class="p">)</span>
+</code></pre></div>
+<p>This will fetch the Door object and put it into the <code>door</code> field of the <code>house</code> object.</p>
+<h2 id="delete">Delete</h2>
+<p>Delete method works the same way as write operations, but it uses other rules.</p>
+<p>To delete all the links on the document deletion, 
+you should use the <code>DeleteRules.DELETE_LINKS</code> value for the <code>link_rule</code> parameter:</p>
+<div class="highlight"><pre><span></span><code><span class="k">await</span> <span class="n">house</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">link_rule</span><span class="o">=</span><span class="n">DeleteRules</span><span class="o">.</span><span class="n">DELETE_LINKS</span><span class="p">)</span>
+</code></pre></div>
+<p>To keep linked documents, you can use the <code>DO_NOTHING</code> rule:</p>
+<div class="highlight"><pre><span></span><code><span class="k">await</span> <span class="n">house</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">link_rule</span><span class="o">=</span><span class="n">DeleteRules</span><span class="o">.</span><span class="n">DO_NOTHING</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="back-links">Back Links</h2>
+<p>To init the back link you should have a document with the direct or list of links to the current document.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">beanie</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">BackLink</span><span class="p">,</span> <span class="n">Link</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
+
+
+<span class="k">class</span> <span class="nc">House</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">door</span><span class="p">:</span> <span class="n">Link</span><span class="p">[</span><span class="s2">&quot;Door&quot;</span><span class="p">]</span>
+    <span class="n">owners</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Link</span><span class="p">[</span><span class="s2">&quot;Person&quot;</span><span class="p">]]</span>
+
+
+<span class="k">class</span> <span class="nc">Door</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">house</span><span class="p">:</span> <span class="n">BackLink</span><span class="p">[</span><span class="n">House</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">original_field</span><span class="o">=</span><span class="s2">&quot;door&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">house</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BackLink</span><span class="p">[</span><span class="n">House</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">original_field</span><span class="o">=</span><span class="s2">&quot;owners&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>The <code>original_field</code> parameter is required for the back link field.</p>
+<p>Back links support all the operations that normal links support, but are virtual. This means that when searching the database, you will need to include <code>fetch_links=True</code> (see <a href="find.md">Finding documents</a>), or you will recieve an empty 'BackLink' virtual object. It is not possible to <code>fetch()</code> this virtual link after the initial search.</p>
+<h2 id="limitations">Limitations</h2>
+<ul>
+<li>Find operations with the <code>fetch_links</code> parameter can not be used in the chaning with <code>delete</code> and <code>update</code> methods.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      
+    
+  </body>
+</html>

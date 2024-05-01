@@ -1,0 +1,1884 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://beanie-odm.dev/batteries/queue/">
+      
+      
+        <link rel="prev" href="../../tutorial/migrations/">
+      
+      
+        <link rel="next" href="../../api-documentation/document/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.20">
+    
+    
+      
+        <title>Queue - Beanie Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/color_scheme.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#task-queue" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Beanie Documentation" class="md-header__button md-logo" aria-label="Beanie Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Beanie Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Queue
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Beanie Documentation" class="md-nav__button md-logo" aria-label="Beanie Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Beanie Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorial
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/defining-a-document/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining a document
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/initialization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Initialization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/inserting-into-the-database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inserting into the database
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/finding-documents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Finding documents
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/lazy-parsing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lazy parsing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/updating-%26-deleting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Updating & Deleting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/indexes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Indexes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/multi-model-pattern/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multi-model pattern
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/inheritance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inheritance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/aggregation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Aggregation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/relations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Relations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/time-series/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Time Series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/event-based-actions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event-based actions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/cache/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cache
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/revision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Revision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/state-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    State Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/on-save-validation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    On save validation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Batteries
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Batteries
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Queue
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Queue
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declare-a-task-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Declare a task class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#process-a-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      Process a task
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task priority
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task state
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-dependencies-with-multiple-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task dependencies with multiple links
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expire-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expire time
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      Queue
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Queue">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stop-the-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stop the queue
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#queue-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Queue settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Worker
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Worker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stop-the-worker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stop the worker
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#worker-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Worker settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stop-the-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stop the runner
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runner-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runner settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/document/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Document
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/query/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Query
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/interfaces/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Interfaces
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Operators
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Operators
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/operators/find/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Find
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/operators/update/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Update
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-documentation/fields/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fields
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-of-conduct/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declare-a-task-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Declare a task class
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#process-a-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      Process a task
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task priority
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task state
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-dependencies-with-multiple-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task dependencies with multiple links
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expire-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expire time
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      Queue
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Queue">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stop-the-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stop the queue
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#queue-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Queue settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Worker
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Worker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stop-the-worker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stop the worker
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#worker-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Worker settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stop-the-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stop the runner
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runner-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runner settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="task-queue">Task Queue</h1>
+<p>Task Queue is an advanced queue system for Beanie (MongoDB), designed to efficiently manage and process tasks. It features task priorities, states, dependencies, and automatic expiration. Different task queues can be processed together using the Worker class. Multiple workers can be run in separate processes using the Runner class.</p>
+<h2 id="example">Example</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">Runner</span>
+
+<span class="k">class</span> <span class="nc">ExampleTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">task_classes</span><span class="o">=</span><span class="p">[</span><span class="n">ExampleTask</span><span class="p">])</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="installation">Installation</h2>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>beanie<span class="o">[</span>queue<span class="o">]</span>
+</code></pre></div>
+<h2 id="task">Task</h2>
+<h3 id="declare-a-task-class">Declare a task class</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">Task</span>
+
+
+<span class="k">class</span> <span class="nc">SimpleTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">s</span><span class="p">:</span> <span class="nb">str</span>
+</code></pre></div>
+<h3 id="process-a-task">Process a task</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">State</span>
+
+<span class="c1"># Producer</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">SimpleTask</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+
+<span class="c1"># Consumer</span>
+<span class="k">async</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">SimpleTask</span><span class="o">.</span><span class="n">queue</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">task</span><span class="o">.</span><span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span>
+    <span class="c1"># Do some work</span>
+    <span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+    <span class="k">break</span>
+
+<span class="c1"># Check that the task is finished</span>
+<span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SimpleTask</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})</span>
+<span class="k">assert</span> <span class="n">task</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">State</span><span class="o">.</span><span class="n">FINISHED</span>
+</code></pre></div>
+<p>Async generator <code>SimpleTask.queue()</code> will return all unfinished tasks in the order they were created or based on the
+priority if it was specified. It is an infinite loop, so you can use <code>break</code> to stop it.</p>
+<p>You can also use <code>SimpleTask.pop()</code> to get the next task from the queue.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">State</span>
+
+<span class="c1"># Producer</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">SimpleTask</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+
+<span class="c1"># Consumer</span>
+<span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SimpleTask</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">task</span><span class="o">.</span><span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span>
+<span class="c1"># Do some work</span>
+<span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="task-priority">Task priority</h3>
+<p>There are three priority levels: <code>LOW</code>, <code>MEDIUM</code>, and <code>HIGH</code>. The default priority is <code>MEDIUM</code>.
+Tasks are popped from the queue in the following order: <code>HIGH</code>, <code>MEDIUM</code>, <code>LOW</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">Priority</span>
+
+<span class="n">task1</span> <span class="o">=</span> <span class="n">SimpleTask</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="s2">&quot;test1&quot;</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="n">Priority</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">task1</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+<span class="n">task2</span> <span class="o">=</span> <span class="n">SimpleTask</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="s2">&quot;test2&quot;</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="n">Priority</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">task2</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+
+<span class="k">async</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">SimpleTask</span><span class="o">.</span><span class="n">queue</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">task</span><span class="o">.</span><span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;test2&quot;</span>
+    <span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+    <span class="k">break</span>
+</code></pre></div>
+<h3 id="task-state">Task state</h3>
+<p>There are four states: <code>CREATED</code>, <code>RUNNING</code>, <code>FINISHED</code>, and <code>FAILED</code>. The default state is <code>PENDING</code>.
+When a task is pushed, it is in the <code>CREATED</code> state. When it gets popped from the queue, it is in the <code>RUNNING</code>
+state. <code>FINISHED</code> and <code>FAILED</code> states should be set manually.</p>
+<p>Finished:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">State</span>
+
+<span class="n">task</span> <span class="o">=</span> <span class="n">SimpleTask</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+
+<span class="k">async</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">SimpleTask</span><span class="o">.</span><span class="n">queue</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">task</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">State</span><span class="o">.</span><span class="n">RUNNING</span>
+    <span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+    <span class="k">break</span>
+
+<span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SimpleTask</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})</span>
+<span class="k">assert</span> <span class="n">task</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">State</span><span class="o">.</span><span class="n">FINISHED</span>
+</code></pre></div>
+<p>Failed:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">State</span>
+
+<span class="n">task</span> <span class="o">=</span> <span class="n">SimpleTask</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+
+<span class="k">async</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">SimpleTask</span><span class="o">.</span><span class="n">queue</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">task</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">State</span><span class="o">.</span><span class="n">RUNNING</span>
+    <span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">fail</span><span class="p">()</span>
+    <span class="k">break</span>
+
+<span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SimpleTask</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})</span>
+<span class="k">assert</span> <span class="n">task</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">State</span><span class="o">.</span><span class="n">FAILED</span>
+</code></pre></div>
+<h3 id="task-dependencies">Task dependencies</h3>
+<p>You can specify that a task depends on another task. In this case, the task will be popped from the queue only when all
+its dependencies have finished.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">DependencyType</span>
+<span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">Link</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
+
+
+<span class="k">class</span> <span class="nc">SimpleTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">s</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">class</span> <span class="nc">TaskWithDirectDependency</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">s</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">direct_dependency</span><span class="p">:</span> <span class="n">Link</span><span class="p">[</span><span class="n">SimpleTask</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">dependency_type</span><span class="o">=</span><span class="n">DependencyType</span><span class="o">.</span><span class="n">DIRECT</span>
+    <span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">State</span>
+
+<span class="n">task1</span> <span class="o">=</span> <span class="n">SimpleTask</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">task1</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+
+<span class="n">task2</span> <span class="o">=</span> <span class="n">TaskWithDirectDependency</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="s2">&quot;test2&quot;</span><span class="p">,</span> <span class="n">direct_dependency</span><span class="o">=</span><span class="n">task1</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">task2</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+
+<span class="n">task_from_queue</span> <span class="o">=</span> <span class="k">await</span> <span class="n">TaskWithDirectDependency</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">task_from_queue</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="c1"># task2 is not popped from the queue because task1 is not finished yet</span>
+
+<span class="k">await</span> <span class="n">task1</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+
+<span class="n">task_from_queue</span> <span class="o">=</span> <span class="k">await</span> <span class="n">TaskWithDirectDependency</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">task_from_queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<span class="c1"># task2 is popped from the queue because task1 is finished</span>
+</code></pre></div>
+<h3 id="task-dependencies-with-multiple-links">Task dependencies with multiple links</h3>
+<p>You can specify that a task depends on multiple tasks. In this case, the task will be popped from the queue when all or
+any its dependencies are finished. It is controlled by the <code>dependency_type</code> parameter.</p>
+<p>All</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TaskWithMultipleDependencies</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">s</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">list_of_dependencies</span><span class="p">:</span> <span class="n">Link</span><span class="p">[</span><span class="n">SimpleTask</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">dependency_type</span><span class="o">=</span><span class="n">DependencyType</span><span class="o">.</span><span class="n">ALL_OF</span>
+    <span class="p">)</span>
+</code></pre></div>
+<p>Any</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TaskWithMultipleDependencies</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">s</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">list_of_dependencies</span><span class="p">:</span> <span class="n">Link</span><span class="p">[</span><span class="n">SimpleTask</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">dependency_type</span><span class="o">=</span><span class="n">DependencyType</span><span class="o">.</span><span class="n">ANY_OF</span>
+    <span class="p">)</span>
+</code></pre></div>
+<p>Tasks can have multiple links with different dependency types.</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TaskWithMultipleDependencies</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">s</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">list_of_dependencies_all</span><span class="p">:</span> <span class="n">Link</span><span class="p">[</span><span class="n">SimpleTask</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">dependency_type</span><span class="o">=</span><span class="n">DependencyType</span><span class="o">.</span><span class="n">ALL_OF</span>
+    <span class="p">)</span>
+    <span class="n">list_of_dependencies_any</span><span class="p">:</span> <span class="n">Link</span><span class="p">[</span><span class="n">SimpleTask</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">dependency_type</span><span class="o">=</span><span class="n">DependencyType</span><span class="o">.</span><span class="n">ANY_OF</span>
+    <span class="p">)</span>
+    <span class="n">direct_dependency</span><span class="p">:</span> <span class="n">Link</span><span class="p">[</span><span class="n">SimpleTask</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">dependency_type</span><span class="o">=</span><span class="n">DependencyType</span><span class="o">.</span><span class="n">DIRECT</span>
+    <span class="p">)</span>
+</code></pre></div>
+<h3 id="expire-time">Expire time</h3>
+<p>You can specify the time after which the task will be removed from the queue, even if it is not finished or has failed.
+This is controlled by the <code>expireAfterSeconds</code> index, which is set to 24 hours by default.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">ASCENDING</span>
+<span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">Task</span>
+
+
+<span class="k">class</span> <span class="nc">TaskWithExpireTime</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">s</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">class</span> <span class="nc">Settings</span><span class="p">:</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># Other indexes,</span>
+
+            <span class="c1"># Expire after 5 minutes</span>
+            <span class="p">[(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">ASCENDING</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;expireAfterSeconds&quot;</span><span class="p">,</span> <span class="mi">300</span><span class="p">)],</span>
+        <span class="p">]</span>
+</code></pre></div>
+<p>Finished or failed tasks are not immediately removed from the queue. They are removed after the expiration time. You can
+manually delete them using the <code>delete()</code> method.</p>
+<h2 id="queue">Queue</h2>
+<p>Queues are designed to manage tasks. It will handle all the logic of creating, updating, and deleting tasks. Task logic
+should be defined in the <code>run</code> method of the task</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">Task</span>
+
+
+<span class="k">class</span> <span class="nc">ProcessTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Implement the logic for processing the task</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing task with data: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</code></pre></div>
+<p>Now we can start the queue and it will process all the tasks. Be aware - it will run infinite loop. If you want to have
+another logic after starting the queue, you should run it with <code>asyncio.create_task()</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">queue</span> <span class="o">=</span> <span class="n">ProcessTask</span><span class="o">.</span><span class="n">queue</span><span class="p">()</span>
+<span class="k">await</span> <span class="n">queue</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="stop-the-queue">Stop the queue</h3>
+<p>You can stop the queue by calling the <code>stop()</code> method.</p>
+<div class="highlight"><pre><span></span><code><span class="k">await</span> <span class="n">queue</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="queue-settings">Queue settings</h3>
+<p>You can specify how frequently the queue will check for new tasks. The default value is 1 second.</p>
+<div class="highlight"><pre><span></span><code><span class="n">queue</span> <span class="o">=</span> <span class="n">ProcessTask</span><span class="o">.</span><span class="n">queue</span><span class="p">(</span><span class="n">sleep_time</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>  <span class="c1"># 60 seconds</span>
+<span class="k">await</span> <span class="n">queue</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="worker">Worker</h2>
+<p>Queue can handle only one task model. To process multiple task models, you should use Worker. It will run multiple queues</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">Worker</span>
+
+<span class="k">class</span> <span class="nc">ProcessTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">AnotherTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+
+<span class="n">worker</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="n">task_classes</span><span class="o">=</span><span class="p">[</span><span class="n">ProcessTask</span><span class="p">,</span> <span class="n">AnotherTask</span><span class="p">])</span>
+<span class="k">await</span> <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+<p>Be aware - it will run infinite loop. If you want to have another logic after starting the worker, you should run it with <code>asyncio.create_task()</code>.</p>
+<h3 id="stop-the-worker">Stop the worker</h3>
+<p>You can stop the worker by calling the <code>stop()</code> method.</p>
+<div class="highlight"><pre><span></span><code><span class="k">await</span> <span class="n">worker</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="worker-settings">Worker settings</h3>
+<p>You can specify how frequently the worker will check for new tasks. The default value is 1 second.</p>
+<div class="highlight"><pre><span></span><code><span class="n">worker</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="n">task_classes</span><span class="o">=</span><span class="p">[</span><span class="n">ProcessTask</span><span class="p">,</span> <span class="n">AnotherTask</span><span class="p">],</span> <span class="n">sleep_time</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>  <span class="c1"># 60 seconds</span>
+<span class="k">await</span> <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="runner">Runner</h2>
+<p>Runner is a class that allows you to run multiple workers in separate processes. It is useful when your tasks are CPU intensive and you want to use all the cores of your CPU.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">beanie_batteries_queue</span> <span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">Runner</span>
+
+<span class="k">class</span> <span class="nc">ProcessTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">AnotherTask</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">task_classes</span><span class="o">=</span><span class="p">[</span><span class="n">ProcessTask</span><span class="p">,</span> <span class="n">AnotherTask</span><span class="p">])</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="stop-the-runner">Stop the runner</h3>
+<p>You can stop the runner by calling the <code>stop()</code> method.</p>
+<div class="highlight"><pre><span></span><code><span class="n">runner</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="runner-settings">Runner settings</h3>
+<p>You can specify how many workers will be run. The default value is 1.</p>
+<div class="highlight"><pre><span></span><code><span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">task_classes</span><span class="o">=</span><span class="p">[</span><span class="n">ProcessTask</span><span class="p">,</span> <span class="n">AnotherTask</span><span class="p">],</span> <span class="n">workers_count</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+<p>You can specify how frequently the worker will check for new tasks. The default value is 1 second.</p>
+<div class="highlight"><pre><span></span><code><span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">task_classes</span><span class="o">=</span><span class="p">[</span><span class="n">ProcessTask</span><span class="p">,</span> <span class="n">AnotherTask</span><span class="p">],</span> <span class="n">sleep_time</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>  <span class="c1"># 60 seconds</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+<p>You can specify if the start method should run while the workers are alive or if it should return immediately. The default value is True.</p>
+<div class="highlight"><pre><span></span><code><span class="n">runner</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">task_classes</span><span class="o">=</span><span class="p">[</span><span class="n">ProcessTask</span><span class="p">,</span> <span class="n">AnotherTask</span><span class="p">],</span> <span class="n">run_indefinitely</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,3123 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://beanie-odm.dev/api-documentation/query/">
+      
+      
+        <link rel="prev" href="../document/">
+      
+      
+        <link rel="next" href="../interfaces/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.20">
+    
+    
+      
+        <title>Query - Beanie Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/color_scheme.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#beanieodmqueriesaggregation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Beanie Documentation" class="md-header__button md-logo" aria-label="Beanie Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Beanie Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Query
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Beanie Documentation" class="md-nav__button md-logo" aria-label="Beanie Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Beanie Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorial
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/defining-a-document/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Defining a document
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/initialization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Initialization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/inserting-into-the-database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inserting into the database
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/finding-documents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Finding documents
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/lazy-parsing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lazy parsing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/updating-%26-deleting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Updating & Deleting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/indexes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Indexes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/multi-model-pattern/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multi-model pattern
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/inheritance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inheritance
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/aggregation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Aggregation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/relations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Relations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/time-series/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Time Series
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/event-based-actions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event-based actions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/cache/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cache
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/revision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Revision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/state-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    State Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/on-save-validation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    On save validation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Batteries
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Batteries
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../batteries/queue/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Queue
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../document/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Document
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Query
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Query
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriesaggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.aggregation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.aggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggregationquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      AggregationQuery
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriescursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.cursor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.cursor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basecursorquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseCursorQuery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseCursorQuery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basecursorqueryto_list" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseCursorQuery.to_list
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriesfind" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.find
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.find">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#findquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FindQuery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#findqueryget_filter_query" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery.get_filter_query
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findquerydelete" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery.delete
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findqueryproject" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery.project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findquerycount" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery.count
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findqueryexists" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery.exists
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmany" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FindMany">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#findmanyfind_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.find_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyproject" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyfind" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.find
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanysort" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.sort
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyskip" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.skip
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanylimit" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.limit
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyupsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.upsert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyupdate_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.update_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanydelete_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.delete_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyaggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.aggregate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyfirst_or_none" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.first_or_none
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanycount" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.count
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findone" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FindOne">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#findoneproject" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findonefind_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.find_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findoneupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findoneupsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.upsert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findoneupdate_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.update_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findonedelete_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.delete_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findonereplace_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.replace_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findone__await__" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.__await__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findonecount" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.count
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriesdelete" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.delete
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.delete">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deletequery" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeleteQuery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletemany" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeleteMany
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DeleteMany">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deletemany__await__" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeleteMany.__await__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleteone" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeleteOne
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DeleteOne">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deleteone__await__" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeleteOne.__await__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriesupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.update
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.update">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#updateresponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateResponse
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UpdateResponse">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#updateresponseupdate_result" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateResponse.UPDATE_RESULT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateresponseold_document" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateResponse.OLD_DOCUMENT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateresponsenew_document" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateResponse.NEW_DOCUMENT
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatequery" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateQuery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatemany" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateMany
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UpdateMany">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#updatemanyupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateMany.update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatemanyupsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateMany.upsert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatemanyupdate_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateMany.update_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatemany__await__" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateMany.__await__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateone" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateOne
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UpdateOne">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#updateoneupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateOne.update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateoneupsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateOne.upsert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateoneupdate_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateOne.update_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateone__await__" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateOne.__await__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interfaces/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Interfaces
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Operators
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Operators
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operators/find/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Find
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operators/update/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Update
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fields/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fields
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-of-conduct/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriesaggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.aggregation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.aggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggregationquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      AggregationQuery
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriescursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.cursor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.cursor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basecursorquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseCursorQuery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseCursorQuery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basecursorqueryto_list" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseCursorQuery.to_list
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriesfind" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.find
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.find">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#findquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FindQuery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#findqueryget_filter_query" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery.get_filter_query
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findquerydelete" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery.delete
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findqueryproject" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery.project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findquerycount" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery.count
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findqueryexists" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindQuery.exists
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmany" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FindMany">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#findmanyfind_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.find_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyproject" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyfind" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.find
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanysort" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.sort
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyskip" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.skip
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanylimit" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.limit
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyupsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.upsert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyupdate_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.update_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanydelete_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.delete_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyaggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.aggregate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanyfirst_or_none" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.first_or_none
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findmanycount" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindMany.count
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findone" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FindOne">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#findoneproject" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findonefind_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.find_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findoneupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findoneupsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.upsert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findoneupdate_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.update_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findonedelete_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.delete_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findonereplace_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.replace_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findone__await__" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.__await__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#findonecount" class="md-nav__link">
+    <span class="md-ellipsis">
+      FindOne.count
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriesdelete" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.delete
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.delete">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deletequery" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeleteQuery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletemany" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeleteMany
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DeleteMany">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deletemany__await__" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeleteMany.__await__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleteone" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeleteOne
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DeleteOne">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deleteone__await__" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeleteOne.__await__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriesupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.update
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.update">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#updateresponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateResponse
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UpdateResponse">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#updateresponseupdate_result" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateResponse.UPDATE_RESULT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateresponseold_document" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateResponse.OLD_DOCUMENT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateresponsenew_document" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateResponse.NEW_DOCUMENT
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatequery" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateQuery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatemany" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateMany
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UpdateMany">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#updatemanyupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateMany.update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatemanyupsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateMany.upsert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatemanyupdate_many" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateMany.update_many
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatemany__await__" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateMany.__await__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateone" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateOne
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UpdateOne">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#updateoneupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateOne.update
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateoneupsert" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateOne.upsert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateoneupdate_one" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateOne.update_one
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateone__await__" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateOne.__await__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Query</h1>
+
+<p><a id="beanie.odm.queries.aggregation"></a></p>
+<h2 id="beanieodmqueriesaggregation">beanie.odm.queries.aggregation</h2>
+<p><a id="beanie.odm.queries.aggregation.AggregationQuery"></a></p>
+<h3 id="aggregationquery">AggregationQuery</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AggregationQuery</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">AggregationProjectionType</span><span class="p">],</span>
+                       <span class="n">BaseCursorQuery</span><span class="p">[</span><span class="n">AggregationProjectionType</span><span class="p">],</span>
+                       <span class="n">SessionMethods</span><span class="p">,</span> <span class="n">CloneInterface</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Aggregation Query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.cursor"></a></p>
+<h2 id="beanieodmqueriescursor">beanie.odm.queries.cursor</h2>
+<p><a id="beanie.odm.queries.cursor.BaseCursorQuery"></a></p>
+<h3 id="basecursorquery">BaseCursorQuery</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BaseCursorQuery</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">CursorResultType</span><span class="p">])</span>
+</code></pre></div>
+<blockquote>
+<p>BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
+which parse result with model</p>
+</blockquote>
+<p><a id="beanie.odm.queries.cursor.BaseCursorQuery.to_list"></a></p>
+<h4 id="basecursorqueryto_list">BaseCursorQuery.to_list</h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="n">length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">CursorResultType</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Get list of documents</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>length</code>: Optional[int] - length of the list</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>Union[List[BaseModel], List[Dict[str, Any]]]</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find"></a></p>
+<h2 id="beanieodmqueriesfind">beanie.odm.queries.find</h2>
+<p><a id="beanie.odm.queries.find.FindQuery"></a></p>
+<h3 id="findquery">FindQuery</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FindQuery</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">FindQueryResultType</span><span class="p">],</span> <span class="n">UpdateMethods</span><span class="p">,</span> <span class="n">SessionMethods</span><span class="p">,</span>
+                <span class="n">CloneInterface</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Find Query base class</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindQuery.get_filter_query"></a></p>
+<h4 id="findqueryget_filter_query">FindQuery.get_filter_query</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_filter_query</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Returns: MongoDB filter query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindQuery.delete"></a></p>
+<h4 id="findquerydelete">FindQuery.delete</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DeleteOne</span><span class="p">,</span> <span class="n">DeleteMany</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Provide search criteria to the Delete query</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>session</code>: Optional[ClientSession]</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>Union[DeleteOne, DeleteMany]</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindQuery.project"></a></p>
+<h4 id="findqueryproject">FindQuery.project</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="n">projection_model</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Apply projection parameter</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>self</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindQuery.count"></a></p>
+<h4 id="findquerycount">FindQuery.count</h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">count</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+<blockquote>
+<p>Number of found documents</p>
+<p><strong>Returns</strong>:</p>
+<p>int</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindQuery.exists"></a></p>
+<h4 id="findqueryexists">FindQuery.exists</h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">exists</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
+<blockquote>
+<p>If find query will return anything</p>
+<p><strong>Returns</strong>:</p>
+<p>bool</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany"></a></p>
+<h3 id="findmany">FindMany</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FindMany</span><span class="p">(</span><span class="n">FindQuery</span><span class="p">[</span><span class="n">FindQueryResultType</span><span class="p">],</span>
+               <span class="n">BaseCursorQuery</span><span class="p">[</span><span class="n">FindQueryResultType</span><span class="p">],</span> <span class="n">AggregateMethods</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Find Many query class</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.find_many"></a></p>
+<h4 id="findmanyfind_many">FindMany.find_many</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">find_many</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;FindMany[FindQueryResultType]&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;FindMany[FindQueryProjectionType]&quot;</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Find many documents by criteria</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Mapping[str, Any] - search criteria</li>
+<li><code>skip</code>: Optional[int] - The number of documents to omit.</li>
+<li><code>limit</code>: Optional[int] - The maximum number of results to return.</li>
+<li><code>sort</code>: Union[None, str, List[Tuple[str, SortDirection]]] - A key
+or a list of (key, direction) pairs specifying the sort order
+for this query.</li>
+<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
+<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>ignore_cache</code>: bool</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>FindMany - query instance</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.project"></a></p>
+<h4 id="findmanyproject">FindMany.project</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">project</span><span class="p">(</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;FindMany[FindQueryResultType]&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;FindMany[FindQueryProjectionType]&quot;</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Apply projection parameter</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>self</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.find"></a></p>
+<h4 id="findmanyfind">FindMany.find</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">find</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;FindMany[FindQueryResultType]&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;FindMany[FindQueryProjectionType]&quot;</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>The same as <code>find_many(...)</code></p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.sort"></a></p>
+<h4 id="findmanysort">FindMany.sort</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">sort</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">],</span>
+                          <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FindMany[FindQueryResultType]&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Add sort parameters</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: Union[str, Tuple[str, SortDirection],
+List[Tuple[str, SortDirection]]] - A key or a tuple (key, direction)
+or a list of (key, direction) pairs specifying
+the sort order for this query.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>self</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.skip"></a></p>
+<h4 id="findmanyskip">FindMany.skip</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">skip</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;FindMany[FindQueryResultType]&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Set skip parameter</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>n</code>: int</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>self</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.limit"></a></p>
+<h4 id="findmanylimit">FindMany.limit</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">limit</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;FindMany[FindQueryResultType]&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Set limit parameter</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>n</code>: int</li>
+</ul>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.update"></a></p>
+<h4 id="findmanyupdate">FindMany.update</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Create Update with modifications query</p>
+<p>and provide search criteria there</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Mapping[str,Any] - the modifications to apply.</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>bulk_writer</code>: Optional[BulkWriter]</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.upsert"></a></p>
+<h4 id="findmanyupsert">FindMany.upsert</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+           <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Create Update with modifications query</p>
+<p>and provide search criteria there</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Mapping[str,Any] - the modifications to apply.</li>
+<li><code>on_insert</code>: DocType - document to insert if there is no matched
+document in the collection</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.update_many"></a></p>
+<h4 id="findmanyupdate_many">FindMany.update_many</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_many</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateMany</span>
+</code></pre></div>
+<blockquote>
+<p>Provide search criteria to the</p>
+<p><a href="./#updatemany">UpdateMany</a> query</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Mapping[str,Any] - the modifications to apply.</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a href="./#updatemany">UpdateMany</a> query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.delete_many"></a></p>
+<h4 id="findmanydelete_many">FindMany.delete_many</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_many</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeleteMany</span>
+</code></pre></div>
+<blockquote>
+<p>Provide search criteria to the <a href="./#deletemany">DeleteMany</a> query</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>session</code>: </li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a href="./#deletemany">DeleteMany</a> query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.aggregate"></a></p>
+<h4 id="findmanyaggregate">FindMany.aggregate</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
+    <span class="n">aggregation_pipeline</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
+        <span class="n">AggregationQuery</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">AggregationQuery</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">],</span>
+<span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Provide search criteria to the <a href="./#aggregationquery">AggregationQuery</a></p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>aggregation_pipeline</code>: list - aggregation pipeline. MongoDB doc:
+<a href="https://docs.mongodb.com/manual/core/aggregation-pipeline/">https://docs.mongodb.com/manual/core/aggregation-pipeline/</a></li>
+<li><code>projection_model</code>: Type[BaseModel] - Projection Model</li>
+<li><code>session</code>: Optional[ClientSession] - PyMongo session</li>
+<li><code>ignore_cache</code>: bool</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a href="./#aggregationquery">AggregationQuery</a></p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.first_or_none"></a></p>
+<h4 id="findmanyfirst_or_none">FindMany.first_or_none</h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">first_or_none</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FindQueryResultType</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Returns the first found element or None if no elements were found</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindMany.count"></a></p>
+<h4 id="findmanycount">FindMany.count</h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">count</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+<blockquote>
+<p>Number of found documents</p>
+<p><strong>Returns</strong>:</p>
+<p>int</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindOne"></a></p>
+<h3 id="findone">FindOne</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FindOne</span><span class="p">(</span><span class="n">FindQuery</span><span class="p">[</span><span class="n">FindQueryResultType</span><span class="p">])</span>
+</code></pre></div>
+<blockquote>
+<p>Find One query class</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindOne.project"></a></p>
+<h4 id="findoneproject">FindOne.project</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">project</span><span class="p">(</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;FindOne[FindQueryResultType]&quot;</span><span class="p">,</span> <span class="s2">&quot;FindOne[FindQueryProjectionType]&quot;</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Apply projection parameter</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>self</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindOne.find_one"></a></p>
+<h4 id="findonefind_one">FindOne.find_one</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">find_one</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;FindOne[FindQueryResultType]&quot;</span><span class="p">,</span> <span class="s2">&quot;FindOne[FindQueryProjectionType]&quot;</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Find one document by criteria</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Mapping[str, Any] - search criteria</li>
+<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
+<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>ignore_cache</code>: bool</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>FindOne - query instance</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindOne.update"></a></p>
+<h4 id="findoneupdate">FindOne.update</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Create Update with modifications query</p>
+<p>and provide search criteria there</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Mapping[str,Any] - the modifications to apply.</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>bulk_writer</code>: Optional[BulkWriter]</li>
+<li><code>response_type</code>: Optional[UpdateResponse]</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindOne.upsert"></a></p>
+<h4 id="findoneupsert">FindOne.upsert</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+           <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Create Update with modifications query</p>
+<p>and provide search criteria there</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Mapping[str,Any] - the modifications to apply.</li>
+<li><code>on_insert</code>: DocType - document to insert if there is no matched
+document in the collection</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>response_type</code>: Optional[UpdateResponse]</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindOne.update_one"></a></p>
+<h4 id="findoneupdate_one">FindOne.update_one</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_one</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+               <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateOne</span>
+</code></pre></div>
+<blockquote>
+<p>Create <a href="./#updateone">UpdateOne</a> query using modifications and</p>
+<p>provide search criteria there</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Mapping[str,Any] - the modifications to apply</li>
+<li><code>session</code>: Optional[ClientSession] - PyMongo sessions</li>
+<li><code>response_type</code>: Optional[UpdateResponse]</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a href="./#updateone">UpdateOne</a> query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindOne.delete_one"></a></p>
+<h4 id="findonedelete_one">FindOne.delete_one</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_one</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeleteOne</span>
+</code></pre></div>
+<blockquote>
+<p>Provide search criteria to the <a href="./#deleteone">DeleteOne</a> query</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>session</code>: Optional[ClientSession] - PyMongo sessions</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a href="./#deleteone">DeleteOne</a> query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindOne.replace_one"></a></p>
+<h4 id="findonereplace_one">FindOne.replace_one</h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">replace_one</span><span class="p">(</span>
+        <span class="n">document</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResult</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Replace found document by provided</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>document</code>: Document - document, which will replace the found one</li>
+<li><code>session</code>: Optional[ClientSession] - PyMongo session</li>
+<li><code>bulk_writer</code>: Optional[BulkWriter] - Beanie bulk writer</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateResult</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindOne.__await__"></a></p>
+<h4 id="findone__await__">FindOne.__await__</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__await__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Coroutine</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FindQueryResultType</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<p>Run the query</p>
+<p><strong>Returns</strong>:</p>
+<p>BaseModel</p>
+</blockquote>
+<p><a id="beanie.odm.queries.find.FindOne.count"></a></p>
+<h4 id="findonecount">FindOne.count</h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">count</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+<blockquote>
+<p>Count the number of documents matching the query</p>
+<p><strong>Returns</strong>:</p>
+<p>int</p>
+</blockquote>
+<p><a id="beanie.odm.queries.delete"></a></p>
+<h2 id="beanieodmqueriesdelete">beanie.odm.queries.delete</h2>
+<p><a id="beanie.odm.queries.delete.DeleteQuery"></a></p>
+<h3 id="deletequery">DeleteQuery</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">DeleteQuery</span><span class="p">(</span><span class="n">SessionMethods</span><span class="p">,</span> <span class="n">CloneInterface</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Deletion Query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.delete.DeleteMany"></a></p>
+<h3 id="deletemany">DeleteMany</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">DeleteMany</span><span class="p">(</span><span class="n">DeleteQuery</span><span class="p">)</span>
+</code></pre></div>
+<p><a id="beanie.odm.queries.delete.DeleteMany.__await__"></a></p>
+<h4 id="deletemany__await__">DeleteMany.__await__</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__await__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">DeleteResult</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DeleteResult</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<p>Run the query
+</p>
+</blockquote>
+<p><a id="beanie.odm.queries.delete.DeleteOne"></a></p>
+<h3 id="deleteone">DeleteOne</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">DeleteOne</span><span class="p">(</span><span class="n">DeleteQuery</span><span class="p">)</span>
+</code></pre></div>
+<p><a id="beanie.odm.queries.delete.DeleteOne.__await__"></a></p>
+<h4 id="deleteone__await__">DeleteOne.__await__</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__await__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">DeleteResult</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DeleteResult</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<p>Run the query
+</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update"></a></p>
+<h2 id="beanieodmqueriesupdate">beanie.odm.queries.update</h2>
+<p><a id="beanie.odm.queries.update.UpdateResponse"></a></p>
+<h3 id="updateresponse">UpdateResponse</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UpdateResponse</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">)</span>
+</code></pre></div>
+<p><a id="beanie.odm.queries.update.UpdateResponse.UPDATE_RESULT"></a></p>
+<h4 id="updateresponseupdate_result">UpdateResponse.UPDATE_RESULT</h4>
+<blockquote>
+<p>PyMongo update result</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateResponse.OLD_DOCUMENT"></a></p>
+<h4 id="updateresponseold_document">UpdateResponse.OLD_DOCUMENT</h4>
+<blockquote>
+<p>Original document</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateResponse.NEW_DOCUMENT"></a></p>
+<h4 id="updateresponsenew_document">UpdateResponse.NEW_DOCUMENT</h4>
+<blockquote>
+<p>Updated document</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateQuery"></a></p>
+<h3 id="updatequery">UpdateQuery</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UpdateQuery</span><span class="p">(</span><span class="n">UpdateMethods</span><span class="p">,</span> <span class="n">SessionMethods</span><span class="p">,</span> <span class="n">CloneInterface</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Update Query base class</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateMany"></a></p>
+<h3 id="updatemany">UpdateMany</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UpdateMany</span><span class="p">(</span><span class="n">UpdateQuery</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Update Many query class</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateMany.update"></a></p>
+<h4 id="updatemanyupdate">UpdateMany.update</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Provide modifications to the update query.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>bulk_writer</code>: Optional[BulkWriter]</li>
+<li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateMany.upsert"></a></p>
+<h4 id="updatemanyupsert">UpdateMany.upsert</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+           <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Provide modifications to the upsert query.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
+<li><code>on_insert</code>: DocType - document to insert if there is no matched
+document in the collection</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for update operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateMany.update_many"></a></p>
+<h4 id="updatemanyupdate_many">UpdateMany.update_many</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_many</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Provide modifications to the update query</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
+<li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateMany.__await__"></a></p>
+<h4 id="updatemany__await__">UpdateMany.__await__</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__await__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">UpdateResult</span><span class="p">,</span> <span class="n">InsertOneResult</span><span class="p">,</span>
+                                              <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;DocType&quot;</span><span class="p">]]]</span>
+</code></pre></div>
+<blockquote>
+<p>Run the query
+</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateOne"></a></p>
+<h3 id="updateone">UpdateOne</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UpdateOne</span><span class="p">(</span><span class="n">UpdateQuery</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Update One query class</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateOne.update"></a></p>
+<h4 id="updateoneupdate">UpdateOne.update</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Provide modifications to the update query.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>bulk_writer</code>: Optional[BulkWriter]</li>
+<li><code>response_type</code>: UpdateResponse</li>
+<li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateOne.upsert"></a></p>
+<h4 id="updateoneupsert">UpdateOne.upsert</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+           <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Provide modifications to the upsert query.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
+<li><code>on_insert</code>: DocType - document to insert if there is no matched
+document in the collection</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>response_type</code>: Optional[UpdateResponse]</li>
+<li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateOne.update_one"></a></p>
+<h4 id="updateoneupdate_one">UpdateOne.update_one</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_one</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+               <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Provide modifications to the update query. The same as <code>update()</code></p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
+<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
+<li><code>response_type</code>: Optional[UpdateResponse]</li>
+<li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>UpdateMany query</p>
+</blockquote>
+<p><a id="beanie.odm.queries.update.UpdateOne.__await__"></a></p>
+<h4 id="updateone__await__">UpdateOne.__await__</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__await__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">UpdateResult</span><span class="p">,</span> <span class="n">InsertOneResult</span><span class="p">,</span>
+                                              <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;DocType&quot;</span><span class="p">]]]</span>
+</code></pre></div>
+<blockquote>
+<p>Run the query
+</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      
+    
+  </body>
+</html>
