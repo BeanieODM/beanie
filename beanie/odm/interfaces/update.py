@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Any, Dict, Mapping, Optional, Union
 
-from pymongo.client_session import ClientSession
+from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import ExpressionField
@@ -21,7 +21,7 @@ class UpdateMethods:
     def update(
         self,
         *args: Mapping[str, Any],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
     ):
@@ -30,7 +30,7 @@ class UpdateMethods:
     def set(
         self,
         expression: Dict[Union[ExpressionField, str], Any],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
     ):
@@ -52,7 +52,7 @@ class UpdateMethods:
 
         :param expression: Dict[Union[ExpressionField, str], Any] - keys and
         values to set
-        :param session: Optional[ClientSession] - pymongo session
+        :param session: Optional[AsyncIOMotorClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """
@@ -63,7 +63,7 @@ class UpdateMethods:
     def current_date(
         self,
         expression: Dict[Union[ExpressionField, str], Any],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
     ):
@@ -73,7 +73,7 @@ class UpdateMethods:
         Uses [CurrentDate operator](operators/update.md#currentdate)
 
         :param expression: Dict[Union[ExpressionField, str], Any]
-        :param session: Optional[ClientSession] - pymongo session
+        :param session: Optional[AsyncIOMotorClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """
@@ -87,7 +87,7 @@ class UpdateMethods:
     def inc(
         self,
         expression: Dict[Union[ExpressionField, str], Any],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
     ):
@@ -108,7 +108,7 @@ class UpdateMethods:
         Uses [Inc operator](operators/update.md#inc)
 
         :param expression: Dict[Union[ExpressionField, str], Any]
-        :param session: Optional[ClientSession] - pymongo session
+        :param session: Optional[AsyncIOMotorClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """
