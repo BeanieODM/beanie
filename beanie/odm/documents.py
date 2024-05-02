@@ -694,7 +694,7 @@ class Document(
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
         **pymongo_kwargs: Any,
-    ) -> DocType:
+    ):
         """
         Partially update the document in the database
 
