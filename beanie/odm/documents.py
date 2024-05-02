@@ -768,7 +768,7 @@ class Document(
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs: Any,
-    ) -> Awaitable[DocType]:
+    ):
         """
         Set values
 
