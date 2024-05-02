@@ -187,9 +187,9 @@ class PydanticObjectId(ObjectId):
 
 
 if not IS_PYDANTIC_V2:
-    ENCODERS_BY_TYPE[
-        PydanticObjectId
-    ] = str  # it is a workaround to force pydantic make json schema for this field
+    ENCODERS_BY_TYPE[PydanticObjectId] = (
+        str  # it is a workaround to force pydantic make json schema for this field
+    )
 
 BeanieObjectId = PydanticObjectId
 
