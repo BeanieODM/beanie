@@ -194,7 +194,11 @@ if not IS_PYDANTIC_V2:
 BeanieObjectId = PydanticObjectId
 
 
-class ExpressionField(str):
+T = TypeVar("T")
+
+
+class ExpressionField(str, Generic[T]):
+    def __init__(self, field: T): ...
     def __getitem__(self, item):
         """
         Get sub field
