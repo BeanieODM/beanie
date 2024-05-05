@@ -761,7 +761,7 @@ class Document(
         )
 
     def set(
-        self: DocType,
+        self,
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
