@@ -1,8 +1,7 @@
 from abc import abstractmethod
-from typing import Any, Dict, Mapping, Optional, Union
-
+from typing import Any, Awaitable, Dict, Mapping, Optional, Union, overload
 from motor.motor_asyncio import AsyncIOMotorClientSession
-
+from pymongo.results import UpdateResult
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import ExpressionField
 from beanie.odm.operators.update.general import (
@@ -24,8 +23,17 @@ class UpdateMethods:
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
-    ):
+    ) -> Awaitable[UpdateResult]:
         return self
+
+    @overload
+    async def set(  # type: ignore
+        self,
+        expression: Dict[Union[ExpressionField, str], Any],
+        session: Optional[AsyncIOMotorClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **kwargs: Any,
+    ) -> UpdateResult: ...
 
     def set(
         self,
@@ -60,6 +68,15 @@ class UpdateMethods:
             Set(expression), session=session, bulk_writer=bulk_writer, **kwargs
         )
 
+    @overload
+    async def current_date(  # type: ignore
+        self,
+        expression: Dict[Union[ExpressionField, str], Any],
+        session: Optional[AsyncIOMotorClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **kwargs: Any,
+    ) -> UpdateResult: ...
+
     def current_date(
         self,
         expression: Dict[Union[ExpressionField, str], Any],
@@ -83,6 +100,15 @@ class UpdateMethods:
             bulk_writer=bulk_writer,
             **kwargs,
         )
+
+    @overload
+    async def inc(  # type: ignore
+        self,
+        expression: Dict[Union[ExpressionField, str], Any],
+        session: Optional[AsyncIOMotorClientSession] = None,
+        bulk_writer: Optional[BulkWriter] = None,
+        **kwargs: Any,
+    ) -> UpdateResult: ...
 
     def inc(
         self,
