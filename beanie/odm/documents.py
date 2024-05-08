@@ -18,6 +18,7 @@ from typing import (
     TypeVar,
     Union,
 )
+from typing_extensions import Self
 from uuid import UUID, uuid4
 
 from bson import DBRef, ObjectId
@@ -685,7 +686,7 @@ class Document(
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
     async def update(
-        self,
+        self: Self,
         *args,
         ignore_revision: bool = False,
         session: Optional[AsyncIOMotorClientSession] = None,
@@ -693,7 +694,7 @@ class Document(
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
         **pymongo_kwargs: Any,
-    ):
+    ) -> Self:
         """
         Partially update the document in the database
 
@@ -702,7 +703,7 @@ class Document(
         :param ignore_revision: bool - force update. Will update even if revision id is not the same, as stored
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param pymongo_kwargs: pymongo native parameters for update operation
-        :return: None
+        :return: Document
         """
         arguments = list(args)
 
@@ -761,7 +762,7 @@ class Document(
         )
 
     def set(
-        self,
+        self: Self,
         expression: Dict[Union[ExpressionField, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
@@ -1246,7 +1247,7 @@ class DocumentWithSoftDelete(Document):
     @classmethod
     def find_many_in_all(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[Any, Any], bool],
+        *args: Union[Mapping[Union[ExpressionField, str], Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -1278,7 +1279,7 @@ class DocumentWithSoftDelete(Document):
     @classmethod
     def find_many(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[Any, Any], bool],
+        *args: Union[Mapping[Union[ExpressionField, str], Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -1313,7 +1314,7 @@ class DocumentWithSoftDelete(Document):
     @classmethod
     def find_one(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[Any, Any], bool],
+        *args: Union[Mapping[Union[ExpressionField, str], Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
