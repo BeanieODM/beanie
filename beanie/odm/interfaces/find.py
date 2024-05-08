@@ -61,6 +61,7 @@ class FindInterface:
     def find_one(  # type: ignore
         cls: Type[FindType],
         *args: Union[Mapping[Union[ExpressionField, str], Any], bool],
+        sort: Union[Any, List[Tuple[Any, SortDirection]]] = None,
         projection_model: None = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -76,6 +77,7 @@ class FindInterface:
     def find_one(  # type: ignore
         cls: Type[FindType],
         *args: Union[Mapping[Union[ExpressionField, str], Any], bool],
+        sort: Union[Any, List[Tuple[Any, SortDirection]]] = None,
         projection_model: Type["DocumentProjectionType"],
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -90,6 +92,7 @@ class FindInterface:
     def find_one(  # type: ignore
         cls: Type[FindType],
         *args: Union[Mapping[Union[ExpressionField, str], Any], bool],
+        sort: Union[Any, List[Tuple[Any, SortDirection]]] = None,
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -105,6 +108,7 @@ class FindInterface:
         When awaited this will either return a document or None if no document exists for the search criteria.
 
         :param args: *Union[Mapping[Union[ExpressionField, str], Any], bool] - search criteria
+        :param sort: Union[Any, List[Tuple[Any, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[AsyncIOMotorClientSession] - pymongo session instance
         :param ignore_cache: bool
