@@ -39,7 +39,7 @@ class FindInterface:
     _find_one_query_class: ClassVar[Type] = FindOne
     _find_many_query_class: ClassVar[Type] = FindMany
 
-    _inheritance_inited: bool
+    _inheritance_inited: bool = False
     _class_id: ClassVar[Optional[str]]
     _children: ClassVar[Dict[str, Type]]
 
