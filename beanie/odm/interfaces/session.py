@@ -26,12 +26,17 @@ class DocumentSessionMethods:
     Document session methods
     """
 
-    __session__: ClassVar[ContextVar[Optional[motor.motor_asyncio.AsyncIOMotorClientSession]]] = ContextVar(
-        "session", default=None
-    )
+    __session__: ClassVar[
+        ContextVar[Optional[motor.motor_asyncio.AsyncIOMotorClientSession]]
+    ] = ContextVar("session", default=None)
 
     @classmethod
-    def set_session(cls, session: Optional[motor.motor_asyncio.AsyncIOMotorClientSession] = None):
+    def set_session(
+        cls,
+        session: Optional[
+            motor.motor_asyncio.AsyncIOMotorClientSession
+        ] = None,
+    ):
         """
         Set session to the ClassVar context
         :param session: Optional[ClientSession] - pymongo session
@@ -41,7 +46,9 @@ class DocumentSessionMethods:
             cls.__session__.set(session)
 
     @classmethod
-    def get_session(cls) -> Optional[motor.motor_asyncio.AsyncIOMotorClientSession]:
+    def get_session(
+        cls,
+    ) -> Optional[motor.motor_asyncio.AsyncIOMotorClientSession]:
         """
         Get session from the ClassVar context
         :return: Optional[ClientSession]
