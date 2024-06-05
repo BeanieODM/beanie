@@ -3,16 +3,16 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "beanie"
-version = "1.26.0"
-description = "Asynchronous Python ODM for MongoDB"
+name = "beanis"
+version = "0.0.1"
+description = "Asynchronous Python ODM for Redis"
 readme = "README.md"
 requires-python = ">=3.7,<4.0"
 license = { file="LICENSE" }
 authors = [
-    {name = "Roman Right", email = "roman-right@protonmail.com"}
+    {name = "Andrei Stefan Bejgu", email = "stefan.bejgu@gmail.com"}
 ]
-keywords = ["mongodb", "odm", "orm", "pydantic", "mongo", "async", "python"]
+keywords = ["redis", "odm", "orm", "pydantic", "async", "python"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Development Status :: 5 - Production/Stable",
@@ -23,8 +23,9 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
+    "redis",
+    "bson",
     "pydantic>=1.10,<3.0",
-    "motor>=2.5.0,<4.0.0",
     "click>=7",
     "toml",
     "lazy-model==0.2.0",
@@ -58,8 +59,8 @@ doc = [
 queue = ["beanie-batteries-queue>=0.2"]
 
 [project.urls]
-homepage = "https://beanie-odm.dev"
-repository = "https://github.com/roman-right/beanie"
+homepage = "https://github.com/andreim14/beanis"
+repository = "https://github.com/andreim14/beanis"
 
 [project.scripts]
 beanie = "beanie.executors.migrate:migrations"
