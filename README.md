@@ -1,5 +1,10 @@
-# Beanis
-[![pypi](https://img.shields.io/pypi/v/beanis)](https://pypi.python.org/pypi/beanis)
+[![Beanis](assets/logo/logo-no-background.svg)](https://github.com/BeanieODM/beanie)
+
+<div align="center">
+
+  <a href="https://pypi.python.org/pypi/beanis">![pypi](https://img.shields.io/pypi/v/beanis)</a>
+
+</div>
 
 ## 📢 Work in Progress Disclaimer 📢
 
