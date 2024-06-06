@@ -1,5 +1,8 @@
 import importlib
-import json
+import inspect
+from asyncio import coroutine
+
+import orjson
 import uuid
 import warnings
 from enum import Enum
@@ -143,7 +146,11 @@ class Document(
         :return: Union["Document", None]
         """
 
-        loaded_data = json.loads(cls.get_settings().motor_db.get(document_id))
+        db_data = cls.get_settings().motor_db.get(document_id)
+        if inspect.iscoroutine(db_data):
+            db_data = await db_data
+        loaded_data = orjson.loads(db_data)
+
         module_name, class_name = loaded_data["class_name"].rsplit(".", 1)
         module = importlib.import_module(module_name)
 
@@ -191,10 +198,12 @@ class Document(
         to_save_dict["class_name"] = (
             document.__module__ + "." + document.__class__.__name__
         )
-        document.get_settings().motor_db.set(
+        output = document.get_settings().motor_db.set(
             document.id,
-            json.dumps(to_save_dict),
+            orjson.dumps(to_save_dict),
         )
+        if inspect.iscoroutine(output):
+            await output
         return document
 
     @classmethod

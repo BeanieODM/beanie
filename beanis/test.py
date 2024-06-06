@@ -1,7 +1,7 @@
 import asyncio
 from typing import Optional
 
-from redis import Redis
+from redis.asyncio import Redis
 from pydantic import BaseModel
 
 from beanis import Document, init_beanis

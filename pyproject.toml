@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "beanis"
-version = "0.0.1"
+version = "0.0.2"
 description = "Asynchronous Python ODM for Redis"
 readme = "README.md"
 requires-python = ">=3.7,<4.0"
@@ -24,6 +24,7 @@ classifiers = [
 ]
 dependencies = [
     "redis",
+    "orjson",
     "bson",
     "pydantic>=1.10,<3.0",
     "click>=7",
