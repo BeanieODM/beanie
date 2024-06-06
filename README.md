@@ -1,4 +1,5 @@
 # Beanis
+[![pypi](https://img.shields.io/pypi/v/beanis)](https://pypi.python.org/pypi/beanis)
 
 ## 📢 Work in Progress Disclaimer 📢
 
