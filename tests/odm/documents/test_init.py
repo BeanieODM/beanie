@@ -18,6 +18,9 @@ from tests.odm.models import (
     DocumentTestModelWithSimpleIndex,
     DocumentWithCustomInit,
     DocumentWithIndexMerging2,
+    DocumentWithLink,
+    DocumentWithListLink,
+    DocumentWithUnionTypeExpressionOptionalBackLink,
 )
 
 
@@ -335,3 +338,19 @@ async def test_index_on_custom_types(db):
     )
 
     await db.drop_collection("sample")
+
+
+async def test_init_document_with_union_type_expression_optional_back_link(db):
+    await init_beanie(
+        database=db,
+        document_models=[
+            DocumentWithUnionTypeExpressionOptionalBackLink,
+            DocumentWithListLink,
+            DocumentWithLink,
+        ],
+    )
+
+    assert DocumentWithUnionTypeExpressionOptionalBackLink.get_link_fields().keys() == {
+        "back_link_list",
+        "back_link",
+    }
