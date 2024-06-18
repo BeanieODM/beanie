@@ -43,9 +43,12 @@ class Operation(BaseModel):
 
 
 class BulkWriter:
-    def __init__(self, session: Optional[ClientSession] = None):
+    def __init__(
+        self, session: Optional[ClientSession] = None, ordered: bool = True
+    ):
         self.operations: List[Operation] = []
         self.session = session
+        self.ordered = ordered
 
     async def __aenter__(self):
         return self
@@ -78,7 +81,7 @@ class BulkWriter:
                 requests.append(query)
 
             return await obj_class.get_motor_collection().bulk_write(  # type: ignore
-                requests, session=self.session
+                requests, session=self.session, ordered=self.ordered
             )
         return None
 
