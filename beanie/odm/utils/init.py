@@ -14,6 +14,11 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import get_args, get_origin
 
+if sys.version_info >= (3, 10):
+    from types import UnionType as TypesUnionType
+else:
+    TypesUnionType = ()
+
 import importlib
 import inspect
 from typing import (  # type: ignore
@@ -262,13 +267,21 @@ class Initializer:
                     )
 
             # Check if annotation is Optional[custom class] or Optional[List[custom class]]
-            elif origin is Union and len(args) == 2 and args[1] is type(None):
-                optional_origin = get_origin(args[0])
-                optional_args = get_args(args[0])
+            elif (
+                (origin is Union or origin is TypesUnionType)
+                and len(args) == 2
+                and type(None) in args
+            ):
+                if args[1] is type(None):
+                    optional = args[0]
+                else:
+                    optional = args[1]
+                optional_origin = get_origin(optional)
+                optional_args = get_args(optional)
 
                 if (
-                    isinstance(args[0], _GenericAlias)
-                    and args[0].__origin__ is cls
+                    isinstance(optional, _GenericAlias)
+                    and optional.__origin__ is cls
                 ):
                     if cls is Link:
                         return LinkInfo(

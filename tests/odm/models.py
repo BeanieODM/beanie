@@ -1,4 +1,5 @@
 import datetime
+import sys
 from enum import Enum
 from ipaddress import (
     IPv4Address,
@@ -59,6 +60,16 @@ from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
 if IS_PYDANTIC_V2:
     from pydantic import RootModel, validate_call
+
+if sys.version_info >= (3, 10):
+
+    def type_union(A, B):
+        return A | B
+
+else:
+
+    def type_union(A, B):
+        return Union[A, B]
 
 
 class Color:
@@ -947,6 +958,24 @@ class DocumentWithOptionalListBackLink(Document):
         )
     else:
         back_link: Optional[List[BackLink[DocumentWithListLink]]] = Field(
+            original_field="link"
+        )
+    i: int = 1
+
+
+class DocumentWithUnionTypeExpressionOptionalBackLink(Document):
+    if IS_PYDANTIC_V2:
+        back_link_list: type_union(
+            List[BackLink[DocumentWithListLink]], None
+        ) = Field(json_schema_extra={"original_field": "link"})
+        back_link: type_union(BackLink[DocumentWithLink], None) = Field(
+            json_schema_extra={"original_field": "link"}
+        )
+    else:
+        back_link_list: type_union(
+            List[BackLink[DocumentWithListLink]], None
+        ) = Field(original_field="link")
+        back_link: type_union(BackLink[DocumentWithLink], None) = Field(
             original_field="link"
         )
     i: int = 1
