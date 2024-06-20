@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from pydantic import UUID4, BaseModel
 
@@ -11,7 +11,7 @@ class InspectionError(BaseModel):
     Inspection error details
     """
 
-    document_id: PydanticObjectId | UUID4
+    document_id: Union[PydanticObjectId, UUID4]
     error: str
 
 
