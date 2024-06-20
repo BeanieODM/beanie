@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic import BaseModel, UUID4
+from pydantic import UUID4, BaseModel
 
 from beanie.odm.enums import InspectionStatuses
 from beanie.odm.fields import PydanticObjectId
