@@ -43,9 +43,9 @@ class AggregationQuery(
         ignore_cache: bool = False,
         **pymongo_kwargs,
     ):
-        self.aggregation_pipeline: List[
-            Mapping[str, Any]
-        ] = aggregation_pipeline
+        self.aggregation_pipeline: List[Mapping[str, Any]] = (
+            aggregation_pipeline
+        )
         self.document_model = document_model
         self.projection_model = projection_model
         self.find_query = find_query

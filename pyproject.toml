@@ -56,6 +56,11 @@ doc = [
     "jinja2>=3.0.3"
 ]
 queue = ["beanie-batteries-queue>=0.2"]
+ci = [
+    "toml",
+    "requests",
+    "types-requests",
+]
 
 [project.urls]
 homepage = "https://beanie-odm.dev"
@@ -65,23 +70,6 @@ repository = "https://github.com/roman-right/beanie"
 beanie = "beanie.executors.migrate:migrations"
 
 # TOOLS
-
-[tool.black]
-line-length = 79
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -112,19 +100,14 @@ include = ["tests/typing", "beanie"]
 
 [tool.ruff]
 line-length = 79
+fix = true
+target-version = "py312"
+include = ["**/*.py", ".github/**/*.py"]
+
+[tool.ruff.lint]
 ignore = ["E501"]
 extend-select = ["I001"]
-fix = true
+per-file-ignores = { "tests/*" = ["E711"] }
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-# Assume Python 3.10.
-target-version = "py310"
-
-[tool.ruff.per-file-ignores]
-"tests/*" = ["E711"]
-
-[tool.ruff.mccabe]
-# Unlike Flake8, default to a complexity level of 10.
-max-complexity = 10

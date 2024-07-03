@@ -195,8 +195,7 @@ class FindMany(
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> "FindMany[FindQueryResultType]":
-        ...
+    ) -> "FindMany[FindQueryResultType]": ...
 
     @overload
     def find_many(
@@ -213,8 +212,7 @@ class FindMany(
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> "FindMany[FindQueryProjectionType]":
-        ...
+    ) -> "FindMany[FindQueryProjectionType]": ...
 
     def find_many(
         self: "FindMany[FindQueryResultType]",
@@ -270,15 +268,13 @@ class FindMany(
     def project(
         self: "FindMany",
         projection_model: None,
-    ) -> "FindMany[FindQueryResultType]":
-        ...
+    ) -> "FindMany[FindQueryResultType]": ...
 
     @overload
     def project(
         self: "FindMany",
         projection_model: Type[FindQueryProjectionType],
-    ) -> "FindMany[FindQueryProjectionType]":
-        ...
+    ) -> "FindMany[FindQueryProjectionType]": ...
 
     def project(
         self: "FindMany",
@@ -310,8 +306,7 @@ class FindMany(
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> "FindMany[FindQueryResultType]":
-        ...
+    ) -> "FindMany[FindQueryResultType]": ...
 
     @overload
     def find(
@@ -328,8 +323,7 @@ class FindMany(
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> "FindMany[FindQueryProjectionType]":
-        ...
+    ) -> "FindMany[FindQueryProjectionType]": ...
 
     def find(
         self: "FindMany[FindQueryResultType]",
@@ -538,8 +532,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs,
-    ) -> AggregationQuery[Dict[str, Any]]:
-        ...
+    ) -> AggregationQuery[Dict[str, Any]]: ...
 
     @overload
     def aggregate(
@@ -549,8 +542,7 @@ class FindMany(
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs,
-    ) -> AggregationQuery[FindQueryProjectionType]:
-        ...
+    ) -> AggregationQuery[FindQueryProjectionType]: ...
 
     def aggregate(
         self,
@@ -618,12 +610,12 @@ class FindMany(
 
     def build_aggregation_pipeline(self, *extra_stages):
         if self.fetch_links:
-            aggregation_pipeline: List[
-                Dict[str, Any]
-            ] = construct_lookup_queries(
-                self.document_model,
-                nesting_depth=self.nesting_depth,
-                nesting_depths_per_field=self.nesting_depths_per_field,
+            aggregation_pipeline: List[Dict[str, Any]] = (
+                construct_lookup_queries(
+                    self.document_model,
+                    nesting_depth=self.nesting_depth,
+                    nesting_depths_per_field=self.nesting_depths_per_field,
+                )
             )
         else:
             aggregation_pipeline = []
@@ -669,9 +661,9 @@ class FindMany(
     @property
     def motor_cursor(self):
         if self.fetch_links:
-            aggregation_pipeline: List[
-                Dict[str, Any]
-            ] = self.build_aggregation_pipeline()
+            aggregation_pipeline: List[Dict[str, Any]] = (
+                self.build_aggregation_pipeline()
+            )
 
             projection = get_projection(self.projection_model)
 
@@ -709,9 +701,9 @@ class FindMany(
         :return: int
         """
         if self.fetch_links:
-            aggregation_pipeline: List[
-                Dict[str, Any]
-            ] = self.build_aggregation_pipeline()
+            aggregation_pipeline: List[Dict[str, Any]] = (
+                self.build_aggregation_pipeline()
+            )
 
             aggregation_pipeline.append({"$count": "count"})
 
@@ -742,15 +734,13 @@ class FindOne(FindQuery[FindQueryResultType]):
     def project(
         self: "FindOne[FindQueryResultType]",
         projection_model: None = None,
-    ) -> "FindOne[FindQueryResultType]":
-        ...
+    ) -> "FindOne[FindQueryResultType]": ...
 
     @overload
     def project(
         self: "FindOne[FindQueryResultType]",
         projection_model: Type[FindQueryProjectionType],
-    ) -> "FindOne[FindQueryProjectionType]":
-        ...
+    ) -> "FindOne[FindQueryProjectionType]": ...
 
     # TODO probably merge FindOne and FindMany to one class to avoid this
     #  code duplication
@@ -780,8 +770,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> "FindOne[FindQueryResultType]":
-        ...
+    ) -> "FindOne[FindQueryResultType]": ...
 
     @overload
     def find_one(
@@ -794,8 +783,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> "FindOne[FindQueryProjectionType]":
-        ...
+    ) -> "FindOne[FindQueryProjectionType]": ...
 
     def find_one(
         self: "FindOne[FindQueryResultType]",

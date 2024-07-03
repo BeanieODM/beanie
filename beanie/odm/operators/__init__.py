@@ -12,8 +12,7 @@ class BaseOperator(Mapping):
 
     @property
     @abstractmethod
-    def query(self) -> MappingType[str, Any]:
-        ...
+    def query(self) -> MappingType[str, Any]: ...
 
     def __getitem__(self, item: str):
         return self.query[item]

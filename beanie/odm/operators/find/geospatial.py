@@ -5,8 +5,7 @@ from typing import List, Optional
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseFindGeospatialOperator(BaseFindOperator, ABC):
-    ...
+class BaseFindGeospatialOperator(BaseFindOperator, ABC): ...
 
 
 class GeoIntersects(BaseFindGeospatialOperator):
@@ -260,13 +259,13 @@ class Near(BaseFindGeospatialOperator):
             }
         }
         if self.max_distance:
-            expression[self.field][self.operator][
-                "$maxDistance"
-            ] = self.max_distance  # type: ignore
+            expression[self.field][self.operator]["$maxDistance"] = (
+                self.max_distance
+            )  # type: ignore
         if self.min_distance:
-            expression[self.field][self.operator][
-                "$minDistance"
-            ] = self.min_distance  # type: ignore
+            expression[self.field][self.operator]["$minDistance"] = (
+                self.min_distance
+            )  # type: ignore
         return expression
 
 

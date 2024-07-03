@@ -158,7 +158,9 @@ class PydanticObjectId(ObjectId):
 
         @classmethod
         def __get_pydantic_json_schema__(
-            cls, schema: core_schema.CoreSchema, handler: GetJsonSchemaHandler  # type: ignore
+            cls,
+            schema: core_schema.CoreSchema,
+            handler: GetJsonSchemaHandler,  # type: ignore
         ) -> JsonSchemaValue:
             json_schema = handler(schema)
             json_schema.update(
@@ -187,9 +189,9 @@ class PydanticObjectId(ObjectId):
 
 
 if not IS_PYDANTIC_V2:
-    ENCODERS_BY_TYPE[
-        PydanticObjectId
-    ] = str  # it is a workaround to force pydantic make json schema for this field
+    ENCODERS_BY_TYPE[PydanticObjectId] = (
+        str  # it is a workaround to force pydantic make json schema for this field
+    )
 
 BeanieObjectId = PydanticObjectId
 
@@ -336,7 +338,7 @@ class Link(Generic[T]):
 
     @staticmethod
     def repack_links(
-        links: List[Union["Link", "DocType"]]
+        links: List[Union["Link", "DocType"]],
     ) -> OrderedDictType[Any, Any]:
         result = OrderedDict()
         for link in links:
@@ -364,7 +366,9 @@ class Link(Generic[T]):
         @classmethod
         def build_validation(cls, handler, source_type):
             def validate(v: Union[DBRef, T], validation_info: ValidationInfo):
-                document_class = DocsRegistry.evaluate_fr(get_args(source_type)[0])  # type: ignore  # noqa: F821
+                document_class = DocsRegistry.evaluate_fr(
+                    get_args(source_type)[0]
+                )  # type: ignore  # noqa: F821
 
                 if isinstance(v, DBRef):
                     return cls(ref=v, document_class=document_class)
@@ -463,7 +467,9 @@ class BackLink(Generic[T]):
         @classmethod
         def build_validation(cls, handler, source_type):
             def validate(v: Union[DBRef, T], field):
-                document_class = DocsRegistry.evaluate_fr(get_args(source_type)[0])  # type: ignore  # noqa: F821
+                document_class = DocsRegistry.evaluate_fr(
+                    get_args(source_type)[0]
+                )  # type: ignore  # noqa: F821
                 if isinstance(v, dict) or isinstance(v, BaseModel):
                     return parse_obj(document_class, v)
                 return cls(document_class=document_class)

@@ -96,8 +96,7 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
         return Encoder(custom_encoders=self.encoders).encode(query)
 
     @abstractmethod
-    async def _update(self) -> UpdateResult:
-        ...
+    async def _update(self) -> UpdateResult: ...
 
 
 class UpdateMany(UpdateQuery):

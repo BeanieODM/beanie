@@ -253,7 +253,9 @@ class Initializer:
                     return LinkInfo(
                         field_name=field_name,
                         lookup_field_name=field_name,
-                        document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(
+                            get_args(args[0])[0]
+                        ),  # type: ignore
                         link_type=LinkTypes.LIST,
                     )
                 if cls is BackLink:
@@ -262,7 +264,9 @@ class Initializer:
                         lookup_field_name=get_extra_field_info(  # type: ignore
                             field, "original_field"
                         ),
-                        document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(
+                            get_args(args[0])[0]
+                        ),  # type: ignore
                         link_type=LinkTypes.BACK_LIST,
                     )
 
@@ -287,7 +291,9 @@ class Initializer:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field_name,
-                            document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                optional_args[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_DIRECT,
                         )
                     if cls is BackLink:
@@ -296,7 +302,9 @@ class Initializer:
                             lookup_field_name=get_extra_field_info(
                                 field, "original_field"
                             ),
-                            document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                optional_args[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
                         )
 
@@ -310,7 +318,9 @@ class Initializer:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field_name,
-                            document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                get_args(optional_args[0])[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_LIST,
                         )
                     if cls is BackLink:
@@ -319,7 +329,9 @@ class Initializer:
                             lookup_field_name=get_extra_field_info(
                                 field, "original_field"
                             ),
-                            document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                get_args(optional_args[0])[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_LIST,
                         )
         return None
@@ -700,7 +712,7 @@ class Initializer:
 
     @staticmethod
     def check_deprecations(
-        cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        cls: Union[Type[Document], Type[View], Type[UnionDoc]],
     ):
         if hasattr(cls, "Collection"):
             raise Deprecation(
