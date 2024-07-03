@@ -17,11 +17,11 @@ class Lock(Document):
 class TestTyping:
     def test_extract_id_class(self):
         # Union
-        assert extract_id_class(Union[str, int]) == str
-        assert extract_id_class(Union[str, None]) == str
-        assert extract_id_class(Union[str, None, int]) == str
+        assert extract_id_class(Union[str, int]) is str
+        assert extract_id_class(Union[str, None]) is str
+        assert extract_id_class(Union[str, None, int]) is str
         # Optional
-        assert extract_id_class(Optional[str]) == str
+        assert extract_id_class(Optional[str]) is str
         # Link
         assert extract_id_class(Link[Lock]) == Lock
 

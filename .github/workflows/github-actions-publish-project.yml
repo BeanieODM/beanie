@@ -8,10 +8,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: install dependencies
+        run: pip install .[ci]
       - name: install flit
-        run: pip3 install flit
-      - name: publish project
+        run: pip install flit
+      - name: update version or publish
         env:
           FLIT_USERNAME: __token__
           FLIT_PASSWORD: ${{ secrets.FLIT_PASSWORD }}
-        run: flit publish
+        run: python .github/scripts/handlers/version.py
