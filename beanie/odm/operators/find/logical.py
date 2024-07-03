@@ -4,8 +4,7 @@ from typing import Any, Dict, Mapping, Union
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseFindLogicalOperator(BaseFindOperator, ABC):
-    ...
+class BaseFindLogicalOperator(BaseFindOperator, ABC): ...
 
 
 class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):

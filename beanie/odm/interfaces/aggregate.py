@@ -26,8 +26,7 @@ class AggregateInterface:
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs,
-    ) -> AggregationQuery[Dict[str, Any]]:
-        ...
+    ) -> AggregationQuery[Dict[str, Any]]: ...
 
     @overload
     @classmethod
@@ -38,8 +37,7 @@ class AggregateInterface:
         session: Optional[ClientSession] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs,
-    ) -> AggregationQuery[DocumentProjectionType]:
-        ...
+    ) -> AggregationQuery[DocumentProjectionType]: ...
 
     @classmethod
     def aggregate(

@@ -76,7 +76,9 @@ class BulkWriter:
                     query = op.operation(op.first_query, **op.pymongo_kwargs)  # type: ignore
                 else:
                     query = op.operation(
-                        op.first_query, op.second_query, **op.pymongo_kwargs  # type: ignore
+                        op.first_query,
+                        op.second_query,
+                        **op.pymongo_kwargs,  # type: ignore
                     )
                 requests.append(query)
 

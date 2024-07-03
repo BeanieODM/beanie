@@ -3,8 +3,7 @@ from abc import ABC
 from beanie.odm.operators.update import BaseUpdateOperator
 
 
-class BaseUpdateBitwiseOperator(BaseUpdateOperator, ABC):
-    ...
+class BaseUpdateBitwiseOperator(BaseUpdateOperator, ABC): ...
 
 
 class Bit(BaseUpdateBitwiseOperator):

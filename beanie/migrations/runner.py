@@ -209,7 +209,8 @@ class MigrationNode:
 
         db = DBHandler.get_db()
         await init_beanie(
-            database=db, document_models=[MigrationLog]  # type: ignore
+            database=db,
+            document_models=[MigrationLog],  # type: ignore
         )
         current_migration = await MigrationLog.find_one({"is_current": True})
 

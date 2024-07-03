@@ -4,8 +4,7 @@ from typing import List, Union
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseFindElementOperator(BaseFindOperator, ABC):
-    ...
+class BaseFindElementOperator(BaseFindOperator, ABC): ...
 
 
 class Exists(BaseFindElementOperator):

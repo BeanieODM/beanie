@@ -66,8 +66,7 @@ def test_previous_saved_state_needed_preserves_signature() -> None:
 
 
 class ExpectsDocumentSelf(Protocol):
-    def __call__(self, doc_self: Document, /) -> Any:
-        ...
+    def __call__(self, doc_self: Document, /) -> Any: ...
 
 
 def test_document_insert_expects_self() -> None:

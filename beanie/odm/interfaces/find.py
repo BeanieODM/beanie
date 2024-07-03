@@ -66,8 +66,7 @@ class FindInterface:
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindOne[FindType]:
-        ...
+    ) -> FindOne[FindType]: ...
 
     @overload
     @classmethod
@@ -82,8 +81,7 @@ class FindInterface:
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindOne["DocumentProjectionType"]:
-        ...
+    ) -> FindOne["DocumentProjectionType"]: ...
 
     @classmethod
     def find_one(  # type: ignore
@@ -139,8 +137,7 @@ class FindInterface:
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindMany[FindType]:
-        ...
+    ) -> FindMany[FindType]: ...
 
     @overload
     @classmethod
@@ -159,8 +156,7 @@ class FindInterface:
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindMany["DocumentProjectionType"]:
-        ...
+    ) -> FindMany["DocumentProjectionType"]: ...
 
     @classmethod
     def find_many(  # type: ignore
@@ -227,8 +223,7 @@ class FindInterface:
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindMany[FindType]:
-        ...
+    ) -> FindMany[FindType]: ...
 
     @overload
     @classmethod
@@ -247,8 +242,7 @@ class FindInterface:
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindMany["DocumentProjectionType"]:
-        ...
+    ) -> FindMany["DocumentProjectionType"]: ...
 
     @classmethod
     def find(  # type: ignore
@@ -301,8 +295,7 @@ class FindInterface:
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindMany[FindType]:
-        ...
+    ) -> FindMany[FindType]: ...
 
     @overload
     @classmethod
@@ -319,8 +312,7 @@ class FindInterface:
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindMany["DocumentProjectionType"]:
-        ...
+    ) -> FindMany["DocumentProjectionType"]: ...
 
     @classmethod
     def find_all(  # type: ignore
@@ -378,8 +370,7 @@ class FindInterface:
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindMany[FindType]:
-        ...
+    ) -> FindMany[FindType]: ...
 
     @overload
     @classmethod
@@ -396,8 +387,7 @@ class FindInterface:
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
-    ) -> FindMany["DocumentProjectionType"]:
-        ...
+    ) -> FindMany["DocumentProjectionType"]: ...
 
     @classmethod
     def all(  # type: ignore
@@ -472,9 +462,7 @@ class FindInterface:
         if cls.get_settings().union_doc:
             args += (
                 {
-                    cls.get_settings()
-                    .class_id: cls.get_settings()
-                    .union_doc_alias
+                    cls.get_settings().class_id: cls.get_settings().union_doc_alias
                 },
             )
         return args

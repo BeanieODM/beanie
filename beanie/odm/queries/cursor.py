@@ -27,16 +27,13 @@ class BaseCursorQuery(Generic[CursorResultType]):
     lazy_parse = False
 
     @abstractmethod
-    def get_projection_model(self) -> Optional[Type[BaseModel]]:
-        ...
+    def get_projection_model(self) -> Optional[Type[BaseModel]]: ...
 
     @property
     @abstractmethod
-    def motor_cursor(self):
-        ...
+    def motor_cursor(self): ...
 
-    def _cursor_params(self):
-        ...
+    def _cursor_params(self): ...
 
     def __aiter__(self):
         if self.cursor is None:
@@ -53,12 +50,10 @@ class BaseCursorQuery(Generic[CursorResultType]):
         return parse_obj(projection, next_item, lazy_parse=self.lazy_parse)  # type: ignore
 
     @abstractmethod
-    def _get_cache(self) -> List[Dict[str, Any]]:
-        ...
+    def _get_cache(self) -> List[Dict[str, Any]]: ...
 
     @abstractmethod
-    def _set_cache(self, data):
-        ...
+    def _set_cache(self, data): ...
 
     async def to_list(
         self, length: Optional[int] = None
