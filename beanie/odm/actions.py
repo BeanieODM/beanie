@@ -174,7 +174,7 @@ def register_action(
 
 
 def before_event(
-    *args: Union[List[EventTypes], EventTypes]
+    *args: Union[List[EventTypes], EventTypes],
 ) -> Callable[[F], F]:
     """
     Decorator. It adds action, which should run before mentioned one
@@ -189,7 +189,7 @@ def before_event(
 
 
 def after_event(
-    *args: Union[List[EventTypes], EventTypes]
+    *args: Union[List[EventTypes], EventTypes],
 ) -> Callable[[F], F]:
     """
     Decorator. It adds action, which should run after mentioned one

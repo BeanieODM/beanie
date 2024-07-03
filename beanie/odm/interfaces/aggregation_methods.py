@@ -18,8 +18,7 @@ class AggregateMethods:
         projection_model=None,
         session=None,
         ignore_cache: bool = False,
-    ):
-        ...
+    ): ...
 
     async def sum(
         self,

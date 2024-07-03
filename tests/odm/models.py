@@ -421,8 +421,7 @@ class DocumentWithActions2(Document):
         self.num_2 -= 1
 
 
-class InheritedDocumentWithActions(DocumentWithActions):
-    ...
+class InheritedDocumentWithActions(DocumentWithActions): ...
 
 
 class InternalDoc(BaseModel):
@@ -701,8 +700,7 @@ class Car(Vehicle, Fuelled):
     body: str
 
 
-class Bike(Vehicle, Fuelled):
-    ...
+class Bike(Vehicle, Fuelled): ...
 
 
 class Bus(Car, Fuelled):

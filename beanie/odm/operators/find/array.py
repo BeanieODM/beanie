@@ -4,8 +4,7 @@ from typing import Optional
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseFindArrayOperator(BaseFindOperator, ABC):
-    ...
+class BaseFindArrayOperator(BaseFindOperator, ABC): ...
 
 
 class All(BaseFindArrayOperator):

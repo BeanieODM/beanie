@@ -50,10 +50,10 @@ async def test_update_query():
 
 
 async def test_update_many(preset_documents):
-    await Sample.find_many(Sample.increment > 4).find_many(
-        Sample.nested.optional == None
-    ).update(
-        Set({Sample.increment: 100})
+    await (
+        Sample.find_many(Sample.increment > 4)
+        .find_many(Sample.nested.optional == None)
+        .update(Set({Sample.increment: 100}))
     )  # noqa
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3
@@ -62,10 +62,10 @@ async def test_update_many(preset_documents):
 
 
 async def test_update_many_linked_method(preset_documents):
-    await Sample.find_many(Sample.increment > 4).find_many(
-        Sample.nested.optional == None
-    ).update_many(
-        Set({Sample.increment: 100})
+    await (
+        Sample.find_many(Sample.increment > 4)
+        .find_many(Sample.nested.optional == None)
+        .update_many(Set({Sample.increment: 100}))
     )  # noqa
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3

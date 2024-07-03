@@ -118,10 +118,21 @@ async def test_aggregate_with_session(preset_documents, session):
 
 async def test_aggregate_pymongo_kwargs(preset_documents):
     with pytest.raises(OperationFailure):
-        await Sample.find(Sample.increment >= 4).aggregate(
-            [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}],
-            wrong=True,
-        ).to_list()
+        await (
+            Sample.find(Sample.increment >= 4)
+            .aggregate(
+                [
+                    {
+                        "$group": {
+                            "_id": "$string",
+                            "total": {"$sum": "$integer"},
+                        }
+                    }
+                ],
+                wrong=True,
+            )
+            .to_list()
+        )
 
 
 async def test_clone(preset_documents):
