@@ -89,8 +89,3 @@ class GitHubHandler:
     @staticmethod
     def run_git_command(command: List[str]):
         subprocess.run(command, check=True)
-
-
-if __name__ == "__main__":
-    handler = GitHubHandler("BeanieODM", "beanie", "1.26.0", "1.27.0")
-    print(handler.build_markdown_for_many_prs())
