@@ -309,14 +309,17 @@ async def test_index_recreation(db):
 
 
 async def test_merge_indexes():
-    assert await DocumentWithIndexMerging2.get_motor_collection().index_information() == {
-        "_id_": {"key": [("_id", 1)], "v": 2},
-        "s0_1": {"key": [("s0", 1)], "v": 2},
-        "s1_1": {"key": [("s1", 1)], "v": 2},
-        "s2_-1": {"key": [("s2", -1)], "v": 2},
-        "s3_index": {"key": [("s3", -1)], "v": 2},
-        "s4_index": {"key": [("s4", 1)], "v": 2},
-    }
+    assert (
+        await DocumentWithIndexMerging2.get_motor_collection().index_information()
+        == {
+            "_id_": {"key": [("_id", 1)], "v": 2},
+            "s0_1": {"key": [("s0", 1)], "v": 2},
+            "s1_1": {"key": [("s1", 1)], "v": 2},
+            "s2_-1": {"key": [("s2", -1)], "v": 2},
+            "s3_index": {"key": [("s3", -1)], "v": 2},
+            "s4_index": {"key": [("s4", 1)], "v": 2},
+        }
+    )
 
 
 async def test_custom_init():
@@ -350,12 +353,15 @@ async def test_init_document_with_union_type_expression_optional_back_link(db):
         ],
     )
 
-    assert DocumentWithUnionTypeExpressionOptionalBackLink.get_link_fields().keys() == {
-        "back_link_list",
-        "back_link",
-    }
+    assert (
+        DocumentWithUnionTypeExpressionOptionalBackLink.get_link_fields().keys()
+        == {
+            "back_link_list",
+            "back_link",
+        }
+    )
 
-
+    
 async def test_init_document_can_inhert_and_extend_settings(db):
     class Sample1(Document):
         class Settings:

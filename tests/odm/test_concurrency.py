@@ -10,12 +10,10 @@ class SampleModel(Document):
     i: int = 10
 
 
-class SampleModel2(SampleModel):
-    ...
+class SampleModel2(SampleModel): ...
 
 
-class SampleModel3(SampleModel2):
-    ...
+class SampleModel3(SampleModel2): ...
 
 
 class TestConcurrency:
