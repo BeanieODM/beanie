@@ -361,7 +361,7 @@ async def test_init_document_with_union_type_expression_optional_back_link(db):
         }
     )
 
-    
+
 async def test_init_document_can_inhert_and_extend_settings(db):
     class Sample1(Document):
         class Settings:
