@@ -179,7 +179,7 @@ Search by `id` of the linked documents works using the following syntax:
 
 ```python
 houses = await House.find(
-    House.door.id == "DOOR_ID_HERE"
+    House.door.id == PydanticObjectId("DOOR_ID_HERE")
 ).to_list()
 ```
 
