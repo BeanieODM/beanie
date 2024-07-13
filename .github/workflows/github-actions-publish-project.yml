@@ -6,8 +6,11 @@ on:
 jobs:
   publish_project:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - uses: actions/checkout@v3
+      - name: get tags
+        run: git fetch --tags origin
       - uses: actions/setup-python@v4
         with:
           python-version: 3.11
