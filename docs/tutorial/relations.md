@@ -179,7 +179,7 @@ Search by `id` of the linked documents works using the following syntax:
 
 ```python
 houses = await House.find(
-    House.door.id == "DOOR_ID_HERE"
+    House.door.id == PydanticObjectId("DOOR_ID_HERE")
 ).to_list()
 ```
 
@@ -294,7 +294,7 @@ class Person(Document):
 
 The `original_field` parameter is required for the back link field.
 
-Back links support all the operations that normal links support, but are virtual. This means that when searching the database, you will need to include `fetch_links=True` (see [Finding documents](find.md)), or you will recieve an empty 'BackLink' virtual object. It is not possible to `fetch()` this virtual link after the initial search.
+Back links support all the operations that normal links support, but are virtual. This means that when searching the database, you will need to include `fetch_links=True` (see [Finding documents](/tutorial/finding-documents).), or you will recieve an empty 'BackLink' virtual object. It is not possible to `fetch()` this virtual link after the initial search.
 
 ## Limitations
 
