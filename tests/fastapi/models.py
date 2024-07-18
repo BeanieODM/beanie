@@ -1,6 +1,6 @@
 from typing import List
 
-from beanie import Document, Indexed, Link
+from beanie import BsonBinary, Document, Indexed, Link
 
 
 class WindowAPI(Document):
@@ -20,3 +20,7 @@ class HouseAPI(Document):
     windows: List[Link[WindowAPI]]
     name: Indexed(str)
     height: Indexed(int) = 2
+
+
+class BinAPI(Document):
+    binary: BsonBinary
