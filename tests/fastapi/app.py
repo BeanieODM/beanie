@@ -3,7 +3,7 @@ from fastapi import FastAPI
 
 from beanie import init_beanie
 from tests.conftest import Settings
-from tests.fastapi.models import DoorAPI, HouseAPI, RoofAPI, WindowAPI
+from tests.fastapi.models import BinAPI, DoorAPI, HouseAPI, RoofAPI, WindowAPI
 from tests.fastapi.routes import house_router
 
 app = FastAPI()
@@ -17,7 +17,7 @@ async def app_init():
     # INIT BEANIE
     await init_beanie(
         client.beanie_db,
-        document_models=[HouseAPI, WindowAPI, DoorAPI, RoofAPI],
+        document_models=[HouseAPI, WindowAPI, DoorAPI, RoofAPI, BinAPI],
     )
 
     # ADD ROUTES
