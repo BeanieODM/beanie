@@ -361,7 +361,7 @@ class Link(Generic[T]):
         def serialize(value: Union["Link", BaseModel]):
             if isinstance(value, Link):
                 return value.to_dict()
-            return value.model_dump()
+            return value.model_dump(by_alias=True)
 
         @classmethod
         def build_validation(cls, handler, source_type):
