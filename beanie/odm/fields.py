@@ -152,7 +152,7 @@ class PydanticObjectId(ObjectId):
                 ),
                 json_schema=str_schema(),
                 serialization=core_schema.plain_serializer_function_ser_schema(
-                    lambda instance: str(instance)
+                    lambda instance: str(instance), when_used="json"
                 ),
             )
 
@@ -361,7 +361,7 @@ class Link(Generic[T]):
         def serialize(value: Union["Link", BaseModel]):
             if isinstance(value, Link):
                 return value.to_dict()
-            return value.model_dump()
+            return value.model_dump(mode="json")
 
         @classmethod
         def build_validation(cls, handler, source_type):
@@ -415,7 +415,8 @@ class Link(Generic[T]):
                     }
                 ),
                 serialization=core_schema.plain_serializer_function_ser_schema(  # type: ignore
-                    lambda instance: cls.serialize(instance)  # type: ignore
+                    lambda instance: cls.serialize(instance),
+                    when_used="json",  # type: ignore
                 ),
             )
             return core_schema.with_info_plain_validator_function(
