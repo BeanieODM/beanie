@@ -21,6 +21,14 @@ classifiers = [
     "Topic :: Database",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
     "pydantic>=1.10,<3.0",
@@ -83,6 +91,7 @@ filterwarnings = [
     "ignore::UserWarning",
 ]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.beanie.migrations]
 path = "beanie/example_migration"

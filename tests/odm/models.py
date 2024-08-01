@@ -1152,3 +1152,22 @@ class BsonRegexDoc(Document):
 
 class NativeRegexDoc(Document):
     regex: Optional[re.Pattern]
+
+
+if IS_PYDANTIC_V2:
+    from pydantic import Secret
+
+    class SecretDoc(Document):
+        a: str
+
+    class SecretData(BaseModel):
+        b: str
+        nested: Secret[int]
+
+    class DocWithSecretFields(Document):
+        secret_data: Secret[SecretData]
+        secret_int: Secret[int]
+        secret_doc: Secret[SecretDoc]
+
+    class NestedSecret(Document):
+        nested: Secret[Secret[int]]
