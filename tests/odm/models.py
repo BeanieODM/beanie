@@ -1134,3 +1134,18 @@ class LongSelfLink(Document):
 
     class Settings:
         max_nesting_depth = 50
+
+
+if IS_PYDANTIC_V2:
+    from pydantic import Secret
+
+    class SecretDoc(Document):
+        a: str
+
+    class SecretData(BaseModel):
+        b: str
+
+    class DocWithSecretFields(Document):
+        secret_data: Secret[SecretData]
+        secret_int: Secret[int]
+        secret_doc: Secret[SecretDoc]

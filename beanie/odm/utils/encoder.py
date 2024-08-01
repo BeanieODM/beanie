@@ -47,9 +47,22 @@ DEFAULT_CUSTOM_ENCODERS: MutableMapping[type, SingleArgCallable] = {
     re.Pattern: bson.Regex.from_native,
 }
 if IS_PYDANTIC_V2:
+    from pydantic import Secret
     from pydantic_core import Url
 
     DEFAULT_CUSTOM_ENCODERS[Url] = str
+
+    def uncover_secret(secret):
+        if isinstance(secret, Secret):
+            return secret.get_secret_value(), True
+        return secret, False
+
+else:
+
+    def uncover_secret(secret):
+        # v1 does not have pydantic.Secret[Any]
+        return secret, False
+
 
 BSON_SCALAR_TYPES = (
     type(None),
@@ -138,6 +151,9 @@ class Encoder:
             }
         if isinstance(obj, Iterable):
             return [self.encode(value) for value in obj]
+        obj, is_secret = uncover_secret(obj)
+        if is_secret:
+            return self.encode(obj)
 
         raise ValueError(f"Cannot encode {obj!r}")
 

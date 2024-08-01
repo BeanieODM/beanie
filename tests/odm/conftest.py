@@ -5,6 +5,7 @@ from typing import List
 import pytest
 
 from beanie.odm.utils.init import init_beanie
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
     ADocument,
     BDocument,
@@ -292,6 +293,11 @@ async def init(db):
         DocumentWithBackLinkForNesting,
         LongSelfLink,
     ]
+    if IS_PYDANTIC_V2:
+        from .models import DocWithSecretFields, SecretDoc
+
+        models.append(DocWithSecretFields)
+        models.append(SecretDoc)
     await init_beanie(
         database=db,
         document_models=models,
