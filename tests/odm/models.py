@@ -24,6 +24,7 @@ from typing import (
 from uuid import UUID, uuid4
 
 import pymongo
+from bson import Regex
 from pydantic import (
     UUID4,
     BaseModel,
@@ -52,6 +53,7 @@ from beanie import (
     ValidateOnSave,
 )
 from beanie.odm.actions import Delete, after_event, before_event
+from beanie.odm.custom_types import re
 from beanie.odm.custom_types.bson.binary import BsonBinary
 from beanie.odm.fields import BackLink, Link, PydanticObjectId
 from beanie.odm.settings.timeseries import TimeSeriesConfig
@@ -1139,3 +1141,14 @@ class LongSelfLink(Document):
 
     class Settings:
         max_nesting_depth = 50
+
+
+class BsonRegexDoc(Document):
+    regex: Optional[Regex] = None
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class NativeRegexDoc(Document):
+    regex: Optional[re.Pattern]
