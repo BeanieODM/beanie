@@ -1,9 +1,11 @@
 from beanie.odm.operators.update.array import (
     AddToSet,
-    Pop,
+    AddToSetEach,
     Pull,
     PullAll,
+    Pop,
     Push,
+    PushEach,
 )
 from tests.odm.models import Sample
 
@@ -11,6 +13,11 @@ from tests.odm.models import Sample
 def test_add_to_set():
     q = AddToSet({Sample.integer: 2})
     assert q == {"$addToSet": {"integer": 2}}
+
+
+def test_add_to_set_each():
+    q = AddToSetEach({Sample.integer: [2]})
+    assert q == {"$addToSet": {"integer": {"$each": [2]}}}
 
 
 def test_pop():
@@ -26,6 +33,11 @@ def test_pull():
 def test_push():
     q = Push({Sample.integer: 2})
     assert q == {"$push": {"integer": 2}}
+
+
+def test_push_each():
+    q = PushEach({Sample.integer: [2]})
+    assert q == {'$push': {'integer': {'$each': [2]}}}
 
 
 def test_pull_all():

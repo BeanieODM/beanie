@@ -39,6 +39,8 @@ from beanie.odm.operators.update.array import (
     Pull,
     PullAll,
     Push,
+    AddToSetEach,
+    PushEach,
 )
 from beanie.odm.operators.update.bitwise import Bit
 from beanie.odm.operators.update.general import (
@@ -103,6 +105,8 @@ __all__ = [
     "Pull",
     "Push",
     "PullAll",
+    "PushEach",
+    "AddToSetEach",
     # Bitwise
     "Bit",
     # General

@@ -140,3 +140,69 @@ class PullAll(BaseUpdateArrayOperator):
     """
 
     operator = "$pullAll"
+
+
+class BaseUpdateEachArrayOperator(BaseUpdateOperator):
+    operator = ""
+    each = "$each"
+
+    def __init__(self, expression):
+        self.expression = expression
+
+    @property
+    def query(self):
+        field_name = next(iter(self.expression))
+        field_value = self.expression[field_name]
+        return {self.operator: {field_name: {self.each: field_value}}}
+
+
+class PushEach(BaseUpdateEachArrayOperator):
+    """
+    `$push` update array query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        results: List[int]
+
+    PushEach({Sample.results: [1]})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$push": { "results": 1}}
+    ```
+
+    MongoDB docs:
+    <https://docs.mongodb.com/manual/reference/operator/update/each/>
+    """
+
+    operator = "$push"
+
+
+class AddToSetEach(BaseUpdateEachArrayOperator):
+    """
+    `$addToSet` update array query operator
+
+    Example:
+
+    ```python
+    class Sample(Document):
+        results: List[int]
+
+    AddToSet({Sample.results, 2})
+    ```
+
+    Will return query object like
+
+    ```python
+    {"$addToSet": {"results": 2}}
+    ```
+
+    MongoDB docs:
+    <https://docs.mongodb.com/manual/reference/operator/update/addToSet/>
+    """
+
+    operator = "$addToSet"
