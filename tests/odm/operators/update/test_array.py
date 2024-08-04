@@ -1,9 +1,9 @@
 from beanie.odm.operators.update.array import (
     AddToSet,
     AddToSetEach,
+    Pop,
     Pull,
     PullAll,
-    Pop,
     Push,
     PushEach,
 )
@@ -37,7 +37,7 @@ def test_push():
 
 def test_push_each():
     q = PushEach({Sample.integer: [2]})
-    assert q == {'$push': {'integer': {'$each': [2]}}}
+    assert q == {"$push": {"integer": {"$each": [2]}}}
 
 
 def test_pull_all():

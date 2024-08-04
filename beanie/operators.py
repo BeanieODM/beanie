@@ -35,11 +35,11 @@ from beanie.odm.operators.find.geospatial import (
 from beanie.odm.operators.find.logical import And, Nor, Not, Or
 from beanie.odm.operators.update.array import (
     AddToSet,
+    AddToSetEach,
     Pop,
     Pull,
     PullAll,
     Push,
-    AddToSetEach,
     PushEach,
 )
 from beanie.odm.operators.update.bitwise import Bit
