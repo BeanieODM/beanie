@@ -63,6 +63,7 @@ BSON_SCALAR_TYPES = (
     bson.MaxKey,
     bson.MinKey,
     bson.ObjectId,
+    bson.Regex,
 )
 
 
