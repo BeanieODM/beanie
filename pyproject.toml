@@ -61,6 +61,12 @@ ci = [
     "requests",
     "types-requests",
 ]
+aws = ["motor[aws]>=2.5.0,<4.0.0"]
+encryption = ["motor[encryption]>=2.5.0,<4.0.0"]
+gssapi = ["motor[gssapi]>=2.5.0,<4.0.0"]
+ocsp = ["motor[ocsp]>=2.5.0,<4.0.0"]
+snappy = ["motor[snappy]>=2.5.0,<4.0.0"]
+zstd = ["motor[zstd]>=2.5.0,<4.0.0"]
 
 [project.urls]
 homepage = "https://beanie-odm.dev"
