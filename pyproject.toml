@@ -73,7 +73,7 @@ beanie = "beanie.executors.migrate:migrations"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--cov-report term-missing --cov=beanie --cov-branch --cov-fail-under=80"
+addopts = "--cov-report term-missing --cov=beanie --cov-branch"
 testpaths = [
     "tests",
 ]

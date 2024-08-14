@@ -37,5 +37,36 @@ jobs:
         run: pip install .[test,ci]
       - name: install pydantic
         run: pip install pydantic==${{ matrix.pydantic-version }}
+      - run: mkdir coverage
       - name: run tests
         run: pytest -v
+      - name: store coverage files
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python-version }}-mypy${{ matrix.mypy-version }}
+          path: coverage
+
+  coverage-combine:
+    needs: [ run-tests ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: get coverage files
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          pattern: coverage-*
+          path: coverage
+
+      - run: pip install coverage[toml]
+
+      - run: ls -la coverage
+      - run: coverage combine coverage
+      - run: coverage report --fail-under=90
+      - run: coverage html --show-contexts --title "pydantic coverage for ${{ github.sha }}"
+      # todo add coverage badge
