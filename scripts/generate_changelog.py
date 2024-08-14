@@ -2,6 +2,7 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List
+
 import requests  # type: ignore
 
 
@@ -16,11 +17,11 @@ class PullRequest:
 
 class ChangelogGenerator:
     def __init__(
-            self,
-            username: str,
-            repository: str,
-            current_version: str,
-            new_version: str,
+        self,
+        username: str,
+        repository: str,
+        current_version: str,
+        new_version: str,
     ):
         self.username = username
         self.repository = repository
@@ -68,7 +69,7 @@ if __name__ == "__main__":
         username="BeanieODM",
         repository="beanie",
         current_version="1.26.0",
-        new_version="1.27.0"
+        new_version="1.27.0",
     )
 
     changelog = generator.generate_changelog()
