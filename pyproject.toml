@@ -7,7 +7,7 @@ name = "beanie"
 version = "1.26.0"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
-requires-python = ">=3.7,<4.0"
+requires-python = ">=3.8,<4.0"
 license = { file="LICENSE" }
 authors = [
     {name = "Roman Right", email = "roman-right@protonmail.com"}
@@ -72,7 +72,7 @@ beanie = "beanie.executors.migrate:migrations"
 # TOOLS
 
 [tool.pytest.ini_options]
-minversion = "6.0"
+minversion = "8.0"
 addopts = "--cov-report term-missing --cov=beanie --cov-branch --cov-fail-under=80"
 testpaths = [
     "tests",
