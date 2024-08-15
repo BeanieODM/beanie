@@ -6,20 +6,12 @@ on:
 jobs:
   publish_project:
     runs-on: ubuntu-latest
-    permissions: write-all
     steps:
       - uses: actions/checkout@v3
-      - name: get tags
-        run: git fetch --tags origin
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-      - name: install dependencies
-        run: pip install .[ci]
       - name: install flit
-        run: pip install flit
-      - name: update version or publish
+        run: pip3 install flit
+      - name: publish project
         env:
           FLIT_USERNAME: __token__
           FLIT_PASSWORD: ${{ secrets.FLIT_PASSWORD }}
-        run: python .github/scripts/handlers/version.py
+        run: flit publish
