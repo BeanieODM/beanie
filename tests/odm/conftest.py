@@ -44,6 +44,7 @@ from tests.odm.models import (
     DocumentWithCustomInit,
     DocumentWithDecimalField,
     DocumentWithDeprecatedHiddenField,
+    DocumentWithEnumKeysDict,
     DocumentWithExtras,
     DocumentWithHttpUrlField,
     DocumentWithIndexedObjectId,
@@ -290,6 +291,7 @@ async def init(db):
         DocumentToTestSync,
         DocumentWithLinkForNesting,
         DocumentWithBackLinkForNesting,
+        DocumentWithEnumKeysDict,
         LongSelfLink,
     ]
     await init_beanie(

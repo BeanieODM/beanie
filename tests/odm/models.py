@@ -1134,3 +1134,12 @@ class LongSelfLink(Document):
 
     class Settings:
         max_nesting_depth = 50
+
+
+class DictEnum(str, Enum):
+    RED = "Red"
+    BLUE = "Blue"
+
+
+class DocumentWithEnumKeysDict(Document):
+    color: Dict[DictEnum, str]
