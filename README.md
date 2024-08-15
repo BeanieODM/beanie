@@ -2,6 +2,11 @@
 
 [![shields badge](https://shields.io/badge/-docs-blue)](https://beanie-odm.dev)
 [![pypi](https://img.shields.io/pypi/v/beanie.svg)](https://pypi.python.org/pypi/beanie)
+[![Downloads](https://static.pepy.tech/badge/beanie/month)](https://pepy.tech/project/beanie)
+![versions](https://img.shields.io/pypi/pyversions/beanie)
+[![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://docs.pydantic.dev/latest/contributing/#badges)
+[![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v1.json)](https://docs.pydantic.dev/latest/contributing/#badges)
+
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G0PS833)
 
