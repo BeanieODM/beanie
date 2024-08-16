@@ -2,6 +2,59 @@
 
 Beanie project
 
+## [1.27.0] - 2024-08-16
+### Removed calls to function causing deprecation warning where possible
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/917>
+### Fix typo in source code comment in inheritance.md
+- Author - [fnogatz](https://github.com/fnogatz)
+- PR <https://github.com/BeanieODM/beanie/pull/984>
+### Remove links to ko-fi from the project
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/986>
+### Project publishing instruction + changelog generation script
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/998>
+### Revert project publishing gh action
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/996>
+### Fix incorrect type serialization when dumping to python
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/968>
+### Remove links to ko-fi from the project
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/986>
+### Fix typo in source code comment in inheritance.md
+- Author - [fnogatz](https://github.com/fnogatz)
+- PR <https://github.com/BeanieODM/beanie/pull/984>
+### Fix gh action to grant permissions and use tags
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/972>
+### Gh action: set new version and publish on push
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/961>
+### Use ruff format instead of black
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/962>
+### Allow unordered parameter on bulkwriter
+- Author - [thiagosalvatore](https://github.com/thiagosalvatore)
+- PR <https://github.com/BeanieODM/beanie/pull/948>
+### Fix: issue #951
+- Author - [IterableTrucks](https://github.com/IterableTrucks)
+- PR <https://github.com/BeanieODM/beanie/pull/952>
+### Fix: set default value in findinterface._inheritance_inited to avoid …
+- Author - [Robert-Nogueira](https://github.com/Robert-Nogueira)
+- PR <https://github.com/BeanieODM/beanie/pull/935>
+### Fix example in multi-model.md
+- Author - [gianpaj](https://github.com/gianpaj)
+- PR <https://github.com/BeanieODM/beanie/pull/932>
+### Add missing type signature to `basefindcomparisonoperator` constructor
+- Author - [aaronted009](https://github.com/aaronted009)
+- PR <https://github.com/BeanieODM/beanie/pull/925>
+
+[1.27.0]: https://pypi.org/project/beanie/1.27.0
+
+
 ## [1.26.0] - 2024-05-01
         
 ### Feature: soft delete
