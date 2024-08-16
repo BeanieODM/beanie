@@ -80,7 +80,8 @@ class Initializer:
         or strings with dot separated paths
         :param allow_index_dropping: bool - if index dropping is allowed.
         Default False
-        :param recreate_views: bool - if views should be recreated. Default False
+        :param recreate_views: bool -
+        if views should be recreated. Default False
         :param multiprocessing_mode: bool - if multiprocessing mode is on
         it will patch the motor client to use process's event loop.
         :return: None
@@ -96,14 +97,15 @@ class Initializer:
             connection_string is not None and database is not None
         ):
             raise ValueError(
-                "connection_string parameter or database parameter must be set"
+                "connection_string parameter "
+                "or database parameter must be set",
             )
 
         if document_models is None:
             raise ValueError("document_models parameter must be set")
         if connection_string is not None:
             database = AsyncIOMotorClient(
-                connection_string
+                connection_string,
             ).get_default_database()
 
         self.database: AsyncIOMotorDatabase = database
@@ -125,7 +127,7 @@ class Initializer:
         self.fill_docs_registry()
 
         self.document_models.sort(
-            key=lambda val: sort_order[val.get_model_type()]
+            key=lambda val: sort_order[val.get_model_type()],
         )
 
     def __await__(self):
@@ -146,7 +148,7 @@ class Initializer:
         """
         Get the model by the path in format bar.foo.Model
 
-        :param dot_path: str - dot seprated path to the model
+        :param dot_path: str - dot separated path to the model
         :return: Type[DocType] - class of the model
         """
         module_name, class_name = None, None
@@ -156,16 +158,18 @@ class Initializer:
 
         except ValueError:
             raise ValueError(
-                f"'{dot_path}' doesn't have '.' path, eg. path.to.your.model.class"
+                f"'{dot_path}' doesn't have '.' path, eg. "
+                f"path.to.your.model.class",
             )
 
         except AttributeError:
             raise AttributeError(
-                f"module '{module_name}' has no class called '{class_name}'"
+                f"module '{module_name}' has no class called '{class_name}'",
             )
 
     def init_settings(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        self,
+        cls: Union[Type[Document], Type[View], Type[UnionDoc]],
     ):
         """
         Init Settings
@@ -180,7 +184,8 @@ class Initializer:
         )
         if issubclass(cls, Document):
             cls._document_settings = parse_model(
-                DocumentSettings, settings_vars
+                DocumentSettings,
+                settings_vars,
             )
         if issubclass(cls, View):
             cls._settings = parse_model(ViewSettings, settings_vars)
@@ -203,7 +208,9 @@ class Initializer:
     # General. Relations
 
     def detect_link(
-        self, field: FieldInfo, field_name: str
+        self,
+        field: FieldInfo,
+        field_name: str,
     ) -> Optional[LinkInfo]:
         """
         It detects link and returns LinkInfo if any found.
@@ -236,7 +243,8 @@ class Initializer:
                     return LinkInfo(
                         field_name=field_name,
                         lookup_field_name=get_extra_field_info(
-                            field, "original_field"
+                            field,
+                            "original_field",
                         ),  # type: ignore
                         document_class=DocsRegistry.evaluate_fr(args[0]),  # type: ignore
                         link_type=LinkTypes.BACK_DIRECT,
@@ -254,7 +262,7 @@ class Initializer:
                         field_name=field_name,
                         lookup_field_name=field_name,
                         document_class=DocsRegistry.evaluate_fr(
-                            get_args(args[0])[0]
+                            get_args(args[0])[0],
                         ),  # type: ignore
                         link_type=LinkTypes.LIST,
                     )
@@ -262,24 +270,23 @@ class Initializer:
                     return LinkInfo(
                         field_name=field_name,
                         lookup_field_name=get_extra_field_info(  # type: ignore
-                            field, "original_field"
+                            field,
+                            "original_field",
                         ),
                         document_class=DocsRegistry.evaluate_fr(
-                            get_args(args[0])[0]
+                            get_args(args[0])[0],
                         ),  # type: ignore
                         link_type=LinkTypes.BACK_LIST,
                     )
 
-            # Check if annotation is Optional[custom class] or Optional[List[custom class]]
+            # Check if annotation is Optional[custom class]
+            # or Optional[List[custom class]]
             elif (
                 (origin is Union or origin is TypesUnionType)
                 and len(args) == 2
                 and type(None) in args
             ):
-                if args[1] is type(None):
-                    optional = args[0]
-                else:
-                    optional = args[1]
+                optional = args[0] if args[1] is type(None) else args[1]
                 optional_origin = get_origin(optional)
                 optional_args = get_args(optional)
 
@@ -292,7 +299,7 @@ class Initializer:
                             field_name=field_name,
                             lookup_field_name=field_name,
                             document_class=DocsRegistry.evaluate_fr(
-                                optional_args[0]
+                                optional_args[0],
                             ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_DIRECT,
                         )
@@ -300,10 +307,11 @@ class Initializer:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=get_extra_field_info(
-                                field, "original_field"
+                                field,
+                                "original_field",
                             ),
                             document_class=DocsRegistry.evaluate_fr(
-                                optional_args[0]
+                                optional_args[0],
                             ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
                         )
@@ -319,7 +327,7 @@ class Initializer:
                             field_name=field_name,
                             lookup_field_name=field_name,
                             document_class=DocsRegistry.evaluate_fr(
-                                get_args(optional_args[0])[0]
+                                get_args(optional_args[0])[0],
                             ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_LIST,
                         )
@@ -327,10 +335,11 @@ class Initializer:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=get_extra_field_info(
-                                field, "original_field"
+                                field,
+                                "original_field",
                             ),
                             document_class=DocsRegistry.evaluate_fr(
-                                get_args(optional_args[0])[0]
+                                get_args(optional_args[0])[0],
                             ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_LIST,
                         )
@@ -363,7 +372,7 @@ class Initializer:
         to init settings
         :return:
         """
-        cls._children = dict()
+        cls._children = {}
         cls._parent = None
         cls._inheritance_inited = False
         cls._class_id = None
@@ -398,7 +407,8 @@ class Initializer:
 
             link_info = self.detect_link(v, k)
             depth_level = cls.get_settings().max_nesting_depths_per_field.get(
-                k, None
+                k,
+                None,
             )
             if depth_level is None:
                 depth_level = cls.get_settings().max_nesting_depth
@@ -406,7 +416,8 @@ class Initializer:
                 if depth_level > 0 or depth_level is None:
                     cls._link_fields[k] = link_info
                     self.check_nested_links(
-                        link_info, current_depth=depth_level
+                        link_info,
+                        current_depth=depth_level,
                     )
                 elif depth_level <= 0:
                     link_info.is_fetchable = False
@@ -422,14 +433,13 @@ class Initializer:
         ActionRegistry.clean_actions(cls)
         for attr in dir(cls):
             f = getattr(cls, attr)
-            if inspect.isfunction(f):
-                if hasattr(f, "has_action"):
-                    ActionRegistry.add_action(
-                        document_class=cls,
-                        event_types=f.event_types,  # type: ignore
-                        action_direction=f.action_direction,  # type: ignore
-                        funct=f,
-                    )
+            if inspect.isfunction(f) and hasattr(f, "has_action"):
+                ActionRegistry.add_action(
+                    document_class=cls,
+                    event_types=f.event_types,  # type: ignore
+                    action_direction=f.action_direction,  # type: ignore
+                    funct=f,
+                )
 
     async def init_document_collection(self, cls):
         """
@@ -446,7 +456,8 @@ class Initializer:
         if document_settings.union_doc is not None:
             name = cls.get_settings().name or cls.__name__
             document_settings.name = document_settings.union_doc.register_doc(
-                name, cls
+                name,
+                cls,
             )
             document_settings.union_doc_alias = name
 
@@ -461,7 +472,7 @@ class Initializer:
             and cls._database_major_version < 5
         ):
             raise MongoDBVersionError(
-                "Timeseries are supported by MongoDB version 5 and higher"
+                "Timeseries are supported by MongoDB version 5 and higher",
             )
 
         # create motor collection
@@ -469,13 +480,14 @@ class Initializer:
             document_settings.timeseries is not None
             and document_settings.name
             not in await self.database.list_collection_names(
-                authorizedCollections=True, nameOnly=True
+                authorizedCollections=True,
+                nameOnly=True,
             )
         ):
             collection = await self.database.create_collection(
                 **document_settings.timeseries.build_query(
-                    document_settings.name
-                )
+                    document_settings.name,
+                ),
             )
         else:
             collection = self.database[document_settings.name]
@@ -492,7 +504,7 @@ class Initializer:
         index_information = await collection.index_information()
 
         old_indexes = IndexModelField.from_motor_index_information(
-            index_information
+            index_information,
         )
         new_indexes = []
 
@@ -508,10 +520,10 @@ class Initializer:
                         (
                             fvalue.alias or k,
                             indexed_attrs[0],
-                        )
+                        ),
                     ],
                     **indexed_attrs[1],
-                )
+                ),
             )
             for k, fvalue, indexed_attrs in indexed_fields
             if indexed_attrs is not None
@@ -520,25 +532,24 @@ class Initializer:
         if document_settings.merge_indexes:
             result: List[IndexModelField] = []
             for subclass in reversed(cls.mro()):
-                if issubclass(subclass, Document) and not subclass == Document:
-                    if (
-                        subclass not in self.inited_classes
-                        and not subclass == cls
-                    ):
+                if issubclass(subclass, Document) and subclass != Document:
+                    if subclass not in self.inited_classes and subclass != cls:
                         await self.init_class(subclass)
                     if subclass.get_settings().indexes:
                         result = IndexModelField.merge_indexes(
-                            result, subclass.get_settings().indexes
+                            result,
+                            subclass.get_settings().indexes,
                         )
             found_indexes = IndexModelField.merge_indexes(
-                found_indexes, result
+                found_indexes,
+                result,
             )
 
-        else:
-            if document_settings.indexes:
-                found_indexes = IndexModelField.merge_indexes(
-                    found_indexes, document_settings.indexes
-                )
+        elif document_settings.indexes:
+            found_indexes = IndexModelField.merge_indexes(
+                found_indexes,
+                document_settings.indexes,
+            )
 
         new_indexes += found_indexes
 
@@ -546,14 +557,15 @@ class Initializer:
         # Only drop indexes if the user specifically allows for it
         if allow_index_dropping:
             for index in IndexModelField.list_difference(
-                old_indexes, new_indexes
+                old_indexes,
+                new_indexes,
             ):
                 await collection.drop_index(index.name)
 
         # create indices
         if found_indexes:
             new_indexes += await collection.create_indexes(
-                IndexModelField.list_to_index_model(new_indexes)
+                IndexModelField.list_to_index_model(new_indexes),
             )
 
     async def init_document(self, cls: Type[Document]) -> Optional[Output]:
@@ -608,14 +620,13 @@ class Initializer:
 
             return output
 
+        elif cls._inheritance_inited is True:
+            return Output(
+                class_name=cls._class_id,
+                collection_name=cls.get_collection_name(),
+            )
         else:
-            if cls._inheritance_inited is True:
-                return Output(
-                    class_name=cls._class_id,
-                    collection_name=cls.get_collection_name(),
-                )
-            else:
-                return None
+            return None
 
     # Views
 
@@ -632,7 +643,8 @@ class Initializer:
             setattr(cls, k, ExpressionField(path))
             link_info = self.detect_link(v, k)
             depth_level = cls.get_settings().max_nesting_depths_per_field.get(
-                k, None
+                k,
+                None,
             )
             if depth_level is None:
                 depth_level = cls.get_settings().max_nesting_depth
@@ -640,7 +652,8 @@ class Initializer:
                 if depth_level > 0:
                     cls._link_fields[k] = link_info
                     self.check_nested_links(
-                        link_info, current_depth=depth_level
+                        link_info,
+                        current_depth=depth_level,
                     )
                 elif depth_level <= 0:
                     link_info.is_fetchable = False
@@ -677,7 +690,8 @@ class Initializer:
         self.init_cache(cls)
 
         collection_names = await self.database.list_collection_names(
-            authorizedCollections=True, nameOnly=True
+            authorizedCollections=True,
+            nameOnly=True,
         )
         if self.recreate_views or cls._settings.name not in collection_names:
             if cls._settings.name in collection_names:
@@ -688,7 +702,7 @@ class Initializer:
                     "create": cls.get_settings().name,
                     "viewOn": cls.get_settings().source,
                     "pipeline": cls.get_settings().pipeline,
-                }
+                },
             )
 
     # Union Doc
@@ -718,13 +732,14 @@ class Initializer:
             raise Deprecation(
                 "Collection inner class is not supported more. "
                 "Please use Settings instead. "
-                "https://beanie-odm.dev/tutorial/defining-a-document/#settings"
+                "https://beanie-odm.dev/tutorial/defining-a-document/#settings",
             )
 
     # Final
 
     async def init_class(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        self,
+        cls: Union[Type[Document], Type[View], Type[UnionDoc]],
     ):
         """
         Init Document, View or UnionDoc based class.
@@ -768,7 +783,8 @@ async def init_beanie(
     Default False
     :param recreate_views: bool - if views should be recreated. Default False
     :param multiprocessing_mode: bool - if multiprocessing mode is on
-        it will patch the motor client to use process's event loop. Default False
+        it will patch the motor client
+        to use process's event loop. Default False
     :return: None
     """
 

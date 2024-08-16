@@ -10,7 +10,9 @@ from tests.odm.models import Sample
 
 async def test_geo_intersects():
     q = GeoIntersects(
-        Sample.geo, geo_type="Polygon", coordinates=[[1, 1], [2, 2], [3, 3]]
+        Sample.geo,
+        geo_type="Polygon",
+        coordinates=[[1, 1], [2, 2], [3, 3]],
     )
     assert q == {
         "geo": {
@@ -18,15 +20,17 @@ async def test_geo_intersects():
                 "$geometry": {
                     "type": "Polygon",
                     "coordinates": [[1, 1], [2, 2], [3, 3]],
-                }
-            }
-        }
+                },
+            },
+        },
     }
 
 
 async def test_geo_within():
     q = GeoWithin(
-        Sample.geo, geo_type="Polygon", coordinates=[[1, 1], [2, 2], [3, 3]]
+        Sample.geo,
+        geo_type="Polygon",
+        coordinates=[[1, 1], [2, 2], [3, 3]],
     )
     assert q == {
         "geo": {
@@ -34,9 +38,9 @@ async def test_geo_within():
                 "$geometry": {
                     "type": "Polygon",
                     "coordinates": [[1, 1], [2, 2], [3, 3]],
-                }
-            }
-        }
+                },
+            },
+        },
     }
 
 
@@ -50,9 +54,9 @@ async def test_near():
     assert q == {
         "geo": {
             "$near": {
-                "$geometry": {"type": "Point", "coordinates": [1.1, 2.2]}
-            }
-        }
+                "$geometry": {"type": "Point", "coordinates": [1.1, 2.2]},
+            },
+        },
     }
 
     q = Near(Sample.geo, longitude=1.1, latitude=2.2, max_distance=1)
@@ -61,8 +65,8 @@ async def test_near():
             "$near": {
                 "$geometry": {"type": "Point", "coordinates": [1.1, 2.2]},
                 "$maxDistance": 1,
-            }
-        }
+            },
+        },
     }
 
     q = Near(
@@ -78,8 +82,8 @@ async def test_near():
                 "$geometry": {"type": "Point", "coordinates": [1.1, 2.2]},
                 "$maxDistance": 1,
                 "$minDistance": 0.5,
-            }
-        }
+            },
+        },
     }
 
 
@@ -88,9 +92,9 @@ async def test_near_sphere():
     assert q == {
         "geo": {
             "$nearSphere": {
-                "$geometry": {"type": "Point", "coordinates": [1.1, 2.2]}
-            }
-        }
+                "$geometry": {"type": "Point", "coordinates": [1.1, 2.2]},
+            },
+        },
     }
 
     q = NearSphere(Sample.geo, longitude=1.1, latitude=2.2, max_distance=1)
@@ -99,8 +103,8 @@ async def test_near_sphere():
             "$nearSphere": {
                 "$geometry": {"type": "Point", "coordinates": [1.1, 2.2]},
                 "$maxDistance": 1,
-            }
-        }
+            },
+        },
     }
 
     q = NearSphere(
@@ -116,6 +120,6 @@ async def test_near_sphere():
                 "$geometry": {"type": "Point", "coordinates": [1.1, 2.2]},
                 "$maxDistance": 1,
                 "$minDistance": 0.5,
-            }
-        }
+            },
+        },
     }

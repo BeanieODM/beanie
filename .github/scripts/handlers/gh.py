@@ -36,6 +36,7 @@ class GitHubHandler:
             ["git", "log", f"{tag}..HEAD", "--pretty=format:%H"],
             stdout=subprocess.PIPE,
             text=True,
+            check=False,
         )
         return result.stdout.split()
 
@@ -53,7 +54,10 @@ class GitHubHandler:
         )
 
     def build_markdown_for_many_prs(self) -> str:
-        markdown = f"\n## [{self.new_version}] - {datetime.now().strftime('%Y-%m-%d')}\n"
+        markdown = (
+            f"\n## [{self.new_version}] - "
+            f"{datetime.now().strftime('%Y-%m-%d')}\n"
+        )
         for pr in self.prs:
             markdown += (
                 f"### {pr.title.capitalize()}\n"
@@ -65,7 +69,7 @@ class GitHubHandler:
 
     def commit_changes(self):
         self.run_git_command(
-            ["git", "config", "--global", "user.name", "github-actions[bot]"]
+            ["git", "config", "--global", "user.name", "github-actions[bot]"],
         )
         self.run_git_command(
             [
@@ -74,11 +78,11 @@ class GitHubHandler:
                 "--global",
                 "user.email",
                 "github-actions[bot]@users.noreply.github.com",
-            ]
+            ],
         )
         self.run_git_command(["git", "add", "."])
         self.run_git_command(
-            ["git", "commit", "-m", f"Bump version to {self.new_version}"]
+            ["git", "commit", "-m", f"Bump version to {self.new_version}"],
         )
         self.run_git_command(["git", "tag", self.new_version])
         self.git_push()

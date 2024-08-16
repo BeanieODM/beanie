@@ -18,7 +18,8 @@ async def test_find_query():
     assert q == {"integer": 1}
 
     q = Sample.find_many(
-        Sample.integer == 1, Sample.nested.integer >= 2
+        Sample.integer == 1,
+        Sample.nested.integer >= 2,
     ).get_filter_query()
     assert q == {"$and": [{"integer": 1}, {"nested.integer": {"$gte": 2}}]}
 
@@ -46,7 +47,7 @@ async def test_find_many(preset_documents):
 
     len_result = 0
     async for a in Sample.find_many(Sample.integer > 1).find_many(
-        Sample.nested.optional == None
+        Sample.nested.optional == None,
     ):  # noqa
         assert a in result
         len_result += 1
@@ -130,20 +131,20 @@ async def test_find_all(preset_documents):
 
 async def test_find_one(preset_documents):
     a = await Sample.find_one(Sample.integer > 1).find_one(
-        Sample.nested.optional == None
+        Sample.nested.optional == None,
     )  # noqa
     assert a.integer > 1
     assert a.nested.optional is None
 
     a = await Sample.find_one(Sample.integer > 100).find_one(
-        Sample.nested.optional == None
+        Sample.nested.optional == None,
     )  # noqa
     assert a is None
 
 
 async def test_get(preset_documents):
     a = await Sample.find_one(Sample.integer > 1).find_one(
-        Sample.nested.optional == None
+        Sample.nested.optional == None,
     )  # noqa
     assert a.integer > 1
     assert a.nested.optional is None
@@ -174,7 +175,8 @@ async def test_sort(preset_documents):
     assert q.sort_expressions == [("integer", SortDirection.DESCENDING)]
 
     result = await Sample.find_many(
-        Sample.integer > 1, sort="-integer"
+        Sample.integer > 1,
+        sort="-integer",
     ).to_list()
     i_buf = None
     for a in result:
@@ -184,7 +186,8 @@ async def test_sort(preset_documents):
         i_buf = a.integer
 
     result = await Sample.find_many(
-        Sample.integer > 1, sort="+integer"
+        Sample.integer > 1,
+        sort="+integer",
     ).to_list()
     i_buf = None
     for a in result:
@@ -194,7 +197,8 @@ async def test_sort(preset_documents):
         i_buf = a.integer
 
     result = await Sample.find_many(
-        Sample.integer > 1, sort="integer"
+        Sample.integer > 1,
+        sort="integer",
     ).to_list()
     i_buf = None
     for a in result:
@@ -204,7 +208,8 @@ async def test_sort(preset_documents):
         i_buf = a.integer
 
     result = await Sample.find_many(
-        Sample.integer > 1, sort=-Sample.integer
+        Sample.integer > 1,
+        sort=-Sample.integer,
     ).to_list()
     i_buf = None
     for a in result:
@@ -248,7 +253,8 @@ async def test_find_many_with_projection(preset_documents):
     result = (
         await Sample.find_many(Sample.integer > 1)
         .find_many(
-            Sample.nested.optional == None, projection_model=SampleProjection
+            Sample.nested.optional == None,
+            projection_model=SampleProjection,
         )
         .to_list()
     )
@@ -288,7 +294,8 @@ async def test_find_many_with_session(preset_documents, session):
     assert q_1.session == session
 
     q_2 = Sample.find_many(Sample.integer > 1).find_many(
-        Sample.nested.optional == None, session=session
+        Sample.nested.optional == None,
+        session=session,
     )
     assert q_2.session == session
 
@@ -301,7 +308,7 @@ async def test_find_many_with_session(preset_documents, session):
 
     len_result = 0
     async for a in Sample.find_many(Sample.integer > 1).find_many(
-        Sample.nested.optional == None
+        Sample.nested.optional == None,
     ):  # noqa
         assert a in result
         len_result += 1
@@ -311,11 +318,12 @@ async def test_find_many_with_session(preset_documents, session):
 
 async def test_bson_encoders_filed_types():
     custom = DocumentWithBsonEncodersFiledsTypes(
-        color="7fffd4", timestamp=datetime.datetime.utcnow()
+        color="7fffd4",
+        timestamp=datetime.datetime.utcnow(),
     )
     c = await custom.insert()
     c_fromdb = await DocumentWithBsonEncodersFiledsTypes.find_one(
-        DocumentWithBsonEncodersFiledsTypes.color == Color("7fffd4")
+        DocumentWithBsonEncodersFiledsTypes.color == Color("7fffd4"),
     )
     assert c_fromdb.color.as_hex() == c.color.as_hex()
 
@@ -351,23 +359,33 @@ async def test_find_pymongo_kwargs(preset_documents):
         await Sample.find_many(Sample.increment > 1, wrong=100).to_list()
 
     await Sample.find_many(
-        Sample.increment > 1, Sample.integer > 1, allow_disk_use=True
+        Sample.increment > 1,
+        Sample.integer > 1,
+        allow_disk_use=True,
     ).to_list()
 
     await Sample.find_many(
-        Sample.increment > 1, Sample.integer > 1, hint="integer_1"
+        Sample.increment > 1,
+        Sample.integer > 1,
+        hint="integer_1",
     ).to_list()
 
     await House.find_many(
-        House.height > 1, fetch_links=True, hint="height_1"
+        House.height > 1,
+        fetch_links=True,
+        hint="height_1",
     ).to_list()
 
     await House.find_many(
-        House.height > 1, fetch_links=True, allowDiskUse=True
+        House.height > 1,
+        fetch_links=True,
+        allowDiskUse=True,
     ).to_list()
 
     await Sample.find_one(
-        Sample.increment > 1, Sample.integer > 1, hint="integer_1"
+        Sample.increment > 1,
+        Sample.integer > 1,
+        hint="integer_1",
     )
 
     await House.find_one(House.height > 1, fetch_links=True, hint="height_1")
@@ -385,7 +403,7 @@ def test_find_clone():
     new_q.find(Sample.nested.integer >= 100).sort(Sample.string).limit(10)
 
     assert q.get_filter_query() == {
-        "$and": [{"integer": 1}, {"nested.integer": {"$gte": 2}}]
+        "$and": [{"integer": 1}, {"nested.integer": {"$gte": 2}}],
     }
     assert q.sort_expressions == [("integer", SortDirection.ASCENDING)]
     assert q.limit_number == 100
@@ -394,7 +412,7 @@ def test_find_clone():
             {"integer": 1},
             {"nested.integer": {"$gte": 2}},
             {"nested.integer": {"$gte": 100}},
-        ]
+        ],
     }
     assert new_q.sort_expressions == [
         ("integer", SortDirection.ASCENDING),

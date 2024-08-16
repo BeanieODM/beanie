@@ -59,20 +59,21 @@ async def test_encode_regex():
     assert {matching_doc.id, ignore_case_matching_doc.id} == {
         doc.id
         async for doc in DocumentWithStringField.find(
-            DocumentWithStringField.string_field == case_insensitive_regex
+            DocumentWithStringField.string_field == case_insensitive_regex,
         )
     }
     assert {matching_doc.id} == {
         doc.id
         async for doc in DocumentWithStringField.find(
-            DocumentWithStringField.string_field == case_sensitive_regex
+            DocumentWithStringField.string_field == case_sensitive_regex,
         )
     }
 
 
 def test_encode_with_custom_encoder():
     assert isinstance(
-        Encoder(custom_encoders={datetime: str}).encode(datetime.now()), str
+        Encoder(custom_encoders={datetime: str}).encode(datetime.now()),
+        str,
     )
 
 
@@ -96,7 +97,8 @@ async def test_bytes_already_binary():
 
 async def test_mutable_objects_on_save():
     instance = SampleWithMutableObjects(
-        d={"Bar": Child(child_field="Foo")}, lst=[Child(child_field="Bar")]
+        d={"Bar": Child(child_field="Foo")},
+        lst=[Child(child_field="Bar")],
     )
     await instance.save()
     assert isinstance(instance.d["Bar"], Child)
@@ -149,7 +151,7 @@ async def test_should_be_able_to_save_retrieve_doc_with_url():
     await doc.save()
 
     new_doc = await DocumentWithHttpUrlField.find_one(
-        DocumentWithHttpUrlField.id == doc.id
+        DocumentWithHttpUrlField.id == doc.id,
     )
 
     assert isinstance(new_doc.url_field, AnyUrl)

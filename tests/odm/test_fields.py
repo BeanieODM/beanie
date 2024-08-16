@@ -42,7 +42,8 @@ def test_pydantic_object_id_bytes_input():
 
 async def test_bson_encoders_filed_types():
     custom = DocumentWithBsonEncodersFiledsTypes(
-        color="7fffd4", timestamp=datetime.datetime.utcnow()
+        color="7fffd4",
+        timestamp=datetime.datetime.utcnow(),
     )
     encoded = get_dict(custom)
     assert isinstance(encoded["timestamp"], str)
@@ -102,10 +103,10 @@ async def test_custom_filed_types():
     assert c1_fromdb_encoded == c1_encoded
     assert c2_fromdb_encoded == c2_encoded
     assert Decimal(str(custom1.decimal)) == Decimal(
-        str(c1_encoded.get("decimal"))
+        str(c1_encoded.get("decimal")),
     )
     assert Decimal(str(custom2.decimal)) == Decimal(
-        str(c2_encoded.get("decimal"))
+        str(c2_encoded.get("decimal")),
     )
 
 
@@ -135,10 +136,7 @@ def test_revision_id_not_in_schema():
 
         bar: int = 3
 
-    if IS_PYDANTIC_V2:
-        schema = Foo.model_json_schema()
-    else:
-        schema = Foo.schema()
+    schema = Foo.model_json_schema() if IS_PYDANTIC_V2 else Foo.schema()
     assert "revision_id" not in schema["properties"]
 
     # check that the document has not been initialized,

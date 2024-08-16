@@ -37,7 +37,8 @@ async def test_init_connection_string(settings):
         test_str: str
 
     await init_beanie(
-        connection_string=settings.mongodb_dsn, document_models=[NewDocumentCS]
+        connection_string=settings.mongodb_dsn,
+        document_models=[NewDocumentCS],
     )
     assert (
         NewDocumentCS.get_motor_collection().database.name
@@ -161,7 +162,8 @@ async def test_complex_index_creation():
 
 async def test_index_dropping_is_allowed(db):
     await init_beanie(
-        database=db, document_models=[DocumentTestModelWithComplexIndex]
+        database=db,
+        document_models=[DocumentTestModelWithComplexIndex],
     )
     collection: AsyncIOMotorCollection = (
         DocumentTestModelWithComplexIndex.get_motor_collection()
@@ -185,7 +187,8 @@ async def test_index_dropping_is_allowed(db):
 
 async def test_index_dropping_is_not_allowed(db):
     await init_beanie(
-        database=db, document_models=[DocumentTestModelWithComplexIndex]
+        database=db,
+        document_models=[DocumentTestModelWithComplexIndex],
     )
     await init_beanie(
         database=db,
@@ -210,7 +213,8 @@ async def test_index_dropping_is_not_allowed(db):
 
 async def test_index_dropping_is_not_allowed_as_default(db):
     await init_beanie(
-        database=db, document_models=[DocumentTestModelWithComplexIndex]
+        database=db,
+        document_models=[DocumentTestModelWithComplexIndex],
     )
     await init_beanie(
         database=db,
@@ -302,24 +306,24 @@ async def test_index_recreation(db):
     )
 
     await init_beanie(
-        database=db, document_models=[Sample2], allow_index_dropping=True
+        database=db,
+        document_models=[Sample2],
+        allow_index_dropping=True,
     )
 
     await db.drop_collection("sample")
 
 
 async def test_merge_indexes():
-    assert (
-        await DocumentWithIndexMerging2.get_motor_collection().index_information()
-        == {
-            "_id_": {"key": [("_id", 1)], "v": 2},
-            "s0_1": {"key": [("s0", 1)], "v": 2},
-            "s1_1": {"key": [("s1", 1)], "v": 2},
-            "s2_-1": {"key": [("s2", -1)], "v": 2},
-            "s3_index": {"key": [("s3", -1)], "v": 2},
-            "s4_index": {"key": [("s4", 1)], "v": 2},
-        }
-    )
+    col = DocumentWithIndexMerging2.get_motor_collection()
+    assert await col.index_information() == {
+        "_id_": {"key": [("_id", 1)], "v": 2},
+        "s0_1": {"key": [("s0", 1)], "v": 2},
+        "s1_1": {"key": [("s1", 1)], "v": 2},
+        "s2_-1": {"key": [("s2", -1)], "v": 2},
+        "s3_index": {"key": [("s3", -1)], "v": 2},
+        "s4_index": {"key": [("s4", 1)], "v": 2},
+    }
 
 
 async def test_custom_init():

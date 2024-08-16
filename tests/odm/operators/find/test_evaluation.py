@@ -39,7 +39,7 @@ async def test_text():
             "$search": "something",
             "$caseSensitive": False,
             "$diacriticSensitive": False,
-        }
+        },
     }
     q = Text("something", case_sensitive=True)
     assert q == {
@@ -47,7 +47,7 @@ async def test_text():
             "$search": "something",
             "$caseSensitive": True,
             "$diacriticSensitive": False,
-        }
+        },
     }
     q = Text("something", diacritic_sensitive=True)
     assert q == {
@@ -55,7 +55,7 @@ async def test_text():
             "$search": "something",
             "$caseSensitive": False,
             "$diacriticSensitive": True,
-        }
+        },
     }
     q = Text("something", language="test")
     assert q == {
@@ -64,7 +64,7 @@ async def test_text():
             "$caseSensitive": False,
             "$diacriticSensitive": False,
             "$language": "test",
-        }
+        },
     }
 
 

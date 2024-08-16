@@ -26,7 +26,8 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
     for k, right_value in right.__iter__():
         left_value = getattr(left, k)
         if isinstance(right_value, BaseModel) and isinstance(
-            left_value, BaseModel
+            left_value,
+            BaseModel,
         ):
             if get_config_value(left_value, "frozen"):
                 left.__setattr__(k, right_value)
@@ -47,7 +48,8 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
 
 
 def apply_changes(
-    changes: Dict[str, Any], target: Union[BaseModel, Dict[str, Any]]
+    changes: Dict[str, Any],
+    target: Union[BaseModel, Dict[str, Any]],
 ):
     for key, value in changes.items():
         if "." in key:
@@ -61,7 +63,7 @@ def apply_changes(
                         current_target = getattr(current_target, part)
                     else:
                         raise ApplyChangesException(
-                            f"Unexpected type of target: {type(target)}"
+                            f"Unexpected type of target: {type(target)}",
                         )
                 final_key = key_parts[-1]
                 if isinstance(current_target, dict):
@@ -70,21 +72,20 @@ def apply_changes(
                     setattr(current_target, final_key, value)
                 else:
                     raise ApplyChangesException(
-                        f"Unexpected type of target: {type(target)}"
+                        f"Unexpected type of target: {type(target)}",
                     )
             except (KeyError, AttributeError) as e:
                 raise ApplyChangesException(
-                    f"Failed to apply change for key '{key}': {e}"
+                    f"Failed to apply change for key '{key}': {e}",
                 )
+        elif isinstance(target, dict):
+            target[key] = value
+        elif isinstance(target, BaseModel):
+            setattr(target, key, value)
         else:
-            if isinstance(target, dict):
-                target[key] = value
-            elif isinstance(target, BaseModel):
-                setattr(target, key, value)
-            else:
-                raise ApplyChangesException(
-                    f"Unexpected type of target: {type(target)}"
-                )
+            raise ApplyChangesException(
+                f"Unexpected type of target: {type(target)}",
+            )
 
 
 def save_state(item: BaseModel):

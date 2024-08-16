@@ -12,20 +12,20 @@ class Set(BaseUpdateGeneralOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     one: int
 
 Set({Sample.one, 2})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$set": {"one": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/set/>
 
@@ -40,20 +40,20 @@ class CurrentDate(BaseUpdateGeneralOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     ts: datetime
 
 CurrentDate({Sample.ts, True})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$currentDate": {"ts": True}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/currentDate/>
 
@@ -68,20 +68,20 @@ class Inc(BaseUpdateGeneralOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     one: int
 
 Inc({Sample.one, 2})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$inc": {"one": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/inc/>
 
@@ -96,20 +96,20 @@ class Min(BaseUpdateGeneralOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     one: int
 
 Min({Sample.one, 2})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$min": {"one": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/min/>
 
@@ -124,20 +124,20 @@ class Max(BaseUpdateGeneralOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     one: int
 
 Max({Sample.one, 2})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$max": {"one": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/max/>
 
@@ -152,20 +152,20 @@ class Mul(BaseUpdateGeneralOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     one: int
 
 Mul({Sample.one, 2})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$mul": {"one": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/update/mul/>
 
@@ -219,20 +219,20 @@ class AddToSet(BaseUpdateArrayOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     results: List[int]
 
 AddToSet({Sample.results, 2})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$addToSet": {"results": 2}}
 ```
-  
+
   MongoDB docs:
   <https://docs.mongodb.com/manual/reference/operator/update/addToSet/>
 
@@ -247,20 +247,20 @@ class Pop(BaseUpdateArrayOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     results: List[int]
 
 Pop({Sample.results, 2})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$pop": {"results": -1}}
 ```
-  
+
   MongoDB docs:
   <https://docs.mongodb.com/manual/reference/operator/update/pop/>
 
@@ -275,20 +275,20 @@ class Pull(BaseUpdateArrayOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     results: List[int]
 
 Pull(In(Sample.result, [1,2,3,4,5])
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$pull": { "results": { $in: [1,2,3,4,5] }}}
 ```
-  
+
   MongoDB docs:
   <https://docs.mongodb.com/manual/reference/operator/update/pull/>
 
@@ -303,20 +303,20 @@ class Push(BaseUpdateArrayOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     results: List[int]
 
 Push({Sample.results: 1})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$push": { "results": 1}}
 ```
-  
+
   MongoDB docs:
   <https://docs.mongodb.com/manual/reference/operator/update/push/>
 
@@ -331,20 +331,20 @@ class PullAll(BaseUpdateArrayOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     results: List[int]
 
 PullAll({ Sample.results: [ 0, 5 ] })
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$pullAll": { "results": [ 0, 5 ] }}
 ```
-  
+
   MongoDB docs:
   <https://docs.mongodb.com/manual/reference/operator/update/pullAll/>
 
@@ -362,4 +362,3 @@ class Bit(BaseUpdateBitwiseOperator)
 
 MongoDB doc:
 <https://docs.mongodb.com/manual/reference/operator/update/bit/>
-

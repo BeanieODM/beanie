@@ -1,9 +1,9 @@
 # Revision
 
-This feature helps with concurrent operations. 
-It stores `revision_id` together with the document and changes it on each document update. 
-If the application with an older local copy of the document tries to change it, an exception will be raised. 
-Only when the local copy is synced with the database, the application will be allowed to change the data. 
+This feature helps with concurrent operations.
+It stores `revision_id` together with the document and changes it on each document update.
+If the application with an older local copy of the document tries to change it, an exception will be raised.
+Only when the local copy is synced with the database, the application will be allowed to change the data.
 This helps to avoid data losses.
 
 ### Be aware
@@ -32,7 +32,7 @@ s.num = 10
 await s.replace()
 ```
 
-If you want to ignore revision and apply all the changes even if the local copy is outdated, 
+If you want to ignore revision and apply all the changes even if the local copy is outdated,
 you can use the `ignore_revision` parameter:
 
 ```python

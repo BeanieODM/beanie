@@ -56,7 +56,8 @@ class BaseCursorQuery(Generic[CursorResultType]):
     def _set_cache(self, data): ...
 
     async def to_list(
-        self, length: Optional[int] = None
+        self,
+        length: Optional[int] = None,
     ) -> List[CursorResultType]:  # noqa
         """
         Get list of documents

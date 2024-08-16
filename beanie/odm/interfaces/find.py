@@ -99,13 +99,16 @@ class FindInterface:
         """
         Find one document by criteria.
         Returns [FindOne](query.md#findone) query object.
-        When awaited this will either return a document or None if no document exists for the search criteria.
+        When awaited this will either return a document or None
+        if no document exists for the search criteria.
 
         :param args: *Mapping[str, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session instance
         :param ignore_cache: bool
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
+        :param **pymongo_kwargs: pymongo native parameters
+        for find operation (if Document class contains links, this parameter
+         must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindOne](query.md#findone) - find query instance
         """
         args = cls._add_class_id_filter(args, with_children)
@@ -182,12 +185,16 @@ class FindInterface:
         :param args: *Mapping[str, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
+        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] -
+                    A key or a list of (key, direction)
+                    pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
         :param lazy_parse: bool
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
+        :param **pymongo_kwargs: pymongo native parameters for find operation
+        (if Document class contains links, this parameter must
+        fit the respective parameter of the aggregate MongoDB function)
         :return: [FindMany](query.md#findmany) - query instance
         """
         args = cls._add_class_id_filter(args, with_children)
@@ -334,10 +341,14 @@ class FindInterface:
 
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
+        :param sort: Union[None, str, List[Tuple[str, SortDirection]]] -
+        A key or a list of (key, direction)
+        pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
+        :param **pymongo_kwargs: pymongo native parameters for find operation
+        (if Document class contains links, this parameter must fit the
+        respective parameter of the aggregate MongoDB function)
         :return: [FindMany](query.md#findmany) - query instance
         """
         return cls.find_many(
@@ -439,30 +450,30 @@ class FindInterface:
                 True
                 for a in args
                 if isinstance(a, Iterable) and cls.get_settings().class_id in a
-            )
+            ),
         ):
             return args
-
+        settings = cls.get_settings()
         if (
             cls.get_model_type() == ModelType.Document
             and cls._inheritance_inited
         ):
             if not with_children:
-                args += ({cls.get_settings().class_id: cls._class_id},)
+                args += ({settings.class_id: cls._class_id},)
             else:
                 args += (
                     {
-                        cls.get_settings().class_id: {
+                        settings.class_id: {
                             "$in": [cls._class_id]
-                            + [cname for cname in cls._children.keys()]
-                        }
+                            + [cname for cname in cls._children],
+                        },
                     },
                 )
 
         if cls.get_settings().union_doc:
             args += (
                 {
-                    cls.get_settings().class_id: cls.get_settings().union_doc_alias
+                    settings.class_id: settings.union_doc_alias,
                 },
             )
         return args

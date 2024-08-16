@@ -4,7 +4,7 @@ There are more than one way to set up indexes using Beanie
 
 ### Indexed function
 
-To set up an index over a single field, the `Indexed` function can be used to wrap the type 
+To set up an index over a single field, the `Indexed` function can be used to wrap the type
 and does not require a `Settings` class:
 
 ```python
@@ -28,8 +28,8 @@ class Sample(Document):
     description: Annotated[str, Indexed(index_type=pymongo.TEXT)]
 ```
 
-The `Indexed` function also supports PyMongo's `IndexModel` kwargs arguments (see the [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel) for details). 
- 
+The `Indexed` function also supports PyMongo's `IndexModel` kwargs arguments (see the [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/api/pymongo/operations.html#pymongo.operations.IndexModel) for details).
+
 For example, to create a `unique` index:
 
 ```python
@@ -52,7 +52,7 @@ class Sample(Document):
 
 ### Multi-field indexes
 
-The `indexes` field of the inner `Settings` class is responsible for more complex indexes. 
+The `indexes` field of the inner `Settings` class is responsible for more complex indexes.
 It is a list where items can be:
 
 - Single key. Name of the document's field (this is equivalent to using the Indexed function described above without any additional arguments)

@@ -36,7 +36,7 @@ async def test_find_one(document_soft_delete_not_inserted):
 
     # check if document exist with `.find_one()`
     document = await DocumentTestModelWithSoftDelete.find_one(
-        DocumentTestModelWithSoftDelete.id == result.id
+        DocumentTestModelWithSoftDelete.id == result.id,
     )
     assert document is None
 

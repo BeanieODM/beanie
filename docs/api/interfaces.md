@@ -248,6 +248,3 @@ Set pymongo session
 - `session`: Optional[ClientSession] - pymongo session
 
 **Returns**:
-
-
-

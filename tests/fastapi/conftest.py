@@ -12,7 +12,8 @@ async def api_client(clean_db):
     async with LifespanManager(app, startup_timeout=100, shutdown_timeout=100):
         server_name = "https://localhost"
         async with AsyncClient(
-            transport=ASGITransport(app=app), base_url=server_name
+            transport=ASGITransport(app=app),
+            base_url=server_name,
         ) as ac:
             yield ac
 

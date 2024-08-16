@@ -75,17 +75,17 @@ Optional list of the links:
 
 ```python
 from typing import List, Optional
- 
+
 from beanie import Document, Link
- 
+
 class Window(Document):
     x: int = 10
     y: int = 10
- 
+
 class Yard(Document):
     v: int = 10
     y: int = 10
- 
+
 class House(Document):
     name: str
     door: Link[Door]
@@ -93,7 +93,7 @@ class House(Document):
     yards: Optional[List[Link[Yard]]]
 ```
 
-Other link patterns are not supported at this moment. If you need something more specific for your use-case, 
+Other link patterns are not supported at this moment. If you need something more specific for your use-case,
 please open an issue on the GitHub page - <https://github.com/roman-right/beanie>
 
 ## Write
@@ -132,11 +132,11 @@ await house.replace(link_rule=WriteRules.DO_NOTHING)
 
 ### Prefetch
 
-You can fetch linked documents on the find query step using the `fetch_links` parameter 
+You can fetch linked documents on the find query step using the `fetch_links` parameter
 
 ```python
 houses = await House.find(
-    House.name == "test", 
+    House.name == "test",
     fetch_links=True
 ).to_list()
 ```
@@ -145,10 +145,10 @@ Supported find methods:
 - `find_one`
 - `get`
 
-Beanie uses the single aggregation query under the hood to fetch all the linked documents. 
+Beanie uses the single aggregation query under the hood to fetch all the linked documents.
 This operation is very effective.
 
-If a direct link is referred to a non-existent document, 
+If a direct link is referred to a non-existent document,
 after fetching it will remain the object of the `Link` class.
 
 Fetching will ignore non-existent documents for the list of links fields.
@@ -227,7 +227,7 @@ Also, you can set up the maximum nesting depth on the document definition level.
 
 ### On-demand fetch
 
-If you don't use prefetching, linked documents will be presented as objects of the `Link` class. 
+If you don't use prefetching, linked documents will be presented as objects of the `Link` class.
 
 You can fetch them manually afterwards.
 
@@ -251,7 +251,7 @@ This will fetch the Door object and put it into the `door` field of the `house` 
 
 Delete method works the same way as write operations, but it uses other rules.
 
-To delete all the links on the document deletion, 
+To delete all the links on the document deletion,
 you should use the `DeleteRules.DELETE_LINKS` value for the `link_rule` parameter:
 
 ```python
@@ -280,13 +280,13 @@ class House(Document):
     door: Link["Door"]
     owners: List[Link["Person"]]
 
-    
+
 class Door(Document):
     height: int = 2
     width: int = 1
     house: BackLink[House] = Field(original_field="door")
 
-    
+
 class Person(Document):
     name: str
     house: List[BackLink[House]] = Field(original_field="owners")
@@ -294,8 +294,8 @@ class Person(Document):
 
 The `original_field` parameter is required for the back link field.
 
-Back links support all the operations that normal links support, but are virtual. This means that when searching the database, you will need to include `fetch_links=True` (see [Finding documents](find.md)), or you will recieve an empty 'BackLink' virtual object. It is not possible to `fetch()` this virtual link after the initial search.
+Back links support all the operations that normal links support, but are virtual. This means that when searching the database, you will need to include `fetch_links=True` (see [Finding documents](find.md)), or you will receive an empty 'BackLink' virtual object. It is not possible to `fetch()` this virtual link after the initial search.
 
 ## Limitations
 
-- Find operations with the `fetch_links` parameter can not be used in the chaning with `delete` and `update` methods.
+- Find operations with the `fetch_links` parameter can not be used in the chaining with `delete` and `update` methods.

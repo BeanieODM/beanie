@@ -5,7 +5,8 @@ from tests.odm.models import Sample
 
 async def test_set(session):
     q = Sample.find_many(Sample.integer == 1).set(
-        {Sample.integer: 100}, session=session
+        {Sample.integer: 100},
+        session=session,
     )
 
     assert isinstance(q, UpdateQuery)
@@ -31,7 +32,8 @@ async def test_set(session):
 
 async def test_current_date(session):
     q = Sample.find_many(Sample.integer == 1).current_date(
-        {Sample.timestamp: "timestamp"}, session=session
+        {Sample.timestamp: "timestamp"},
+        session=session,
     )
 
     assert isinstance(q, UpdateQuery)
@@ -57,7 +59,8 @@ async def test_current_date(session):
 
 async def test_inc(session):
     q = Sample.find_many(Sample.integer == 1).inc(
-        {Sample.integer: 100}, session=session
+        {Sample.integer: 100},
+        session=session,
     )
 
     assert isinstance(q, UpdateQuery)

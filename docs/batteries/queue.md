@@ -13,7 +13,7 @@ class ExampleTask(Task):
     async def run(self):
         self.data = self.data.upper()
         await self.save()
-        
+
 runner = Runner(task_classes=[ExampleTask])
 runner.start()
 ```
@@ -306,7 +306,7 @@ class AnotherTask(Task):
     async def run(self):
         self.data = self.data.upper()
         await self.save()
-    
+
 
 worker = Worker(task_classes=[ProcessTask, AnotherTask])
 await worker.start()

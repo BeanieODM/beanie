@@ -86,7 +86,7 @@ class MigrationNode:
                     if migration_node is None:
                         break
             else:
-                logger.info(f"Running {mode.distance} migrations forward")
+                logger.info("Running %s migrations forward", mode.distance)
                 for i in range(mode.distance):
                     await migration_node.run_forward(
                         allow_index_dropping=allow_index_dropping,
@@ -108,7 +108,7 @@ class MigrationNode:
                     if migration_node is None:
                         break
             else:
-                logger.info(f"Running {mode.distance} migrations backward")
+                logger.info("Running %s migrations backward", mode.distance)
                 for i in range(mode.distance):
                     await migration_node.run_backward(
                         allow_index_dropping=allow_index_dropping,
@@ -119,7 +119,9 @@ class MigrationNode:
                         break
 
     async def run_forward(
-        self, allow_index_dropping: bool, use_transaction: bool
+        self,
+        allow_index_dropping: bool,
+        use_transaction: bool,
     ):
         if self.forward_class is not None:
             await self.run_migration_class(
@@ -130,7 +132,9 @@ class MigrationNode:
         await self.update_current_migration()
 
     async def run_backward(
-        self, allow_index_dropping: bool, use_transaction: bool
+        self,
+        allow_index_dropping: bool,
+        use_transaction: bool,
     ):
         if self.backward_class is not None:
             await self.run_migration_class(
@@ -144,7 +148,10 @@ class MigrationNode:
             await self.clean_current_migration()
 
     async def run_migration_class(
-        self, cls: Type, allow_index_dropping: bool, use_transaction: bool
+        self,
+        cls: Type,
+        allow_index_dropping: bool,
+        use_transaction: bool,
     ):
         """
         Run Backward or Forward migration class
@@ -167,11 +174,17 @@ class MigrationNode:
             if use_transaction:
                 async with s.start_transaction():
                     await self.run_migrations(
-                        migrations, db, allow_index_dropping, s
+                        migrations,
+                        db,
+                        allow_index_dropping,
+                        s,
                     )
             else:
                 await self.run_migrations(
-                    migrations, db, allow_index_dropping, s
+                    migrations,
+                    db,
+                    allow_index_dropping,
+                    s,
                 )
 
     async def run_migrations(
@@ -189,8 +202,9 @@ class MigrationNode:
                     allow_index_dropping=allow_index_dropping,
                 )  # TODO this is slow
             logger.info(
-                f"Running migration {migration.function.__name__} "
-                f"from module {self.name}"
+                "Running migration %s " "from module %s",
+                migration.function.__name__,
+                migration.__module__,
             )
             await migration.run(session=session)
 
@@ -203,9 +217,7 @@ class MigrationNode:
         :return:
         """
         logger.info("Building migration list")
-        names = []
-        for modulepath in path.glob("*.py"):
-            names.append(modulepath.name)
+        names = [modulepath.name for modulepath in path.glob("*.py")]
         names.sort()
 
         db = DBHandler.get_db()
@@ -220,7 +232,8 @@ class MigrationNode:
 
         for name in names:
             loader = SourceFileLoader(
-                (path / name).stem, str((path / name).absolute())
+                (path / name).stem,
+                str((path / name).absolute()),
             )
             module = types.ModuleType(loader.name)
             loader.exec_module(module)

@@ -404,4 +404,3 @@ are compatible with the Document schema
 **Returns**:
 
 InspectionResult
-

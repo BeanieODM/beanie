@@ -22,7 +22,7 @@ def extract_id_class(annotation) -> Type[Any]:
             annotation = None
     if inspect.isclass(annotation):
         return annotation
-    raise ValueError("Unknown annotation: {}".format(annotation))
+    raise ValueError(f"Unknown annotation: {annotation}")
 
 
 def get_index_attributes(field) -> Optional[Tuple[int, Dict[str, Any]]]:
@@ -45,7 +45,8 @@ def get_index_attributes(field) -> Optional[Tuple[int, Dict[str, Any]]]:
         # the annotations.
         metadata = getattr(field, "metadata", None)
     elif hasattr(field, "annotation") and hasattr(
-        field.annotation, "__metadata__"
+        field.annotation,
+        "__metadata__",
     ):
         # In Pydantic 1, the field has an `annotation` attribute with the
         # type assigned to the field. If the type is annotated, it will

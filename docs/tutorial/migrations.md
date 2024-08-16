@@ -11,7 +11,7 @@ beanie new-migration -n migration_name -p relative/path/to/migrations/directory/
 
 It will create a file named `*_migration_name.py` in the directory `relative/path/to/migrations/directory/`
 
-Migration file contains two classes: `Forward` and `Backward`. 
+Migration file contains two classes: `Forward` and `Backward`.
 Each one contains instructions to roll migration respectively forward and backward.
 
 ## Run
@@ -57,7 +57,7 @@ Migration class contains instructions - decorated async functions. There are two
 
 ### Iterative migrations
 
-To mark a function as iterative migration, `@iterative_migration()` decorator must be used. 
+To mark a function as iterative migration, `@iterative_migration()` decorator must be used.
 The function itself must accept typed `input_document` and `output_document` arguments. Like here:
 
 ```python
@@ -174,13 +174,13 @@ All the examples of migrations can be found by [link](https://github.com/roman-r
 
 ### Free fall migrations
 
-It is a much more flexible migration type, which allows the implementation of any migration logic. 
+It is a much more flexible migration type, which allows the implementation of any migration logic.
 But at the same time, it is more verbose.
 
-To mark function as a free fall migration, 
-`@free_fall_migration()` decorator with the list of Document classes must be used. 
-Function itself accepts `session` as an argument. 
-It is used in order to roll back the migration in case something has gone wrong. 
+To mark function as a free fall migration,
+`@free_fall_migration()` decorator with the list of Document classes must be used.
+Function itself accepts `session` as an argument.
+It is used in order to roll back the migration in case something has gone wrong.
 To be able to roll back, please pass session to the Documents methods. Like here:
 
 ```python

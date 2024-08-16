@@ -13,7 +13,9 @@ class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
     def __init__(
         self,
         *expressions: Union[
-            BaseFindOperator, Dict[str, Any], Mapping[str, Any]
+            BaseFindOperator,
+            Dict[str, Any],
+            Mapping[str, Any],
         ],
     ):
         self.expressions = list(expressions)
@@ -108,7 +110,10 @@ class Nor(BaseFindLogicalOperator):
     def __init__(
         self,
         *expressions: Union[
-            BaseFindOperator, Dict[str, Any], Mapping[str, Any], bool
+            BaseFindOperator,
+            Dict[str, Any],
+            Mapping[str, Any],
+            bool,
         ],
     ):
         self.expressions = list(expressions)
@@ -151,7 +156,7 @@ class Not(BaseFindLogicalOperator):
             expression_key = list(self.expression.keys())[0]
             if expression_key.startswith("$"):
                 raise AttributeError(
-                    "Not operator can not be used with operators"
+                    "Not operator can not be used with operators",
                 )
             value = self.expression[expression_key]
             if isinstance(value, dict):
@@ -161,5 +166,5 @@ class Not(BaseFindLogicalOperator):
 
             return {expression_key: {"$not": {"$eq": value}}}
         raise AttributeError(
-            "Not operator can only be used with one expression"
+            "Not operator can only be used with one expression",
         )

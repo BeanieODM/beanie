@@ -14,8 +14,8 @@ avg_price = await Product.avg(Product.price)
 
 A full list of available methods can be found [here](../api-documentation/interfaces.md/#aggregatemethods).
 
-You can also use the native PyMongo syntax by calling the `aggregate` method. 
-However, as Beanie will not know what output to expect, you will have to supply a projection model yourself. 
+You can also use the native PyMongo syntax by calling the `aggregate` method.
+However, as Beanie will not know what output to expect, you will have to supply a projection model yourself.
 If you do not supply a projection model, then a dictionary will be returned.
 
 ```python

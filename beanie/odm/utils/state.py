@@ -16,7 +16,7 @@ R = TypeVar("R")
 def check_if_state_saved(self: "DocType"):
     if not self.use_state_management():
         raise StateManagementIsTurnedOff(
-            "State management is turned off for this document"
+            "State management is turned off for this document",
         )
     if self._saved_state is None:
         raise StateNotSaved("No state was saved")
@@ -47,11 +47,12 @@ def saved_state_needed(
 def check_if_previous_state_saved(self: "DocType"):
     if not self.use_state_management():
         raise StateManagementIsTurnedOff(
-            "State management is turned off for this document"
+            "State management is turned off for this document",
         )
     if not self.state_management_save_previous():
         raise StateManagementIsTurnedOff(
-            "State management's option to save previous state is turned off for this document"
+            "State management's option to save "
+            "previous state is turned off for this document",
         )
 
 

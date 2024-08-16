@@ -1,12 +1,12 @@
 # Multi-model pattern
 
-Documents with different schemas could be stored in a single collection and managed correctly. 
+Documents with different schemas could be stored in a single collection and managed correctly.
 `UnionDoc` class is used for this.
 
-It supports `find` and `aggregate` methods. 
+It supports `find` and `aggregate` methods.
 For `find`, it will fetch all the found documents into the respective `Document` classes.
 
-Documents with `union_doc` in their settings can still be used in `find` and other queries. 
+Documents with `union_doc` in their settings can still be used in `find` and other queries.
 Queries of one such class will not see the data of others.
 
 ## Example
@@ -21,11 +21,11 @@ class Parent(UnionDoc):  # Union
     class Settings:
         name = "union_doc_collection"  # Collection name
         class_id = "_class_id"  # _class_id is the default beanie internal field used to filter children Documents
-        
-        
+
+
 class One(Document):
     int_field: int = 0
-    shared: int = 0        
+    shared: int = 0
 
     class Settings:
         name = "One" # Name used to filer union document 'One', default to class name

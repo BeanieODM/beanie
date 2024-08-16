@@ -30,28 +30,28 @@ class MigrationSettings:
             kwargs.get("distance")
             or self.get_env_value("distance")
             or self.get_from_toml("distance")
-            or 0
+            or 0,
         )
         self.connection_uri = str(
             kwargs.get("connection_uri")
             or self.get_env_value("connection_uri")
-            or self.get_from_toml("connection_uri")
+            or self.get_from_toml("connection_uri"),
         )
         self.database_name = str(
             kwargs.get("database_name")
             or self.get_env_value("database_name")
-            or self.get_from_toml("database_name")
+            or self.get_from_toml("database_name"),
         )
         self.path = Path(
             kwargs.get("path")
             or self.get_env_value("path")
-            or self.get_from_toml("path")
+            or self.get_from_toml("path"),
         )
         self.allow_index_dropping = bool(
             kwargs.get("allow_index_dropping")
             or self.get_env_value("allow_index_dropping")
             or self.get_from_toml("allow_index_dropping")
-            or False
+            or False,
         )
         self.use_transaction = bool(kwargs.get("use_transaction"))
 
@@ -81,7 +81,7 @@ class MigrationSettings:
             )
         else:
             value = os.environ.get(
-                f"BEANIE_{field_name.upper()}"
+                f"BEANIE_{field_name.upper()}",
             ) or os.environ.get(f"beanie_{field_name.lower()}")
         return value
 
@@ -109,7 +109,8 @@ async def run_migrate(settings: MigrationSettings):
     DBHandler.set_db(settings.connection_uri, settings.database_name)
     root = await MigrationNode.build(settings.path)
     mode = RunningMode(
-        direction=settings.direction, distance=settings.distance
+        direction=settings.direction,
+        distance=settings.distance,
     )
     await root.run(
         mode=mode,
@@ -148,7 +149,11 @@ async def run_migrate(settings: MigrationSettings):
     help="MongoDB connection URI",
 )
 @click.option(
-    "-db", "--database_name", required=False, type=str, help="DataBase name"
+    "-db",
+    "--database_name",
+    required=False,
+    type=str,
+    help="DataBase name",
 )
 @click.option(
     "-p",
@@ -161,14 +166,16 @@ async def run_migrate(settings: MigrationSettings):
     "--allow-index-dropping/--forbid-index-dropping",
     required=False,
     default=False,
-    help="if allow-index-dropping is set, Beanie will drop indexes from your collection",
+    help="if allow-index-dropping is set, "
+    "Beanie will drop indexes from your collection",
 )
 @click.option(
     "--use-transaction/--no-use-transaction",
     required=False,
     default=True,
     help="Enable or disable the use of transactions during migration. "
-    "When enabled (--use-transaction), Beanie uses transactions for migration, "
+    "When enabled (--use-transaction), "
+    "Beanie uses transactions for migration, "
     "which necessitates a replica set. When disabled (--no-use-transaction), "
     "migrations occur without transactions.",
 )

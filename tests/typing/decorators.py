@@ -30,7 +30,8 @@ async def async_func(doc_self: Document, arg1: str, arg2: int, /) -> Document:
 
 
 AsyncFunc: TypeAlias = Callable[
-    [Document, str, int], Coroutine[Any, Any, Document]
+    [Document, str, int],
+    Coroutine[Any, Any, Document],
 ]
 
 

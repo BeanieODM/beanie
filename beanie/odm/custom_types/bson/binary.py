@@ -13,7 +13,8 @@ def _to_bson_binary(value: Any) -> bson.Binary:
 
 if IS_PYDANTIC_V2:
     BsonBinary = Annotated[
-        bson.Binary, pydantic.PlainValidator(_to_bson_binary)
+        bson.Binary,
+        pydantic.PlainValidator(_to_bson_binary),
     ]
 else:
 

@@ -14,7 +14,9 @@ def data_maker():
     return TestModel(
         my_id="5f4e3f3b7c0c9d001f7d4c8e",
         fake_doc=DocumentTestModelWithSoftDelete(
-            test_int=1, test_str="test", id="5f4e3f3b7c0c9d001f7d4c8f"
+            test_int=1,
+            test_str="test",
+            id="5f4e3f3b7c0c9d001f7d4c8f",
         ),
     )
 

@@ -58,23 +58,29 @@ FindQueryResultType = TypeVar("FindQueryResultType", bound=BaseModel)
 
 
 class FindQuery(
-    Generic[FindQueryResultType], UpdateMethods, SessionMethods, CloneInterface
+    Generic[FindQueryResultType],
+    UpdateMethods,
+    SessionMethods,
+    CloneInterface,
 ):
     """
     Find Query base class
     """
 
     UpdateQueryType: Union[
-        Type[UpdateQuery], Type[UpdateMany], Type[UpdateOne]
+        Type[UpdateQuery],
+        Type[UpdateMany],
+        Type[UpdateOne],
     ] = UpdateQuery
     DeleteQueryType: Union[Type[DeleteOne], Type[DeleteMany]] = DeleteMany
     AggregationQueryType = AggregationQuery
 
     def __init__(self, document_model: Type["DocType"]):
-        self.document_model: Type["DocType"] = document_model
+        self.document_model: Type[DocType] = document_model
         self.find_expressions: List[Mapping[str, Any]] = []
         self.projection_model: Type[FindQueryResultType] = cast(
-            Type[FindQueryResultType], self.document_model
+            Type[FindQueryResultType],
+            self.document_model,
         )
         self.session = None
         self.encoders: Dict[Any, Callable[[Any], Any]] = {}
@@ -104,7 +110,7 @@ class FindQuery(
         self.prepare_find_expressions()
         if self.find_expressions:
             return Encoder(custom_encoders=self.encoders).encode(
-                And(*self.find_expressions).query
+                And(*self.find_expressions).query,
             )
         else:
             return {}
@@ -149,7 +155,7 @@ class FindQuery(
         """
         return (
             await self.document_model.get_motor_collection().count_documents(
-                self.get_filter_query()
+                self.get_filter_query(),
             )
         )
 
@@ -175,7 +181,7 @@ class FindMany(
     DeleteQueryType = DeleteMany
 
     def __init__(self, document_model: Type["DocType"]):
-        super(FindMany, self).__init__(document_model=document_model)
+        super().__init__(document_model=document_model)
         self.sort_expressions: List[Tuple[str, SortDirection]] = []
         self.skip_number: int = 0
         self.limit_number: int = 0
@@ -229,7 +235,8 @@ class FindMany(
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[
-        "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
+        "FindMany[FindQueryResultType]",
+        "FindMany[FindQueryProjectionType]",
     ]:
         """
         Find many documents by criteria
@@ -243,7 +250,10 @@ class FindMany(
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
+        :param **pymongo_kwargs: pymongo native parameters for find operation
+        (if Document class contains links,
+        this parameter must fit the respective parameter
+        of the aggregate MongoDB function)
         :return: FindMany - query instance
         """
         self.find_expressions += args  # type: ignore # bool workaround
@@ -280,7 +290,8 @@ class FindMany(
         self: "FindMany",
         projection_model: Optional[Type[FindQueryProjectionType]],
     ) -> Union[
-        "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
+        "FindMany[FindQueryResultType]",
+        "FindMany[FindQueryProjectionType]",
     ]:
         """
         Apply projection parameter
@@ -340,7 +351,8 @@ class FindMany(
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[
-        "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
+        "FindMany[FindQueryResultType]",
+        "FindMany[FindQueryProjectionType]",
     ]:
         """
         The same as `find_many(...)`
@@ -364,7 +376,9 @@ class FindMany(
         self,
         *args: Optional[
             Union[
-                str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
+                str,
+                Tuple[str, SortDirection],
+                List[Tuple[str, SortDirection]],
             ]
         ],
     ) -> "FindMany[FindQueryResultType]":
@@ -386,15 +400,15 @@ class FindMany(
             elif isinstance(arg, str):
                 if arg.startswith("+"):
                     self.sort_expressions.append(
-                        (arg[1:], SortDirection.ASCENDING)
+                        (arg[1:], SortDirection.ASCENDING),
                     )
                 elif arg.startswith("-"):
                     self.sort_expressions.append(
-                        (arg[1:], SortDirection.DESCENDING)
+                        (arg[1:], SortDirection.DESCENDING),
                     )
                 else:
                     self.sort_expressions.append(
-                        (arg, SortDirection.ASCENDING)
+                        (arg, SortDirection.ASCENDING),
                     )
             else:
                 raise TypeError("Wrong argument type")
@@ -515,12 +529,15 @@ class FindMany(
         :return: [DeleteMany](query.md#deletemany) query
         """
         # We need to cast here to tell mypy that we are sure about the type.
-        # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case
+        # This is because delete may also return a DeleteOne type in general,
+        # and mypy can not be sure in this case
         # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
         return cast(
             DeleteMany,
             self.delete(
-                session=session, bulk_writer=bulk_writer, **pymongo_kwargs
+                session=session,
+                bulk_writer=bulk_writer,
+                **pymongo_kwargs,
             ),
         )
 
@@ -556,7 +573,8 @@ class FindMany(
         AggregationQuery[FindQueryProjectionType],
     ]:
         """
-        Provide search criteria to the [AggregationQuery](query.md#aggregationquery)
+        Provide search criteria to the
+        [AggregationQuery](query.md#aggregationquery)
 
         :param aggregation_pipeline: list - aggregation pipeline. MongoDB doc:
         <https://docs.mongodb.com/manual/core/aggregation-pipeline/>
@@ -585,7 +603,7 @@ class FindMany(
                 "projection": get_projection(self.projection_model),
                 "skip": self.skip_number,
                 "limit": self.limit_number,
-            }
+            },
         )
 
     def _get_cache(self):
@@ -594,7 +612,7 @@ class FindMany(
             and self.ignore_cache is False
         ):
             return self.document_model._cache.get(  # type: ignore
-                self._cache_key
+                self._cache_key,
             )
         else:
             return None
@@ -605,7 +623,8 @@ class FindMany(
             and self.ignore_cache is False
         ):
             return self.document_model._cache.set(  # type: ignore
-                self._cache_key, data
+                self._cache_key,
+                data,
             )
 
     def build_aggregation_pipeline(self, *extra_stages):
@@ -632,7 +651,7 @@ class FindMany(
                             {"$and": text_queries}
                             if len(text_queries) > 1
                             else text_queries[0]
-                        )
+                        ),
                     },
                 )
 
@@ -643,8 +662,8 @@ class FindMany(
                             {"$and": non_text_queries}
                             if len(non_text_queries) > 1
                             else non_text_queries[0]
-                        )
-                    }
+                        ),
+                    },
                 )
 
         if extra_stages:
@@ -719,7 +738,7 @@ class FindMany(
 
             return result[0]["count"] if result else 0
 
-        return await super(FindMany, self).count()
+        return await super().count()
 
 
 class FindOne(FindQuery[FindQueryResultType]):
@@ -749,7 +768,8 @@ class FindOne(FindQuery[FindQueryResultType]):
         self: "FindOne[FindQueryResultType]",
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
     ) -> Union[
-        "FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"
+        "FindOne[FindQueryResultType]",
+        "FindOne[FindQueryProjectionType]",
     ]:
         """
         Apply projection parameter
@@ -796,7 +816,8 @@ class FindOne(FindQuery[FindQueryResultType]):
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs,
     ) -> Union[
-        "FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"
+        "FindOne[FindQueryResultType]",
+        "FindOne[FindQueryProjectionType]",
     ]:
         """
         Find one document by criteria
@@ -805,7 +826,10 @@ class FindOne(FindQuery[FindQueryResultType]):
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[ClientSession] - pymongo session
         :param ignore_cache: bool
-        :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
+        :param **pymongo_kwargs:
+        pymongo native parameters for find operation
+        (if Document class contains links, this parameter must
+        fit the respective parameter of the aggregate MongoDB function)
         :return: FindOne - query instance
         """
         self.find_expressions += args  # type: ignore # bool workaround
@@ -924,12 +948,15 @@ class FindOne(FindQuery[FindQueryResultType]):
         :return: [DeleteOne](query.md#deleteone) query
         """
         # We need to cast here to tell mypy that we are sure about the type.
-        # This is because delete may also return a DeleteOne type in general, and mypy can not be sure in this case
+        # This is because delete may also return a DeleteOne
+        # type in general, and mypy can not be sure in this case
         # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
         return cast(
             DeleteOne,
             self.delete(
-                session=session, bulk_writer=bulk_writer, **pymongo_kwargs
+                session=session,
+                bulk_writer=bulk_writer,
+                **pymongo_kwargs,
             ),
         )
 
@@ -977,7 +1004,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                     ),
                     object_class=self.document_model,
                     pymongo_kwargs=self.pymongo_kwargs,
-                )
+                ),
             )
             return None
 
@@ -1019,21 +1046,23 @@ class FindOne(FindQuery[FindQueryResultType]):
                 self.fetch_links,
             )
             document: Dict[str, Any] = self.document_model._cache.get(  # type: ignore
-                cache_key
+                cache_key,
             )
             if document is None:
                 document = yield from self._find_one().__await__()  # type: ignore
                 self.document_model._cache.set(  # type: ignore
-                    cache_key, document
+                    cache_key,
+                    document,
                 )
         else:
             document = yield from self._find_one().__await__()  # type: ignore
         if document is None:
             return None
-        if type(document) == self.projection_model:
+        if type(document) is self.projection_model:
             return cast(FindQueryResultType, document)
         return cast(
-            FindQueryResultType, parse_obj(self.projection_model, document)
+            FindQueryResultType,
+            parse_obj(self.projection_model, document),
         )
 
     async def count(self) -> int:
@@ -1048,4 +1077,4 @@ class FindOne(FindQuery[FindQueryResultType]):
                 fetch_links=self.fetch_links,
                 **self.pymongo_kwargs,
             ).count()
-        return await super(FindOne, self).count()
+        return await super().count()

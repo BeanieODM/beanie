@@ -29,7 +29,9 @@ class Forward:
     async def name_to_title(self, session):
         async for old_note in OldNote.find_all():
             new_note = Note(
-                id=old_note.id, title=old_note.name, tag=old_note.tag
+                id=old_note.id,
+                title=old_note.name,
+                tag=old_note.tag,
             )
             await new_note.replace(session=session)
 
@@ -39,6 +41,8 @@ class Backward:
     async def title_to_name(self, session):
         async for old_note in Note.find_all():
             new_note = OldNote(
-                id=old_note.id, name=old_note.title, tag=old_note.tag
+                id=old_note.id,
+                name=old_note.title,
+                tag=old_note.tag,
             )
             await new_note.replace(session=session)

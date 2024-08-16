@@ -23,7 +23,8 @@ class TestConcurrency:
             cli.get_io_loop = asyncio.get_running_loop
             db = cli[settings.mongodb_db_name]
             await init_beanie(
-                db, document_models=[SampleModel3, SampleModel, SampleModel2]
+                db,
+                document_models=[SampleModel3, SampleModel, SampleModel2],
             )
 
             async def insert_find():

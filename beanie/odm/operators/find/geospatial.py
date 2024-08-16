@@ -63,9 +63,9 @@ class GeoIntersects(BaseFindGeospatialOperator):
                     "$geometry": {
                         "type": self.geo_type,
                         "coordinates": self.coordinates,
-                    }
-                }
-            }
+                    },
+                },
+            },
         }
 
 
@@ -117,7 +117,10 @@ class GeoWithin(BaseFindGeospatialOperator):
     """
 
     def __init__(
-        self, field, geo_type: GeoWithinTypes, coordinates: List[List[float]]
+        self,
+        field,
+        geo_type: GeoWithinTypes,
+        coordinates: List[List[float]],
     ):
         self.field = field
         self.geo_type = geo_type
@@ -131,9 +134,9 @@ class GeoWithin(BaseFindGeospatialOperator):
                     "$geometry": {
                         "type": self.geo_type,
                         "coordinates": self.coordinates,
-                    }
-                }
-            }
+                    },
+                },
+            },
         }
 
 
@@ -177,7 +180,10 @@ class Box(BaseFindGeospatialOperator):
     """
 
     def __init__(
-        self, field, lower_left: List[float], upper_right: List[float]
+        self,
+        field,
+        lower_left: List[float],
+        upper_right: List[float],
     ):
         self.field = field
         self.coordinates = [lower_left, upper_right]
@@ -255,8 +261,8 @@ class Near(BaseFindGeospatialOperator):
                         "type": "Point",
                         "coordinates": [self.longitude, self.latitude],
                     },
-                }
-            }
+                },
+            },
         }
         if self.max_distance:
             expression[self.field][self.operator]["$maxDistance"] = (

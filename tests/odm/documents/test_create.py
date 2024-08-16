@@ -37,7 +37,8 @@ async def test_create_twice(document_not_inserted):
 
 async def test_insert_one_with_session(document_not_inserted, session):
     result = await DocumentTestModel.insert_one(
-        document_not_inserted, session=session
+        document_not_inserted,
+        session=session,
     )
     document = await DocumentTestModel.get(result.id, session=session)
     assert document is not None
@@ -48,7 +49,8 @@ async def test_insert_one_with_session(document_not_inserted, session):
 
 async def test_insert_many_with_session(documents_not_inserted, session):
     await DocumentTestModel.insert_many(
-        documents_not_inserted(10), session=session
+        documents_not_inserted(10),
+        session=session,
     )
     documents = await DocumentTestModel.find_all(session=session).to_list()
     assert len(documents) == 10
@@ -73,7 +75,7 @@ async def test_insert_keep_nulls_false():
 
     raw_data = (
         await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
-            {"_id": doc.id}
+            {"_id": doc.id},
         )
     )
     assert raw_data == {
@@ -102,7 +104,7 @@ async def test_insert_many_keep_nulls_false():
 
     raw_data = (
         await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
-            {"_id": new_docs[0].id}
+            {"_id": new_docs[0].id},
         )
     )
     assert raw_data == {
@@ -111,7 +113,7 @@ async def test_insert_many_keep_nulls_false():
     }
     raw_data = (
         await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
-            {"_id": new_docs[1].id}
+            {"_id": new_docs[1].id},
         )
     )
     assert raw_data == {

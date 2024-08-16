@@ -12,7 +12,7 @@ class Sample(Document):
         use_cache = True
 ```
 
-Beanie uses LRU cache with expiration time. 
+Beanie uses LRU cache with expiration time.
 You can set `capacity` (the maximum number of the cached queries) and expiration time in the `Settings` inner class.
 
 ```python

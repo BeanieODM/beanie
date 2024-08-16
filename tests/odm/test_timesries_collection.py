@@ -12,18 +12,20 @@ async def test_timeseries_collection(db):
     if major_version < 5:
         with pytest.raises(MongoDBVersionError):
             await init_beanie(
-                database=db, document_models=[DocumentWithTimeseries]
+                database=db,
+                document_models=[DocumentWithTimeseries],
             )
 
     if major_version >= 5:
         await init_beanie(
-            database=db, document_models=[DocumentWithTimeseries]
+            database=db,
+            document_models=[DocumentWithTimeseries],
         )
         info = await db.command(
             {
                 "listCollections": 1,
                 "filter": {"name": "DocumentWithTimeseries"},
-            }
+            },
         )
 
         assert info["cursor"]["firstBatch"][0] == {

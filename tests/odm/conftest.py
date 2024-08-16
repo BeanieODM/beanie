@@ -132,7 +132,7 @@ async def preset_documents(point):
             coordinates=[
                 point["longitude"] + i / 10,
                 point["latitude"] + i / 10,
-            ]
+            ],
         )
         nested = Nested(
             integer=integer_2,
@@ -172,7 +172,7 @@ def sample_doc_not_saved(point):
         coordinates=[
             point["longitude"],
             point["latitude"],
-        ]
+        ],
     )
     return Sample(
         timestamp=datetime.utcnow(),
@@ -317,7 +317,9 @@ def document_not_inserted():
 @pytest.fixture
 def documents_not_inserted():
     def generate_documents(
-        number: int, test_str: str = None, random: bool = False
+        number: int,
+        test_str: str = None,
+        random: bool = False,
     ) -> List[DocumentTestModel]:
         return [
             DocumentTestModel(
@@ -345,14 +347,13 @@ def document_soft_delete_not_inserted():
 
 @pytest.fixture
 def documents_soft_delete_not_inserted():
-    docs = []
-    for i in range(3):
-        docs.append(
-            DocumentTestModelWithSoftDelete(
-                test_int=randint(0, 1000000),
-                test_str="kipasa",
-            )
+    docs = [
+        DocumentTestModelWithSoftDelete(
+            test_int=randint(0, 1000000),
+            test_str="kipasa",
         )
+        for _ in range(3)
+    ]
     return docs
 
 
@@ -364,10 +365,12 @@ async def document(document_not_inserted) -> DocumentTestModel:
 @pytest.fixture
 def documents(documents_not_inserted):
     async def generate_documents(
-        number: int, test_str: str = None, random: bool = False
+        number: int,
+        test_str: str = None,
+        random: bool = False,
     ):
         result = await DocumentTestModel.insert_many(
-            documents_not_inserted(number, test_str, random)
+            documents_not_inserted(number, test_str, random),
         )
         return result.inserted_ids
 

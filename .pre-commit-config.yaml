@@ -1,15 +1,48 @@
 repos:
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.5.0
+    rev: v0.6.0
     hooks:
       - id: ruff
         args: [ --fix ]
       - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.1
+    rev: v1.11.1
     hooks:
       - id: mypy
         additional_dependencies:
           - types-click
           - types-toml
         exclude: ^tests/
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.3.0
+    hooks:
+      - id: codespell
+        additional_dependencies:
+          - tomli
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-builtin-literals
+      - id: check-xml
+      - id: check-toml
+      - id: check-json
+      - id: check-yaml
+        args:
+          - --unsafe
+      - id: end-of-file-fixer
+        exclude: \.py$ #already done by ruff
+      - id: trailing-whitespace
+        exclude: \.py$ #already done by ruff
+      - id: fix-byte-order-marker
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: debug-statements
+      - id: detect-private-key
+      - id: check-vcs-permalinks
+      - id: forbid-submodules
+      - id: mixed-line-ending
+        exclude: \.py$ #already done by ruff
+      # make code friendly to windows programmers we do not want to have maximal compatibility
+      - id: check-case-conflict
+      #- id: check-illegal-windows-names not available yet

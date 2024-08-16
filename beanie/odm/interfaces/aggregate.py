@@ -58,7 +58,8 @@ class AggregateInterface:
         :param projection_model: Type[BaseModel]
         :param session: Optional[ClientSession]
         :param ignore_cache: bool
-        :param **pymongo_kwargs: pymongo native parameters for aggregate operation
+        :param **pymongo_kwargs:
+        pymongo native parameters for aggregate operation
         :return: [AggregationQuery](query.md#aggregationquery)
         """
         return cls.find_all().aggregate(

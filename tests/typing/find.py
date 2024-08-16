@@ -12,17 +12,14 @@ async def find_many_with_projection() -> List[ProjectionTest]:
 
 
 async def find_many_generator() -> List[Test]:
-    docs: List[Test] = []
-    async for doc in Test.find():
-        docs.append(doc)
-    return docs
+    return [doc async for doc in Test.find()]
 
 
 async def find_many_generator_with_projection() -> List[ProjectionTest]:
-    docs: List[ProjectionTest] = []
-    async for doc in Test.find().project(projection_model=ProjectionTest):
-        docs.append(doc)
-    return docs
+    return [
+        doc
+        async for doc in Test.find().project(projection_model=ProjectionTest)
+    ]
 
 
 async def find_one() -> Optional[Test]:

@@ -55,7 +55,7 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
         self.update_expressions: List[Mapping[str, Any]] = []
         self.session = None
         self.is_upsert = False
-        self.upsert_insert_doc: Optional["DocType"] = None
+        self.upsert_insert_doc: Optional[DocType] = None
         self.encoders: Dict[Any, Callable[[Any], Any]] = {}
         self.bulk_writer: Optional[BulkWriter] = None
         self.encoders = self.document_model.get_settings().bson_encoders
@@ -165,7 +165,10 @@ class UpdateMany(UpdateQuery):
         :return: UpdateMany query
         """
         return self.update(
-            *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
+            *args,
+            session=session,
+            bulk_writer=bulk_writer,
+            **pymongo_kwargs,
         )
 
     async def _update(self):
@@ -186,13 +189,15 @@ class UpdateMany(UpdateQuery):
                     second_query=self.update_query,
                     object_class=self.document_model,
                     pymongo_kwargs=self.pymongo_kwargs,
-                )
+                ),
             )
 
     def __await__(
         self,
     ) -> Generator[
-        Any, None, Union[UpdateResult, InsertOneResult, Optional["DocType"]]
+        Any,
+        None,
+        Union[UpdateResult, InsertOneResult, Optional["DocType"]],
     ]:
         """
         Run the query
@@ -221,7 +226,7 @@ class UpdateOne(UpdateQuery):
     """
 
     def __init__(self, *args, **kwargs):
-        super(UpdateOne, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.response_type = UpdateResponse.UPDATE_RESULT
 
     def update(
@@ -307,15 +312,16 @@ class UpdateOne(UpdateQuery):
 
     async def _update(self):
         if not self.bulk_writer:
+            collection = self.document_model.get_motor_collection()
             if self.response_type == UpdateResponse.UPDATE_RESULT:
-                return await self.document_model.get_motor_collection().update_one(
+                return await collection.update_one(
                     self.find_query,
                     self.update_query,
                     session=self.session,
                     **self.pymongo_kwargs,
                 )
             else:
-                result = await self.document_model.get_motor_collection().find_one_and_update(
+                result = await collection.find_one_and_update(
                     self.find_query,
                     self.update_query,
                     session=self.session,
@@ -335,13 +341,15 @@ class UpdateOne(UpdateQuery):
                     second_query=self.update_query,
                     object_class=self.document_model,
                     pymongo_kwargs=self.pymongo_kwargs,
-                )
+                ),
             )
 
     def __await__(
         self,
     ) -> Generator[
-        Any, None, Union[UpdateResult, InsertOneResult, Optional["DocType"]]
+        Any,
+        None,
+        Union[UpdateResult, InsertOneResult, Optional["DocType"]],
     ]:
         """
         Run the query

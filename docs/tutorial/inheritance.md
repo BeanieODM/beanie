@@ -21,7 +21,7 @@ from beanie import Document, Link, init_beanie
 
 
 class Vehicle(Document):
-    """Inheritance scheme bellow"""
+    """Inheritance scheme below"""
     #               Vehicle
     #              /   |   \
     #             /    |    \
@@ -31,7 +31,7 @@ class Vehicle(Document):
     #                          Bus
     # shared attribute for all children
     color: str
-    
+
     class Settings:
         is_root = True
 
@@ -58,8 +58,8 @@ class Car(Vehicle, Fuelled):
 class Bus(Car, Fuelled):
     """Inheritance chain is Vehicle -> Car -> Bus, it is also stored in Vehicle collection"""
     seats: int
-    
-    
+
+
 class Owner(Document):
     vehicles: Optional[List[Link[Vehicle]]]
 ```

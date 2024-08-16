@@ -10,7 +10,7 @@ from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, parse_model
 
 class DummyOutput:
     def __init__(self):
-        super(DummyOutput, self).__setattr__("_internal_structure_dict", {})
+        super().__setattr__("_internal_structure_dict", {})
 
     def __setattr__(self, key, value):
         self._internal_structure_dict[key] = value
@@ -48,7 +48,7 @@ def iterative_migration(
             self.function = function
             self.function_signature = signature(function)
             input_signature = self.function_signature.parameters.get(
-                "input_document"
+                "input_document",
             )
             if input_signature is None:
                 raise RuntimeError("input_signature must not be None")
@@ -56,7 +56,7 @@ def iterative_migration(
                 input_signature.annotation
             )
             output_signature = self.function_signature.parameters.get(
-                "output_document"
+                "output_document",
             )
             if output_signature is None:
                 raise RuntimeError("output_signature must not be None")
@@ -72,7 +72,7 @@ def iterative_migration(
             ):
                 raise TypeError(
                     "input_document and output_document "
-                    "must have annotation of Document subclass"
+                    "must have annotation of Document subclass",
                 )
 
             self.batch_size = batch_size
@@ -94,7 +94,7 @@ def iterative_migration(
             output_documents = []
             all_migration_ops = []
             async for input_document in self.input_document_model.find_all(
-                session=session
+                session=session,
             ):
                 output = DummyOutput()
                 function_kwargs = {
@@ -111,23 +111,26 @@ def iterative_migration(
                 )
                 update_dict(output_dict, output.dict())
                 output_document = parse_model(
-                    self.output_document_model, output_dict
+                    self.output_document_model,
+                    output_dict,
                 )
                 output_documents.append(output_document)
 
                 if len(output_documents) == self.batch_size:
                     all_migration_ops.append(
                         self.output_document_model.replace_many(
-                            documents=output_documents, session=session
-                        )
+                            documents=output_documents,
+                            session=session,
+                        ),
                     )
                     output_documents = []
 
             if output_documents:
                 all_migration_ops.append(
                     self.output_document_model.replace_many(
-                        documents=output_documents, session=session
-                    )
+                        documents=output_documents,
+                        session=session,
+                    ),
                 )
             await asyncio.gather(*all_migration_ops)
 

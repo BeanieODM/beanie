@@ -55,7 +55,7 @@ class TestMultiModel:
         await DocumentMultiModelTwo().insert()
 
         docs = await DocumentUnion.aggregate(
-            [{"$match": {"$expr": {"$eq": ["$int_filed", 0]}}}]
+            [{"$match": {"$expr": {"$eq": ["$int_filed", 0]}}}],
         ).to_list()
         assert len(docs) == 2
 

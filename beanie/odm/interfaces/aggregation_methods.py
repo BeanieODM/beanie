@@ -51,7 +51,8 @@ class AggregateMethods:
             {"$project": {"_id": 0, "sum": 1}},
         ]
 
-        # As we did not supply a projection we can safely cast the type (hinting to mypy that we know the type)
+        # As we did not supply a projection
+        # we can safely cast the type (hinting to mypy that we know the type)
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
             await self.aggregate(

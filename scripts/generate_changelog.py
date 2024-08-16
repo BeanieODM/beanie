@@ -36,6 +36,7 @@ class ChangelogGenerator:
             ["git", "log", f"{tag}..HEAD", "--pretty=format:%H"],
             stdout=subprocess.PIPE,
             text=True,
+            check=False,
         )
         return result.stdout.split()
 
@@ -53,7 +54,10 @@ class ChangelogGenerator:
         )
 
     def generate_changelog(self) -> str:
-        markdown = f"\n## [{self.new_version}] - {datetime.now().strftime('%Y-%m-%d')}\n"
+        markdown = (
+            f"\n## [{self.new_version}] "
+            f"- {datetime.now().strftime('%Y-%m-%d')}\n"
+        )
         for pr in self.prs:
             markdown += (
                 f"### {pr.title.capitalize()}\n"

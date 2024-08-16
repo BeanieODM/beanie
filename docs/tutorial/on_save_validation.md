@@ -1,8 +1,8 @@
 # On save validation
 
-Pydantic has a very useful config to validate values on assignment - `validate_assignment = True`. 
+Pydantic has a very useful config to validate values on assignment - `validate_assignment = True`.
 But, unfortunately, this is an expensive operation and doesn't fit some use cases.
-You can validate all the values before saving the document (`insert`, `replace`, `save`, `save_changes`) 
+You can validate all the values before saving the document (`insert`, `replace`, `save`, `save_changes`)
 with beanie config `validate_on_save` instead.
 
 This feature must be turned on in the `Settings` inner class explicitly:
@@ -16,7 +16,7 @@ class Sample(Document):
         validate_on_save = True
 ```
 
-If any field has a wrong value, 
+If any field has a wrong value,
 it will raise an error on write operations (`insert`, `replace`, `save`, `save_changes`).
 
 ```python

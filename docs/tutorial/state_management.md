@@ -77,8 +77,8 @@ s.get_changes() == {}
 
 ## Options
 
-By default, state management will merge the changes made to nested objects, 
-which is fine for most cases as it is non-destructive and does not re-assign the whole object 
+By default, state management will merge the changes made to nested objects,
+which is fine for most cases as it is non-destructive and does not re-assign the whole object
 if only one of its attributes changed:
 
 ```python

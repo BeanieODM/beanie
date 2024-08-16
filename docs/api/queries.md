@@ -205,7 +205,7 @@ Provide search criteria to the [DeleteMany](https://roman-right.github.io/beanie
 
 **Arguments**:
 
-- `session`: 
+- `session`:
 
 **Returns**:
 
@@ -565,4 +565,3 @@ Get list of documents
 **Returns**:
 
 Union[List[BaseModel], List[Dict[str, Any]]]
-

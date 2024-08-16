@@ -126,7 +126,9 @@ class TestStateManagement:
     class TestSaveState:
         async def test_save_state(self):
             doc = DocumentWithTurnedOnStateManagement(
-                num_1=1, num_2=2, internal=InternalDoc(num=1, string="s")
+                num_1=1,
+                num_2=2,
+                internal=InternalDoc(num=1, string="s"),
             )
             assert doc.get_saved_state() is None
             assert doc.get_previous_saved_state() is None
@@ -166,7 +168,9 @@ class TestStateManagement:
 
         async def test_save_state_with_previous(self):
             doc = DocumentWithTurnedOnSavePrevious(
-                num_1=1, num_2=2, internal=InternalDoc(num=1, string="s")
+                num_1=1,
+                num_2=2,
+                internal=InternalDoc(num=1, string="s"),
             )
             assert doc.get_saved_state() is None
             assert doc.get_previous_saved_state() is None
@@ -206,7 +210,9 @@ class TestStateManagement:
 
         async def test_state_management_on_not_changed(self):
             doc = DocumentWithTurnedOnStateManagement(
-                num_1=1, num_2=2, internal=InternalDoc()
+                num_1=1,
+                num_2=2,
+                internal=InternalDoc(),
             )
 
             with pytest.raises(StateNotSaved):
@@ -228,7 +234,9 @@ class TestStateManagement:
 
         async def test_state_management_on_not_changed(self):
             doc = DocumentWithTurnedOnStateManagement(
-                num_1=1, num_2=2, internal=InternalDoc()
+                num_1=1,
+                num_2=2,
+                internal=InternalDoc(),
             )
 
             with pytest.raises(StateNotSaved):
@@ -236,7 +244,9 @@ class TestStateManagement:
 
         async def test_save_previous_on_not_changed(self):
             doc = DocumentWithTurnedOnSavePrevious(
-                num_1=1, num_2=2, internal=InternalDoc()
+                num_1=1,
+                num_2=2,
+                internal=InternalDoc(),
             )
 
             with pytest.raises(StateNotSaved):
@@ -283,7 +293,7 @@ class TestStateManagement:
                     "num": 1000,
                     "string": "new_value",
                     "lst": [1, 2, 3, 4, 5],
-                }
+                },
             }
 
         async def test_replace_whole(self, doc_replace):
@@ -293,7 +303,7 @@ class TestStateManagement:
                 "internal": {
                     "num": 1000,
                     "string": "new_value",
-                }
+                },
             }
 
     class TestGetPreviousChanges:
@@ -340,7 +350,7 @@ class TestStateManagement:
             )
 
             new_doc = await DocumentWithTurnedOnStateManagement.get(
-                saved_doc_default.id
+                saved_doc_default.id,
             )
             assert new_doc.num_1 == 10000
 
@@ -363,7 +373,7 @@ class TestStateManagement:
             )
 
             new_doc = await DocumentWithTurnedOnSavePrevious.get(
-                saved_doc_previous.id
+                saved_doc_previous.id,
             )
             assert new_doc.num_1 == 10000
 
@@ -377,29 +387,31 @@ class TestStateManagement:
 
         async def test_find_one(self, saved_doc_default, state):
             new_doc = await DocumentWithTurnedOnStateManagement.get(
-                saved_doc_default.id
+                saved_doc_default.id,
             )
             assert new_doc.get_saved_state() == state
             assert new_doc.get_previous_saved_state() is None
 
             new_doc = await DocumentWithTurnedOnStateManagement.find_one(
-                DocumentWithTurnedOnStateManagement.id == saved_doc_default.id
+                DocumentWithTurnedOnStateManagement.id == saved_doc_default.id,
             )
             assert new_doc.get_saved_state() == state
             assert new_doc.get_previous_saved_state() is None
 
         async def test_find_many(self):
-            docs = []
-            for i in range(10):
-                docs.append(
+            await DocumentWithTurnedOnStateManagement.insert_many(
+                [
                     DocumentWithTurnedOnStateManagement(
-                        num_1=i, num_2=i + 1, internal=InternalDoc()
+                        num_1=i,
+                        num_2=i + 1,
+                        internal=InternalDoc(),
                     )
-                )
-            await DocumentWithTurnedOnStateManagement.insert_many(docs)
+                    for i in range(10)
+                ]
+            )
 
             found_docs = await DocumentWithTurnedOnStateManagement.find(
-                DocumentWithTurnedOnStateManagement.num_1 > 4
+                DocumentWithTurnedOnStateManagement.num_1 > 4,
             ).to_list()
 
             for doc in found_docs:
@@ -408,7 +420,8 @@ class TestStateManagement:
 
         async def test_insert(self, state_without_id):
             doc = parse_model(
-                DocumentWithTurnedOnStateManagement, state_without_id
+                DocumentWithTurnedOnStateManagement,
+                state_without_id,
             )
             assert doc.get_saved_state() is None
             await doc.insert()
@@ -443,20 +456,20 @@ class TestStateManagement:
             )
             assert (
                 saved_doc_previous.get_saved_state().get(
-                    "previous_revision_id"
+                    "previous_revision_id",
                 )
                 is None
             )
 
             assert (
                 saved_doc_previous.get_previous_saved_state().get(
-                    "revision_id"
+                    "revision_id",
                 )
                 is None
             )
             assert (
                 saved_doc_previous.get_previous_saved_state().get(
-                    "previous_revision_id"
+                    "previous_revision_id",
                 )
                 is None
             )

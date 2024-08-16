@@ -214,7 +214,7 @@ class DocumentTestModelWithIndexFlags(Document):
 class DocumentTestModelWithIndexFlagsAliases(Document):
     test_int: Indexed(int, sparse=True) = Field(alias="testInt")
     test_str: Indexed(str, index_type=pymongo.DESCENDING, unique=True) = Field(
-        alias="testStr"
+        alias="testStr",
     )
 
 
@@ -683,7 +683,8 @@ class Vehicle(Document):
 
     @after_event(Insert)
     def on_object_create(self):
-        # this event will be triggered for all children too (self will have corresponding type)
+        # this event will be triggered for all children too
+        # (self will have corresponding type)
         ...
 
     class Settings:
@@ -788,7 +789,9 @@ class BDocument(RootDocument):
 class StateAndDecimalFieldModel(Document):
     amt: DecimalAnnotation
     other_amt: DecimalAnnotation = Field(
-        decimal_places=1, multiple_of=0.5, default=0
+        decimal_places=1,
+        multiple_of=0.5,
+        default=0,
     )
 
     class Settings:
@@ -859,7 +862,9 @@ class DocWithCollectionInnerClass(Document):
 class DocumentWithDecimalField(Document):
     amt: DecimalAnnotation
     other_amt: DecimalAnnotation = Field(
-        decimal_places=1, multiple_of=0.5, default=0
+        decimal_places=1,
+        multiple_of=0.5,
+        default=0,
     )
 
     if IS_PYDANTIC_V2:
@@ -877,7 +882,8 @@ class DocumentWithDecimalField(Document):
         use_state_management = True
         indexes = [
             pymongo.IndexModel(
-                keys=[("amt", pymongo.ASCENDING)], name="amt_ascending"
+                keys=[("amt", pymongo.ASCENDING)],
+                name="amt_ascending",
             ),
             pymongo.IndexModel(
                 keys=[("other_amt", pymongo.DESCENDING)],
@@ -932,7 +938,7 @@ class DocumentWithOptionalBackLink(Document):
         )
     else:
         back_link: Optional[BackLink[DocumentWithLink]] = Field(
-            original_field="link"
+            original_field="link",
         )
     i: int = 1
 
@@ -949,7 +955,7 @@ class DocumentWithListBackLink(Document):
         )
     else:
         back_link: List[BackLink[DocumentWithListLink]] = Field(
-            original_field="link"
+            original_field="link",
         )
     i: int = 1
 
@@ -961,7 +967,7 @@ class DocumentWithOptionalListBackLink(Document):
         )
     else:
         back_link: Optional[List[BackLink[DocumentWithListLink]]] = Field(
-            original_field="link"
+            original_field="link",
         )
     i: int = 1
 
@@ -969,17 +975,19 @@ class DocumentWithOptionalListBackLink(Document):
 class DocumentWithUnionTypeExpressionOptionalBackLink(Document):
     if IS_PYDANTIC_V2:
         back_link_list: type_union(
-            List[BackLink[DocumentWithListLink]], None
+            List[BackLink[DocumentWithListLink]],
+            None,
         ) = Field(json_schema_extra={"original_field": "link"})
         back_link: type_union(BackLink[DocumentWithLink], None) = Field(
-            json_schema_extra={"original_field": "link"}
+            json_schema_extra={"original_field": "link"},
         )
     else:
         back_link_list: type_union(
-            List[BackLink[DocumentWithListLink]], None
+            List[BackLink[DocumentWithListLink]],
+            None,
         ) = Field(original_field="link")
         back_link: type_union(BackLink[DocumentWithLink], None) = Field(
-            original_field="link"
+            original_field="link",
         )
     i: int = 1
 
@@ -1052,7 +1060,7 @@ class DocumentWithTextIndexAndLink(Document):
             pymongo.IndexModel(
                 [("s", pymongo.TEXT)],
                 name="text_index",
-            )
+            ),
         ]
 
 
@@ -1064,10 +1072,7 @@ class DocumentWithBsonBinaryField(Document):
     binary_field: BsonBinary
 
 
-if IS_PYDANTIC_V2:
-    Pets = RootModel[List[str]]
-else:
-    Pets = List[str]
+Pets = RootModel[List[str]] if IS_PYDANTIC_V2 else List[str]
 
 
 class DocumentWithRootModelAsAField(Document):
@@ -1102,7 +1107,9 @@ class DocumentToTestSync(Document):
     s: str = "TEST"
     i: int = 1
     n: Nested = Nested(
-        integer=1, option_1=Option1(s="test"), union=Option1(s="test")
+        integer=1,
+        option_1=Option1(s="test"),
+        union=Option1(s="test"),
     )
     o: Optional[Option2] = None
     d: Dict[str, Any] = {}
@@ -1126,7 +1133,7 @@ class DocumentWithBackLinkForNesting(Document):
         )
     else:
         back_link: BackLink[DocumentWithLinkForNesting] = Field(
-            original_field="link"
+            original_field="link",
         )
     i: int
 

@@ -12,20 +12,20 @@ class Eq(BaseFindComparisonOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
 
 Eq(Product.price, 2)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"price": 2}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/eq/>
 
@@ -40,20 +40,20 @@ class GT(BaseFindComparisonOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
 
 GT(Product.price, 2)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"price": {"$gt": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/gt/>
 
@@ -68,20 +68,20 @@ class GTE(BaseFindComparisonOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
 
 GTE(Product.price, 2)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"price": {"$gte": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/gte/>
 
@@ -96,20 +96,20 @@ class In(BaseFindComparisonOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
 
 In(Product.price, [2, 3, 4])
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"price": {"$in": [2, 3, 4]}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/in/>
 
@@ -124,20 +124,20 @@ class NotIn(BaseFindComparisonOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
 
 NotIn(Product.price, [2, 3, 4])
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"price": {"$nin": [2, 3, 4]}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/nin/>
 
@@ -152,20 +152,20 @@ class LT(BaseFindComparisonOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
 
 LT(Product.price, 2)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"price": {"$lt": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/lt/>
 
@@ -180,20 +180,20 @@ class LTE(BaseFindComparisonOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
 
 LTE(Product.price, 2)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"price": {"$lte": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/lte/>
 
@@ -208,20 +208,20 @@ class NE(BaseFindComparisonOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
 
 NE(Product.price, 2)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"price": {"$ne": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/ne/>
 
@@ -239,7 +239,7 @@ class Or(LogicalOperatorForListOfExpressions)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
@@ -247,13 +247,13 @@ class Product(Document):
 
 Or({Product.price<10}, {Product.category=="Sweets"})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$or": [{"price": {"$lt": 10}}, {"category": "Sweets"}]}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/or/>
 
@@ -268,7 +268,7 @@ class And(LogicalOperatorForListOfExpressions)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
@@ -276,13 +276,13 @@ class Product(Document):
 
 And({Product.price<10}, {Product.category=="Sweets"})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$and": [{"price": {"$lt": 10}}, {"category": "Sweets"}]}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/and/>
 
@@ -297,7 +297,7 @@ class Nor(BaseFindLogicalOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
@@ -305,13 +305,13 @@ class Product(Document):
 
 Nor({Product.price<10}, {Product.category=="Sweets"})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$nor": [{"price": {"$lt": 10}}, {"category": "Sweets"}]}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/nor/>
 
@@ -326,7 +326,7 @@ class Not(BaseFindLogicalOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
@@ -334,13 +334,13 @@ class Product(Document):
 
 Not({Product.price<10})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$not": {"price": {"$lt": 10}}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/not/>
 
@@ -358,20 +358,20 @@ class Exists(BaseFindElementOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
 
 Exists(Product.price, True)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"price": {"$exists": True}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/exists/>
 
@@ -386,20 +386,20 @@ class Type(BaseFindElementOperator)
 
 **Example**:
 
-  
+
 ```python
 class Product(Document):
     price: float
 
 Type(Product.price, "decimal")
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"price": {"$type": "decimal"}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/type/>
 
@@ -417,7 +417,7 @@ class Expr(BaseFindEvaluationOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     one: int
@@ -425,13 +425,13 @@ class Sample(Document):
 
 Expr({"$gt": [ "$one" , "$two" ]})
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"$expr": {"$gt": [ "$one" , "$two" ]}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/expr/>
 
@@ -458,20 +458,20 @@ class Mod(BaseFindEvaluationOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     one: int
 
 Mod(Sample.one, 4, 0)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 { "one": { "$mod": [ 4, 0 ] } }
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/mod/>
 
@@ -498,16 +498,16 @@ class Text(BaseFindEvaluationOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     description: Indexed(str, pymongo.TEXT)
 
 Text("coffee")
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {
     "$text": {
@@ -517,7 +517,7 @@ Text("coffee")
     }
 }
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/text/>
 
@@ -561,7 +561,7 @@ class GeoIntersects(BaseFindGeospatialOperator)
 
 **Example**:
 
-  
+
 ```python
 class GeoObject(BaseModel):
     type: str = "Point"
@@ -578,9 +578,9 @@ class Place(Document):
 
 GeoIntersects(Place.geo, "Polygon", [[0,0], [1,1], [3,3]])
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {
     "geo": {
@@ -593,7 +593,7 @@ GeoIntersects(Place.geo, "Polygon", [[0,0], [1,1], [3,3]])
     }
 }
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/geoIntersects/>
 
@@ -608,7 +608,7 @@ class GeoWithin(BaseFindGeospatialOperator)
 
 **Example**:
 
-  
+
 ```python
 class GeoObject(BaseModel):
     type: str = "Point"
@@ -625,9 +625,9 @@ class Place(Document):
 
 GeoWithin(Place.geo, "Polygon", [[0,0], [1,1], [3,3]])
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {
     "geo": {
@@ -640,7 +640,7 @@ GeoWithin(Place.geo, "Polygon", [[0,0], [1,1], [3,3]])
     }
 }
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/geoWithin/>
 
@@ -655,7 +655,7 @@ class Near(BaseFindGeospatialOperator)
 
 **Example**:
 
-  
+
 ```python
 class GeoObject(BaseModel):
     type: str = "Point"
@@ -672,9 +672,9 @@ class Place(Document):
 
 Near(Place.geo, 1.2345, 2.3456, min_distance=500)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {
     "geo": {
@@ -688,7 +688,7 @@ Near(Place.geo, 1.2345, 2.3456, min_distance=500)
     }
 }
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/near/>
 
@@ -703,7 +703,7 @@ class NearSphere(Near)
 
 **Example**:
 
-  
+
 ```python
 class GeoObject(BaseModel):
     type: str = "Point"
@@ -720,9 +720,9 @@ class Place(Document):
 
 NearSphere(Place.geo, 1.2345, 2.3456, min_distance=500)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {
     "geo": {
@@ -736,7 +736,7 @@ NearSphere(Place.geo, 1.2345, 2.3456, min_distance=500)
     }
 }
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/nearSphere/>
 
@@ -754,20 +754,20 @@ class All(BaseFindArrayOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     results: List[int]
 
 All(Sample.results, [80, 85])
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"results": {"$all": [80, 85]}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/all>
 
@@ -782,20 +782,20 @@ class ElemMatch(BaseFindArrayOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     results: List[int]
 
 ElemMatch(Sample.results, [80, 85])
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"results": {"$elemMatch": [80, 85]}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/elemMatch/>
 
@@ -810,20 +810,20 @@ class Size(BaseFindArrayOperator)
 
 **Example**:
 
-  
+
 ```python
 class Sample(Document):
     results: List[int]
 
 Size(Sample.results, 2)
 ```
-  
+
   Will return query object like
-  
+
 ```python
 {"results": {"$size": 2}}
 ```
-  
+
   MongoDB doc:
   <https://docs.mongodb.com/manual/reference/operator/query/size/>
 
@@ -877,4 +877,3 @@ class BitsAnySet(BaseFindBitwiseOperator)
 
 MongoDB doc:
 https://docs.mongodb.com/manual/reference/operator/query/bitsAnySet/
-

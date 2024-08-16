@@ -52,7 +52,8 @@ async def test_update():
         await doc.update(Inc({DocumentWithRevisionTurnedOn.num_1: 1}))
 
     await doc.update(
-        Inc({DocumentWithRevisionTurnedOn.num_1: 1}), ignore_revision=True
+        Inc({DocumentWithRevisionTurnedOn.num_1: 1}),
+        ignore_revision=True,
     )
     await doc.update(Inc({DocumentWithRevisionTurnedOn.num_1: 1}))
 

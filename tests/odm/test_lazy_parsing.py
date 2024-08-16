@@ -27,7 +27,8 @@ class TestLazyParsing:
 
     async def test_find_many(self, docs):
         found_docs = await SampleLazyParsing.find(
-            SampleLazyParsing.i <= 5, lazy_parse=True
+            SampleLazyParsing.i <= 5,
+            lazy_parse=True,
         ).to_list()
         saved_state = found_docs[0].get_saved_state()
         assert "_id" in saved_state

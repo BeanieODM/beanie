@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class Granularity(str, Enum):
     """
-    Time Series Granuality
+    Time Series Granularity
     """
 
     seconds = "seconds"

@@ -50,20 +50,21 @@ def construct_query(
         LinkTypes.OPTIONAL_DIRECT,
     ]:
         if database_major_version >= 5 or link_info.nested_links is None:
+            frm = link_info.document_class.get_motor_collection().name
             lookup_steps = [
                 {
                     "$lookup": {
-                        "from": link_info.document_class.get_motor_collection().name,  # type: ignore
+                        "from": frm,  # type: ignore
                         "localField": f"{link_info.lookup_field_name}.$id",
                         "foreignField": "_id",
                         "as": f"_link_{link_info.field_name}",
-                    }
+                    },
                 },
                 {
                     "$unwind": {
                         "path": f"$_link_{link_info.field_name}",
                         "preserveNullAndEmptyArrays": True,
-                    }
+                    },
                 },
                 {
                     "$set": {
@@ -73,13 +74,13 @@ def construct_query(
                                     "$ifNull": [
                                         f"$_link_{link_info.field_name}",
                                         False,
-                                    ]
+                                    ],
                                 },
                                 "then": f"$_link_{link_info.field_name}",
                                 "else": f"${link_info.field_name}",
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
                 {"$unset": f"_link_{link_info.field_name}"},
             ]  # type: ignore
@@ -98,28 +99,29 @@ def construct_query(
             queries += lookup_steps
 
         else:
+            frm = link_info.document_class.get_motor_collection().name
             lookup_steps = [
                 {
                     "$lookup": {
-                        "from": link_info.document_class.get_motor_collection().name,  # type: ignore
+                        "from": frm,  # type: ignore
                         "let": {
-                            "link_id": f"${link_info.lookup_field_name}.$id"
+                            "link_id": f"${link_info.lookup_field_name}.$id",
                         },
                         "as": f"_link_{link_info.field_name}",
                         "pipeline": [
                             {
                                 "$match": {
-                                    "$expr": {"$eq": ["$_id", "$$link_id"]}
-                                }
+                                    "$expr": {"$eq": ["$_id", "$$link_id"]},
+                                },
                             },
                         ],
-                    }
+                    },
                 },
                 {
                     "$unwind": {
                         "path": f"$_link_{link_info.field_name}",
                         "preserveNullAndEmptyArrays": True,
-                    }
+                    },
                 },
                 {
                     "$set": {
@@ -129,13 +131,13 @@ def construct_query(
                                     "$ifNull": [
                                         f"$_link_{link_info.field_name}",
                                         False,
-                                    ]
+                                    ],
                                 },
                                 "then": f"$_link_{link_info.field_name}",
                                 "else": f"${link_info.field_name}",
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
                 {"$unset": f"_link_{link_info.field_name}"},
             ]
@@ -156,20 +158,21 @@ def construct_query(
         LinkTypes.OPTIONAL_BACK_DIRECT,
     ]:
         if database_major_version >= 5 or link_info.nested_links is None:
+            frm = link_info.document_class.get_motor_collection().name
             lookup_steps = [
                 {
                     "$lookup": {
-                        "from": link_info.document_class.get_motor_collection().name,  # type: ignore
+                        "from": frm,  # type: ignore
                         "localField": "_id",
                         "foreignField": f"{link_info.lookup_field_name}.$id",
                         "as": f"_link_{link_info.field_name}",
-                    }
+                    },
                 },
                 {
                     "$unwind": {
                         "path": f"$_link_{link_info.field_name}",
                         "preserveNullAndEmptyArrays": True,
-                    }
+                    },
                 },
                 {
                     "$set": {
@@ -179,13 +182,13 @@ def construct_query(
                                     "$ifNull": [
                                         f"$_link_{link_info.field_name}",
                                         False,
-                                    ]
+                                    ],
                                 },
                                 "then": f"$_link_{link_info.field_name}",
                                 "else": f"${link_info.field_name}",
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
                 {"$unset": f"_link_{link_info.field_name}"},
             ]  # type: ignore
@@ -204,10 +207,11 @@ def construct_query(
             queries += lookup_steps
 
         else:
+            frm = link_info.document_class.get_motor_collection().name
             lookup_steps = [
                 {
                     "$lookup": {
-                        "from": link_info.document_class.get_motor_collection().name,  # type: ignore
+                        "from": frm,  # type: ignore
                         "let": {"link_id": "$_id"},
                         "as": f"_link_{link_info.field_name}",
                         "pipeline": [
@@ -217,18 +221,18 @@ def construct_query(
                                         "$eq": [
                                             f"${link_info.lookup_field_name}.$id",
                                             "$$link_id",
-                                        ]
-                                    }
-                                }
+                                        ],
+                                    },
+                                },
                             },
                         ],
-                    }
+                    },
                 },
                 {
                     "$unwind": {
                         "path": f"$_link_{link_info.field_name}",
                         "preserveNullAndEmptyArrays": True,
-                    }
+                    },
                 },
                 {
                     "$set": {
@@ -238,13 +242,13 @@ def construct_query(
                                     "$ifNull": [
                                         f"$_link_{link_info.field_name}",
                                         False,
-                                    ]
+                                    ],
                                 },
                                 "then": f"$_link_{link_info.field_name}",
                                 "else": f"${link_info.field_name}",
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
                 {"$unset": f"_link_{link_info.field_name}"},
             ]
@@ -265,15 +269,16 @@ def construct_query(
         LinkTypes.OPTIONAL_LIST,
     ]:
         if database_major_version >= 5 or link_info.nested_links is None:
+            frm = link_info.document_class.get_motor_collection().name
             queries.append(
                 {
                     "$lookup": {
-                        "from": link_info.document_class.get_motor_collection().name,  # type: ignore
+                        "from": frm,  # type: ignore
                         "localField": f"{link_info.lookup_field_name}.$id",
                         "foreignField": "_id",
                         "as": link_info.field_name,
-                    }
-                }
+                    },
+                },
             )
             new_depth = (
                 current_depth - 1 if current_depth is not None else None
@@ -288,15 +293,16 @@ def construct_query(
                         current_depth=new_depth,
                     )
         else:
+            frm = link_info.document_class.get_motor_collection().name
             lookup_step = {
                 "$lookup": {
-                    "from": link_info.document_class.get_motor_collection().name,  # type: ignore
+                    "from": frm,  # type: ignore
                     "let": {"link_id": f"${link_info.lookup_field_name}.$id"},
                     "as": link_info.field_name,
                     "pipeline": [
                         {"$match": {"$expr": {"$in": ["$_id", "$$link_id"]}}},
                     ],
-                }
+                },
             }
             new_depth = (
                 current_depth - 1 if current_depth is not None else None
@@ -315,15 +321,16 @@ def construct_query(
         LinkTypes.OPTIONAL_BACK_LIST,
     ]:
         if database_major_version >= 5 or link_info.nested_links is None:
+            frm = link_info.document_class.get_motor_collection().name
             queries.append(
                 {
                     "$lookup": {
-                        "from": link_info.document_class.get_motor_collection().name,  # type: ignore
+                        "from": frm,  # type: ignore
                         "localField": "_id",
                         "foreignField": f"{link_info.lookup_field_name}.$id",
                         "as": link_info.field_name,
-                    }
-                }
+                    },
+                },
             )
             new_depth = (
                 current_depth - 1 if current_depth is not None else None
@@ -338,9 +345,10 @@ def construct_query(
                         current_depth=new_depth,
                     )
         else:
+            frm = link_info.document_class.get_motor_collection().name
             lookup_step = {
                 "$lookup": {
-                    "from": link_info.document_class.get_motor_collection().name,  # type: ignore
+                    "from": frm,  # type: ignore
                     "let": {"link_id": "$_id"},
                     "as": link_info.field_name,
                     "pipeline": [
@@ -350,12 +358,12 @@ def construct_query(
                                     "$in": [
                                         "$$link_id",
                                         f"${link_info.lookup_field_name}.$id",
-                                    ]
-                                }
-                            }
-                        }
+                                    ],
+                                },
+                            },
+                        },
                     ],
-                }
+                },
             }
             new_depth = (
                 current_depth - 1 if current_depth is not None else None
@@ -382,7 +390,7 @@ def split_text_query(
         respectively
     """
 
-    root_text_query_args: Dict[str, Any] = query.get("$text", None)
+    root_text_query_args: Dict[str, Any] | None = query.get("$text")
     root_non_text_queries: Dict[str, Any] = {
         k: v for k, v in query.items() if k not in {"$text", "$and"}
     }

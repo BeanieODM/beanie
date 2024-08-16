@@ -16,6 +16,7 @@ async def aggregate_with_projection() -> List[ProjectionTest]:
         .to_list()
     )
     result_2 = await Test.aggregate(
-        [], projection_model=ProjectionTest
+        [],
+        projection_model=ProjectionTest,
     ).to_list()
     return result or result_2

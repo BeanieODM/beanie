@@ -57,7 +57,10 @@ class UpdateMethods:
         :return: self
         """
         return self.update(
-            Set(expression), session=session, bulk_writer=bulk_writer, **kwargs
+            Set(expression),
+            session=session,
+            bulk_writer=bulk_writer,
+            **kwargs,
         )
 
     def current_date(
@@ -113,5 +116,8 @@ class UpdateMethods:
         :return: self
         """
         return self.update(
-            Inc(expression), session=session, bulk_writer=bulk_writer, **kwargs
+            Inc(expression),
+            session=session,
+            bulk_writer=bulk_writer,
+            **kwargs,
         )

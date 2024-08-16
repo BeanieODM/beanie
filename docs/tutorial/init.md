@@ -1,5 +1,5 @@
-Beanie uses Motor as an async database engine. 
-To initialize previously created documents, you should provide a Motor database instance 
+Beanie uses Motor as an async database engine.
+To initialize previously created documents, you should provide a Motor database instance
 and a list of your document models to the `init_beanie(...)` function, as it is shown in the example:
 
 ```python
@@ -22,7 +22,7 @@ async def init():
 This creates the collection (if necessary) and sets up any indexes that are defined.
 
 
-`init_beanie` supports not only a list of classes as the document_models argument, 
+`init_beanie` supports not only a list of classes as the document_models argument,
 but also strings with dot-separated paths:
 
 ```python
@@ -36,7 +36,7 @@ await init_beanie(
 
 ### Warning
 
-`init_beanie` supports the parameter named `allow_index_dropping` that will drop indexes from your collections. 
-`allow_index_dropping` is by default set to `False`. If you set this to `True`, 
-ensure that you are not managing your indexes in another manner. 
+`init_beanie` supports the parameter named `allow_index_dropping` that will drop indexes from your collections.
+`allow_index_dropping` is by default set to `False`. If you set this to `True`,
+ensure that you are not managing your indexes in another manner.
 If you are, these will be deleted when setting `allow_index_dropping=True`.

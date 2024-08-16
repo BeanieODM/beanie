@@ -23,10 +23,10 @@ def test_nesting():
     assert Sample.nested.optional == "nested.optional"
 
     q = Sample.find_many(Sample.nested.integer == 1).find_many(
-        Sample.nested.union.s == "test"
+        Sample.nested.union.s == "test",
     )
     assert q.get_filter_query() == {
-        "$and": [{"nested.integer": 1}, {"nested.union.s": "test"}]
+        "$and": [{"nested.integer": 1}, {"nested.union.s": "test"}],
     }
 
 

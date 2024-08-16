@@ -42,7 +42,7 @@ class VersionHandler:
         self.changelog = self.ROOT_PATH / "docs" / "changelog.md"
 
         self.current_version = self.parse_version_from_pyproject(
-            self.pyproject
+            self.pyproject,
         )
         self.pypi_version = self.get_version_from_pypi()
 
@@ -62,7 +62,7 @@ class VersionHandler:
 
     def get_version_from_pypi(self) -> SemVer:
         response = requests.get(
-            f"https://pypi.org/pypi/{self.PACKAGE_NAME}/json"
+            f"https://pypi.org/pypi/{self.PACKAGE_NAME}/json",
         )
         if response.status_code == 200:
             return SemVer(response.json()["info"]["version"])
@@ -82,7 +82,8 @@ class VersionHandler:
         for file_path in files_to_update:
             content = file_path.read_text()
             content = content.replace(
-                str(self.pypi_version), str(self.current_version)
+                str(self.pypi_version),
+                str(self.current_version),
             )
             file_path.write_text(content)
 

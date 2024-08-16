@@ -52,7 +52,7 @@ async def main():
     db = client.bikes
 
     await init_beanie(
-        database=db, 
+        database=db,
         document_models=[Bike, Metrics],
         recreate_views=True,
     )

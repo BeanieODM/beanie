@@ -169,7 +169,7 @@ class Text(BaseFindEvaluationOperator):
                 "$search": self.search,
                 "$caseSensitive": self.case_sensitive,
                 "$diacriticSensitive": self.diacritic_sensitive,
-            }
+            },
         }
         if self.language:
             expression["$text"]["$language"] = self.language

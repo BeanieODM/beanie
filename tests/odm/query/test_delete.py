@@ -111,11 +111,11 @@ async def test_delete_pymongo_kwargs(preset_documents):
         await Sample.find_many(Sample.increment > 4).delete(wrong="integer_1")
 
     delete_result = await Sample.find_many(Sample.increment > 4).delete(
-        hint="integer_1"
+        hint="integer_1",
     )
     assert delete_result is not None
 
     delete_result = await Sample.find_one(Sample.increment > 4).delete(
-        hint="integer_1"
+        hint="integer_1",
     )
     assert delete_result is not None

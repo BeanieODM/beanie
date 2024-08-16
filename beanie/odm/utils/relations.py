@@ -14,7 +14,9 @@ if TYPE_CHECKING:
 
 
 def convert_ids(
-    query: MappingType[str, Any], doc: "Document", fetch_links: bool
+    query: MappingType[str, Any],
+    doc: "Document",
+    fetch_links: bool,
 ) -> Dict[str, Any]:
     # TODO add all the cases
     new_query = {}
@@ -24,7 +26,7 @@ def convert_ids(
             isinstance(k, ExpressionField)
             and doc.get_link_fields() is not None
             and len(k_splitted) == 2
-            and k_splitted[0] in doc.get_link_fields().keys()  # type: ignore
+            and k_splitted[0] in doc.get_link_fields()  # type: ignore
             and k_splitted[1] == "id"
         ):
             if fetch_links:

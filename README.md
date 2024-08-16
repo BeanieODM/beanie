@@ -71,7 +71,7 @@ class Product(Document):
 
 # This is an asynchronous example, so we will access it from an async function
 async def example():
-    # Beanie uses Motor async client under the hood 
+    # Beanie uses Motor async client under the hood
     client = AsyncIOMotorClient("mongodb://user:pass@host:27017")
 
     # Initialize beanie with the Product document class
@@ -81,11 +81,11 @@ async def example():
     # Beanie documents work just like pydantic models
     tonybar = Product(name="Tony's", price=5.95, category=chocolate)
     # And can be inserted into the database
-    await tonybar.insert() 
-    
+    await tonybar.insert()
+
     # You can find documents with pythonic syntax
     product = await Product.find_one(Product.price < 10)
-    
+
     # And update them
     await product.set({Product.name:"Gold bar"})
 
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 ### Example Projects
 
 - **[fastapi-cosmos-beanie](https://github.com/tonybaloney/ants-azure-demos/tree/master/fastapi-cosmos-beanie)** - FastAPI + Beanie ODM + Azure Cosmos Demo Application by [Anthony Shaw](https://github.com/tonybaloney)
-- **[fastapi-beanie-jwt](https://github.com/flyinactor91/fastapi-beanie-jwt)** - 
+- **[fastapi-beanie-jwt](https://github.com/flyinactor91/fastapi-beanie-jwt)** -
   Sample FastAPI server with JWT auth and Beanie ODM by [Michael duPont](https://github.com/flyinactor91)
 - **[Shortify](https://github.com/IHosseini083/Shortify)** - URL shortener RESTful API (FastAPI + Beanie ODM + JWT & OAuth2) by [
 Iliya Hosseini](https://github.com/IHosseini083)

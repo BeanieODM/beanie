@@ -44,7 +44,9 @@ class Operation(BaseModel):
 
 class BulkWriter:
     def __init__(
-        self, session: Optional[ClientSession] = None, ordered: bool = True
+        self,
+        session: Optional[ClientSession] = None,
+        ordered: bool = True,
     ):
         self.operations: List[Operation] = []
         self.session = session
@@ -70,7 +72,8 @@ class BulkWriter:
 
                 if obj_class != op.object_class:
                     raise ValueError(
-                        "All the operations should be for a single document model"
+                        "All the operations should "
+                        "be for a single document model",
                     )
                 if op.operation in [InsertOne, DeleteOne]:
                     query = op.operation(op.first_query, **op.pymongo_kwargs)  # type: ignore
@@ -83,7 +86,9 @@ class BulkWriter:
                 requests.append(query)
 
             return await obj_class.get_motor_collection().bulk_write(  # type: ignore
-                requests, session=self.session, ordered=self.ordered
+                requests,
+                session=self.session,
+                ordered=self.ordered,
             )
         return None
 

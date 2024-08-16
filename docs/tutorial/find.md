@@ -1,16 +1,16 @@
-To populate the database, please run the examples from the [previous section of the tutorial](inserting-into-the-database.md) 
+To populate the database, please run the examples from the [previous section of the tutorial](inserting-into-the-database.md)
 as we will be using the same setup here.
 
 ## Finding documents
 
-The basic syntax for finding multiple documents in the database is to call the class method `find()` 
-or it's synonym `find_many()` with some search criteria (see next section): 
+The basic syntax for finding multiple documents in the database is to call the class method `find()`
+or it's synonym `find_many()` with some search criteria (see next section):
 
 ```python
 findresult = Product.find(search_criteria)
 ```
 
-This returns a `FindMany` object, which can be used to access the results in different ways. 
+This returns a `FindMany` object, which can be used to access the results in different ways.
 To loop through the results, use a `async for` loop:
 
 ```python
@@ -24,7 +24,7 @@ If you prefer a list of the results, then you can call `to_list()` method:
 result = await Product.find(search_criteria).to_list()
 ```
 
-To get the first document, you can use `.first_or_none()` method. 
+To get the first document, you can use `.first_or_none()` method.
 It returns the first found document or `None`, if no documents were found.
 
 ```python
@@ -42,7 +42,7 @@ products = await Product.find(Product.price < 10).to_list()
 ```
 
 This is supported for the following operators: `==`, `>`, `>=`, `<`, `<=`, `!=`.
-Other MongoDB query operators can be used with the included wrappers. 
+Other MongoDB query operators can be used with the included wrappers.
 For example, the `$in` operator can be used as follows:
 
 ```python
@@ -63,7 +63,7 @@ products = await Product.find({"price": 1000}).to_list()
 
 ## Finding single documents
 
-Sometimes you will only need to find a single document. 
+Sometimes you will only need to find a single document.
 If you are searching by `id`, then you can use the [get](../api-documentation/document.md/#documentget) method:
 
 ```python
@@ -113,7 +113,7 @@ await bar.sync(merge_strategy=MergeStrategy.local)
 
 ### Multiple search criteria
 
-If you have multiple criteria to search against, 
+If you have multiple criteria to search against,
 you can pass them as separate arguments to any of the `find` functions:
 
 ```python
@@ -136,7 +136,7 @@ chocolates = await Product
 
 Sorting can be done with the [sort](../api-documentation/query.md/#findmanysort) method.
 
-You can pass it one or multiple fields to sort by. You may optionally specify a `+` or `-` 
+You can pass it one or multiple fields to sort by. You may optionally specify a `+` or `-`
 (denoting ascending and descending respectively).
 
 ```python
@@ -161,7 +161,7 @@ chocolates = await Product.find(
 
 ### Skip and limit
 
-To skip a certain number of documents, or limit the total number of elements returned, 
+To skip a certain number of documents, or limit the total number of elements returned,
 the `skip` and `limit` methods can be used:
 ```python
 chocolates = await Product.find(

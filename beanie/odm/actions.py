@@ -88,7 +88,7 @@ class ActionRegistry:
             }
         for event_type in event_types:
             cls._actions[document_class][event_type][action_direction].append(
-                funct
+                funct,
             )
 
     @classmethod
@@ -128,7 +128,9 @@ class ActionRegistry:
 
         document_class = instance.__class__
         actions_list = cls.get_action_list(
-            document_class, event_type, action_direction
+            document_class,
+            event_type,
+            action_direction,
         )
         coros = []
         for action in actions_list:
@@ -184,7 +186,8 @@ def before_event(
     :return: None
     """
     return register_action(
-        action_direction=ActionDirections.BEFORE, event_types=args
+        action_direction=ActionDirections.BEFORE,
+        event_types=args,
     )
 
 
@@ -200,14 +203,16 @@ def after_event(
     """
 
     return register_action(
-        action_direction=ActionDirections.AFTER, event_types=args
+        action_direction=ActionDirections.AFTER,
+        event_types=args,
     )
 
 
 def wrap_with_actions(
     event_type: EventTypes,
 ) -> Callable[
-    ["AsyncDocMethod[DocType, P, R]"], "AsyncDocMethod[DocType, P, R]"
+    ["AsyncDocMethod[DocType, P, R]"],
+    "AsyncDocMethod[DocType, P, R]",
 ]:
     """
     Helper function to wrap Document methods with

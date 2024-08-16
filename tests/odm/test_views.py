@@ -13,7 +13,7 @@ class TestViews:
             [
                 {"$set": {"test_field": 1}},
                 {"$match": {"$expr": {"$lt": ["$number", 12]}}},
-            ]
+            ],
         ).to_list()
         assert len(results) == 3
         assert results[0]["test_field"] == 1

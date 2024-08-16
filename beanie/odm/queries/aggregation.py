@@ -63,7 +63,7 @@ class AggregationQuery(
                 "projection": get_projection(self.projection_model)
                 if self.projection_model
                 else None,
-            }
+            },
         )
 
     def _get_cache(self):
@@ -99,7 +99,9 @@ class AggregationQuery(
     def motor_cursor(self) -> AgnosticCommandCursor:
         aggregation_pipeline = self.get_aggregation_pipeline()
         return self.document_model.get_motor_collection().aggregate(
-            aggregation_pipeline, session=self.session, **self.pymongo_kwargs
+            aggregation_pipeline,
+            session=self.session,
+            **self.pymongo_kwargs,
         )
 
     def get_projection_model(self) -> Optional[Type[BaseModel]]:

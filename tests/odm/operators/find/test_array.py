@@ -19,10 +19,13 @@ async def test_size():
 
 async def test_elem_match_nested():
     q = ElemMatch(
-        PackageElemMatch.releases, major_ver=7, minor_ver=1, build_ver=0
+        PackageElemMatch.releases,
+        major_ver=7,
+        minor_ver=1,
+        build_ver=0,
     )
     assert q == {
         "releases": {
-            "$elemMatch": {"major_ver": 7, "minor_ver": 1, "build_ver": 0}
-        }
+            "$elemMatch": {"major_ver": 7, "minor_ver": 1, "build_ver": 0},
+        },
     }

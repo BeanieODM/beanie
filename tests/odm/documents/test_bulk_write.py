@@ -10,10 +10,12 @@ async def test_insert(documents_not_inserted):
     documents = documents_not_inserted(2)
     async with BulkWriter() as bulk_writer:
         await DocumentTestModel.insert_one(
-            documents[0], bulk_writer=bulk_writer
+            documents[0],
+            bulk_writer=bulk_writer,
         )
         await DocumentTestModel.insert_one(
-            documents[1], bulk_writer=bulk_writer
+            documents[1],
+            bulk_writer=bulk_writer,
         )
 
     new_documents = await DocumentTestModel.find_all().to_list()
@@ -27,36 +29,38 @@ async def test_update(documents, document_not_inserted):
     async with BulkWriter() as bulk_writer:
         await doc.save_changes(bulk_writer=bulk_writer)
         await DocumentTestModel.find_one(
-            DocumentTestModel.test_int == 1
+            DocumentTestModel.test_int == 1,
         ).update(
-            Set({DocumentTestModel.test_int: 1000}), bulk_writer=bulk_writer
+            Set({DocumentTestModel.test_int: 1000}),
+            bulk_writer=bulk_writer,
         )
         await DocumentTestModel.find(DocumentTestModel.test_int < 100).update(
-            Set({DocumentTestModel.test_int: 2000}), bulk_writer=bulk_writer
+            Set({DocumentTestModel.test_int: 2000}),
+            bulk_writer=bulk_writer,
         )
 
     assert len(await DocumentTestModel.find_all().to_list()) == 5
     assert (
         len(
             await DocumentTestModel.find(
-                DocumentTestModel.test_int == 100
-            ).to_list()
+                DocumentTestModel.test_int == 100,
+            ).to_list(),
         )
         == 1
     )
     assert (
         len(
             await DocumentTestModel.find(
-                DocumentTestModel.test_int == 1000
-            ).to_list()
+                DocumentTestModel.test_int == 1000,
+            ).to_list(),
         )
         == 1
     )
     assert (
         len(
             await DocumentTestModel.find(
-                DocumentTestModel.test_int == 2000
-            ).to_list()
+                DocumentTestModel.test_int == 2000,
+            ).to_list(),
         )
         == 3
     )
@@ -69,7 +73,8 @@ async def test_unordered_update(documents, document):
     with pytest.raises(BulkWriteError):
         async with BulkWriter(ordered=False) as bulk_writer:
             await DocumentTestModel.insert_one(
-                document, bulk_writer=bulk_writer
+                document,
+                bulk_writer=bulk_writer,
             )
             await doc.save_changes(bulk_writer=bulk_writer)
 
@@ -77,8 +82,8 @@ async def test_unordered_update(documents, document):
     assert (
         len(
             await DocumentTestModel.find(
-                DocumentTestModel.test_int == 100
-            ).to_list()
+                DocumentTestModel.test_int == 100,
+            ).to_list(),
         )
         == 1
     )
@@ -90,10 +95,10 @@ async def test_delete(documents, document_not_inserted):
     async with BulkWriter() as bulk_writer:
         await doc.delete(bulk_writer=bulk_writer)
         await DocumentTestModel.find_one(
-            DocumentTestModel.test_int == 1
+            DocumentTestModel.test_int == 1,
         ).delete(bulk_writer=bulk_writer)
         await DocumentTestModel.find(DocumentTestModel.test_int < 4).delete(
-            bulk_writer=bulk_writer
+            bulk_writer=bulk_writer,
         )
 
     assert len(await DocumentTestModel.find_all().to_list()) == 1
@@ -109,15 +114,15 @@ async def test_replace(documents, document_not_inserted):
         document_not_inserted.test_int = 100
 
         await DocumentTestModel.find_one(
-            DocumentTestModel.test_int == 1
+            DocumentTestModel.test_int == 1,
         ).replace_one(document_not_inserted, bulk_writer=bulk_writer)
 
     assert len(await DocumentTestModel.find_all().to_list()) == 5
     assert (
         len(
             await DocumentTestModel.find(
-                DocumentTestModel.test_int == 100
-            ).to_list()
+                DocumentTestModel.test_int == 100,
+            ).to_list(),
         )
         == 2
     )
@@ -127,7 +132,8 @@ async def test_internal_error(document):
     with pytest.raises(BulkWriteError):
         async with BulkWriter() as bulk_writer:
             await DocumentTestModel.insert_one(
-                document, bulk_writer=bulk_writer
+                document,
+                bulk_writer=bulk_writer,
             )
 
 
@@ -136,7 +142,7 @@ async def test_native_upsert_found(documents, document_not_inserted):
     document_not_inserted.test_int = -1000
     async with BulkWriter() as bulk_writer:
         await DocumentTestModel.find_one(
-            DocumentTestModel.test_int == 1
+            DocumentTestModel.test_int == 1,
         ).update_one(
             {
                 "$addToSet": {
@@ -144,8 +150,8 @@ async def test_native_upsert_found(documents, document_not_inserted):
                         "$each": [
                             SubDocument(test_str="TEST_ONE"),
                             SubDocument(test_str="TEST_TWO"),
-                        ]
-                    }
+                        ],
+                    },
                 },
                 "$setOnInsert": {},
             },
@@ -163,7 +169,7 @@ async def test_native_upsert_not_found(documents, document_not_inserted):
     document_not_inserted.test_int = -1000
     async with BulkWriter() as bulk_writer:
         await DocumentTestModel.find_one(
-            DocumentTestModel.test_int == -1000
+            DocumentTestModel.test_int == -1000,
         ).update_one(
             {
                 "$addToSet": {
@@ -171,8 +177,8 @@ async def test_native_upsert_not_found(documents, document_not_inserted):
                         "$each": [
                             SubDocument(test_str="TEST_ONE"),
                             SubDocument(test_str="TEST_TWO"),
-                        ]
-                    }
+                        ],
+                    },
                 },
                 "$setOnInsert": {"TEST": "VALUE"},
             },
