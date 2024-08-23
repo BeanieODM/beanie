@@ -62,6 +62,28 @@ async def test_update(documents, document_not_inserted):
     )
 
 
+async def test_unordered_update(documents, document):
+    await documents(5)
+    doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 0)
+    doc.test_int = 100
+    with pytest.raises(BulkWriteError):
+        async with BulkWriter(ordered=False) as bulk_writer:
+            await DocumentTestModel.insert_one(
+                document, bulk_writer=bulk_writer
+            )
+            await doc.save_changes(bulk_writer=bulk_writer)
+
+    assert len(await DocumentTestModel.find_all().to_list()) == 6
+    assert (
+        len(
+            await DocumentTestModel.find(
+                DocumentTestModel.test_int == 100
+            ).to_list()
+        )
+        == 1
+    )
+
+
 async def test_delete(documents, document_not_inserted):
     await documents(5)
     doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 0)

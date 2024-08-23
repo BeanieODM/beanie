@@ -373,7 +373,7 @@ def construct_query(
 
 
 def split_text_query(
-    query: Dict[str, Any]
+    query: Dict[str, Any],
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """Divide query into text and non-text matches
 

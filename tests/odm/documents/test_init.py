@@ -18,6 +18,9 @@ from tests.odm.models import (
     DocumentTestModelWithSimpleIndex,
     DocumentWithCustomInit,
     DocumentWithIndexMerging2,
+    DocumentWithLink,
+    DocumentWithListLink,
+    DocumentWithUnionTypeExpressionOptionalBackLink,
 )
 
 
@@ -306,14 +309,17 @@ async def test_index_recreation(db):
 
 
 async def test_merge_indexes():
-    assert await DocumentWithIndexMerging2.get_motor_collection().index_information() == {
-        "_id_": {"key": [("_id", 1)], "v": 2},
-        "s0_1": {"key": [("s0", 1)], "v": 2},
-        "s1_1": {"key": [("s1", 1)], "v": 2},
-        "s2_-1": {"key": [("s2", -1)], "v": 2},
-        "s3_index": {"key": [("s3", -1)], "v": 2},
-        "s4_index": {"key": [("s4", 1)], "v": 2},
-    }
+    assert (
+        await DocumentWithIndexMerging2.get_motor_collection().index_information()
+        == {
+            "_id_": {"key": [("_id", 1)], "v": 2},
+            "s0_1": {"key": [("s0", 1)], "v": 2},
+            "s1_1": {"key": [("s1", 1)], "v": 2},
+            "s2_-1": {"key": [("s2", -1)], "v": 2},
+            "s3_index": {"key": [("s3", -1)], "v": 2},
+            "s4_index": {"key": [("s4", 1)], "v": 2},
+        }
+    )
 
 
 async def test_custom_init():
@@ -335,3 +341,41 @@ async def test_index_on_custom_types(db):
     )
 
     await db.drop_collection("sample")
+
+
+async def test_init_document_with_union_type_expression_optional_back_link(db):
+    await init_beanie(
+        database=db,
+        document_models=[
+            DocumentWithUnionTypeExpressionOptionalBackLink,
+            DocumentWithListLink,
+            DocumentWithLink,
+        ],
+    )
+
+    assert (
+        DocumentWithUnionTypeExpressionOptionalBackLink.get_link_fields().keys()
+        == {
+            "back_link_list",
+            "back_link",
+        }
+    )
+
+
+async def test_init_document_can_inhert_and_extend_settings(db):
+    class Sample1(Document):
+        class Settings:
+            name = "sample1"
+            bson_encoders = {Color: lambda x: x.value}
+
+    class Sample2(Sample1):
+        class Settings(Sample1.Settings):
+            name = "sample2"
+
+    await init_beanie(
+        database=db,
+        document_models=[Sample2],
+    )
+
+    assert Sample2.get_settings().bson_encoders != {}
+    assert Sample2.get_settings().name == "sample2"

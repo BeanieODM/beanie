@@ -14,6 +14,11 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import get_args, get_origin
 
+if sys.version_info >= (3, 10):
+    from types import UnionType as TypesUnionType
+else:
+    TypesUnionType = ()
+
 import importlib
 import inspect
 from typing import (  # type: ignore
@@ -170,9 +175,15 @@ class Initializer:
         :return: None
         """
         settings_class = getattr(cls, "Settings", None)
-        settings_vars = (
-            {} if settings_class is None else dict(vars(settings_class))
-        )
+        settings_vars = {}
+        if settings_class is not None:
+            # get all attributes of the Settings subclass (including inherited ones)
+            # without magic dunder methods
+            settings_vars = {
+                attr: getattr(settings_class, attr)
+                for attr in dir(settings_class)
+                if not attr.startswith("__")
+            }
         if issubclass(cls, Document):
             cls._document_settings = parse_model(
                 DocumentSettings, settings_vars
@@ -248,7 +259,9 @@ class Initializer:
                     return LinkInfo(
                         field_name=field_name,
                         lookup_field_name=field_name,
-                        document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(
+                            get_args(args[0])[0]
+                        ),  # type: ignore
                         link_type=LinkTypes.LIST,
                     )
                 if cls is BackLink:
@@ -257,24 +270,36 @@ class Initializer:
                         lookup_field_name=get_extra_field_info(  # type: ignore
                             field, "original_field"
                         ),
-                        document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(
+                            get_args(args[0])[0]
+                        ),  # type: ignore
                         link_type=LinkTypes.BACK_LIST,
                     )
 
             # Check if annotation is Optional[custom class] or Optional[List[custom class]]
-            elif origin is Union and len(args) == 2 and args[1] is type(None):
-                optional_origin = get_origin(args[0])
-                optional_args = get_args(args[0])
+            elif (
+                (origin is Union or origin is TypesUnionType)
+                and len(args) == 2
+                and type(None) in args
+            ):
+                if args[1] is type(None):
+                    optional = args[0]
+                else:
+                    optional = args[1]
+                optional_origin = get_origin(optional)
+                optional_args = get_args(optional)
 
                 if (
-                    isinstance(args[0], _GenericAlias)
-                    and args[0].__origin__ is cls
+                    isinstance(optional, _GenericAlias)
+                    and optional.__origin__ is cls
                 ):
                     if cls is Link:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field_name,
-                            document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                optional_args[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_DIRECT,
                         )
                     if cls is BackLink:
@@ -283,7 +308,9 @@ class Initializer:
                             lookup_field_name=get_extra_field_info(
                                 field, "original_field"
                             ),
-                            document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                optional_args[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
                         )
 
@@ -297,7 +324,9 @@ class Initializer:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field_name,
-                            document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                get_args(optional_args[0])[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_LIST,
                         )
                     if cls is BackLink:
@@ -306,7 +335,9 @@ class Initializer:
                             lookup_field_name=get_extra_field_info(
                                 field, "original_field"
                             ),
-                            document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                get_args(optional_args[0])[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_LIST,
                         )
         return None
@@ -687,7 +718,7 @@ class Initializer:
 
     @staticmethod
     def check_deprecations(
-        cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        cls: Union[Type[Document], Type[View], Type[UnionDoc]],
     ):
         if hasattr(cls, "Collection"):
             raise Deprecation(

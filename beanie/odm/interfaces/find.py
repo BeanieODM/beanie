@@ -42,7 +42,7 @@ class FindInterface:
     _find_one_query_class: ClassVar[Type] = FindOne
     _find_many_query_class: ClassVar[Type] = FindMany
 
-    _inheritance_inited: bool
+    _inheritance_inited: bool = False
     _class_id: ClassVar[Optional[str]]
     _children: ClassVar[Dict[str, Type]]
 
@@ -469,9 +469,7 @@ class FindInterface:
         if cls.get_settings().union_doc:
             args += (
                 {
-                    cls.get_settings()
-                    .class_id: cls.get_settings()
-                    .union_doc_alias
+                    cls.get_settings().class_id: cls.get_settings().union_doc_alias
                 },
             )
         return args

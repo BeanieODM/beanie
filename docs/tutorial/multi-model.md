@@ -6,7 +6,7 @@ Documents with different schemas could be stored in a single collection and mana
 It supports `find` and `aggregate` methods. 
 For `find`, it will fetch all the found documents into the respective `Document` classes.
 
-Documents that have `union_doc` in their settings can still be used in `find` and other queries. 
+Documents with `union_doc` in their settings can still be used in `find` and other queries. 
 Queries of one such class will not see the data of others.
 
 ## Example
@@ -20,7 +20,7 @@ from beanie import Document, UnionDoc
 class Parent(UnionDoc):  # Union
     class Settings:
         name = "union_doc_collection"  # Collection name
-        class_id = "_class_id"  # _class_id is default beanie internal field used to filter children Documents
+        class_id = "_class_id"  # _class_id is the default beanie internal field used to filter children Documents
         
         
 class One(Document):
@@ -67,7 +67,7 @@ Of the second type:
 docs = await Two.all().to_list()
 print(len(docs))
 
->> 1 # It found only documents of class One
+>> 1 # It found only documents of class Two
 ```
 
 Of both:
@@ -76,7 +76,7 @@ Of both:
 docs = await Parent.all().to_list()
 print(len(docs))
 
->> 4 # instances of the both classes will be in the output here
+>> 4 # instances of both classes will be in the output here
 ```
 
 Aggregations will work separately for these two document classes too.

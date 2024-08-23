@@ -73,10 +73,10 @@ async def test_find_many_skip(preset_documents):
         assert sample.nested.optional is None
 
     len_result = 0
-    async for sample in Sample.find_many(Sample.increment > 2).find_many(
-        Sample.nested.optional == None
-    ).skip(
-        1
+    async for sample in (
+        Sample.find_many(Sample.increment > 2)
+        .find_many(Sample.nested.optional == None)
+        .skip(1)
     ):  # noqa
         assert sample in result
         len_result += 1
@@ -104,10 +104,11 @@ async def test_find_many_limit(preset_documents):
         assert a.nested.optional is None
 
     len_result = 0
-    async for a in Sample.find_many(Sample.increment > 2).find(
-        Sample.nested.optional == None
-    ).sort(Sample.increment).limit(
-        2
+    async for a in (
+        Sample.find_many(Sample.increment > 2)
+        .find(Sample.nested.optional == None)
+        .sort(Sample.increment)
+        .limit(2)
     ):  # noqa
         assert a in result
         len_result += 1

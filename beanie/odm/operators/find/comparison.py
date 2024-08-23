@@ -8,7 +8,7 @@ class BaseFindComparisonOperator(BaseFindOperator):
         self,
         field,
         other,
-    ):
+    ) -> None:
         self.field = field
         self.other = other
 

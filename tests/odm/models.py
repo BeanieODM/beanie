@@ -1,4 +1,5 @@
 import datetime
+import sys
 from enum import Enum
 from ipaddress import (
     IPv4Address,
@@ -60,6 +61,16 @@ from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 if IS_PYDANTIC_V2:
     from pydantic import RootModel, validate_call
 
+if sys.version_info >= (3, 10):
+
+    def type_union(A, B):
+        return A | B
+
+else:
+
+    def type_union(A, B):
+        return Union[A, B]
+
 
 class Color:
     def __init__(self, value):
@@ -96,7 +107,12 @@ class Color:
                 return Color(value["value"])
             return Color(value)
 
-        python_schema = core_schema.general_plain_validator_function(validate)
+        vf = (
+            core_schema.with_info_plain_validator_function
+            if hasattr(core_schema, "with_info_plain_validator_function")
+            else core_schema.general_plain_validator_function
+        )
+        python_schema = vf(validate)
 
         return core_schema.json_or_python_schema(
             json_schema=core_schema.str_schema(),
@@ -410,8 +426,7 @@ class DocumentWithActions2(Document):
         self.num_2 -= 1
 
 
-class InheritedDocumentWithActions(DocumentWithActions):
-    ...
+class InheritedDocumentWithActions(DocumentWithActions): ...
 
 
 class InternalDoc(BaseModel):
@@ -690,8 +705,7 @@ class Car(Vehicle, Fuelled):
     body: str
 
 
-class Bike(Vehicle, Fuelled):
-    ...
+class Bike(Vehicle, Fuelled): ...
 
 
 class Bus(Car, Fuelled):
@@ -947,6 +961,24 @@ class DocumentWithOptionalListBackLink(Document):
         )
     else:
         back_link: Optional[List[BackLink[DocumentWithListLink]]] = Field(
+            original_field="link"
+        )
+    i: int = 1
+
+
+class DocumentWithUnionTypeExpressionOptionalBackLink(Document):
+    if IS_PYDANTIC_V2:
+        back_link_list: type_union(
+            List[BackLink[DocumentWithListLink]], None
+        ) = Field(json_schema_extra={"original_field": "link"})
+        back_link: type_union(BackLink[DocumentWithLink], None) = Field(
+            json_schema_extra={"original_field": "link"}
+        )
+    else:
+        back_link_list: type_union(
+            List[BackLink[DocumentWithListLink]], None
+        ) = Field(original_field="link")
+        back_link: type_union(BackLink[DocumentWithLink], None) = Field(
             original_field="link"
         )
     i: int = 1
