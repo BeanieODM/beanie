@@ -295,9 +295,6 @@ class LinkInfo(BaseModel):
     is_fetchable: bool = True
 
 
-T = TypeVar("T")
-
-
 class Link(Generic[T]):
     def __init__(self, ref: DBRef, document_class: Type[T]):
         self.ref = ref
