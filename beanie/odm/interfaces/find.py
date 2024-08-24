@@ -448,7 +448,10 @@ class FindInterface:
         ):
             return args
 
-        if cls.get_model_type() == ModelType.Document and cls._inheritance_inited:
+        if (
+            cls.get_model_type() == ModelType.Document
+            and cls._inheritance_inited
+        ):
             if not with_children:
                 args += ({cls.get_settings().class_id: cls._class_id},)
             else:
@@ -462,5 +465,9 @@ class FindInterface:
                 )
 
         if cls.get_settings().union_doc:
-            args += ({cls.get_settings().class_id: cls.get_settings().union_doc_alias},)
+            args += (
+                {
+                    cls.get_settings().class_id: cls.get_settings().union_doc_alias
+                },
+            )
         return args
