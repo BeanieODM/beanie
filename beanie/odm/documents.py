@@ -18,11 +18,11 @@ from typing import (
     TypeVar,
     Union,
 )
-from typing_extensions import Self
 from uuid import UUID, uuid4
 
 from bson import DBRef, ObjectId
 from lazy_model import LazyModel
+from motor.motor_asyncio import AsyncIOMotorClientSession
 from pydantic import (
     ConfigDict,
     Field,
@@ -32,13 +32,12 @@ from pydantic import (
 from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
 from pymongo import InsertOne
-from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo.errors import DuplicateKeyError
 from pymongo.results import (
     DeleteResult,
     InsertManyResult,
 )
-from typing_extensions import Concatenate, ParamSpec, TypeAlias
+from typing_extensions import Concatenate, ParamSpec, Self, TypeAlias
 
 from beanie.exceptions import (
     CollectionWasNotInitialized,

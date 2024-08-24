@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, Any, Dict, Generator, Mapping, Optional, Type
 
+from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo import DeleteMany as DeleteManyPyMongo
 from pymongo import DeleteOne as DeleteOnePyMongo
-from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo.results import DeleteResult
 
 from beanie.odm.bulk import BulkWriter, Operation

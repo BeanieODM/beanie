@@ -13,10 +13,10 @@ from typing import (
     Union,
 )
 
+from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo import ReturnDocument
 from pymongo import UpdateMany as UpdateManyPyMongo
 from pymongo import UpdateOne as UpdateOnePyMongo
-from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo.results import InsertOneResult, UpdateResult
 
 from beanie.odm.bulk import BulkWriter, Operation

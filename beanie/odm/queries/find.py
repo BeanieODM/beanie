@@ -17,9 +17,9 @@ from typing import (
     overload,
 )
 
+from motor.motor_asyncio import AsyncIOMotorClientSession
 from pydantic import BaseModel
 from pymongo import ReplaceOne
-from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo.results import UpdateResult
 
 from beanie.exceptions import DocumentNotFound
@@ -949,17 +949,17 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         self.set_session(session=session)
         if bulk_writer is None:
-            result: (
-                UpdateResult
-            ) = await self.document_model.get_motor_collection().replace_one(
-                self.get_filter_query(),
-                get_dict(
-                    document,
-                    to_db=True,
-                    exclude={"_id"},
-                    keep_nulls=document.get_settings().keep_nulls,
-                ),
-                session=self.session,
+            result: UpdateResult = (
+                await self.document_model.get_motor_collection().replace_one(
+                    self.get_filter_query(),
+                    get_dict(
+                        document,
+                        to_db=True,
+                        exclude={"_id"},
+                        keep_nulls=document.get_settings().keep_nulls,
+                    ),
+                    session=self.session,
+                )
             )
 
             if not result.raw_result["updatedExisting"]:
