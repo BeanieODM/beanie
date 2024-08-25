@@ -9,6 +9,7 @@ from beanie.odm.settings.union_doc import UnionDocSettings
 
 UnionDocType = TypeVar("UnionDocType", bound="UnionDoc")
 
+
 class UnionDoc(
     FindInterface,
     AggregateInterface,

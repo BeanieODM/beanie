@@ -65,7 +65,9 @@ class Initializer:
         database: AsyncIOMotorDatabase = None,
         connection_string: Optional[str] = None,
         document_models: Optional[
-            List[Union[Type["DocType"], Type["UnionDocType"], Type["View"], str]]
+            List[
+                Union[Type["DocType"], Type["UnionDocType"], Type["View"], str]
+            ]
         ] = None,
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
@@ -117,7 +119,9 @@ class Initializer:
             ModelType.View: 2,
         }
 
-        self.document_models: List[Union[Type[DocType], Type[UnionDocType], Type[View]]] = [
+        self.document_models: List[
+            Union[Type[DocType], Type[UnionDocType], Type[View]]
+        ] = [
             self.get_model(model) if isinstance(model, str) else model
             for model in document_models
         ]
