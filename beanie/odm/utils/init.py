@@ -50,7 +50,7 @@ from beanie.odm.registry import DocsRegistry
 from beanie.odm.settings.document import DocumentSettings, IndexModelField
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
-from beanie.odm.union_doc import UnionDoc
+from beanie.odm.union_doc import UnionDoc, UnionDocType
 from beanie.odm.views import View
 
 
@@ -65,7 +65,7 @@ class Initializer:
         database: AsyncIOMotorDatabase = None,
         connection_string: Optional[str] = None,
         document_models: Optional[
-            List[Union[Type["DocType"], Type["View"], str]]
+            List[Union[Type["DocType"], Type["UnionDocType"], Type["View"], str]]
         ] = None,
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
@@ -76,7 +76,7 @@ class Initializer:
 
         :param database: AsyncIOMotorDatabase - motor database instance
         :param connection_string: str - MongoDB connection string
-        :param document_models: List[Union[Type[DocType], str]] - model classes
+        :param document_models: List[Union[Type[DocType], Type[UnionDocType] str]] - model classes
         or strings with dot separated paths
         :param allow_index_dropping: bool - if index dropping is allowed.
         Default False
@@ -117,7 +117,7 @@ class Initializer:
             ModelType.View: 2,
         }
 
-        self.document_models: List[Union[Type[DocType], Type[View]]] = [
+        self.document_models: List[Union[Type[DocType], Type[UnionDocType], Type[View]]] = [
             self.get_model(model) if isinstance(model, str) else model
             for model in document_models
         ]
@@ -757,7 +757,7 @@ async def init_beanie(
     database: AsyncIOMotorDatabase = None,
     connection_string: Optional[str] = None,
     document_models: Optional[
-        List[Union[Type[Document], Type["View"], str]]
+        List[Union[Type[Document], Type[UnionDoc], Type["View"], str]]
     ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
@@ -768,7 +768,7 @@ async def init_beanie(
 
     :param database: AsyncIOMotorDatabase - motor database instance
     :param connection_string: str - MongoDB connection string
-    :param document_models: List[Union[Type[DocType], str]] - model classes
+    :param document_models: List[Union[Type[DocType], Type[UnionDocType], str]] - model classes
     or strings with dot separated paths
     :param allow_index_dropping: bool - if index dropping is allowed.
     Default False
