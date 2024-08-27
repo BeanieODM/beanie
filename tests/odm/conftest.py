@@ -10,6 +10,7 @@ from tests.odm.models import (
     BDocument,
     Bicycle,
     Bike,
+    BsonRegexDoc,
     Bus,
     Car,
     Doc2NonRoot,
@@ -83,6 +84,7 @@ from tests.odm.models import (
     LongSelfLink,
     LoopedLinksA,
     LoopedLinksB,
+    NativeRegexDoc,
     Nested,
     Option1,
     Option2,
@@ -293,7 +295,10 @@ async def init(db):
         DocumentWithBackLinkForNesting,
         DocumentWithEnumKeysDict,
         LongSelfLink,
+        BsonRegexDoc,
+        NativeRegexDoc,
     ]
+
     await init_beanie(
         database=db,
         document_models=models,
