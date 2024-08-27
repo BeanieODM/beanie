@@ -21,7 +21,7 @@ Each one contains instructions to roll migration respectively forward and backwa
 To roll one forward migration, run:
 
 ```shell
-beanie migrate -uri 'mongodb+srv://user:pass@host/db' -p relative/path/to/migrations/directory/ --distance 1
+beanie migrate -uri 'mongodb+srv://user:pass@host' -db db -p relative/path/to/migrations/directory/ --distance 1
 ```
 
 To roll all forward migrations, run:
@@ -33,13 +33,13 @@ beanie migrate -uri 'mongodb://user:pass@host' -db db -p relative/path/to/migrat
 To roll one backward migration, run:
 
 ```shell
-beanie migrate -uri 'mongodb+srv://user:pass@host/db' -p relative/path/to/migrations/directory/ --distance 1 --backward
+beanie migrate -uri 'mongodb+srv://user:pass@host' -db db -p relative/path/to/migrations/directory/ --distance 1 --backward
 ```
 
 To roll all backward migrations, run:
 
 ```shell
-beanie migrate -uri 'mongodb+srv://user:pass@host/db' -p relative/path/to/migrations/directory/ --backward
+beanie migrate -uri 'mongodb+srv://user:pass@host' -db db -p relative/path/to/migrations/directory/ --backward
 ```
 
 To show the help message with all the parameters and descriptions, run:
