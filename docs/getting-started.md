@@ -16,6 +16,62 @@ pip install beanie
 poetry add beanie
 ```
 
+### Optional dependencies
+
+Beanie supports some optional dependencies from Motor (`pip` or `poetry` can be used).
+
+GSSAPI authentication requires `gssapi` extra dependency:
+
+```bash
+pip install "beanie[gssapi]"
+```
+
+MONGODB-AWS authentication requires `aws` extra dependency:
+
+```bash
+pip install "beanie[aws]"
+```
+
+Support for mongodb+srv:// URIs requires `srv` extra dependency:
+
+```bash
+pip install "beanie[srv]"
+```
+
+OCSP requires `ocsp` extra dependency:
+
+```bash
+pip install "beanie[ocsp]"
+```
+
+Wire protocol compression with snappy requires `snappy` extra
+dependency:
+
+```bash
+pip install "beanie[snappy]"
+```
+
+Wire protocol compression with zstandard requires `zstd` extra
+dependency:
+
+```bash
+pip install "beanie[zstd]"
+```
+
+Client-Side Field Level Encryption requires `encryption` extra
+dependency:
+
+```bash
+pip install "beanie[encryption]"
+```
+
+You can install all dependencies automatically with the following
+command:
+
+```bash
+pip install "beanie[gssapi,aws,ocsp,snappy,srv,zstd,encryption]"
+```
+
 ## Initialization
 
 Getting Beanie setup in your code is really easy:
