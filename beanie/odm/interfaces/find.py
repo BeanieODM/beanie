@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from beanie.odm.views import View
 
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
-FindType = TypeVar("FindType", bound=Union["Document", "UnionDoc", "View"]
+FindType = TypeVar("FindType", bound=Union["Document", "UnionDoc", "View"])
 
 
 class FindInterface:
