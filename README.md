@@ -45,6 +45,9 @@ pip install beanie
 ```shell
 poetry add beanie
 ```
+
+For more installation options (eg: `aws`, `gcp`, `srv` ...) you can look in the [getting started](./docs/getting-started.md#optional-dependencies)
+
 ## Example
 
 ```python
