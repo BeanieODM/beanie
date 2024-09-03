@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 class CachedItem(BaseModel):
     timestamp: datetime.datetime = Field(
-        default_factory=datetime.datetime.utcnow
+        default_factory=lambda: datetime.datetime.now(tz=timezone.utc)
     )
     value: Any
 
