@@ -1,6 +1,6 @@
 import asyncio
 import warnings
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
@@ -1240,7 +1240,7 @@ class DocumentWithSoftDelete(Document):
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
-        self.deleted_at = datetime.utcnow()
+        self.deleted_at = datetime.now(tz=timezone.utc)
         await self.save()
         return None
 

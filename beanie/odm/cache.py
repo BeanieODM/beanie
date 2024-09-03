@@ -1,6 +1,6 @@
 import collections
 import datetime
-from datetime import timedelta
+from datetime import timedelta, timezone
 from typing import Any, Optional
 
 from pydantic import BaseModel, Field
@@ -21,9 +21,9 @@ class LRUCache:
 
     def get(self, key) -> Optional[CachedItem]:
         try:
-            item = self.cache.pop(key)
+            item: CachedItem = self.cache.pop(key)
             if (
-                datetime.datetime.utcnow() - item.timestamp
+                datetime.datetime.now(tz=timezone.utc) - item.timestamp
                 > self.expiration_time
             ):
                 return None
