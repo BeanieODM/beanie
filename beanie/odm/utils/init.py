@@ -1,6 +1,8 @@
 import asyncio
 import sys
 
+from typing_extensions import Sequence, get_args, get_origin
+
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
     get_extra_field_info,
@@ -8,11 +10,6 @@ from beanie.odm.utils.pydantic import (
     parse_model,
 )
 from beanie.odm.utils.typing import get_index_attributes
-
-if sys.version_info >= (3, 8):
-    from typing import get_args, get_origin
-else:
-    from typing_extensions import get_args, get_origin
 
 if sys.version_info >= (3, 10):
     from types import UnionType as TypesUnionType
@@ -65,7 +62,7 @@ class Initializer:
         database: AsyncIOMotorDatabase = None,
         connection_string: Optional[str] = None,
         document_models: Optional[
-            List[
+            Sequence[
                 Union[Type["DocType"], Type["UnionDocType"], Type["View"], str]
             ]
         ] = None,
@@ -761,7 +758,7 @@ async def init_beanie(
     database: AsyncIOMotorDatabase = None,
     connection_string: Optional[str] = None,
     document_models: Optional[
-        List[Union[Type[Document], Type[UnionDoc], Type["View"], str]]
+        Sequence[Union[Type[Document], Type[UnionDoc], Type["View"], str]]
     ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
