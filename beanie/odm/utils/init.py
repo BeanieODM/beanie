@@ -78,7 +78,7 @@ class Initializer:
 
         :param database: AsyncIOMotorDatabase - motor database instance
         :param connection_string: str - MongoDB connection string
-        :param document_models: List[Union[Type[DocType], Type[UnionDocType] str]] - model classes
+        :param document_models: List[Union[Type[DocType], Type[UnionDocType], str]] - model classes
         or strings with dot separated paths
         :param allow_index_dropping: bool - if index dropping is allowed.
         Default False
