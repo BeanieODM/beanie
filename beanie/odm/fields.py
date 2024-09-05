@@ -487,7 +487,17 @@ class BackLink(Generic[T]):
         def __get_pydantic_core_schema__(
             cls, source_type: Any, handler: GetCoreSchemaHandler
         ) -> CoreSchema:  # type: ignore
-            return plain_validator(cls.build_validation(handler, source_type))
+            # build_validation can return any object
+            # so json_schema should be a general dict 
+            return core_schema.json_or_python_schema(
+                python_schema = plain_validator(
+                    cls.build_validation(handler, source_type),
+                ),
+                json_schema = core_schema.dict_schema(
+                    keys_schema=core_schema.str_schema(), 
+                    values_schema=core_schema.any_schema()
+                ),
+            )
 
     else:
 

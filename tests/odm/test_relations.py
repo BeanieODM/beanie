@@ -839,6 +839,9 @@ class TestSaveBackLinks:
         for lnk in new_back_link_doc.back_link:
             assert lnk.s == "new value"
 
+    def test_json_schema_export(self):
+        json_schema = DocumentWithListBackLink.model_json_schema()
+        assert json_schema['properties']['back_link']['items']['type'] == 'object'
 
 class HouseForReversedOrderInit(Document):
     name: str
