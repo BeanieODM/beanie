@@ -840,8 +840,16 @@ class TestSaveBackLinks:
             assert lnk.s == "new value"
 
     def test_json_schema_export(self):
-        json_schema = DocumentWithListBackLink.model_json_schema()
-        assert json_schema['properties']['back_link']['items']['type'] == 'object'
+        if IS_PYDANTIC_V2:
+            json_schema = DocumentWithListBackLink.model_json_schema()
+        else:
+            import json
+
+            json_schema = json.loads(DocumentWithListBackLink.schema_json())
+        assert (
+            json_schema["properties"]["back_link"]["items"]["type"] == "object"
+        )
+
 
 class HouseForReversedOrderInit(Document):
     name: str
