@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Any, Dict, Optional, Type, TypeVar, Union, overload
 
-from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClientSession
+from pydantic import BaseModel
 
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindMany
