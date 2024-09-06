@@ -18,7 +18,7 @@ from typing import (
 from pydantic import (
     BaseModel,
 )
-from pymongo.client_session import ClientSession
+from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.detector import ModelType
@@ -59,7 +59,7 @@ class FindInterface:
         cls: Type[FindType],
         *args: Union[Mapping[str, Any], bool],
         projection_model: None = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -74,7 +74,7 @@ class FindInterface:
         cls: Type[FindType],
         *args: Union[Mapping[str, Any], bool],
         projection_model: Type["DocumentProjectionType"],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -88,7 +88,7 @@ class FindInterface:
         cls: Type[FindType],
         *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -103,7 +103,7 @@ class FindInterface:
 
         :param args: *Mapping[str, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
-        :param session: Optional[ClientSession] - pymongo session instance
+        :param session: Optional[AsyncIOMotorClientSession] - motor session instance
         :param ignore_cache: bool
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindOne](query.md#findone) - find query instance
@@ -129,7 +129,7 @@ class FindInterface:
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -148,7 +148,7 @@ class FindInterface:
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -166,7 +166,7 @@ class FindInterface:
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -184,7 +184,7 @@ class FindInterface:
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
-        :param session: Optional[ClientSession] - pymongo session
+        :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param ignore_cache: bool
         :param lazy_parse: bool
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
@@ -215,7 +215,7 @@ class FindInterface:
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -234,7 +234,7 @@ class FindInterface:
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -252,7 +252,7 @@ class FindInterface:
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -288,7 +288,7 @@ class FindInterface:
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: None = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
@@ -305,7 +305,7 @@ class FindInterface:
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
@@ -321,7 +321,7 @@ class FindInterface:
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
@@ -336,7 +336,7 @@ class FindInterface:
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[Type[BaseModel]] - projection model
-        :param session: Optional[ClientSession] - pymongo session
+        :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
         :return: [FindMany](query.md#findmany) - query instance
         """
@@ -363,7 +363,7 @@ class FindInterface:
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
@@ -380,7 +380,7 @@ class FindInterface:
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
@@ -396,7 +396,7 @@ class FindInterface:
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
@@ -443,10 +443,7 @@ class FindInterface:
         ):
             return args
 
-        if (
-            cls.get_model_type() == ModelType.Document
-            and cls._inheritance_inited
-        ):
+        if cls.get_model_type() == ModelType.Document and cls._inheritance_inited:
             if not with_children:
                 args += ({cls.get_settings().class_id: cls._class_id},)
             else:
@@ -460,9 +457,5 @@ class FindInterface:
                 )
 
         if cls.get_settings().union_doc:
-            args += (
-                {
-                    cls.get_settings().class_id: cls.get_settings().union_doc_alias
-                },
-            )
+            args += ({cls.get_settings().class_id: cls.get_settings().union_doc_alias},)
         return args
