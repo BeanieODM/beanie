@@ -114,6 +114,7 @@ if IS_PYDANTIC_V2:
 
 if TYPE_CHECKING:
     from beanie.odm.views import View
+    from datetime import datetime
 
 FindType = TypeVar("FindType", bound=Union["Document", "View"])
 DocType = TypeVar("DocType", bound="Document")
@@ -763,7 +764,7 @@ class Document(
 
     def set(
         self: DocType,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Any, Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -785,7 +786,7 @@ class Document(
 
         Uses [Set operator](operators/update.md#set)
 
-        :param expression: Dict[Union[ExpressionField, str], Any] - keys and
+        :param expression: Dict[Any, Any] - keys and
         values to set
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
@@ -802,7 +803,7 @@ class Document(
 
     def current_date(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[datetime, ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -813,7 +814,7 @@ class Document(
 
         Uses [CurrentDate operator](operators/update.md#currentdate)
 
-        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param expression: Dict[Union[datetime, ExpressionField, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
@@ -829,7 +830,7 @@ class Document(
 
     def inc(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -851,7 +852,7 @@ class Document(
 
         Uses [Inc operator](operators/update.md#inc)
 
-        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param expression: Dict[Union[ExpressionField, float, int, str], Any]
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
