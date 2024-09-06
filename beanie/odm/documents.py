@@ -114,7 +114,6 @@ if IS_PYDANTIC_V2:
 
 if TYPE_CHECKING:
     from beanie.odm.views import View
-    from datetime import datetime
 
 FindType = TypeVar("FindType", bound=Union["Document", "View"])
 DocType = TypeVar("DocType", bound="Document")

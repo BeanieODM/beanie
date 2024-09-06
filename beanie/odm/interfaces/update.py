@@ -1,5 +1,6 @@
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Dict, Mapping, Optional, Union
+from datetime import datetime
+from typing import Any, Dict, Mapping, Optional, Union
 
 from pymongo.client_session import ClientSession
 
@@ -10,9 +11,6 @@ from beanie.odm.operators.update.general import (
     Inc,
     Set,
 )
-
-if TYPE_CHECKING:
-    from datetime import datetime
 
 
 class UpdateMethods:
