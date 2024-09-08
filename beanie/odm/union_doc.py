@@ -1,4 +1,4 @@
-from typing import ClassVar, Dict, Optional, Type
+from typing import ClassVar, Dict, Optional, Type, TypeVar
 
 from beanie.exceptions import UnionDocNotInited
 from beanie.odm.interfaces.aggregate import AggregateInterface
@@ -6,6 +6,8 @@ from beanie.odm.interfaces.detector import DetectionInterface, ModelType
 from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
 from beanie.odm.settings.union_doc import UnionDocSettings
+
+UnionDocType = TypeVar("UnionDocType", bound="UnionDoc")
 
 
 class UnionDoc(
