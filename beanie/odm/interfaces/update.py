@@ -51,7 +51,7 @@ class UpdateMethods:
 
         Uses [Set operator](operators/update.md#set)
 
-        :param expression: Dict[Any, Any] - keys and
+        :param expression: Dict[Union[ExpressionField, str, Any], Any] - keys and
         values to set
         :param session: Optional[ClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
