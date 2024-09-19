@@ -346,7 +346,9 @@ class Document(
                         LinkTypes.OPTIONAL_DIRECT,
                     ]:
                         if isinstance(value, Document):
-                            await value.save(link_rule=WriteRules.WRITE)
+                            await value.save(
+                                link_rule=WriteRules.WRITE, session=session
+                            )
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
@@ -354,7 +356,10 @@ class Document(
                         if isinstance(value, List):
                             await asyncio.gather(
                                 *[
-                                    obj.save(link_rule=WriteRules.WRITE)
+                                    obj.save(
+                                        link_rule=WriteRules.WRITE,
+                                        session=session,
+                                    )
                                     for obj in value
                                     if isinstance(obj, Document)
                                 ]
