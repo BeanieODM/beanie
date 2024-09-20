@@ -24,8 +24,8 @@ classifiers = [
 ]
 dependencies = [
     "pydantic>=1.10,<3.0",
-    "motor>=2.5.0,<4.0.0",
-    "pymongo<4.9",
+    "motor~=3.6.0",
+    "pymongo~=4.9.1",
     "click>=7",
     "toml",
     "lazy-model==0.2.0",
