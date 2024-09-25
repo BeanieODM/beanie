@@ -5,7 +5,6 @@ from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
-    Awaitable,
     Callable,
     ClassVar,
     Coroutine,
@@ -691,7 +690,7 @@ class Document(
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
     async def update(
-        self,
+        self: DocType,
         *args,
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
@@ -767,13 +766,13 @@ class Document(
         )
 
     def set(
-        self: DocType,
+        self,
         expression: Dict[Union[ExpressionField, str, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ) -> Awaitable[DocType]:
+    ):
         """
         Set values
 
