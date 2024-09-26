@@ -346,7 +346,9 @@ class Document(
                         LinkTypes.OPTIONAL_DIRECT,
                     ]:
                         if isinstance(value, Document):
-                            await value.save(link_rule=WriteRules.WRITE)
+                            await value.save(
+                                link_rule=WriteRules.WRITE, session=session
+                            )
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
@@ -354,7 +356,10 @@ class Document(
                         if isinstance(value, List):
                             await asyncio.gather(
                                 *[
-                                    obj.save(link_rule=WriteRules.WRITE)
+                                    obj.save(
+                                        link_rule=WriteRules.WRITE,
+                                        session=session,
+                                    )
                                     for obj in value
                                     if isinstance(obj, Document)
                                 ]
@@ -763,7 +768,7 @@ class Document(
 
     def set(
         self: DocType,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, str, Any], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -785,7 +790,7 @@ class Document(
 
         Uses [Set operator](operators/update.md#set)
 
-        :param expression: Dict[Union[ExpressionField, str], Any] - keys and
+        :param expression: Dict[Union[ExpressionField, str, Any], Any] - keys and
         values to set
         :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
@@ -802,7 +807,7 @@ class Document(
 
     def current_date(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[datetime, ExpressionField, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -813,7 +818,7 @@ class Document(
 
         Uses [CurrentDate operator](operators/update.md#currentdate)
 
-        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param expression: Dict[Union[datetime, ExpressionField, str], Any]
         :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
@@ -829,7 +834,7 @@ class Document(
 
     def inc(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
+        expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -851,7 +856,7 @@ class Document(
 
         Uses [Inc operator](operators/update.md#inc)
 
-        :param expression: Dict[Union[ExpressionField, str], Any]
+        :param expression: Dict[Union[ExpressionField, float, int, str], Any]
         :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
