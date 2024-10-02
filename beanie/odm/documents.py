@@ -562,7 +562,7 @@ class Document(
         :param session: Optional[ClientSession] - pymongo session.
         :param link_rule: WriteRules - rules how to deal with links on writing
         :param ignore_revision: bool - do force save.
-        :return: None
+        :return: DocType
         """
         if link_rule == WriteRules.WRITE:
             link_fields = self.get_link_fields()
@@ -642,7 +642,7 @@ class Document(
 
         :param ignore_revision: bool - ignore revision id, if revision is turned on
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
-        :return: None
+        :return: Optional[DocType]
         """
         if not self.is_changed:
             return None
@@ -707,7 +707,7 @@ class Document(
         :param ignore_revision: bool - force update. Will update even if revision id is not the same, as stored
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param pymongo_kwargs: pymongo native parameters for update operation
-        :return: None
+        :return: DocType
         """
         arguments = list(args)
 
