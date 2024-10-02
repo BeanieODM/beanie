@@ -37,7 +37,7 @@ from pymongo.results import (
     DeleteResult,
     InsertManyResult,
 )
-from typing_extensions import Concatenate, ParamSpec, TypeAlias
+from typing_extensions import Concatenate, ParamSpec, Self, TypeAlias
 
 from beanie.exceptions import (
     CollectionWasNotInitialized,
@@ -323,15 +323,15 @@ class Document(
     @save_state_after
     @validate_self_before
     async def insert(
-        self: DocType,
+        self: Self,
         *,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         session: Optional[ClientSession] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-    ) -> DocType:
+    ) -> Self:
         """
         Insert the document (self) to the collection
-        :return: Document
+        :return: self
         """
         if self.get_settings().use_revision:
             self.revision_id = uuid4()
@@ -381,12 +381,12 @@ class Document(
         return self
 
     async def create(
-        self: DocType,
+        self: Self,
         session: Optional[ClientSession] = None,
-    ) -> DocType:
+    ) -> Self:
         """
         The same as self.insert()
-        :return: Document
+        :return: self
         """
         return await self.insert(session=session)
 
@@ -466,13 +466,13 @@ class Document(
     @save_state_after
     @validate_self_before
     async def replace(
-        self: DocType,
+        self: Self,
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-    ) -> DocType:
+    ) -> Self:
         """
         Fully update the document in the database
 
@@ -549,12 +549,12 @@ class Document(
     @save_state_after
     @validate_self_before
     async def save(
-        self: DocType,
+        self: Self,
         session: Optional[ClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         ignore_revision: bool = False,
         **kwargs,
-    ) -> DocType:
+    ) -> Self:
         """
         Update an existing model in the database or
         insert it if it does not yet exist.
@@ -562,7 +562,7 @@ class Document(
         :param session: Optional[ClientSession] - pymongo session.
         :param link_rule: WriteRules - rules how to deal with links on writing
         :param ignore_revision: bool - do force save.
-        :return: DocType
+        :return: self
         """
         if link_rule == WriteRules.WRITE:
             link_fields = self.get_link_fields()
@@ -630,19 +630,19 @@ class Document(
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
     @validate_self_before
     async def save_changes(
-        self: DocType,
+        self: Self,
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-    ) -> Optional[DocType]:
+    ) -> Optional[Self]:
         """
         Save changes.
         State management usage must be turned on
 
         :param ignore_revision: bool - ignore revision id, if revision is turned on
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
-        :return: Optional[DocType]
+        :return: Optional[self]
         """
         if not self.is_changed:
             return None
@@ -690,7 +690,7 @@ class Document(
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
     async def update(
-        self: DocType,
+        self: Self,
         *args,
         ignore_revision: bool = False,
         session: Optional[ClientSession] = None,
@@ -698,7 +698,7 @@ class Document(
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
         **pymongo_kwargs,
-    ) -> DocType:
+    ) -> Self:
         """
         Partially update the document in the database
 
@@ -707,7 +707,7 @@ class Document(
         :param ignore_revision: bool - force update. Will update even if revision id is not the same, as stored
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param pymongo_kwargs: pymongo native parameters for update operation
-        :return: DocType
+        :return: self
         """
         arguments = list(args)
 
@@ -766,13 +766,13 @@ class Document(
         )
 
     def set(
-        self,
+        self: Self,
         expression: Dict[Union[ExpressionField, str, Any], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ):
+    ) -> Coroutine[None, None, Self]:
         """
         Set values
 
@@ -805,13 +805,13 @@ class Document(
         )
 
     def current_date(
-        self,
+        self: Self,
         expression: Dict[Union[datetime, ExpressionField, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ):
+    ) -> Coroutine[None, None, Self]:
         """
         Set current date
 
@@ -832,13 +832,13 @@ class Document(
         )
 
     def inc(
-        self,
+        self: Self,
         expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[ClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
-    ):
+    ) -> Coroutine[None, None, Self]:
         """
         Increment
 
