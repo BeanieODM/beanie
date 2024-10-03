@@ -23,6 +23,7 @@ from uuid import UUID, uuid4
 
 from bson import DBRef, ObjectId
 from lazy_model import LazyModel
+from motor.motor_asyncio import AsyncIOMotorClientSession
 from pydantic import (
     ConfigDict,
     Field,
@@ -32,7 +33,6 @@ from pydantic import (
 from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
 from pymongo import InsertOne
-from pymongo.client_session import ClientSession
 from pymongo.errors import DuplicateKeyError
 from pymongo.results import (
     DeleteResult,
@@ -249,7 +249,7 @@ class Document(
     async def get(
         cls: Type["DocType"],
         document_id: Any,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -261,7 +261,7 @@ class Document(
         Get document by id, returns None if document does not exist
 
         :param document_id: PydanticObjectId - document id
-        :param session: Optional[ClientSession] - pymongo session
+        :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param ignore_cache: bool - ignore cache (if it is turned on)
         :param **pymongo_kwargs: pymongo native parameters for find operation
         :return: Union["Document", None]
@@ -327,7 +327,7 @@ class Document(
         self: DocType,
         *,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> DocType:
         """
@@ -383,7 +383,7 @@ class Document(
 
     async def create(
         self: DocType,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
     ) -> DocType:
         """
         The same as self.insert()
@@ -395,14 +395,14 @@ class Document(
     async def insert_one(
         cls: Type[DocType],
         document: DocType,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional["BulkWriter"] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
     ) -> Optional[DocType]:
         """
         Insert one document to the collection
         :param document: Document - document to insert
-        :param session: ClientSession - pymongo session
+        :param session: AsyncIOMotorClientSession - motor session
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param link_rule: InsertRules - hot to manage link fields
         :return: DocType
@@ -435,7 +435,7 @@ class Document(
     async def insert_many(
         cls: Type[DocType],
         documents: Iterable[DocType],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         **pymongo_kwargs,
     ) -> InsertManyResult:
@@ -443,7 +443,7 @@ class Document(
         Insert many documents to the collection
 
         :param documents:  List["Document"] - documents to insert
-        :param session: ClientSession - pymongo session
+        :param session: AsyncIOMotorClientSession - motor session
         :param link_rule: InsertRules - how to manage link fields
         :return: InsertManyResult
         """
@@ -469,7 +469,7 @@ class Document(
     async def replace(
         self: DocType,
         ignore_revision: bool = False,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
@@ -477,7 +477,7 @@ class Document(
         """
         Fully update the document in the database
 
-        :param session: Optional[ClientSession] - pymongo session.
+        :param session: Optional[AsyncIOMotorClientSession] - motor session.
         :param ignore_revision: bool - do force replace.
             Used when revision based protection is turned on.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
@@ -551,7 +551,7 @@ class Document(
     @validate_self_before
     async def save(
         self: DocType,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         ignore_revision: bool = False,
         **kwargs,
@@ -560,7 +560,7 @@ class Document(
         Update an existing model in the database or
         insert it if it does not yet exist.
 
-        :param session: Optional[ClientSession] - pymongo session.
+        :param session: Optional[AsyncIOMotorClientSession] - motor session.
         :param link_rule: WriteRules - rules how to deal with links on writing
         :param ignore_revision: bool - do force save.
         :return: None
@@ -633,7 +633,7 @@ class Document(
     async def save_changes(
         self: DocType,
         ignore_revision: bool = False,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
     ) -> Optional[DocType]:
@@ -668,13 +668,13 @@ class Document(
     async def replace_many(
         cls: Type[DocType],
         documents: List[DocType],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
     ) -> None:
         """
         Replace list of documents
 
         :param documents: List["Document"]
-        :param session: Optional[ClientSession] - pymongo session.
+        :param session: Optional[AsyncIOMotorClientSession] - motor session.
         :return: None
         """
         ids_list = [document.id for document in documents]
@@ -694,7 +694,7 @@ class Document(
         self,
         *args,
         ignore_revision: bool = False,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
@@ -704,7 +704,7 @@ class Document(
         Partially update the document in the database
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
-        :param session: ClientSession - pymongo session.
+        :param session: AsyncIOMotorClientSession - motor session.
         :param ignore_revision: bool - force update. Will update even if revision id is not the same, as stored
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param pymongo_kwargs: pymongo native parameters for update operation
@@ -749,7 +749,7 @@ class Document(
     def update_all(
         cls,
         *args: Union[dict, Mapping],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
     ) -> UpdateMany:
@@ -757,7 +757,7 @@ class Document(
         Partially update all the documents
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
-        :param session: ClientSession - pymongo session.
+        :param session: AsyncIOMotorClientSession - motor session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param **pymongo_kwargs: pymongo native parameters for find operation
         :return: UpdateMany query
@@ -769,7 +769,7 @@ class Document(
     def set(
         self: DocType,
         expression: Dict[Union[ExpressionField, str, Any], Any],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
@@ -792,7 +792,7 @@ class Document(
 
         :param expression: Dict[Union[ExpressionField, str, Any], Any] - keys and
         values to set
-        :param session: Optional[ClientSession] - pymongo session
+        :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
         :return: self
@@ -808,7 +808,7 @@ class Document(
     def current_date(
         self,
         expression: Dict[Union[datetime, ExpressionField, str], Any],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
@@ -819,7 +819,7 @@ class Document(
         Uses [CurrentDate operator](operators/update.md#currentdate)
 
         :param expression: Dict[Union[datetime, ExpressionField, str], Any]
-        :param session: Optional[ClientSession] - pymongo session
+        :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
         :return: self
@@ -835,7 +835,7 @@ class Document(
     def inc(
         self,
         expression: Dict[Union[ExpressionField, float, int, str], Any],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
         **kwargs,
@@ -857,7 +857,7 @@ class Document(
         Uses [Inc operator](operators/update.md#inc)
 
         :param expression: Dict[Union[ExpressionField, float, int, str], Any]
-        :param session: Optional[ClientSession] - pymongo session
+        :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :param skip_sync: bool - skip doc syncing. Available for the direct instances only
         :return: self
@@ -873,7 +873,7 @@ class Document(
     @wrap_with_actions(EventTypes.DELETE)
     async def delete(
         self,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
@@ -882,7 +882,7 @@ class Document(
         """
         Delete the document
 
-        :param session: Optional[ClientSession] - pymongo session.
+        :param session: Optional[AsyncIOMotorClientSession] - motor session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param link_rule: DeleteRules - rules for link fields
         :param **pymongo_kwargs: pymongo native parameters for delete operation
@@ -930,14 +930,14 @@ class Document(
     @classmethod
     async def delete_all(
         cls,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         """
         Delete all the documents
 
-        :param session: Optional[ClientSession] - pymongo session.
+        :param session: Optional[AsyncIOMotorClientSession] - motor session.
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param **pymongo_kwargs: pymongo native parameters for delete operation
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
@@ -1112,7 +1112,7 @@ class Document(
 
     @classmethod
     async def inspect_collection(
-        cls, session: Optional[ClientSession] = None
+        cls, session: Optional[AsyncIOMotorClientSession] = None
     ) -> InspectionResult:
         """
         Check, if documents, stored in the MongoDB collection
@@ -1202,7 +1202,7 @@ class Document(
         cls,
         key: str,
         filter: Optional[Mapping[str, Any]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         **kwargs: Any,
     ) -> list:
         return await cls.get_motor_collection().distinct(
@@ -1223,7 +1223,7 @@ class DocumentWithSoftDelete(Document):
 
     async def hard_delete(
         self,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
@@ -1239,7 +1239,7 @@ class DocumentWithSoftDelete(Document):
 
     async def delete(
         self,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
@@ -1257,7 +1257,7 @@ class DocumentWithSoftDelete(Document):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -1289,7 +1289,7 @@ class DocumentWithSoftDelete(Document):
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
@@ -1321,7 +1321,7 @@ class DocumentWithSoftDelete(Document):
         cls: Type[FindType],
         *args: Union[Mapping[str, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
