@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from random import randint
 from typing import List
 
@@ -45,6 +45,7 @@ from tests.odm.models import (
     DocumentWithCustomInit,
     DocumentWithDecimalField,
     DocumentWithDeprecatedHiddenField,
+    DocumentWithEnumKeysDict,
     DocumentWithExtras,
     DocumentWithHttpUrlField,
     DocumentWithIndexedObjectId,
@@ -121,7 +122,7 @@ def point():
 async def preset_documents(point):
     docs = []
     for i in range(10):
-        timestamp = datetime.utcnow() - timedelta(days=i)
+        timestamp = datetime.now(tz=timezone.utc) - timedelta(days=i)
         integer_1: int = i // 3
         integer_2: int = i // 2
         float_num = integer_1 + 0.3
@@ -177,7 +178,7 @@ def sample_doc_not_saved(point):
         ]
     )
     return Sample(
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(tz=timezone.utc),
         increment=0,
         integer=0,
         float_num=0,
@@ -292,6 +293,7 @@ async def init(db):
         DocumentToTestSync,
         DocumentWithLinkForNesting,
         DocumentWithBackLinkForNesting,
+        DocumentWithEnumKeysDict,
         LongSelfLink,
         BsonRegexDoc,
         NativeRegexDoc,
