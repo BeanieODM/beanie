@@ -3,108 +3,48 @@
 Beanie project
 
 ## [1.27.0] - 2024-10-06
-### Fix return type from document update
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1030>
-### Fix type hint using pymongo client session instead of motor client session
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1022>
 ### Add tests on all major mongo version
 - Author - [07pepa](https://github.com/07pepa)
 - PR <https://github.com/BeanieODM/beanie/pull/1034>
-### Add test to ensure dict with enum keys are encoded properly
-- Author - [adeelsohailahmed](https://github.com/adeelsohailahmed)
-- PR <https://github.com/BeanieODM/beanie/pull/1001>
-### Replace deprecated datetime.utcnow with datetime.now
-- Author - [adeelsohailahmed](https://github.com/adeelsohailahmed)
-- PR <https://github.com/BeanieODM/beanie/pull/1014>
-### Use sequence instead of list in init_beanie
-- Author - [07pepa](https://github.com/07pepa)
-- PR <https://github.com/BeanieODM/beanie/pull/1015>
+### Fix return type from document update
+- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
+- PR <https://github.com/BeanieODM/beanie/pull/1030>
 ### Fix expression type hint not allowing some type https://github.com/beanieodm/beanie/issues/1020
 - Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
 - PR <https://github.com/BeanieODM/beanie/pull/1023>
-### Fix expression type hint not allowing some type https://github.com/beanieodm/beanie/issues/1020
+### Fix type hint using pymongo client session instead of motor client session
 - Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1023>
-### Fix expression type hint not allowing some type https://github.com/beanieodm/beanie/issues/1020
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1023>
-### Fix expression type hint not allowing some type https://github.com/beanieodm/beanie/issues/1020
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1023>
-### Fix expression type hint not allowing some type https://github.com/beanieodm/beanie/issues/1020
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1023>
-### Extend motor option to beanie
-- Author - [Dudesons](https://github.com/Dudesons)
-- PR <https://github.com/BeanieODM/beanie/pull/995>
-### Extend motor option to beanie
-- Author - [Dudesons](https://github.com/Dudesons)
-- PR <https://github.com/BeanieODM/beanie/pull/995>
-### Extend motor option to beanie
-- Author - [Dudesons](https://github.com/Dudesons)
-- PR <https://github.com/BeanieODM/beanie/pull/995>
-### Use session in document insert
-- Author - [andraghetti](https://github.com/andraghetti)
-- PR <https://github.com/BeanieODM/beanie/pull/1018>
+- PR <https://github.com/BeanieODM/beanie/pull/1022>
 ### Fix logical operator typing #1000
 - Author - [janas-adam](https://github.com/janas-adam)
 - PR <https://github.com/BeanieODM/beanie/pull/1021>
-### Fix uniondoc type hint missing in init_beanie and on findinterface
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1007>
 ### Use session in document insert
 - Author - [andraghetti](https://github.com/andraghetti)
 - PR <https://github.com/BeanieODM/beanie/pull/1018>
-### Fix uniondoc type hint missing in init_beanie and on findinterface
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1007>
-### Fix uniondoc type hint missing in init_beanie and on findinterface
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1007>
-### Fix uniondoc type hint missing in init_beanie and on findinterface
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1007>
-### Update migrations.md
-- Author - [marwan-alloreview](https://github.com/marwan-alloreview)
-- PR <https://github.com/BeanieODM/beanie/pull/915>
-### Fix regex storing
+### Use sequence instead of list in init_beanie
 - Author - [07pepa](https://github.com/07pepa)
-- PR <https://github.com/BeanieODM/beanie/pull/989>
+- PR <https://github.com/BeanieODM/beanie/pull/1015>
+### Replace deprecated datetime.utcnow with datetime.now
+- Author - [adeelsohailahmed](https://github.com/adeelsohailahmed)
+- PR <https://github.com/BeanieODM/beanie/pull/1014>
 ### Fix uniondoc type hint missing in init_beanie and on findinterface
 - Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
 - PR <https://github.com/BeanieODM/beanie/pull/1007>
-### Fix uniondoc type hint missing in init_beanie and on findinterface
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1007>
-### Fix uniondoc type hint missing in init_beanie and on findinterface
-- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
-- PR <https://github.com/BeanieODM/beanie/pull/1007>
-### Fix: example of find by id and link to finding-documents
-- Author - [fredowashere](https://github.com/fredowashere)
-- PR <https://github.com/BeanieODM/beanie/pull/970>
-### Feature / fix: allow settings to be inherited and extended (fixes #644)
-- Author - [dotKokott](https://github.com/dotKokott)
-- PR <https://github.com/BeanieODM/beanie/pull/960>
-### Removed calls to function causing deprecation warning where possible
-- Author - [07pepa](https://github.com/07pepa)
-- PR <https://github.com/BeanieODM/beanie/pull/917>
-### Fix typo in source code comment in inheritance.md
-- Author - [fnogatz](https://github.com/fnogatz)
-- PR <https://github.com/BeanieODM/beanie/pull/984>
-### Remove links to ko-fi from the project
-- Author - [roman-right](https://github.com/roman-right)
-- PR <https://github.com/BeanieODM/beanie/pull/986>
+### Add test to ensure dict with enum keys are encoded properly
+- Author - [adeelsohailahmed](https://github.com/adeelsohailahmed)
+- PR <https://github.com/BeanieODM/beanie/pull/1001>
 ### Project publishing instruction + changelog generation script
 - Author - [roman-right](https://github.com/roman-right)
 - PR <https://github.com/BeanieODM/beanie/pull/998>
 ### Revert project publishing gh action
 - Author - [roman-right](https://github.com/roman-right)
 - PR <https://github.com/BeanieODM/beanie/pull/996>
-### Fix incorrect type serialization when dumping to python
+### Extend motor option to beanie
+- Author - [Dudesons](https://github.com/Dudesons)
+- PR <https://github.com/BeanieODM/beanie/pull/995>
+### Fix regex storing
 - Author - [07pepa](https://github.com/07pepa)
-- PR <https://github.com/BeanieODM/beanie/pull/968>
+- PR <https://github.com/BeanieODM/beanie/pull/989>
 ### Remove links to ko-fi from the project
 - Author - [roman-right](https://github.com/roman-right)
 - PR <https://github.com/BeanieODM/beanie/pull/986>
@@ -114,33 +54,27 @@ Beanie project
 ### Fix gh action to grant permissions and use tags
 - Author - [roman-right](https://github.com/roman-right)
 - PR <https://github.com/BeanieODM/beanie/pull/972>
-### Gh action: set new version and publish on push
-- Author - [roman-right](https://github.com/roman-right)
-- PR <https://github.com/BeanieODM/beanie/pull/961>
 ### Fix: example of find by id and link to finding-documents
 - Author - [fredowashere](https://github.com/fredowashere)
 - PR <https://github.com/BeanieODM/beanie/pull/970>
-### Fix: example of find by id and link to finding-documents
-- Author - [fredowashere](https://github.com/fredowashere)
-- PR <https://github.com/BeanieODM/beanie/pull/970>
-### Feature / fix: allow settings to be inherited and extended (fixes #644)
-- Author - [dotKokott](https://github.com/dotKokott)
-- PR <https://github.com/BeanieODM/beanie/pull/960>
-### Feature / fix: allow settings to be inherited and extended (fixes #644)
-- Author - [dotKokott](https://github.com/dotKokott)
-- PR <https://github.com/BeanieODM/beanie/pull/960>
+### Fix incorrect type serialization when dumping to python
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/968>
 ### Use ruff format instead of black
 - Author - [roman-right](https://github.com/roman-right)
 - PR <https://github.com/BeanieODM/beanie/pull/962>
+### Gh action: set new version and publish on push
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/961>
 ### Feature / fix: allow settings to be inherited and extended (fixes #644)
 - Author - [dotKokott](https://github.com/dotKokott)
 - PR <https://github.com/BeanieODM/beanie/pull/960>
-### Allow unordered parameter on bulkwriter
-- Author - [thiagosalvatore](https://github.com/thiagosalvatore)
-- PR <https://github.com/BeanieODM/beanie/pull/948>
 ### Fix: issue #951
 - Author - [IterableTrucks](https://github.com/IterableTrucks)
 - PR <https://github.com/BeanieODM/beanie/pull/952>
+### Allow unordered parameter on bulkwriter
+- Author - [thiagosalvatore](https://github.com/thiagosalvatore)
+- PR <https://github.com/BeanieODM/beanie/pull/948>
 ### Fix: set default value in findinterface._inheritance_inited to avoid …
 - Author - [Robert-Nogueira](https://github.com/Robert-Nogueira)
 - PR <https://github.com/BeanieODM/beanie/pull/935>
@@ -150,6 +84,9 @@ Beanie project
 ### Add missing type signature to `basefindcomparisonoperator` constructor
 - Author - [aaronted009](https://github.com/aaronted009)
 - PR <https://github.com/BeanieODM/beanie/pull/925>
+### Removed calls to function causing deprecation warning where possible
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/917>
 ### Update migrations.md
 - Author - [marwan-alloreview](https://github.com/marwan-alloreview)
 - PR <https://github.com/BeanieODM/beanie/pull/915>
