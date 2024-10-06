@@ -43,6 +43,8 @@ class Operation(BaseModel):
 
 
 class BulkWriter:
+    __slots__ = ("operations", "session", "ordered")
+
     def __init__(
         self,
         session: Optional[AsyncIOMotorClientSession] = None,

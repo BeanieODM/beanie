@@ -14,6 +14,8 @@ class CachedItem(BaseModel):
 
 
 class LRUCache:
+    __slots__ = ("capacity", "expiration_time", "cache")
+
     def __init__(self, capacity: int, expiration_time: timedelta):
         self.capacity: int = capacity
         self.expiration_time: timedelta = expiration_time
