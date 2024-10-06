@@ -29,15 +29,7 @@ from pydantic import BaseModel
 from pymongo import ASCENDING, IndexModel
 
 from beanie.odm.enums import SortDirection
-from beanie.odm.operators.find.comparison import (
-    GT,
-    GTE,
-    LT,
-    LTE,
-    NE,
-    Eq,
-    In,
-)
+from beanie.odm.operators.find.comparison import GT, GTE, LT, LTE, NE, Eq, In
 from beanie.odm.registry import DocsRegistry
 from beanie.odm.utils.parsing import parse_obj
 from beanie.odm.utils.pydantic import (
@@ -81,6 +73,7 @@ else:
 
 @dataclass(frozen=True)
 class IndexedAnnotation:
+    __slots__ = "_indexed"
     _indexed: Tuple[int, Dict[str, Any]]
 
 
@@ -137,6 +130,8 @@ class PydanticObjectId(ObjectId):
     """
     Object Id field. Compatible with Pydantic.
     """
+
+    __slots__ = ()
 
     @classmethod
     def __get_validators__(cls):
@@ -206,6 +201,8 @@ BeanieObjectId = PydanticObjectId
 
 
 class ExpressionField(str):
+    __slots__ = ()
+
     def __getitem__(self, item):
         """
         Get sub field
@@ -511,6 +508,8 @@ if not IS_PYDANTIC_V2:
 
 
 class IndexModelField:
+    __slots__ = ("index", "name", "fields", "options")
+
     def __init__(self, index: IndexModel):
         self.index = index
         self.name = index.document["name"]
