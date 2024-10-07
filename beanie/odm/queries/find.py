@@ -1049,3 +1049,4 @@ class FindOne(FindQuery[FindQueryResultType]):
                 **self.pymongo_kwargs,
             ).count()
         return await super(FindOne, self).count()
+    
