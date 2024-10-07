@@ -73,7 +73,6 @@ else:
 
 @dataclass(frozen=True)
 class IndexedAnnotation:
-    __slots__ = "_indexed"
     _indexed: Tuple[int, Dict[str, Any]]
 
 
