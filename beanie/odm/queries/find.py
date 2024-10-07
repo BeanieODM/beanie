@@ -150,9 +150,9 @@ class FindQuery(
         kwargs = {}
         if isinstance(self, FindMany):
             if self.limit_number:
-                kwargs['limit'] = self.limit_number
+                kwargs["limit"] = self.limit_number
             if self.skip_number:
-                kwargs['skip'] = self.skip_number
+                kwargs["skip"] = self.skip_number
         return (
             await self.document_model.get_motor_collection().count_documents(
                 self.get_filter_query(), session=self.session, **kwargs
