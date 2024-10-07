@@ -21,4 +21,3 @@ async def test_count_with_limit(documents):
     assert c == 1
     d = await DocumentTestModel.find_all().count()
     assert d == 5
-
