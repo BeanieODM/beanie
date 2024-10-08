@@ -13,3 +13,11 @@ async def test_count_with_filter_query(documents):
     await documents(1, "cuatro", True)
     c = await DocumentTestModel.find_many({"test_str": "dos"}).count()
     assert c == 2
+
+
+async def test_count_with_limit(documents):
+    await documents(5, "five", True)
+    c = await DocumentTestModel.find_all().limit(1).count()
+    assert c == 1
+    d = await DocumentTestModel.find_all().count()
+    assert d == 5
