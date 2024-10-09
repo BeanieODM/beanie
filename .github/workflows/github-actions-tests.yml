@@ -6,20 +6,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: 3.12
       - uses: pre-commit/action@v3.0.1
   run-tests:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11", "3.12.3" ]
-        mongodb-version: [ 4.4, 5.0, 6.0, 7.0, 8.0 ]
-        pydantic-version: [ "1.10.15", "2.7" ]
-        exclude:
-          - python-version: "3.7"
-            pydantic-version: "2.7"
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
+        mongodb-version: [4.4, 5.0, 6.0, 7.0, 8.0 ]
+        pydantic-version: [ "1.10.18", "2.9.2" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
