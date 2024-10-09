@@ -118,7 +118,7 @@ async def test_excluded(document):
         assert "test_list" not in document.dict()
 
 
-async def test_hidden():
+async def test_hidden(deprecated_init_beanie):
     document = DocumentWithDeprecatedHiddenField(test_hidden=["abc", "def"])
     await document.insert()
     document = await DocumentWithDeprecatedHiddenField.find_one()

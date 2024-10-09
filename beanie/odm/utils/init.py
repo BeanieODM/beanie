@@ -419,7 +419,7 @@ class Initializer:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
 
-        cls.check_hidden_fields()
+        cls._check_hidden_fields()
 
     @staticmethod
     def init_actions(cls):
