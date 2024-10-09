@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime, timedelta, timezone
 from random import randint
 from typing import List
@@ -109,6 +110,105 @@ from tests.odm.models import (
 )
 from tests.odm.views import ViewForTest, ViewForTestWithLink
 
+TESTING_MODELS = [
+    DocumentWithExtras,
+    DocumentWithPydanticConfig,
+    DocumentTestModel,
+    DocumentTestModelWithSoftDelete,
+    DocumentTestModelWithLink,
+    DocumentTestModelWithCustomCollectionName,
+    DocumentTestModelWithSimpleIndex,
+    DocumentTestModelWithIndexFlags,
+    DocumentTestModelWithIndexFlagsAliases,
+    DocumentTestModelIndexFlagsAnnotated,
+    DocumentTestModelWithComplexIndex,
+    DocumentTestModelFailInspection,
+    DocumentWithBsonEncodersFiledsTypes,
+    DocumentWithCustomFiledsTypes,
+    DocumentWithCustomIdUUID,
+    DocumentWithCustomIdInt,
+    Sample,
+    DocumentWithActions,
+    DocumentWithTurnedOnStateManagement,
+    DocumentWithTurnedOnReplaceObjects,
+    DocumentWithTurnedOnSavePrevious,
+    DocumentWithTurnedOffStateManagement,
+    DocumentWithValidationOnSave,
+    DocumentWithRevisionTurnedOn,
+    DocumentWithHttpUrlField,
+    House,
+    Window,
+    WindowWithValidationOnSave,
+    Door,
+    Roof,
+    Yard,
+    Lock,
+    InheritedDocumentWithActions,
+    DocumentForEncodingTest,
+    DocumentForEncodingTestDate,
+    DocumentWithStringField,
+    ViewForTest,
+    ViewForTestWithLink,
+    DocumentMultiModelOne,
+    DocumentMultiModelTwo,
+    DocumentUnion,
+    HouseWithRevision,
+    WindowWithRevision,
+    LockWithRevision,
+    YardWithRevision,
+    DocumentWithActions2,
+    Vehicle,
+    Bicycle,
+    Bike,
+    Car,
+    Bus,
+    Owner,
+    SampleWithMutableObjects,
+    DocNonRoot,
+    Doc2NonRoot,
+    SampleLazyParsing,
+    RootDocument,
+    ADocument,
+    BDocument,
+    StateAndDecimalFieldModel,
+    Region,
+    UsersAddresses,
+    SelfLinked,
+    LoopedLinksA,
+    LoopedLinksB,
+    DocumentWithTurnedOnStateManagementWithCustomId,
+    DocumentWithDecimalField,
+    DocumentWithKeepNullsFalse,
+    PackageElemMatch,
+    DocumentWithLink,
+    DocumentWithBackLink,
+    DocumentWithListLink,
+    DocumentWithListBackLink,
+    DocumentWithListOfLinks,
+    DocumentToBeLinked,
+    DocumentWithTimeStampToTestConsistency,
+    DocumentWithIndexMerging1,
+    DocumentWithIndexMerging2,
+    DocumentWithCustomInit,
+    DocumentWithTextIndexAndLink,
+    LinkDocumentForTextSeacrh,
+    DocumentWithList,
+    DocumentWithBsonBinaryField,
+    DocumentWithRootModelAsAField,
+    DocWithCallWrapper,
+    DocumentWithOptionalBackLink,
+    DocumentWithOptionalListBackLink,
+    DocumentWithComplexDictKey,
+    DocumentWithIndexedObjectId,
+    DocumentToTestSync,
+    DocumentWithLinkForNesting,
+    DocumentWithBackLinkForNesting,
+    DocumentWithEnumKeysDict,
+    LongSelfLink,
+    BsonRegexDoc,
+    NativeRegexDoc,
+]
+
 
 @pytest.fixture
 def point():
@@ -197,118 +297,38 @@ async def session(cli):
     await s.end_session()
 
 
-@pytest.fixture(autouse=True)
-async def init(db):
-    models = [
-        DocumentWithExtras,
-        DocumentWithPydanticConfig,
-        DocumentTestModel,
-        DocumentTestModelWithSoftDelete,
-        DocumentTestModelWithLink,
-        DocumentTestModelWithCustomCollectionName,
-        DocumentTestModelWithSimpleIndex,
-        DocumentTestModelWithIndexFlags,
-        DocumentTestModelWithIndexFlagsAliases,
-        DocumentTestModelIndexFlagsAnnotated,
-        DocumentTestModelWithComplexIndex,
-        DocumentTestModelFailInspection,
-        DocumentWithBsonEncodersFiledsTypes,
-        DocumentWithDeprecatedHiddenField,
-        DocumentWithCustomFiledsTypes,
-        DocumentWithCustomIdUUID,
-        DocumentWithCustomIdInt,
-        Sample,
-        DocumentWithActions,
-        DocumentWithTurnedOnStateManagement,
-        DocumentWithTurnedOnReplaceObjects,
-        DocumentWithTurnedOnSavePrevious,
-        DocumentWithTurnedOffStateManagement,
-        DocumentWithValidationOnSave,
-        DocumentWithRevisionTurnedOn,
-        DocumentWithHttpUrlField,
-        House,
-        Window,
-        WindowWithValidationOnSave,
-        Door,
-        Roof,
-        Yard,
-        Lock,
-        InheritedDocumentWithActions,
-        DocumentForEncodingTest,
-        DocumentForEncodingTestDate,
-        DocumentWithStringField,
-        ViewForTest,
-        ViewForTestWithLink,
-        DocumentMultiModelOne,
-        DocumentMultiModelTwo,
-        DocumentUnion,
-        HouseWithRevision,
-        WindowWithRevision,
-        LockWithRevision,
-        YardWithRevision,
-        DocumentWithActions2,
-        Vehicle,
-        Bicycle,
-        Bike,
-        Car,
-        Bus,
-        Owner,
-        SampleWithMutableObjects,
-        DocNonRoot,
-        Doc2NonRoot,
-        SampleLazyParsing,
-        RootDocument,
-        ADocument,
-        BDocument,
-        StateAndDecimalFieldModel,
-        Region,
-        UsersAddresses,
-        SelfLinked,
-        LoopedLinksA,
-        LoopedLinksB,
-        DocumentWithTurnedOnStateManagementWithCustomId,
-        DocumentWithDecimalField,
-        DocumentWithKeepNullsFalse,
-        PackageElemMatch,
-        DocumentWithLink,
-        DocumentWithBackLink,
-        DocumentWithListLink,
-        DocumentWithListBackLink,
-        DocumentWithListOfLinks,
-        DocumentToBeLinked,
-        DocumentWithTimeStampToTestConsistency,
-        DocumentWithIndexMerging1,
-        DocumentWithIndexMerging2,
-        DocumentWithCustomInit,
-        DocumentWithTextIndexAndLink,
-        LinkDocumentForTextSeacrh,
-        DocumentWithList,
-        DocumentWithBsonBinaryField,
-        DocumentWithRootModelAsAField,
-        DocWithCallWrapper,
-        DocumentWithOptionalBackLink,
-        DocumentWithOptionalListBackLink,
-        DocumentWithComplexDictKey,
-        DocumentWithIndexedObjectId,
-        DocumentToTestSync,
-        DocumentWithLinkForNesting,
-        DocumentWithBackLinkForNesting,
-        DocumentWithEnumKeysDict,
-        LongSelfLink,
-        BsonRegexDoc,
-        NativeRegexDoc,
-    ]
-
-    await init_beanie(
-        database=db,
-        document_models=models,
-    )
-
-    yield None
-
-    for model in models:
+@pytest.fixture()
+async def deprecated_init_beanie(db):
+    for model in TESTING_MODELS:  # crude clear from init
         await model.get_motor_collection().drop()
         await model.get_motor_collection().drop_indexes()
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+
+        await init_beanie(
+            database=db,
+            document_models=[DocumentWithDeprecatedHiddenField],
+        )
+        assert len(w) == 1
+        assert issubclass(w[-1].category, DeprecationWarning)
+        assert (
+            "DocumentWithDeprecatedHiddenField: 'hidden=True' is deprecated, please use 'exclude=True'"
+            in str(w[-1].message)
+        )
+
+
+@pytest.fixture(autouse=True)
+async def init(db):
+    await init_beanie(
+        database=db,
+        document_models=TESTING_MODELS,
+    )
+    try:
+        yield None
+    finally:
+        for model in TESTING_MODELS:
+            await model.get_motor_collection().drop()
+            await model.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture
