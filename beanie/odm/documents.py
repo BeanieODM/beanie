@@ -1136,7 +1136,7 @@ class Document(
         return inspection_result
 
     @classmethod
-    def check_hidden_fields(cls):
+    def _check_hidden_fields(cls):
         hidden_fields = [
             (name, field)
             for name, field in get_model_fields(cls).items()
@@ -1147,6 +1147,7 @@ class Document(
         warnings.warn(
             f"{cls.__name__}: 'hidden=True' is deprecated, please use 'exclude=True'",
             DeprecationWarning,
+            stacklevel=2,
         )
         if IS_PYDANTIC_V2:
             for name, field in hidden_fields:

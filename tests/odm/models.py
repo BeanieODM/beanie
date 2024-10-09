@@ -996,7 +996,9 @@ class DocumentWithListOfLinks(Document):
 
 
 class DocumentWithTimeStampToTestConsistency(Document):
-    ts: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+    ts: datetime.datetime = Field(
+        default_factory=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
 
 
 class DocumentWithIndexMerging1(Document):
@@ -1155,8 +1157,14 @@ class DocumentWithEnumKeysDict(Document):
 class BsonRegexDoc(Document):
     regex: Optional[Regex] = None
 
-    class Config:
-        arbitrary_types_allowed = True
+    if IS_PYDANTIC_V2:
+        model_config = ConfigDict(
+            arbitrary_types_allowed=True,
+        )
+    else:
+
+        class Config:
+            arbitrary_types_allowed = True
 
 
 class NativeRegexDoc(Document):
