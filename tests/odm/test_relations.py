@@ -839,6 +839,18 @@ class TestSaveBackLinks:
         for lnk in new_back_link_doc.back_link:
             assert lnk.s == "new value"
 
+    def test_json_schema_export(self):
+        if IS_PYDANTIC_V2:
+            json_schema = DocumentWithListBackLink.model_json_schema()
+        else:
+            return  # schema does not work in pydantic v1 due to pydantic bug #3390
+            json_schema = DocumentWithListBackLink.schema()
+
+        assert (
+            json_schema["properties"]["back_link"]["items"]
+            and json_schema["properties"]["back_link"]["type"] == "array"
+        )
+
 
 class HouseForReversedOrderInit(Document):
     name: str
