@@ -10,6 +10,7 @@ from beanie.odm.utils.pydantic import (
     parse_model,
 )
 from beanie.odm.utils.typing import get_index_attributes
+
 if sys.version_info >= (3, 10):
     from types import UnionType as TypesUnionType
 else:
@@ -29,6 +30,7 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 from pymongo import IndexModel
+from pymongo.driver_info import DriverInfo
 
 from beanie.exceptions import Deprecation, MongoDBVersionError
 from beanie.odm.actions import ActionRegistry
@@ -48,7 +50,7 @@ from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
 from beanie.odm.union_doc import UnionDoc, UnionDocType
 from beanie.odm.views import View
-from pymongo.driver_info import DriverInfo
+
 
 class Output(BaseModel):
     class_name: str
@@ -96,7 +98,7 @@ class Initializer:
             raise ValueError(
                 "connection_string parameter or database parameter must be set"
             )
-        
+
         if document_models is None:
             raise ValueError("document_models parameter must be set")
         if connection_string is not None:
