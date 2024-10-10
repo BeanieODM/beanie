@@ -1,5 +1,5 @@
 from inspect import signature
-from typing import List, Type
+from typing import Any, List, Type
 
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.odm.documents import Document
@@ -12,7 +12,7 @@ def free_fall_migration(document_models: List[Type[Document]]):
             self.function_signature = signature(function)
             self.document_models = document_models
 
-        def __call__(self, *args, **kwargs):
+        def __call__(self, *args: Any, **kwargs: Any):
             pass
 
         @property
