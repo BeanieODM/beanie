@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../../assets/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.20">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.40">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8c3ca2c6.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -50,7 +50,7 @@
     
       <link rel="stylesheet" href="../../assets/color_scheme.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#beanieodmqueriesaggregation" class="md-skip">
+        <a href="#beanieodmqueriesfind" class="md-skip">
           Skip to content
         </a>
       
@@ -99,7 +99,7 @@
     </a>
     <label class="md-header__button md-icon" for="__drawer">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -127,7 +127,7 @@
     <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
       </label>
     
   
@@ -137,7 +137,7 @@
     <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
       </label>
     
   
@@ -145,13 +145,13 @@
       
     
     
-      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
       <label class="md-header__button md-icon" for="__search">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
@@ -160,21 +160,21 @@
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </nav>
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -191,7 +191,7 @@
         <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -236,7 +236,7 @@
       <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -897,69 +897,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#beanieodmqueriesaggregation" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.queries.aggregation
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="beanie.odm.queries.aggregation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aggregationquery" class="md-nav__link">
-    <span class="md-ellipsis">
-      AggregationQuery
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodmqueriescursor" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.queries.cursor
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="beanie.odm.queries.cursor">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basecursorquery" class="md-nav__link">
-    <span class="md-ellipsis">
-      BaseCursorQuery
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="BaseCursorQuery">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basecursorqueryto_list" class="md-nav__link">
-    <span class="md-ellipsis">
-      BaseCursorQuery.to_list
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#beanieodmqueriesfind" class="md-nav__link">
     <span class="md-ellipsis">
       beanie.odm.queries.find
@@ -1335,6 +1272,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#beanieodmqueriescursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.cursor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.cursor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basecursorquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseCursorQuery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseCursorQuery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basecursorqueryto_list" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseCursorQuery.to_list
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#beanieodmqueriesupdate" class="md-nav__link">
     <span class="md-ellipsis">
       beanie.odm.queries.update
@@ -1494,6 +1470,30 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriesaggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.aggregation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.aggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggregationquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      AggregationQuery
+    </span>
+  </a>
   
 </li>
         
@@ -1730,69 +1730,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#beanieodmqueriesaggregation" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.queries.aggregation
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="beanie.odm.queries.aggregation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aggregationquery" class="md-nav__link">
-    <span class="md-ellipsis">
-      AggregationQuery
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodmqueriescursor" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.queries.cursor
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="beanie.odm.queries.cursor">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basecursorquery" class="md-nav__link">
-    <span class="md-ellipsis">
-      BaseCursorQuery
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="BaseCursorQuery">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#basecursorqueryto_list" class="md-nav__link">
-    <span class="md-ellipsis">
-      BaseCursorQuery.to_list
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#beanieodmqueriesfind" class="md-nav__link">
     <span class="md-ellipsis">
       beanie.odm.queries.find
@@ -2168,6 +2105,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#beanieodmqueriescursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.cursor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.cursor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basecursorquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseCursorQuery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseCursorQuery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basecursorqueryto_list" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseCursorQuery.to_list
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#beanieodmqueriesupdate" class="md-nav__link">
     <span class="md-ellipsis">
       beanie.odm.queries.update
@@ -2335,6 +2311,30 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#beanieodmqueriesaggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.queries.aggregation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.queries.aggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggregationquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      AggregationQuery
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2355,40 +2355,6 @@
 
   <h1>Query</h1>
 
-<p><a id="beanie.odm.queries.aggregation"></a></p>
-<h2 id="beanieodmqueriesaggregation">beanie.odm.queries.aggregation</h2>
-<p><a id="beanie.odm.queries.aggregation.AggregationQuery"></a></p>
-<h3 id="aggregationquery">AggregationQuery</h3>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AggregationQuery</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">AggregationProjectionType</span><span class="p">],</span>
-                       <span class="n">BaseCursorQuery</span><span class="p">[</span><span class="n">AggregationProjectionType</span><span class="p">],</span>
-                       <span class="n">SessionMethods</span><span class="p">,</span> <span class="n">CloneInterface</span><span class="p">)</span>
-</code></pre></div>
-<blockquote>
-<p>Aggregation Query</p>
-</blockquote>
-<p><a id="beanie.odm.queries.cursor"></a></p>
-<h2 id="beanieodmqueriescursor">beanie.odm.queries.cursor</h2>
-<p><a id="beanie.odm.queries.cursor.BaseCursorQuery"></a></p>
-<h3 id="basecursorquery">BaseCursorQuery</h3>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BaseCursorQuery</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">CursorResultType</span><span class="p">])</span>
-</code></pre></div>
-<blockquote>
-<p>BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
-which parse result with model</p>
-</blockquote>
-<p><a id="beanie.odm.queries.cursor.BaseCursorQuery.to_list"></a></p>
-<h4 id="basecursorqueryto_list">BaseCursorQuery.to_list</h4>
-<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="n">length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">CursorResultType</span><span class="p">]</span>
-</code></pre></div>
-<blockquote>
-<p>Get list of documents</p>
-<p><strong>Arguments</strong>:</p>
-<ul>
-<li><code>length</code>: Optional[int] - length of the list</li>
-</ul>
-<p><strong>Returns</strong>:</p>
-<p>Union[List[BaseModel], List[Dict[str, Any]]]</p>
-</blockquote>
 <p><a id="beanie.odm.queries.find"></a></p>
 <h2 id="beanieodmqueriesfind">beanie.odm.queries.find</h2>
 <p><a id="beanie.odm.queries.find.FindQuery"></a></p>
@@ -2408,7 +2374,7 @@ which parse result with model</p>
 </blockquote>
 <p><a id="beanie.odm.queries.find.FindQuery.delete"></a></p>
 <h4 id="findquerydelete">FindQuery.delete</h4>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DeleteOne</span><span class="p">,</span> <span class="n">DeleteMany</span><span class="p">]</span>
 </code></pre></div>
@@ -2416,7 +2382,7 @@ which parse result with model</p>
 <p>Provide search criteria to the Delete query</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 </ul>
 <p><strong>Returns</strong>:</p>
 <p>Union[DeleteOne, DeleteMany]</p>
@@ -2468,7 +2434,7 @@ which parse result with model</p>
     <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -2489,7 +2455,7 @@ which parse result with model</p>
 or a list of (key, direction) pairs specifying the sort order
 for this query.</li>
 <li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
 <li><code>ignore_cache</code>: bool</li>
 <li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)</li>
 </ul>
@@ -2520,7 +2486,7 @@ for this query.</li>
     <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -2579,7 +2545,7 @@ the sort order for this query.</li>
 <p><a id="beanie.odm.queries.find.FindMany.update"></a></p>
 <h4 id="findmanyupdate">FindMany.update</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
 </code></pre></div>
@@ -2589,7 +2555,7 @@ the sort order for this query.</li>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>args</code>: *Mapping[str,Any] - the modifications to apply.</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 <li><code>bulk_writer</code>: Optional[BulkWriter]</li>
 </ul>
 <p><strong>Returns</strong>:</p>
@@ -2599,7 +2565,7 @@ the sort order for this query.</li>
 <h4 id="findmanyupsert">FindMany.upsert</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
            <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
-           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
@@ -2610,7 +2576,7 @@ the sort order for this query.</li>
 <li><code>args</code>: *Mapping[str,Any] - the modifications to apply.</li>
 <li><code>on_insert</code>: DocType - document to insert if there is no matched
 document in the collection</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 </ul>
 <p><strong>Returns</strong>:</p>
 <p>UpdateMany query</p>
@@ -2618,7 +2584,7 @@ document in the collection</li>
 <p><a id="beanie.odm.queries.find.FindMany.update_many"></a></p>
 <h4 id="findmanyupdate_many">FindMany.update_many</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_many</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-                <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateMany</span>
 </code></pre></div>
@@ -2628,14 +2594,14 @@ document in the collection</li>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>args</code>: *Mapping[str,Any] - the modifications to apply.</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 </ul>
 <p><strong>Returns</strong>:</p>
 <p><a href="./#updatemany">UpdateMany</a> query</p>
 </blockquote>
 <p><a id="beanie.odm.queries.find.FindMany.delete_many"></a></p>
 <h4 id="findmanydelete_many">FindMany.delete_many</h4>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_many</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_many</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeleteMany</span>
 </code></pre></div>
@@ -2653,7 +2619,7 @@ document in the collection</li>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
     <span class="n">aggregation_pipeline</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
     <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">pymongo_kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
@@ -2668,7 +2634,7 @@ document in the collection</li>
 <li><code>aggregation_pipeline</code>: list - aggregation pipeline. MongoDB doc:
 <a href="https://docs.mongodb.com/manual/core/aggregation-pipeline/">https://docs.mongodb.com/manual/core/aggregation-pipeline/</a></li>
 <li><code>projection_model</code>: Type[BaseModel] - Projection Model</li>
-<li><code>session</code>: Optional[ClientSession] - PyMongo session</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - PyMongo session</li>
 <li><code>ignore_cache</code>: bool</li>
 </ul>
 <p><strong>Returns</strong>:</p>
@@ -2717,7 +2683,7 @@ document in the collection</li>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">find_one</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
     <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2731,7 +2697,7 @@ document in the collection</li>
 <ul>
 <li><code>args</code>: *Mapping[str, Any] - search criteria</li>
 <li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
 <li><code>ignore_cache</code>: bool</li>
 <li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)</li>
 </ul>
@@ -2741,7 +2707,7 @@ document in the collection</li>
 <p><a id="beanie.odm.queries.find.FindOne.update"></a></p>
 <h4 id="findoneupdate">FindOne.update</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
@@ -2752,7 +2718,7 @@ document in the collection</li>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>args</code>: *Mapping[str,Any] - the modifications to apply.</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 <li><code>bulk_writer</code>: Optional[BulkWriter]</li>
 <li><code>response_type</code>: Optional[UpdateResponse]</li>
 </ul>
@@ -2763,7 +2729,7 @@ document in the collection</li>
 <h4 id="findoneupsert">FindOne.upsert</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
            <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
-           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
 </code></pre></div>
@@ -2775,7 +2741,7 @@ document in the collection</li>
 <li><code>args</code>: *Mapping[str,Any] - the modifications to apply.</li>
 <li><code>on_insert</code>: DocType - document to insert if there is no matched
 document in the collection</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 <li><code>response_type</code>: Optional[UpdateResponse]</li>
 </ul>
 <p><strong>Returns</strong>:</p>
@@ -2784,7 +2750,7 @@ document in the collection</li>
 <p><a id="beanie.odm.queries.find.FindOne.update_one"></a></p>
 <h4 id="findoneupdate_one">FindOne.update_one</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_one</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-               <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateOne</span>
@@ -2795,7 +2761,7 @@ document in the collection</li>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>args</code>: *Mapping[str,Any] - the modifications to apply</li>
-<li><code>session</code>: Optional[ClientSession] - PyMongo sessions</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - PyMongo sessions</li>
 <li><code>response_type</code>: Optional[UpdateResponse]</li>
 </ul>
 <p><strong>Returns</strong>:</p>
@@ -2803,7 +2769,7 @@ document in the collection</li>
 </blockquote>
 <p><a id="beanie.odm.queries.find.FindOne.delete_one"></a></p>
 <h4 id="findonedelete_one">FindOne.delete_one</h4>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_one</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_one</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeleteOne</span>
 </code></pre></div>
@@ -2811,7 +2777,7 @@ document in the collection</li>
 <p>Provide search criteria to the <a href="./#deleteone">DeleteOne</a> query</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
-<li><code>session</code>: Optional[ClientSession] - PyMongo sessions</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - PyMongo sessions</li>
 </ul>
 <p><strong>Returns</strong>:</p>
 <p><a href="./#deleteone">DeleteOne</a> query</p>
@@ -2820,7 +2786,7 @@ document in the collection</li>
 <h4 id="findonereplace_one">FindOne.replace_one</h4>
 <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">replace_one</span><span class="p">(</span>
         <span class="n">document</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
-        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResult</span><span class="p">]</span>
 </code></pre></div>
 <blockquote>
@@ -2828,7 +2794,7 @@ document in the collection</li>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>document</code>: Document - document, which will replace the found one</li>
-<li><code>session</code>: Optional[ClientSession] - PyMongo session</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - PyMongo session</li>
 <li><code>bulk_writer</code>: Optional[BulkWriter] - Beanie bulk writer</li>
 </ul>
 <p><strong>Returns</strong>:</p>
@@ -2885,6 +2851,29 @@ document in the collection</li>
 <p>Run the query
 </p>
 </blockquote>
+<p><a id="beanie.odm.queries.cursor"></a></p>
+<h2 id="beanieodmqueriescursor">beanie.odm.queries.cursor</h2>
+<p><a id="beanie.odm.queries.cursor.BaseCursorQuery"></a></p>
+<h3 id="basecursorquery">BaseCursorQuery</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BaseCursorQuery</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">CursorResultType</span><span class="p">])</span>
+</code></pre></div>
+<blockquote>
+<p>BaseCursorQuery class. Wrapper over AsyncIOMotorCursor,
+which parse result with model</p>
+</blockquote>
+<p><a id="beanie.odm.queries.cursor.BaseCursorQuery.to_list"></a></p>
+<h4 id="basecursorqueryto_list">BaseCursorQuery.to_list</h4>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="n">length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">CursorResultType</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Get list of documents</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>length</code>: Optional[int] - length of the list</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>Union[List[BaseModel], List[Dict[str, Any]]]</p>
+</blockquote>
 <p><a id="beanie.odm.queries.update"></a></p>
 <h2 id="beanieodmqueriesupdate">beanie.odm.queries.update</h2>
 <p><a id="beanie.odm.queries.update.UpdateResponse"></a></p>
@@ -2923,7 +2912,7 @@ document in the collection</li>
 <p><a id="beanie.odm.queries.update.UpdateMany.update"></a></p>
 <h4 id="updatemanyupdate">UpdateMany.update</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
 </code></pre></div>
@@ -2932,7 +2921,7 @@ document in the collection</li>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 <li><code>bulk_writer</code>: Optional[BulkWriter]</li>
 <li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
 </ul>
@@ -2943,7 +2932,7 @@ document in the collection</li>
 <h4 id="updatemanyupsert">UpdateMany.upsert</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
            <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
-           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
 </code></pre></div>
 <blockquote>
@@ -2953,7 +2942,7 @@ document in the collection</li>
 <li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
 <li><code>on_insert</code>: DocType - document to insert if there is no matched
 document in the collection</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 <li><code>**pymongo_kwargs</code>: pymongo native parameters for update operation</li>
 </ul>
 <p><strong>Returns</strong>:</p>
@@ -2962,7 +2951,7 @@ document in the collection</li>
 <p><a id="beanie.odm.queries.update.UpdateMany.update_many"></a></p>
 <h4 id="updatemanyupdate_many">UpdateMany.update_many</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_many</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-                <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
 </code></pre></div>
@@ -2971,7 +2960,7 @@ document in the collection</li>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 <li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
 <li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
 </ul>
@@ -2997,7 +2986,7 @@ document in the collection</li>
 <p><a id="beanie.odm.queries.update.UpdateOne.update"></a></p>
 <h4 id="updateoneupdate">UpdateOne.update</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
@@ -3007,7 +2996,7 @@ document in the collection</li>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 <li><code>bulk_writer</code>: Optional[BulkWriter]</li>
 <li><code>response_type</code>: UpdateResponse</li>
 <li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
@@ -3019,7 +3008,7 @@ document in the collection</li>
 <h4 id="updateoneupsert">UpdateOne.upsert</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
            <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
-           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
 </code></pre></div>
@@ -3030,7 +3019,7 @@ document in the collection</li>
 <li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
 <li><code>on_insert</code>: DocType - document to insert if there is no matched
 document in the collection</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 <li><code>response_type</code>: Optional[UpdateResponse]</li>
 <li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
 </ul>
@@ -3040,7 +3029,7 @@ document in the collection</li>
 <p><a id="beanie.odm.queries.update.UpdateOne.update_one"></a></p>
 <h4 id="updateoneupdate_one">UpdateOne.update_one</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_one</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-               <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
@@ -3050,7 +3039,7 @@ document in the collection</li>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>args</code>: *Union[dict, Mapping] - the modifications to apply.</li>
-<li><code>session</code>: Optional[ClientSession]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
 <li><code>bulk_writer</code>: "BulkWriter" - Beanie bulk writer</li>
 <li><code>response_type</code>: Optional[UpdateResponse]</li>
 <li><code>pymongo_kwargs</code>: pymongo native parameters for update operation</li>
@@ -3066,6 +3055,17 @@ document in the collection</li>
 <blockquote>
 <p>Run the query
 </p>
+</blockquote>
+<p><a id="beanie.odm.queries.aggregation"></a></p>
+<h2 id="beanieodmqueriesaggregation">beanie.odm.queries.aggregation</h2>
+<p><a id="beanie.odm.queries.aggregation.AggregationQuery"></a></p>
+<h3 id="aggregationquery">AggregationQuery</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AggregationQuery</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">AggregationProjectionType</span><span class="p">],</span>
+                       <span class="n">BaseCursorQuery</span><span class="p">[</span><span class="n">AggregationProjectionType</span><span class="p">],</span>
+                       <span class="n">SessionMethods</span><span class="p">,</span> <span class="n">CloneInterface</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Aggregation Query</p>
 </blockquote>
 
 
@@ -3113,10 +3113,10 @@ document in the collection</li>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      <script src="../../assets/javascripts/bundle.525ec568.min.js"></script>
       
     
   </body>

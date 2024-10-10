@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../../assets/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.20">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.40">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8c3ca2c6.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -50,7 +50,7 @@
     
       <link rel="stylesheet" href="../../assets/color_scheme.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#beanieodminterfacessetters" class="md-skip">
+        <a href="#beanieodminterfacesfind" class="md-skip">
           Skip to content
         </a>
       
@@ -99,7 +99,7 @@
     </a>
     <label class="md-header__button md-icon" for="__drawer">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -127,7 +127,7 @@
     <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
       </label>
     
   
@@ -137,7 +137,7 @@
     <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
       </label>
     
   
@@ -145,13 +145,13 @@
       
     
     
-      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
       <label class="md-header__button md-icon" for="__search">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
@@ -160,21 +160,21 @@
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </nav>
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -191,7 +191,7 @@
         <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -236,7 +236,7 @@
       <a href="https://github.com/roman-right/beanie" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -918,159 +918,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#beanieodminterfacessetters" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.setters
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="beanie.odm.interfaces.setters">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#settersinterface" class="md-nav__link">
-    <span class="md-ellipsis">
-      SettersInterface
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="SettersInterface">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#settersinterfaceset_collection" class="md-nav__link">
-    <span class="md-ellipsis">
-      SettersInterface.set_collection
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#settersinterfaceset_database" class="md-nav__link">
-    <span class="md-ellipsis">
-      SettersInterface.set_database
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#settersinterfaceset_collection_name" class="md-nav__link">
-    <span class="md-ellipsis">
-      SettersInterface.set_collection_name
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodminterfacesaggregate" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.aggregate
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="beanie.odm.interfaces.aggregate">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aggregateinterface" class="md-nav__link">
-    <span class="md-ellipsis">
-      AggregateInterface
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="AggregateInterface">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aggregateinterfaceaggregate" class="md-nav__link">
-    <span class="md-ellipsis">
-      AggregateInterface.aggregate
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodminterfacesdetector" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.detector
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodminterfacesclone" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.clone
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodminterfacessession" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.session
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="beanie.odm.interfaces.session">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#sessionmethods" class="md-nav__link">
-    <span class="md-ellipsis">
-      SessionMethods
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="SessionMethods">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#sessionmethodsset_session" class="md-nav__link">
-    <span class="md-ellipsis">
-      SessionMethods.set_session
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#beanieodminterfacesfind" class="md-nav__link">
     <span class="md-ellipsis">
       beanie.odm.interfaces.find
@@ -1155,6 +1002,72 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#beanieodminterfacessetters" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.setters
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.interfaces.setters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#settersinterface" class="md-nav__link">
+    <span class="md-ellipsis">
+      SettersInterface
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SettersInterface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#settersinterfaceset_collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      SettersInterface.set_collection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settersinterfaceset_database" class="md-nav__link">
+    <span class="md-ellipsis">
+      SettersInterface.set_database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settersinterfaceset_collection_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      SettersInterface.set_collection_name
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacesclone" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.clone
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#beanieodminterfacesaggregation_methods" class="md-nav__link">
     <span class="md-ellipsis">
       beanie.odm.interfaces.aggregation_methods
@@ -1221,24 +1134,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#beanieodminterfacesinheritance" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.inheritance
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodminterfacesgetters" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.getters
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#beanieodminterfacesupdate" class="md-nav__link">
     <span class="md-ellipsis">
       beanie.odm.interfaces.update
@@ -1292,6 +1187,111 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacesinheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.inheritance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacessession" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.session
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.interfaces.session">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sessionmethods" class="md-nav__link">
+    <span class="md-ellipsis">
+      SessionMethods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SessionMethods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sessionmethodsset_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      SessionMethods.set_session
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacesaggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.aggregate
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.interfaces.aggregate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggregateinterface" class="md-nav__link">
+    <span class="md-ellipsis">
+      AggregateInterface
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AggregateInterface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggregateinterfaceaggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      AggregateInterface.aggregate
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacesdetector" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.detector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacesgetters" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.getters
+    </span>
+  </a>
   
 </li>
       
@@ -1502,159 +1502,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#beanieodminterfacessetters" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.setters
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="beanie.odm.interfaces.setters">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#settersinterface" class="md-nav__link">
-    <span class="md-ellipsis">
-      SettersInterface
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="SettersInterface">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#settersinterfaceset_collection" class="md-nav__link">
-    <span class="md-ellipsis">
-      SettersInterface.set_collection
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#settersinterfaceset_database" class="md-nav__link">
-    <span class="md-ellipsis">
-      SettersInterface.set_database
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#settersinterfaceset_collection_name" class="md-nav__link">
-    <span class="md-ellipsis">
-      SettersInterface.set_collection_name
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodminterfacesaggregate" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.aggregate
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="beanie.odm.interfaces.aggregate">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aggregateinterface" class="md-nav__link">
-    <span class="md-ellipsis">
-      AggregateInterface
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="AggregateInterface">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aggregateinterfaceaggregate" class="md-nav__link">
-    <span class="md-ellipsis">
-      AggregateInterface.aggregate
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodminterfacesdetector" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.detector
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodminterfacesclone" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.clone
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodminterfacessession" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.session
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="beanie.odm.interfaces.session">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#sessionmethods" class="md-nav__link">
-    <span class="md-ellipsis">
-      SessionMethods
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="SessionMethods">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#sessionmethodsset_session" class="md-nav__link">
-    <span class="md-ellipsis">
-      SessionMethods.set_session
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#beanieodminterfacesfind" class="md-nav__link">
     <span class="md-ellipsis">
       beanie.odm.interfaces.find
@@ -1739,6 +1586,72 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#beanieodminterfacessetters" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.setters
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.interfaces.setters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#settersinterface" class="md-nav__link">
+    <span class="md-ellipsis">
+      SettersInterface
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SettersInterface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#settersinterfaceset_collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      SettersInterface.set_collection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settersinterfaceset_database" class="md-nav__link">
+    <span class="md-ellipsis">
+      SettersInterface.set_database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settersinterfaceset_collection_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      SettersInterface.set_collection_name
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacesclone" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.clone
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#beanieodminterfacesaggregation_methods" class="md-nav__link">
     <span class="md-ellipsis">
       beanie.odm.interfaces.aggregation_methods
@@ -1805,24 +1718,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#beanieodminterfacesinheritance" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.inheritance
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#beanieodminterfacesgetters" class="md-nav__link">
-    <span class="md-ellipsis">
-      beanie.odm.interfaces.getters
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#beanieodminterfacesupdate" class="md-nav__link">
     <span class="md-ellipsis">
       beanie.odm.interfaces.update
@@ -1879,6 +1774,111 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacesinheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.inheritance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacessession" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.session
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.interfaces.session">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sessionmethods" class="md-nav__link">
+    <span class="md-ellipsis">
+      SessionMethods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SessionMethods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sessionmethodsset_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      SessionMethods.set_session
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacesaggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.aggregate
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="beanie.odm.interfaces.aggregate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggregateinterface" class="md-nav__link">
+    <span class="md-ellipsis">
+      AggregateInterface
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AggregateInterface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggregateinterfaceaggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      AggregateInterface.aggregate
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacesdetector" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.detector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beanieodminterfacesgetters" class="md-nav__link">
+    <span class="md-ellipsis">
+      beanie.odm.interfaces.getters
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1899,6 +1899,168 @@
 
   <h1>Interfaces</h1>
 
+<p><a id="beanie.odm.interfaces.find"></a></p>
+<h2 id="beanieodminterfacesfind">beanie.odm.interfaces.find</h2>
+<p><a id="beanie.odm.interfaces.find.FindInterface"></a></p>
+<h3 id="findinterface">FindInterface</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FindInterface</span><span class="p">()</span>
+</code></pre></div>
+<p><a id="beanie.odm.interfaces.find.FindInterface.find_one"></a></p>
+<h4 id="findinterfacefind_one">FindInterface.find_one</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">find_one</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindOne</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindOne</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<p>Find one document by criteria.</p>
+<p>Returns <a href="../query/#findone">FindOne</a> query object.
+When awaited this will either return a document or None if no document exists for the search criteria.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Mapping[str, Any] - search criteria</li>
+<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session instance</li>
+<li><code>ignore_cache</code>: bool</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a href="../query/#findone">FindOne</a> - find query instance</p>
+</blockquote>
+<p><a id="beanie.odm.interfaces.find.FindInterface.find_many"></a></p>
+<h4 id="findinterfacefind_many">FindInterface.find_many</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">find_many</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<p>Find many documents by criteria.</p>
+<p>Returns <a href="../query/#findmany">FindMany</a> query object</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>args</code>: *Mapping[str, Any] - search criteria</li>
+<li><code>skip</code>: Optional[int] - The number of documents to omit.</li>
+<li><code>limit</code>: Optional[int] - The maximum number of results to return.</li>
+<li><code>sort</code>: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.</li>
+<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
+<li><code>ignore_cache</code>: bool</li>
+<li><code>lazy_parse</code>: bool</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a href="../query/#findmany">FindMany</a> - query instance</p>
+</blockquote>
+<p><a id="beanie.odm.interfaces.find.FindInterface.find"></a></p>
+<h4 id="findinterfacefind">FindInterface.find</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">find</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<p>The same as find_many</p>
+</blockquote>
+<p><a id="beanie.odm.interfaces.find.FindInterface.find_all"></a></p>
+<h4 id="findinterfacefind_all">FindInterface.find_all</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">find_all</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span>
+    <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<p>Get all the documents</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>skip</code>: Optional[int] - The number of documents to omit.</li>
+<li><code>limit</code>: Optional[int] - The maximum number of results to return.</li>
+<li><code>sort</code>: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.</li>
+<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a href="../query/#findmany">FindMany</a> - query instance</p>
+</blockquote>
+<p><a id="beanie.odm.interfaces.find.FindInterface.all"></a></p>
+<h4 id="findinterfaceall">FindInterface.all</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">all</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
+</code></pre></div>
+<blockquote>
+<p>the same as find_all</p>
+</blockquote>
+<p><a id="beanie.odm.interfaces.find.FindInterface.count"></a></p>
+<h4 id="findinterfacecount">FindInterface.count</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+<blockquote>
+<p>Number of documents in the collections</p>
+<p>The same as find_all().count()</p>
+<p><strong>Returns</strong>:</p>
+<p>int</p>
+</blockquote>
 <p><a id="beanie.odm.interfaces.setters"></a></p>
 <h2 id="beanieodminterfacessetters">beanie.odm.interfaces.setters</h2>
 <p><a id="beanie.odm.interfaces.setters.SettersInterface"></a></p>
@@ -1929,227 +2091,8 @@
 <blockquote>
 <p>Collection name setter</p>
 </blockquote>
-<p><a id="beanie.odm.interfaces.aggregate"></a></p>
-<h2 id="beanieodminterfacesaggregate">beanie.odm.interfaces.aggregate</h2>
-<p><a id="beanie.odm.interfaces.aggregate.AggregateInterface"></a></p>
-<h3 id="aggregateinterface">AggregateInterface</h3>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AggregateInterface</span><span class="p">()</span>
-</code></pre></div>
-<p><a id="beanie.odm.interfaces.aggregate.AggregateInterface.aggregate"></a></p>
-<h4 id="aggregateinterfaceaggregate">AggregateInterface.aggregate</h4>
-<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocType</span><span class="p">],</span>
-    <span class="n">aggregation_pipeline</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
-    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">DocumentProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
-        <span class="n">AggregationQuery</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
-        <span class="n">AggregationQuery</span><span class="p">[</span><span class="n">DocumentProjectionType</span><span class="p">],</span>
-<span class="p">]</span>
-</code></pre></div>
-<blockquote>
-<p>Aggregate over collection.</p>
-<p>Returns <a href="../query/#aggregationquery">AggregationQuery</a> query object</p>
-<p><strong>Arguments</strong>:</p>
-<ul>
-<li><code>aggregation_pipeline</code>: list - aggregation pipeline</li>
-<li><code>projection_model</code>: Type[BaseModel]</li>
-<li><code>session</code>: Optional[ClientSession]</li>
-<li><code>ignore_cache</code>: bool</li>
-<li><code>**pymongo_kwargs</code>: pymongo native parameters for aggregate operation</li>
-</ul>
-<p><strong>Returns</strong>:</p>
-<p><a href="../query/#aggregationquery">AggregationQuery</a></p>
-</blockquote>
-<p><a id="beanie.odm.interfaces.detector"></a></p>
-<h2 id="beanieodminterfacesdetector">beanie.odm.interfaces.detector</h2>
 <p><a id="beanie.odm.interfaces.clone"></a></p>
 <h2 id="beanieodminterfacesclone">beanie.odm.interfaces.clone</h2>
-<p><a id="beanie.odm.interfaces.session"></a></p>
-<h2 id="beanieodminterfacessession">beanie.odm.interfaces.session</h2>
-<p><a id="beanie.odm.interfaces.session.SessionMethods"></a></p>
-<h3 id="sessionmethods">SessionMethods</h3>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">SessionMethods</span><span class="p">()</span>
-</code></pre></div>
-<blockquote>
-<p>Session methods</p>
-</blockquote>
-<p><a id="beanie.odm.interfaces.session.SessionMethods.set_session"></a></p>
-<h4 id="sessionmethodsset_session">SessionMethods.set_session</h4>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_session</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
-</code></pre></div>
-<blockquote>
-<p>Set pymongo session</p>
-<p><strong>Arguments</strong>:</p>
-<ul>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
-</ul>
-</blockquote>
-<p><a id="beanie.odm.interfaces.find"></a></p>
-<h2 id="beanieodminterfacesfind">beanie.odm.interfaces.find</h2>
-<p><a id="beanie.odm.interfaces.find.FindInterface"></a></p>
-<h3 id="findinterface">FindInterface</h3>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">FindInterface</span><span class="p">()</span>
-</code></pre></div>
-<p><a id="beanie.odm.interfaces.find.FindInterface.find_one"></a></p>
-<h4 id="findinterfacefind_one">FindInterface.find_one</h4>
-<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">find_one</span><span class="p">(</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span>
-    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
-    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindOne</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindOne</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
-</code></pre></div>
-<blockquote>
-<p>Find one document by criteria.</p>
-<p>Returns <a href="../query/#findone">FindOne</a> query object.
-When awaited this will either return a document or None if no document exists for the search criteria.</p>
-<p><strong>Arguments</strong>:</p>
-<ul>
-<li><code>args</code>: *Mapping[str, Any] - search criteria</li>
-<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session instance</li>
-<li><code>ignore_cache</code>: bool</li>
-<li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)</li>
-</ul>
-<p><strong>Returns</strong>:</p>
-<p><a href="../query/#findone">FindOne</a> - find query instance</p>
-</blockquote>
-<p><a id="beanie.odm.interfaces.find.FindInterface.find_many"></a></p>
-<h4 id="findinterfacefind_many">FindInterface.find_many</h4>
-<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">find_many</span><span class="p">(</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span>
-    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
-    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
-</code></pre></div>
-<blockquote>
-<p>Find many documents by criteria.</p>
-<p>Returns <a href="../query/#findmany">FindMany</a> query object</p>
-<p><strong>Arguments</strong>:</p>
-<ul>
-<li><code>args</code>: *Mapping[str, Any] - search criteria</li>
-<li><code>skip</code>: Optional[int] - The number of documents to omit.</li>
-<li><code>limit</code>: Optional[int] - The maximum number of results to return.</li>
-<li><code>sort</code>: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.</li>
-<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
-<li><code>ignore_cache</code>: bool</li>
-<li><code>lazy_parse</code>: bool</li>
-<li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)</li>
-</ul>
-<p><strong>Returns</strong>:</p>
-<p><a href="../query/#findmany">FindMany</a> - query instance</p>
-</blockquote>
-<p><a id="beanie.odm.interfaces.find.FindInterface.find"></a></p>
-<h4 id="findinterfacefind">FindInterface.find</h4>
-<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">find</span><span class="p">(</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span>
-    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
-    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
-</code></pre></div>
-<blockquote>
-<p>The same as find_many</p>
-</blockquote>
-<p><a id="beanie.odm.interfaces.find.FindInterface.find_all"></a></p>
-<h4 id="findinterfacefind_all">FindInterface.find_all</h4>
-<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">find_all</span><span class="p">(</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span>
-    <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
-</code></pre></div>
-<blockquote>
-<p>Get all the documents</p>
-<p><strong>Arguments</strong>:</p>
-<ul>
-<li><code>skip</code>: Optional[int] - The number of documents to omit.</li>
-<li><code>limit</code>: Optional[int] - The maximum number of results to return.</li>
-<li><code>sort</code>: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.</li>
-<li><code>projection_model</code>: Optional[Type[BaseModel]] - projection model</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
-<li><code>**pymongo_kwargs</code>: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)</li>
-</ul>
-<p><strong>Returns</strong>:</p>
-<p><a href="../query/#findmany">FindMany</a> - query instance</p>
-</blockquote>
-<p><a id="beanie.odm.interfaces.find.FindInterface.all"></a></p>
-<h4 id="findinterfaceall">FindInterface.all</h4>
-<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">all</span><span class="p">(</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span>
-    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">sort</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SortDirection</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
-</code></pre></div>
-<blockquote>
-<p>the same as find_all</p>
-</blockquote>
-<p><a id="beanie.odm.interfaces.find.FindInterface.count"></a></p>
-<h4 id="findinterfacecount">FindInterface.count</h4>
-<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
-</code></pre></div>
-<blockquote>
-<p>Number of documents in the collections</p>
-<p>The same as find_all().count()</p>
-<p><strong>Returns</strong>:</p>
-<p>int</p>
-</blockquote>
 <p><a id="beanie.odm.interfaces.aggregation_methods"></a></p>
 <h2 id="beanieodminterfacesaggregation_methods">beanie.odm.interfaces.aggregation_methods</h2>
 <p><a id="beanie.odm.interfaces.aggregation_methods.AggregateMethods"></a></p>
@@ -2162,7 +2105,7 @@ When awaited this will either return a document or None if no document exists fo
 <p><a id="beanie.odm.interfaces.aggregation_methods.AggregateMethods.sum"></a></p>
 <h4 id="aggregatemethodssum">AggregateMethods.sum</h4>
 <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ExpressionField</span><span class="p">],</span>
-              <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
               <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
 </code></pre></div>
 <blockquote>
@@ -2177,7 +2120,7 @@ When awaited this will either return a document or None if no document exists fo
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>field</code>: Union[str, ExpressionField]</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
 <li><code>ignore_cache</code>: bool</li>
 </ul>
 <p><strong>Returns</strong>:</p>
@@ -2186,7 +2129,7 @@ When awaited this will either return a document or None if no document exists fo
 <p><a id="beanie.odm.interfaces.aggregation_methods.AggregateMethods.avg"></a></p>
 <h4 id="aggregatemethodsavg">AggregateMethods.avg</h4>
 <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">avg</span><span class="p">(</span><span class="n">field</span><span class="p">,</span>
-              <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
               <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
 </code></pre></div>
 <blockquote>
@@ -2201,7 +2144,7 @@ When awaited this will either return a document or None if no document exists fo
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>field</code>: Union[str, ExpressionField]</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
 <li><code>ignore_cache</code>: bool</li>
 </ul>
 <p><strong>Returns</strong>:</p>
@@ -2210,7 +2153,7 @@ When awaited this will either return a document or None if no document exists fo
 <p><a id="beanie.odm.interfaces.aggregation_methods.AggregateMethods.max"></a></p>
 <h4 id="aggregatemethodsmax">AggregateMethods.max</h4>
 <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ExpressionField</span><span class="p">],</span>
-              <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
               <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
 </code></pre></div>
 <blockquote>
@@ -2225,7 +2168,7 @@ When awaited this will either return a document or None if no document exists fo
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>field</code>: Union[str, ExpressionField]</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
 </ul>
 <p><strong>Returns</strong>:</p>
 <p>float - max. None if there are no items.</p>
@@ -2233,7 +2176,7 @@ When awaited this will either return a document or None if no document exists fo
 <p><a id="beanie.odm.interfaces.aggregation_methods.AggregateMethods.min"></a></p>
 <h4 id="aggregatemethodsmin">AggregateMethods.min</h4>
 <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ExpressionField</span><span class="p">],</span>
-              <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
               <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
 </code></pre></div>
 <blockquote>
@@ -2248,15 +2191,11 @@ When awaited this will either return a document or None if no document exists fo
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li><code>field</code>: Union[str, ExpressionField]</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
 </ul>
 <p><strong>Returns</strong>:</p>
 <p>float - min. None if there are no items.</p>
 </blockquote>
-<p><a id="beanie.odm.interfaces.inheritance"></a></p>
-<h2 id="beanieodminterfacesinheritance">beanie.odm.interfaces.inheritance</h2>
-<p><a id="beanie.odm.interfaces.getters"></a></p>
-<h2 id="beanieodminterfacesgetters">beanie.odm.interfaces.getters</h2>
 <p><a id="beanie.odm.interfaces.update"></a></p>
 <h2 id="beanieodminterfacesupdate">beanie.odm.interfaces.update</h2>
 <p><a id="beanie.odm.interfaces.update.UpdateMethods"></a></p>
@@ -2268,8 +2207,8 @@ When awaited this will either return a document or None if no document exists fo
 </blockquote>
 <p><a id="beanie.odm.interfaces.update.UpdateMethods.set"></a></p>
 <h4 id="updatemethodsset">UpdateMethods.set</h4>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
-        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
@@ -2284,9 +2223,9 @@ When awaited this will either return a document or None if no document exists fo
 <p>Uses <a href="../operators/update/#set">Set operator</a></p>
 <p><strong>Arguments</strong>:</p>
 <ul>
-<li><code>expression</code>: Dict[Union[ExpressionField, str], Any] - keys and
+<li><code>expression</code>: Dict[Union[ExpressionField, str, Any], Any] - keys and
 values to set</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
 <li><code>bulk_writer</code>: Optional[BulkWriter] - bulk writer</li>
 </ul>
 <p><strong>Returns</strong>:</p>
@@ -2294,8 +2233,8 @@ values to set</li>
 </blockquote>
 <p><a id="beanie.odm.interfaces.update.UpdateMethods.current_date"></a></p>
 <h4 id="updatemethodscurrent_date">UpdateMethods.current_date</h4>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">current_date</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
-                 <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">current_date</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
+                 <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
@@ -2304,8 +2243,8 @@ values to set</li>
 <p>Uses <a href="../operators/update/#currentdate">CurrentDate operator</a></p>
 <p><strong>Arguments</strong>:</p>
 <ul>
-<li><code>expression</code>: Dict[Union[ExpressionField, str], Any]</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>expression</code>: Dict[Union[datetime, ExpressionField, str], Any]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
 <li><code>bulk_writer</code>: Optional[BulkWriter] - bulk writer</li>
 </ul>
 <p><strong>Returns</strong>:</p>
@@ -2313,8 +2252,8 @@ values to set</li>
 </blockquote>
 <p><a id="beanie.odm.interfaces.update.UpdateMethods.inc"></a></p>
 <h4 id="updatemethodsinc">UpdateMethods.inc</h4>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
-        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
@@ -2329,13 +2268,74 @@ values to set</li>
 <p>Uses <a href="../operators/update/#inc">Inc operator</a></p>
 <p><strong>Arguments</strong>:</p>
 <ul>
-<li><code>expression</code>: Dict[Union[ExpressionField, str], Any]</li>
-<li><code>session</code>: Optional[ClientSession] - pymongo session</li>
+<li><code>expression</code>: Dict[Union[ExpressionField, float, int, str], Any]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
 <li><code>bulk_writer</code>: Optional[BulkWriter] - bulk writer</li>
 </ul>
 <p><strong>Returns</strong>:</p>
 <p>self</p>
 </blockquote>
+<p><a id="beanie.odm.interfaces.inheritance"></a></p>
+<h2 id="beanieodminterfacesinheritance">beanie.odm.interfaces.inheritance</h2>
+<p><a id="beanie.odm.interfaces.session"></a></p>
+<h2 id="beanieodminterfacessession">beanie.odm.interfaces.session</h2>
+<p><a id="beanie.odm.interfaces.session.SessionMethods"></a></p>
+<h3 id="sessionmethods">SessionMethods</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">SessionMethods</span><span class="p">()</span>
+</code></pre></div>
+<blockquote>
+<p>Session methods</p>
+</blockquote>
+<p><a id="beanie.odm.interfaces.session.SessionMethods.set_session"></a></p>
+<h4 id="sessionmethodsset_session">SessionMethods.set_session</h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_session</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Set motor session</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession] - motor session</li>
+</ul>
+</blockquote>
+<p><a id="beanie.odm.interfaces.aggregate"></a></p>
+<h2 id="beanieodminterfacesaggregate">beanie.odm.interfaces.aggregate</h2>
+<p><a id="beanie.odm.interfaces.aggregate.AggregateInterface"></a></p>
+<h3 id="aggregateinterface">AggregateInterface</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AggregateInterface</span><span class="p">()</span>
+</code></pre></div>
+<p><a id="beanie.odm.interfaces.aggregate.AggregateInterface.aggregate"></a></p>
+<h4 id="aggregateinterfaceaggregate">AggregateInterface.aggregate</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DocType</span><span class="p">],</span>
+    <span class="n">aggregation_pipeline</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">DocumentProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
+        <span class="n">AggregationQuery</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">AggregationQuery</span><span class="p">[</span><span class="n">DocumentProjectionType</span><span class="p">],</span>
+<span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p>Aggregate over collection.</p>
+<p>Returns <a href="../query/#aggregationquery">AggregationQuery</a> query object</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>aggregation_pipeline</code>: list - aggregation pipeline</li>
+<li><code>projection_model</code>: Type[BaseModel]</li>
+<li><code>session</code>: Optional[AsyncIOMotorClientSession]</li>
+<li><code>ignore_cache</code>: bool</li>
+<li><code>**pymongo_kwargs</code>: pymongo native parameters for aggregate operation</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p><a href="../query/#aggregationquery">AggregationQuery</a></p>
+</blockquote>
+<p><a id="beanie.odm.interfaces.detector"></a></p>
+<h2 id="beanieodminterfacesdetector">beanie.odm.interfaces.detector</h2>
+<p><a id="beanie.odm.interfaces.getters"></a></p>
+<h2 id="beanieodminterfacesgetters">beanie.odm.interfaces.getters</h2>
 
 
 
@@ -2382,10 +2382,10 @@ values to set</li>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      <script src="../../assets/javascripts/bundle.525ec568.min.js"></script>
       
     
   </body>
