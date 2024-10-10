@@ -302,7 +302,7 @@ class UpdateOne(UpdateQuery):
             session=session,
             bulk_writer=bulk_writer,
             response_type=response_type,
-            **pymongo_kwargs: Any,
+            **pymongo_kwargs,
         )
 
     async def _update(self):
