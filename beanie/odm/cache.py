@@ -19,7 +19,7 @@ class LRUCache:
         self.expiration_time: timedelta = expiration_time
         self.cache: collections.OrderedDict = collections.OrderedDict()
 
-    def get(self, key: Any) -> Optional[CachedItem]:
+    def get(self, key) -> Optional[CachedItem]:
         try:
             item: CachedItem = self.cache.pop(key)
             if (
