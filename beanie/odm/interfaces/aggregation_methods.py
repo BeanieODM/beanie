@@ -16,7 +16,7 @@ class AggregateMethods:
         self,
         aggregation_pipeline,
         projection_model=None,
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session=None,
         ignore_cache: bool = False,
     ): ...
 
