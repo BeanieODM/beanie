@@ -691,7 +691,7 @@ class Document(
     @save_state_after
     async def update(
         self: Self,
-        *args,
+        *args: Any,
         ignore_revision: bool = False,
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
