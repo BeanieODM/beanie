@@ -1,6 +1,6 @@
 import inspect
 from functools import wraps
-from typing import Any, TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from typing_extensions import ParamSpec
 
