@@ -23,7 +23,7 @@ class DeleteQuery(SessionMethods, CloneInterface):
         document_model: Type["DocType"],
         find_query: Mapping[str, Any],
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ):
         self.document_model = document_model
         self.find_query = find_query

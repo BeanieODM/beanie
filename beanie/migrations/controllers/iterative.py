@@ -1,6 +1,6 @@
 import asyncio
 from inspect import isclass, signature
-from typing import List, Optional, Type, Union
+from typing import Any, List, Optional, Type, Union
 
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.migrations.utils import update_dict
@@ -77,7 +77,7 @@ def iterative_migration(
 
             self.batch_size = batch_size
 
-        def __call__(self, *args, **kwargs):
+        def __call__(self, *args: Any, **kwargs: Any):
             pass
 
         @property

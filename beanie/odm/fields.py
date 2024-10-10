@@ -84,7 +84,7 @@ class IndexedAnnotation:
     _indexed: Tuple[int, Dict[str, Any]]
 
 
-def Indexed(typ=None, index_type=ASCENDING, **kwargs):
+def Indexed(typ=None, index_type=ASCENDING, **kwargs: Any):
     """
     If `typ` is defined, returns a subclass of `typ` with an extra attribute
     `_indexed` as a tuple:

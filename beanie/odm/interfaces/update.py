@@ -24,7 +24,7 @@ class UpdateMethods:
         *args: Mapping[str, Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         return self
 
@@ -33,7 +33,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, str, Any], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Set values
@@ -66,7 +66,7 @@ class UpdateMethods:
         expression: Dict[Union[datetime, ExpressionField, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Set current date
@@ -90,7 +90,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Increment

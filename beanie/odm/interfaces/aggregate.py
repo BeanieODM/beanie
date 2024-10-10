@@ -25,7 +25,7 @@ class AggregateInterface:
         projection_model: None = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> AggregationQuery[Dict[str, Any]]: ...
 
     @overload
@@ -36,7 +36,7 @@ class AggregateInterface:
         projection_model: Type[DocumentProjectionType],
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> AggregationQuery[DocumentProjectionType]: ...
 
     @classmethod
@@ -46,7 +46,7 @@ class AggregateInterface:
         projection_model: Optional[Type[DocumentProjectionType]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Union[
         AggregationQuery[Dict[str, Any]],
         AggregationQuery[DocumentProjectionType],
