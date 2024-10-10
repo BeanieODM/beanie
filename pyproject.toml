@@ -103,6 +103,7 @@ ignore_missing_imports = true
 
 [tool.pyright]
 include = ["tests/typing", "beanie"]
+typeCheckingMode = "strict"
 
 [tool.ruff]
 line-length = 79

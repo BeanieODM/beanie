@@ -90,7 +90,7 @@ class UpdateMethods:
         expression: Dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Increment

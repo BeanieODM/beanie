@@ -109,7 +109,7 @@ class UpdateMany(UpdateQuery):
         *args: Mapping[str, Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
         Provide modifications to the update query.
@@ -132,7 +132,7 @@ class UpdateMany(UpdateQuery):
         *args: Mapping[str, Any],
         on_insert: "DocType",
         session: Optional[AsyncIOMotorClientSession] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
         Provide modifications to the upsert query.
@@ -153,7 +153,7 @@ class UpdateMany(UpdateQuery):
         *args: Mapping[str, Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ):
         """
         Provide modifications to the update query
@@ -230,7 +230,7 @@ class UpdateOne(UpdateQuery):
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
         Provide modifications to the update query.
@@ -257,7 +257,7 @@ class UpdateOne(UpdateQuery):
         on_insert: "DocType",
         session: Optional[AsyncIOMotorClientSession] = None,
         response_type: Optional[UpdateResponse] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
         Provide modifications to the upsert query.
@@ -285,7 +285,7 @@ class UpdateOne(UpdateQuery):
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         response_type: Optional[UpdateResponse] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ):
         """
         Provide modifications to the update query. The same as `update()`
@@ -302,7 +302,7 @@ class UpdateOne(UpdateQuery):
             session=session,
             bulk_writer=bulk_writer,
             response_type=response_type,
-            **pymongo_kwargs,
+            **pymongo_kwargs: Any,
         )
 
     async def _update(self):
