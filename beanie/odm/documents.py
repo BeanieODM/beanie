@@ -204,7 +204,7 @@ class Document(
     # Database
     _database_major_version: ClassVar[int] = 4
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
 
@@ -1160,7 +1160,7 @@ class Document(
                 cls.__exclude_fields__[name] = True
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
-    async def validate_self(self, *args, **kwargs):
+    async def validate_self(self, *args: Any, **kwargs: Any):
         # TODO: it can be sync, but needs some actions controller improvements
         if self.get_settings().validate_on_save:
             new_model = parse_model(self.__class__, get_model_dump(self))

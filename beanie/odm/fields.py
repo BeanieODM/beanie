@@ -109,7 +109,7 @@ def Indexed(typ=None, index_type=ASCENDING, **kwargs: Any):
     class NewType(typ):
         _indexed = (index_type, kwargs)
 
-        def __new__(cls, *args, **kwargs):
+        def __new__(cls, *args: Any, **kwargs: Any):
             return typ.__new__(typ, *args, **kwargs)
 
         if IS_PYDANTIC_V2:

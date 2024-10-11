@@ -26,12 +26,14 @@ def saved_state_needed(
     f: "AnyDocMethod[DocType, P, R]",
 ) -> "AnyDocMethod[DocType, P, R]":
     @wraps(f)
-    def sync_wrapper(self: "DocType", *args, **kwargs):
+    def sync_wrapper(self: "DocType", *args: P.args, **kwargs: P.kwargs) -> R:
         check_if_state_saved(self)
         return f(self, *args, **kwargs)
 
     @wraps(f)
-    async def async_wrapper(self: "DocType", *args, **kwargs):
+    async def async_wrapper(
+        self: "DocType", *args: P.args, **kwargs: P.kwargs
+    ) -> R:
         check_if_state_saved(self)
         # type ignore because there is no nice/proper way to annotate both sync
         # and async case without parametrized TypeVar, which is not supported
@@ -59,12 +61,14 @@ def previous_saved_state_needed(
     f: "AnyDocMethod[DocType, P, R]",
 ) -> "AnyDocMethod[DocType, P, R]":
     @wraps(f)
-    def sync_wrapper(self: "DocType", *args, **kwargs):
+    def sync_wrapper(self: "DocType", *args: P.args, **kwargs: P.kwargs) -> R:
         check_if_previous_state_saved(self)
         return f(self, *args, **kwargs)
 
     @wraps(f)
-    async def async_wrapper(self: "DocType", *args, **kwargs):
+    async def async_wrapper(
+        self: "DocType", *args: P.args, **kwargs: P.kwargs
+    ) -> R:
         check_if_previous_state_saved(self)
         # type ignore because there is no nice/proper way to annotate both sync
         # and async case without parametrized TypeVar, which is not supported

@@ -220,7 +220,7 @@ class UpdateOne(UpdateQuery):
     Update One query class
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super(UpdateOne, self).__init__(*args, **kwargs)
         self.response_type = UpdateResponse.UPDATE_RESULT
 
