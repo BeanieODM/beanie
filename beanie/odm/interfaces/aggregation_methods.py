@@ -1,9 +1,13 @@
 from abc import abstractmethod
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Type, TypeVar, Union, cast
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
+from pydantic import BaseModel
 
 from beanie.odm.fields import ExpressionField
+
+DocType = TypeVar("DocType", bound="AggregateMethods")
+DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
 class AggregateMethods:
@@ -20,8 +24,9 @@ class AggregateMethods:
         ignore_cache: bool = False,
     ): ...
 
+    @classmethod
     async def sum(
-        self,
+        cls: Type[DocType],
         field: Union[str, ExpressionField],
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -54,7 +59,7 @@ class AggregateMethods:
         # As we did not supply a projection we can safely cast the type (hinting to mypy that we know the type)
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
-            await self.aggregate(
+            await cls.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
@@ -64,9 +69,10 @@ class AggregateMethods:
             return None
         return result[0]["sum"]
 
+    @classmethod
     async def avg(
-        self,
-        field,
+        cls: Type[DocType],
+        field: Union[str, ExpressionField],
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
@@ -96,7 +102,7 @@ class AggregateMethods:
 
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
-            await self.aggregate(
+            await cls.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
@@ -106,8 +112,9 @@ class AggregateMethods:
             return None
         return result[0]["avg"]
 
+    @classmethod
     async def max(
-        self,
+        cls: Type[DocType],
         field: Union[str, ExpressionField],
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -137,7 +144,7 @@ class AggregateMethods:
 
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
-            await self.aggregate(
+            await cls.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
@@ -147,8 +154,9 @@ class AggregateMethods:
             return None
         return result[0]["max"]
 
+    @classmethod
     async def min(
-        self,
+        cls: Type[DocType],
         field: Union[str, ExpressionField],
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -178,7 +186,7 @@ class AggregateMethods:
 
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
-            await self.aggregate(
+            await cls.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
