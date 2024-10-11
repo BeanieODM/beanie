@@ -68,8 +68,8 @@ if __name__ == "__main__":
     generator = ChangelogGenerator(
         username="BeanieODM",
         repository="beanie",
-        current_version="1.26.0",
-        new_version="1.27.0",
+        current_version="1.27.0",
+        new_version="1.28.0",
     )
 
     changelog = generator.generate_changelog()

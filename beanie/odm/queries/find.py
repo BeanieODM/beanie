@@ -71,7 +71,7 @@ class FindQuery(
     AggregationQueryType = AggregationQuery
 
     def __init__(self, document_model: Type["DocType"]):
-        self.document_model: Type["DocType"] = document_model
+        self.document_model = document_model
         self.find_expressions: List[Mapping[str, Any]] = []
         self.projection_model: Type[FindQueryResultType] = cast(
             Type[FindQueryResultType], self.document_model
@@ -147,9 +147,15 @@ class FindQuery(
         Number of found documents
         :return: int
         """
+        kwargs = {}
+        if isinstance(self, FindMany):
+            if self.limit_number:
+                kwargs["limit"] = self.limit_number
+            if self.skip_number:
+                kwargs["skip"] = self.skip_number
         return (
             await self.document_model.get_motor_collection().count_documents(
-                self.get_filter_query()
+                self.get_filter_query(), session=self.session, **kwargs
             )
         )
 
@@ -1024,7 +1030,7 @@ class FindOne(FindQuery[FindQueryResultType]):
             document = yield from self._find_one().__await__()  # type: ignore
         if document is None:
             return None
-        if type(document) == self.projection_model:
+        if type(document) is self.projection_model:
             return cast(FindQueryResultType, document)
         return cast(
             FindQueryResultType, parse_obj(self.projection_model, document)
