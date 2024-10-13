@@ -709,7 +709,7 @@ class Document(
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: self
         """
-        arguments = list(args)
+        arguments: list[Any] = list(args)
 
         if skip_sync is not None:
             raise DeprecationWarning(
