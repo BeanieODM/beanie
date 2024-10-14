@@ -58,7 +58,6 @@ if IS_PYDANTIC_V2:
     from pydantic_core.core_schema import (
         ValidationInfo,
         simple_ser_schema,
-        str_schema,
     )
 else:
     from pydantic.fields import ModelField  # type: ignore
