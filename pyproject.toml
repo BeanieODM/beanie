@@ -84,6 +84,7 @@ testpaths = [
 ]
 filterwarnings = [
     "error",
+    "ignore::DeprecationWarning",
     "ignore::UserWarning",
 ]
 asyncio_mode = "auto"
