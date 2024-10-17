@@ -35,10 +35,12 @@ from beanie.odm.operators.find.geospatial import (
 from beanie.odm.operators.find.logical import And, Nor, Not, Or
 from beanie.odm.operators.update.array import (
     AddToSet,
+    AddToSetEach,
     Pop,
     Pull,
     PullAll,
     Push,
+    PushEach,
 )
 from beanie.odm.operators.update.bitwise import Bit
 from beanie.odm.operators.update.general import (
@@ -103,6 +105,8 @@ __all__ = [
     "Pull",
     "Push",
     "PullAll",
+    "PushEach",
+    "AddToSetEach",
     # Bitwise
     "Bit",
     # General
