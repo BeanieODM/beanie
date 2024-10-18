@@ -30,6 +30,7 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 from pymongo import IndexModel
+from pymongo.driver_info import DriverInfo
 
 from beanie.exceptions import Deprecation, MongoDBVersionError
 from beanie.odm.actions import ActionRegistry
@@ -102,10 +103,11 @@ class Initializer:
             raise ValueError("document_models parameter must be set")
         if connection_string is not None:
             database = AsyncIOMotorClient(
-                connection_string
+                connection_string, driver=DriverInfo(name="Beanie")
             ).get_default_database()
 
         self.database: AsyncIOMotorDatabase = database
+        print(self.database)
 
         if multiprocessing_mode:
             self.database.client.get_io_loop = asyncio.get_running_loop
