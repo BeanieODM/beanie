@@ -54,7 +54,6 @@ if IS_PYDANTIC_V2:
     from pydantic_core.core_schema import (
         ValidationInfo,
         simple_ser_schema,
-        str_schema,
     )
 else:
     from pydantic.fields import ModelField  # type: ignore
@@ -155,7 +154,16 @@ class PydanticObjectId(ObjectId):
         ) -> CoreSchema:  # type: ignore
             return core_schema.json_or_python_schema(
                 python_schema=plain_validator(cls.validate),
-                json_schema=str_schema(),
+                json_schema=plain_validator(
+                    cls.validate,
+                    metadata={
+                        "pydantic_js_input_core_schema": core_schema.str_schema(
+                            pattern="^[0-9a-f]{24}$",
+                            min_length=24,
+                            max_length=24,
+                        )
+                    },
+                ),
                 serialization=core_schema.plain_serializer_function_ser_schema(
                     lambda instance: str(instance), when_used="json"
                 ),
