@@ -7,7 +7,7 @@ name = "beanie"
 version = "1.27.0"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
-requires-python = ">=3.8,<4.0"
+requires-python = ">=3.,<4.0"
 license = { file="LICENSE" }
 authors = [
     {name = "Roman Right", email = "roman-right@protonmail.com"}
@@ -84,7 +84,7 @@ testpaths = [
 ]
 filterwarnings = [
     "error",
-    "ignore::DeprecationWarning",
+
     "ignore::UserWarning",
 ]
 asyncio_mode = "auto"
