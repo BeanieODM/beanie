@@ -112,7 +112,11 @@ include = ["**/*.py", ".github/**/*.py"]
 
 [tool.ruff.lint]
 ignore = ["E501"]
-extend-select = ["I001"]
+extend-select = [
+     'I',     # isort
+     'PERF',  # Perflint
+     'C4',    # flake8-comprehensions
+]
 per-file-ignores = { "tests/*" = ["E711"] }
 
 # Allow unused variables when underscore-prefixed.

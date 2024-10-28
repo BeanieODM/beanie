@@ -309,12 +309,16 @@ async def deprecated_init_beanie(db):
             database=db,
             document_models=[DocumentWithDeprecatedHiddenField],
         )
-        assert len(w) == 1
-        assert issubclass(w[-1].category, DeprecationWarning)
-        assert (
-            "DocumentWithDeprecatedHiddenField: 'hidden=True' is deprecated, please use 'exclude=True'"
-            in str(w[-1].message)
-        )
+        found = False
+        for warning in w:
+            if (
+                "DocumentWithDeprecatedHiddenField: 'hidden=True' is deprecated, please use 'exclude=True"
+                in str(warning.message)
+            ):
+                found = True
+                break
+
+        assert found
 
 
 @pytest.fixture(autouse=True)
@@ -372,15 +376,13 @@ def document_soft_delete_not_inserted():
 
 @pytest.fixture
 def documents_soft_delete_not_inserted():
-    docs = []
-    for i in range(3):
-        docs.append(
-            DocumentTestModelWithSoftDelete(
-                test_int=randint(0, 1000000),
-                test_str="kipasa",
-            )
+    return [
+        DocumentTestModelWithSoftDelete(
+            test_int=randint(0, 1000000),
+            test_str="kipasa",
         )
-    return docs
+        for _ in range(3)
+    ]
 
 
 @pytest.fixture

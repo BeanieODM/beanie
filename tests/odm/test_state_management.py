@@ -389,13 +389,12 @@ class TestStateManagement:
             assert new_doc.get_previous_saved_state() is None
 
         async def test_find_many(self):
-            docs = []
-            for i in range(10):
-                docs.append(
-                    DocumentWithTurnedOnStateManagement(
-                        num_1=i, num_2=i + 1, internal=InternalDoc()
-                    )
+            docs = [
+                DocumentWithTurnedOnStateManagement(
+                    num_1=i, num_2=i + 1, internal=InternalDoc()
                 )
+                for i in range(10)
+            ]
             await DocumentWithTurnedOnStateManagement.insert_many(docs)
 
             found_docs = await DocumentWithTurnedOnStateManagement.find(

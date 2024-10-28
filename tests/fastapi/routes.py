@@ -41,7 +41,7 @@ async def create_houses_with_window_link(window: WindowInput):
         HouseAPI.model_validate if IS_PYDANTIC_V2 else HouseAPI.parse_obj
     )
     house = validator(
-        dict(name="test_name", windows=[WindowAPI.link_from_id(window.id)])
+        {"name": "test_name", "windows": [WindowAPI.link_from_id(window.id)]}
     )
     await house.insert(link_rule=WriteRules.WRITE)
     return house

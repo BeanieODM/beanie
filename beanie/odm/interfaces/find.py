@@ -454,8 +454,7 @@ class FindInterface:
                 args += (
                     {
                         cls.get_settings().class_id: {
-                            "$in": [cls._class_id]
-                            + [cname for cname in cls._children.keys()]
+                            "$in": [cls._class_id] + list(cls._children.keys())
                         }
                     },
                 )

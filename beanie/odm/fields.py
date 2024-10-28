@@ -326,7 +326,7 @@ class Link(Generic[T]):
         data = Link.repack_links(links)  # type: ignore
         ids_to_fetch = []
         document_class = None
-        for doc_id, link in data.items():
+        for link in data.values():
             if isinstance(link, Link):
                 if document_class is None:
                     document_class = link.document_class
@@ -363,10 +363,7 @@ class Link(Generic[T]):
 
     @classmethod
     async def fetch_many(cls, links: List[Link]):
-        coros = []
-        for link in links:
-            coros.append(link.fetch())
-        return await asyncio.gather(*coros)
+        return await asyncio.gather(*[link.fetch() for link in links])
 
     if IS_PYDANTIC_V2:
 
@@ -538,11 +535,7 @@ class IndexModelField:
     def list_difference(
         left: List[IndexModelField], right: List[IndexModelField]
     ):
-        result = []
-        for index in left:
-            if index not in right:
-                result.append(index)
-        return result
+        return [index for index in left if index not in right]
 
     @staticmethod
     def list_to_index_model(left: List[IndexModelField]):

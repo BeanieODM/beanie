@@ -63,8 +63,8 @@ class TestInheritance:
         assert len(white_vehicles) == 3
         assert len(cars_only) == 2
 
-        assert {Car, Bus} == set(i.__class__ for i in cars_and_buses)
-        assert {Bicycle, Car, Bus} == set(i.__class__ for i in white_vehicles)
+        assert {Car, Bus} == {i.__class__ for i in cars_and_buses}
+        assert {Bicycle, Car, Bus} == {i.__class__ for i in white_vehicles}
 
         white_vehicles_2 = await Car.find(Vehicle.color == "white").to_list()
         assert len(white_vehicles_2) == 1
@@ -92,13 +92,13 @@ class TestInheritance:
 
         # re-fetch from DB w/o links
         owner = await Owner.get(owner.id)
-        assert {Link} == set(i.__class__ for i in owner.vehicles)
+        assert {Link} == {i.__class__ for i in owner.vehicles}
         await owner.fetch_all_links()
-        assert {Car, Bus} == set(i.__class__ for i in owner.vehicles)
+        assert {Car, Bus} == {i.__class__ for i in owner.vehicles}
 
         # re-fetch from DB with resolved links
         owner = await Owner.get(owner.id, fetch_links=True)
-        assert {Car, Bus} == set(i.__class__ for i in owner.vehicles)
+        assert {Car, Bus} == {i.__class__ for i in owner.vehicles}
 
         for e in (owner, car_1, car_2, bus_1):
             await e.delete()

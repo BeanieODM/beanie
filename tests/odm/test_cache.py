@@ -82,11 +82,10 @@ async def test_aggregation(documents):
 
 async def test_capacity(documents):
     await documents(10)
-    docs = []
-    for i in range(10):
-        docs.append(
-            await DocumentTestModel.find_one(DocumentTestModel.test_int == i)
-        )
+    docs = [
+        await DocumentTestModel.find_one(DocumentTestModel.test_int == i)
+        for i in range(10)
+    ]
 
     await DocumentTestModel.find_one(DocumentTestModel.test_int == 1).set(
         {DocumentTestModel.test_str: "NEW_VALUE"}

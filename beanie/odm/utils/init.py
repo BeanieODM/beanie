@@ -370,7 +370,7 @@ class Initializer:
         to init settings
         :return:
         """
-        cls._children = dict()
+        cls._children = {}
         cls._parent = None
         cls._inheritance_inited = False
         cls._class_id = None

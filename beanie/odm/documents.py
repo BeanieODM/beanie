@@ -1182,12 +1182,14 @@ class Document(
             setattr(self, field, values)
 
     async def fetch_all_links(self):
-        coros = []
         link_fields = self.get_link_fields()
         if link_fields is not None:
-            for ref in link_fields.values():
-                coros.append(self.fetch_link(ref.field_name))  # TODO lists
-        await asyncio.gather(*coros)
+            await asyncio.gather(
+                *[
+                    self.fetch_link(ref.field_name)
+                    for ref in link_fields.values()
+                ]
+            )
 
     @classmethod
     def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:

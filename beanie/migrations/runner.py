@@ -203,10 +203,7 @@ class MigrationNode:
         :return:
         """
         logger.info("Building migration list")
-        names = []
-        for modulepath in path.glob("*.py"):
-            names.append(modulepath.name)
-        names.sort()
+        names = sorted([modulepath.name for modulepath in path.glob("*.py")])
 
         db = DBHandler.get_db()
         await init_beanie(
