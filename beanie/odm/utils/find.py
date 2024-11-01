@@ -95,8 +95,6 @@ def construct_query(
                         database_major_version=database_major_version,
                         current_depth=new_depth,
                     )
-            queries += lookup_steps
-
         else:
             lookup_steps = [
                 {
@@ -149,7 +147,7 @@ def construct_query(
                     database_major_version=database_major_version,
                     current_depth=new_depth,
                 )
-            queries += lookup_steps
+        queries += lookup_steps
 
     elif link_info.link_type in [
         LinkTypes.BACK_DIRECT,
@@ -201,8 +199,6 @@ def construct_query(
                         database_major_version=database_major_version,
                         current_depth=new_depth,
                     )
-            queries += lookup_steps
-
         else:
             lookup_steps = [
                 {
@@ -258,7 +254,7 @@ def construct_query(
                     database_major_version=database_major_version,
                     current_depth=new_depth,
                 )
-            queries += lookup_steps
+        queries += lookup_steps
 
     elif link_info.link_type in [
         LinkTypes.LIST,

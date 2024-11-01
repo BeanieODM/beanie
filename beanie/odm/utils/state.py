@@ -39,11 +39,7 @@ def saved_state_needed(
         # and async case without parametrized TypeVar, which is not supported
         return await f(self, *args, **kwargs)  # type: ignore[misc]
 
-    if inspect.iscoroutinefunction(f):
-        # type ignore because there is no nice/proper way to annotate both sync
-        # and async case without parametrized TypeVar, which is not supported
-        return async_wrapper  # type: ignore[return-value]
-    return sync_wrapper
+    return async_wrapper if inspect.iscoroutinefunction(f) else sync_wrapper  # type: ignore[return-value]
 
 
 def check_if_previous_state_saved(self: "DocType"):
@@ -74,11 +70,7 @@ def previous_saved_state_needed(
         # and async case without parametrized TypeVar, which is not supported
         return await f(self, *args, **kwargs)  # type: ignore[misc]
 
-    if inspect.iscoroutinefunction(f):
-        # type ignore because there is no nice/proper way to annotate both sync
-        # and async case without parametrized TypeVar, which is not supported
-        return async_wrapper  # type: ignore[return-value]
-    return sync_wrapper
+    return async_wrapper if inspect.iscoroutinefunction(f) else sync_wrapper  # type: ignore[return-value]
 
 
 def save_state_after(

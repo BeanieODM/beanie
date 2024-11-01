@@ -27,10 +27,11 @@ def convert_ids(
             and k_splitted[0] in doc.get_link_fields().keys()  # type: ignore
             and k_splitted[1] == "id"
         ):
-            if fetch_links:
-                new_k = f"{k_splitted[0]}._id"
-            else:
-                new_k = f"{k_splitted[0]}.$id"
+            new_k = (
+                f"{k_splitted[0]}._id"
+                if fetch_links
+                else f"{k_splitted[0]}.$id"
+            )
         else:
             new_k = k
         new_v: Any

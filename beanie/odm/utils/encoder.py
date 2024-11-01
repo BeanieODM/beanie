@@ -161,7 +161,11 @@ def _get_encoder(
     encoder = custom_encoders.get(type(obj))
     if encoder is not None:
         return encoder
-    for cls, encoder in custom_encoders.items():
-        if isinstance(obj, cls):
-            return encoder
-    return None
+    return next(
+        (
+            encoder
+            for cls, encoder in custom_encoders.items()
+            if isinstance(obj, cls)
+        ),
+        None,
+    )

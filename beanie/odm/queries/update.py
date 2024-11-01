@@ -306,30 +306,7 @@ class UpdateOne(UpdateQuery):
         )
 
     async def _update(self):
-        if not self.bulk_writer:
-            if self.response_type == UpdateResponse.UPDATE_RESULT:
-                return await self.document_model.get_motor_collection().update_one(
-                    self.find_query,
-                    self.update_query,
-                    session=self.session,
-                    **self.pymongo_kwargs,
-                )
-            else:
-                result = await self.document_model.get_motor_collection().find_one_and_update(
-                    self.find_query,
-                    self.update_query,
-                    session=self.session,
-                    return_document=(
-                        ReturnDocument.BEFORE
-                        if self.response_type == UpdateResponse.OLD_DOCUMENT
-                        else ReturnDocument.AFTER
-                    ),
-                    **self.pymongo_kwargs,
-                )
-                if result is not None:
-                    result = parse_obj(self.document_model, result)
-                return result
-        else:
+        if self.bulk_writer:
             self.bulk_writer.add_operation(
                 Operation(
                     operation=UpdateOnePyMongo,
@@ -339,6 +316,29 @@ class UpdateOne(UpdateQuery):
                     pymongo_kwargs=self.pymongo_kwargs,
                 )
             )
+
+        elif self.response_type == UpdateResponse.UPDATE_RESULT:
+            return await self.document_model.get_motor_collection().update_one(
+                self.find_query,
+                self.update_query,
+                session=self.session,
+                **self.pymongo_kwargs,
+            )
+        else:
+            result = await self.document_model.get_motor_collection().find_one_and_update(
+                self.find_query,
+                self.update_query,
+                session=self.session,
+                return_document=(
+                    ReturnDocument.BEFORE
+                    if self.response_type == UpdateResponse.OLD_DOCUMENT
+                    else ReturnDocument.AFTER
+                ),
+                **self.pymongo_kwargs,
+            )
+            if result is not None:
+                result = parse_obj(self.document_model, result)
+            return result
 
     def __await__(
         self,

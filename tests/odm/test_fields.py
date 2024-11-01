@@ -136,10 +136,7 @@ def test_revision_id_not_in_schema():
 
         bar: int = 3
 
-    if IS_PYDANTIC_V2:
-        schema = Foo.model_json_schema()
-    else:
-        schema = Foo.schema()
+    schema = Foo.model_json_schema() if IS_PYDANTIC_V2 else Foo.schema()
     assert "revision_id" not in schema["properties"]
 
     # check that the document has not been initialized,

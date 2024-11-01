@@ -29,8 +29,7 @@ def get_projection(
     if get_config_value(model, "extra") == "allow":
         return None
 
-    document_projection: Dict[str, int] = {}
-
-    for name, field in get_model_fields(model).items():
-        document_projection[field.alias or name] = 1
-    return document_projection
+    return {
+        field.alias or name: 1
+        for name, field in get_model_fields(model).items()
+    }

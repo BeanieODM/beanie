@@ -19,17 +19,11 @@ def parse_object_as(object_type: Type, data: Any):
 
 
 def get_field_type(field):
-    if IS_PYDANTIC_V2:
-        return field.annotation
-    else:
-        return field.outer_type_
+    return field.annotation if IS_PYDANTIC_V2 else field.outer_type_
 
 
 def get_model_fields(model):
-    if IS_PYDANTIC_V2:
-        return model.model_fields
-    else:
-        return model.__fields__
+    return model.model_fields if IS_PYDANTIC_V2 else model.__fields__
 
 
 def parse_model(model_type: Type[BaseModel], data: Any):
@@ -40,12 +34,11 @@ def parse_model(model_type: Type[BaseModel], data: Any):
 
 
 def get_extra_field_info(field, parameter: str):
-    if IS_PYDANTIC_V2:
-        if isinstance(field.json_schema_extra, dict):
-            return field.json_schema_extra.get(parameter)
-        return None
-    else:
+    if not IS_PYDANTIC_V2:
         return field.field_info.extra.get(parameter)
+    if isinstance(field.json_schema_extra, dict):
+        return field.json_schema_extra.get(parameter)
+    return None
 
 
 def get_config_value(model, parameter: str):

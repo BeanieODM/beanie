@@ -330,11 +330,10 @@ class Link(Generic[T]):
             if isinstance(link, Link):
                 if document_class is None:
                     document_class = link.document_class
-                else:
-                    if document_class != link.document_class:
-                        raise ValueError(
-                            "All the links must have the same model class"
-                        )
+                elif document_class != link.document_class:
+                    raise ValueError(
+                        "All the links must have the same model class"
+                    )
                 ids_to_fetch.append(link.ref.id)
 
         if ids_to_fetch:
@@ -563,10 +562,7 @@ class IndexModelField:
     def find_index_with_the_same_fields(
         indexes: List[IndexModelField], index: IndexModelField
     ):
-        for i in indexes:
-            if i.same_fields(index):
-                return i
-        return None
+        return next((i for i in indexes if i.same_fields(index)), None)
 
     @staticmethod
     def merge_indexes(

@@ -34,11 +34,7 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
                 merge_models(left_value, right_value)
             continue
         if isinstance(right_value, list):
-            links_found = False
-            for i in right_value:
-                if isinstance(i, Link):
-                    links_found = True
-                    break
+            links_found = any(isinstance(i, Link) for i in right_value)
             if links_found:
                 continue
             left.__setattr__(k, right_value)
@@ -76,15 +72,14 @@ def apply_changes(
                 raise ApplyChangesException(
                     f"Failed to apply change for key '{key}': {e}"
                 )
+        elif isinstance(target, dict):
+            target[key] = value
+        elif isinstance(target, BaseModel):
+            setattr(target, key, value)
         else:
-            if isinstance(target, dict):
-                target[key] = value
-            elif isinstance(target, BaseModel):
-                setattr(target, key, value)
-            else:
-                raise ApplyChangesException(
-                    f"Unexpected type of target: {type(target)}"
-                )
+            raise ApplyChangesException(
+                f"Unexpected type of target: {type(target)}"
+            )
 
 
 def save_state(item: BaseModel):

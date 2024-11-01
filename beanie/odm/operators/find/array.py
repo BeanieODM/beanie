@@ -74,10 +74,7 @@ class ElemMatch(BaseFindArrayOperator):
     ):
         self.field = field
 
-        if expression is None:
-            self.expression = kwargs
-        else:
-            self.expression = expression
+        self.expression = kwargs if expression is None else expression
 
     @property
     def query(self):

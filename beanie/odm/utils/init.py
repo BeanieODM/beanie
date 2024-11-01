@@ -249,7 +249,6 @@ class Initializer:
                         link_type=LinkTypes.BACK_DIRECT,
                     )
 
-            # Check if annotation is List[custom class]
             elif (
                 (origin is List or origin is list)
                 and len(args) == 1
@@ -277,16 +276,12 @@ class Initializer:
                         link_type=LinkTypes.BACK_LIST,
                     )
 
-            # Check if annotation is Optional[custom class] or Optional[List[custom class]]
             elif (
                 (origin is Union or origin is TypesUnionType)
                 and len(args) == 2
                 and type(None) in args
             ):
-                if args[1] is type(None):
-                    optional = args[0]
-                else:
-                    optional = args[1]
+                optional = args[0] if args[1] is type(None) else args[1]
                 optional_origin = get_origin(optional)
                 optional_args = get_args(optional)
 
@@ -415,7 +410,7 @@ class Initializer:
                     self.check_nested_links(
                         link_info, current_depth=depth_level
                     )
-                elif depth_level <= 0:
+                else:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
 
@@ -429,14 +424,13 @@ class Initializer:
         ActionRegistry.clean_actions(cls)
         for attr in dir(cls):
             f = getattr(cls, attr)
-            if inspect.isfunction(f):
-                if hasattr(f, "has_action"):
-                    ActionRegistry.add_action(
-                        document_class=cls,
-                        event_types=f.event_types,  # type: ignore
-                        action_direction=f.action_direction,  # type: ignore
-                        funct=f,
-                    )
+            if inspect.isfunction(f) and hasattr(f, "has_action"):
+                ActionRegistry.add_action(
+                    document_class=cls,
+                    event_types=f.event_types,  # type: ignore
+                    action_direction=f.action_direction,  # type: ignore
+                    funct=f,
+                )
 
     async def init_document_collection(self, cls):
         """
@@ -527,11 +521,8 @@ class Initializer:
         if document_settings.merge_indexes:
             result: List[IndexModelField] = []
             for subclass in reversed(cls.mro()):
-                if issubclass(subclass, Document) and not subclass == Document:
-                    if (
-                        subclass not in self.inited_classes
-                        and not subclass == cls
-                    ):
+                if issubclass(subclass, Document) and subclass != Document:
+                    if subclass not in self.inited_classes and subclass != cls:
                         await self.init_class(subclass)
                     if subclass.get_settings().indexes:
                         result = IndexModelField.merge_indexes(
@@ -541,11 +532,10 @@ class Initializer:
                 found_indexes, result
             )
 
-        else:
-            if document_settings.indexes:
-                found_indexes = IndexModelField.merge_indexes(
-                    found_indexes, document_settings.indexes
-                )
+        elif document_settings.indexes:
+            found_indexes = IndexModelField.merge_indexes(
+                found_indexes, document_settings.indexes
+            )
 
         new_indexes += found_indexes
 
@@ -577,52 +567,51 @@ class Initializer:
         build_info = await self.database.command({"buildInfo": 1})
         mongo_version = build_info["version"]
         cls._database_major_version = int(mongo_version.split(".")[0])
-        if cls not in self.inited_classes:
-            self.set_default_class_vars(cls)
-            self.init_settings(cls)
-
-            bases = [b for b in cls.__bases__ if issubclass(b, Document)]
-            if len(bases) > 1:
-                return None
-            parent = bases[0]
-            output = await self.init_document(parent)
-            if cls.get_settings().is_root and (
-                parent is Document or not parent.get_settings().is_root
-            ):
-                if cls.get_collection_name() is None:
-                    cls.set_collection_name(cls.__name__)
-                output = Output(
-                    class_name=cls.__name__,
-                    collection_name=cls.get_collection_name(),
-                )
-                cls._class_id = cls.__name__
-                cls._inheritance_inited = True
-            elif output is not None:
-                output.class_name = f"{output.class_name}.{cls.__name__}"
-                cls._class_id = output.class_name
-                cls.set_collection_name(output.collection_name)
-                parent.add_child(cls._class_id, cls)
-                cls._parent = parent
-                cls._inheritance_inited = True
-
-            await self.init_document_collection(cls)
-            await self.init_indexes(cls, self.allow_index_dropping)
-            self.init_document_fields(cls)
-            self.init_cache(cls)
-            self.init_actions(cls)
-
-            self.inited_classes.append(cls)
-
-            return output
-
-        else:
-            if cls._inheritance_inited is True:
-                return Output(
+        if cls in self.inited_classes:
+            return (
+                Output(
                     class_name=cls._class_id,
                     collection_name=cls.get_collection_name(),
                 )
-            else:
-                return None
+                if cls._inheritance_inited is True
+                else None
+            )
+        self.set_default_class_vars(cls)
+        self.init_settings(cls)
+
+        bases = [b for b in cls.__bases__ if issubclass(b, Document)]
+        if len(bases) > 1:
+            return None
+        parent = bases[0]
+        output = await self.init_document(parent)
+        if cls.get_settings().is_root and (
+            parent is Document or not parent.get_settings().is_root
+        ):
+            if cls.get_collection_name() is None:
+                cls.set_collection_name(cls.__name__)
+            output = Output(
+                class_name=cls.__name__,
+                collection_name=cls.get_collection_name(),
+            )
+            cls._class_id = cls.__name__
+            cls._inheritance_inited = True
+        elif output is not None:
+            output.class_name = f"{output.class_name}.{cls.__name__}"
+            cls._class_id = output.class_name
+            cls.set_collection_name(output.collection_name)
+            parent.add_child(cls._class_id, cls)
+            cls._parent = parent
+            cls._inheritance_inited = True
+
+        await self.init_document_collection(cls)
+        await self.init_indexes(cls, self.allow_index_dropping)
+        self.init_document_fields(cls)
+        self.init_cache(cls)
+        self.init_actions(cls)
+
+        self.inited_classes.append(cls)
+
+        return output
 
     # Views
 
@@ -649,7 +638,7 @@ class Initializer:
                     self.check_nested_links(
                         link_info, current_depth=depth_level
                     )
-                elif depth_level <= 0:
+                else:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
 

@@ -24,5 +24,5 @@ async def test_distinct_different_value(documents, document_not_inserted):
     document_not_inserted.test_str = "diff_val"
     await document_not_inserted.insert()
     another_unique_test_strs = await DocumentTestModel.distinct("test_str", {})
-    assert not another_unique_test_strs == expected_result
+    assert another_unique_test_strs != expected_result
     assert another_unique_test_strs == ["cuatro", "diff_val", "dos", "uno"]

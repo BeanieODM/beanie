@@ -60,9 +60,7 @@ class AggregateMethods:
                 ignore_cache=ignore_cache,
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
-        if not result:
-            return None
-        return result[0]["sum"]
+        return result[0]["sum"] if result else None
 
     async def avg(
         self,
@@ -102,9 +100,7 @@ class AggregateMethods:
                 ignore_cache=ignore_cache,
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
-        if not result:
-            return None
-        return result[0]["avg"]
+        return result[0]["avg"] if result else None
 
     async def max(
         self,
@@ -143,9 +139,7 @@ class AggregateMethods:
                 ignore_cache=ignore_cache,
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
-        if not result:
-            return None
-        return result[0]["max"]
+        return result[0]["max"] if result else None
 
     async def min(
         self,
@@ -184,6 +178,4 @@ class AggregateMethods:
                 ignore_cache=ignore_cache,
             ).to_list(),  # type: ignore # TODO: pyright issue, fix
         )
-        if not result:
-            return None
-        return result[0]["min"]
+        return result[0]["min"] if result else None

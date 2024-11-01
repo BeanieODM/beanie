@@ -27,7 +27,6 @@ class TimeSeriesConfig(BaseModel):
     expire_after_seconds: Optional[int] = None
 
     def build_query(self, collection_name: str) -> Dict[str, Any]:
-        res: Dict[str, Any] = {"name": collection_name}
         timeseries: Dict[str, Any] = {"timeField": self.time_field}
         if self.meta_field is not None:
             timeseries["metaField"] = self.meta_field
@@ -37,7 +36,10 @@ class TimeSeriesConfig(BaseModel):
             timeseries["bucketMaxSpanSeconds"] = self.bucket_max_span_seconds
         if self.bucket_rounding_second is not None:
             timeseries["bucketRoundingSeconds"] = self.bucket_rounding_second
-        res["timeseries"] = timeseries
+        res: Dict[str, Any] = {
+            "name": collection_name,
+            "timeseries": timeseries,
+        }
         if self.expire_after_seconds is not None:
             res["expireAfterSeconds"] = self.expire_after_seconds
         return res

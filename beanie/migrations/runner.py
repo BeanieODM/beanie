@@ -87,7 +87,7 @@ class MigrationNode:
                         break
             else:
                 logger.info(f"Running {mode.distance} migrations forward")
-                for i in range(mode.distance):
+                for _ in range(mode.distance):
                     await migration_node.run_forward(
                         allow_index_dropping=allow_index_dropping,
                         use_transaction=use_transaction,
@@ -109,7 +109,7 @@ class MigrationNode:
                         break
             else:
                 logger.info(f"Running {mode.distance} migrations backward")
-                for i in range(mode.distance):
+                for _ in range(mode.distance):
                     await migration_node.run_backward(
                         allow_index_dropping=allow_index_dropping,
                         use_transaction=use_transaction,

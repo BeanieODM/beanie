@@ -98,16 +98,19 @@ async def house(house_not_inserted):
 async def houses():
     for i in range(10):
         roof = Roof() if i % 2 == 0 else None
-        if i % 2 == 0:
-            yards = [Yard(v=10, w=10 + i), Yard(v=11, w=10 + i)]
-        else:
-            yards = None
+        yards = (
+            [Yard(v=10, w=10 + i), Yard(v=11, w=10 + i)]
+            if i % 2 == 0
+            else None
+        )
         house = await House(
             door=Door(
                 t=i,
-                window=Window(x=20, y=21 + i, lock=Lock(k=20 + i))
-                if i % 2 == 0
-                else None,
+                window=(
+                    Window(x=20, y=21 + i, lock=Lock(k=20 + i))
+                    if i % 2 == 0
+                    else None
+                ),
                 locks=[Lock(k=20 + i)],
             ),
             windows=[
@@ -357,7 +360,7 @@ class TestFind:
 
     async def test_fetch_list_with_some_prefetched(self):
         docs = []
-        for i in range(10):
+        for _ in range(10):
             doc = DocumentToBeLinked()
             await doc.save()
             docs.append(doc)
@@ -592,13 +595,13 @@ class TestOther:
         region = Region()
         await region.insert()
 
-        for i in range(10):
+        for _ in range(10):
             await UsersAddresses(region_id=region).insert()
 
         region_2 = Region()
         await region_2.insert()
 
-        for i in range(10):
+        for _ in range(10):
             await UsersAddresses(region_id=region_2).insert()
 
         addresses_count = (

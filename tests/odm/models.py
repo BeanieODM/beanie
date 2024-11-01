@@ -92,9 +92,9 @@ class Color:
     def validate(cls, value):
         if isinstance(value, Color):
             return value
-        if isinstance(value, dict):
-            return Color(value["value"])
-        return Color(value)
+        return (
+            Color(value["value"]) if isinstance(value, dict) else Color(value)
+        )
 
     @classmethod
     def __get_pydantic_core_schema__(
@@ -105,9 +105,11 @@ class Color:
         def validate(value, _: FieldInfo) -> Color:
             if isinstance(value, Color):
                 return value
-            if isinstance(value, dict):
-                return Color(value["value"])
-            return Color(value)
+            return (
+                Color(value["value"])
+                if isinstance(value, dict)
+                else Color(value)
+            )
 
         vf = (
             core_schema.with_info_plain_validator_function
@@ -1068,10 +1070,7 @@ class DocumentWithBsonBinaryField(Document):
     binary_field: BsonBinary
 
 
-if IS_PYDANTIC_V2:
-    Pets = RootModel[List[str]]
-else:
-    Pets = List[str]
+Pets = RootModel[List[str]] if IS_PYDANTIC_V2 else List[str]
 
 
 class DocumentWithRootModelAsAField(Document):

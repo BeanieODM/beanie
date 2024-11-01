@@ -22,7 +22,7 @@ def extract_id_class(annotation) -> Type[Any]:
             annotation = None
     if inspect.isclass(annotation):
         return annotation
-    raise ValueError("Unknown annotation: {}".format(annotation))
+    raise ValueError(f"Unknown annotation: {annotation}")
 
 
 def get_index_attributes(field) -> Optional[Tuple[int, Dict[str, Any]]]:

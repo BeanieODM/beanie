@@ -142,9 +142,7 @@ def json_schema_extra(schema: Dict[str, Any], model: Type["Document"]) -> None:
 
 
 def document_alias_generator(s: str) -> str:
-    if s == "id":
-        return "_id"
-    return s
+    return "_id" if s == "id" else s
 
 
 class MergeStrategy(str, Enum):
@@ -343,26 +341,24 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
-                    ]:
-                        if isinstance(value, Document):
-                            await value.save(
-                                link_rule=WriteRules.WRITE, session=session
-                            )
+                    ] and isinstance(value, Document):
+                        await value.save(
+                            link_rule=WriteRules.WRITE, session=session
+                        )
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
-                    ]:
-                        if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.save(
-                                        link_rule=WriteRules.WRITE,
-                                        session=session,
-                                    )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
+                    ] and isinstance(value, List):
+                        await asyncio.gather(
+                            *[
+                                obj.save(
+                                    link_rule=WriteRules.WRITE,
+                                    session=session,
+                                )
+                                for obj in value
+                                if isinstance(obj, Document)
+                            ]
+                        )
         result = await self.get_motor_collection().insert_one(
             get_dict(
                 self, to_db=True, keep_nulls=self.get_settings().keep_nulls
@@ -412,23 +408,22 @@ class Document(
             )
         if bulk_writer is None:
             return await document.insert(link_rule=link_rule, session=session)
-        else:
-            if link_rule == WriteRules.WRITE:
-                raise NotSupported(
-                    "Cascade insert with bulk writing not supported"
-                )
-            bulk_writer.add_operation(
-                Operation(
-                    operation=InsertOne,
-                    first_query=get_dict(
-                        document,
-                        to_db=True,
-                        keep_nulls=document.get_settings().keep_nulls,
-                    ),
-                    object_class=type(document),
-                )
+        if link_rule == WriteRules.WRITE:
+            raise NotSupported(
+                "Cascade insert with bulk writing not supported"
             )
-            return None
+        bulk_writer.add_operation(
+            Operation(
+                operation=InsertOne,
+                first_query=get_dict(
+                    document,
+                    to_db=True,
+                    keep_nulls=document.get_settings().keep_nulls,
+                ),
+                object_class=type(document),
+            )
+        )
+        return None
 
     @classmethod
     async def insert_many(
@@ -490,41 +485,40 @@ class Document(
 
         if link_rule == WriteRules.WRITE:
             link_fields = self.get_link_fields()
-            if link_fields is not None:
+            if link_fields:
                 for field_info in link_fields.values():
                     value = getattr(self, field_info.field_name)
-                    if field_info.link_type in [
+                    link_type = field_info.link_type
+                    if link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
                         LinkTypes.BACK_DIRECT,
                         LinkTypes.OPTIONAL_BACK_DIRECT,
-                    ]:
-                        if isinstance(value, Document):
-                            await value.replace(
-                                link_rule=link_rule,
-                                bulk_writer=bulk_writer,
-                                ignore_revision=ignore_revision,
-                                session=session,
-                            )
-                    if field_info.link_type in [
+                    ] and isinstance(value, Document):
+                        await value.replace(
+                            link_rule=link_rule,
+                            bulk_writer=bulk_writer,
+                            ignore_revision=ignore_revision,
+                            session=session,
+                        )
+                    if link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
                         LinkTypes.BACK_LIST,
                         LinkTypes.OPTIONAL_BACK_LIST,
-                    ]:
-                        if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.replace(
-                                        link_rule=link_rule,
-                                        bulk_writer=bulk_writer,
-                                        ignore_revision=ignore_revision,
-                                        session=session,
-                                    )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
+                    ] and isinstance(value, List):
+                        await asyncio.gather(
+                            *[
+                                obj.replace(
+                                    link_rule=link_rule,
+                                    bulk_writer=bulk_writer,
+                                    ignore_revision=ignore_revision,
+                                    session=session,
+                                )
+                                for obj in value
+                                if isinstance(obj, Document)
+                            ]
+                        )
 
         use_revision_id = self.get_settings().use_revision
         find_query: Dict[str, Any] = {"_id": self.id}
@@ -574,27 +568,21 @@ class Document(
                         LinkTypes.OPTIONAL_DIRECT,
                         LinkTypes.BACK_DIRECT,
                         LinkTypes.OPTIONAL_BACK_DIRECT,
-                    ]:
-                        if isinstance(value, Document):
-                            await value.save(
-                                link_rule=link_rule, session=session
-                            )
+                    ] and isinstance(value, Document):
+                        await value.save(link_rule=link_rule, session=session)
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
                         LinkTypes.BACK_LIST,
                         LinkTypes.OPTIONAL_BACK_LIST,
-                    ]:
-                        if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.save(
-                                        link_rule=link_rule, session=session
-                                    )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
+                    ] and isinstance(value, List):
+                        await asyncio.gather(
+                            *[
+                                obj.save(link_rule=link_rule, session=session)
+                                for obj in value
+                                if isinstance(obj, Document)
+                            ]
+                        )
 
         if self.get_settings().keep_nulls is False:
             return await self.update(
@@ -898,29 +886,27 @@ class Document(
                         LinkTypes.OPTIONAL_DIRECT,
                         LinkTypes.BACK_DIRECT,
                         LinkTypes.OPTIONAL_BACK_DIRECT,
-                    ]:
-                        if isinstance(value, Document):
-                            await value.delete(
-                                link_rule=DeleteRules.DELETE_LINKS,
-                                **pymongo_kwargs,
-                            )
+                    ] and isinstance(value, Document):
+                        await value.delete(
+                            link_rule=DeleteRules.DELETE_LINKS,
+                            **pymongo_kwargs,
+                        )
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
                         LinkTypes.BACK_LIST,
                         LinkTypes.OPTIONAL_BACK_LIST,
-                    ]:
-                        if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.delete(
-                                        link_rule=DeleteRules.DELETE_LINKS,
-                                        **pymongo_kwargs,
-                                    )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
+                    ] and isinstance(value, List):
+                        await asyncio.gather(
+                            *[
+                                obj.delete(
+                                    link_rule=DeleteRules.DELETE_LINKS,
+                                    **pymongo_kwargs,
+                                )
+                                for obj in value
+                                if isinstance(obj, Document)
+                            ]
+                        )
 
         return await self.find_one({"_id": self.id}).delete(
             session=session, bulk_writer=bulk_writer, **pymongo_kwargs
@@ -1004,25 +990,21 @@ class Document(
     @property
     @saved_state_needed
     def is_changed(self) -> bool:
-        if self._saved_state == get_dict(
+        return self._saved_state != get_dict(
             self,
             to_db=True,
             keep_nulls=self.get_settings().keep_nulls,
             exclude={"revision_id"},
-        ):
-            return False
-        return True
+        )
 
     @property
     @saved_state_needed
     @previous_saved_state_needed
     def has_changed(self) -> bool:
-        if (
-            self._previous_saved_state is None
-            or self._previous_saved_state == self._saved_state
-        ):
-            return False
-        return True
+        return (
+            self._previous_saved_state is not None
+            and self._previous_saved_state != self._saved_state
+        )
 
     def _collect_updates(
         self, old_dict: Dict[str, Any], new_dict: Dict[str, Any]

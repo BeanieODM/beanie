@@ -263,7 +263,7 @@ class FindMany(
         self.pymongo_kwargs.update(pymongo_kwargs)
         self.nesting_depth = nesting_depth
         self.nesting_depths_per_field = nesting_depths_per_field
-        if lazy_parse is True:
+        if lazy_parse:
             self.lazy_parse = lazy_parse
         return self
 
@@ -693,9 +693,7 @@ class FindMany(
         Returns the first found element or None if no elements were found
         """
         res = await self.limit(1).to_list()
-        if not res:
-            return None
-        return res[0]
+        return res[0] if res else None
 
     async def count(self) -> int:
         """

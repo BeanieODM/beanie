@@ -58,7 +58,7 @@ class MigrationSettings:
     @staticmethod
     def get_env_value(field_name) -> Any:
         if field_name == "connection_uri":
-            value = (
+            return (
                 os.environ.get("BEANIE_URI")
                 or os.environ.get("BEANIE_CONNECTION_URI")
                 or os.environ.get("BEANIE_CONNECTION_STRING")
@@ -71,7 +71,7 @@ class MigrationSettings:
                 or os.environ.get("beanie_mongodb_uri")
             )
         elif field_name == "database_name":
-            value = (
+            return (
                 os.environ.get("BEANIE_DB")
                 or os.environ.get("BEANIE_DB_NAME")
                 or os.environ.get("BEANIE_DATABASE_NAME")
@@ -80,10 +80,9 @@ class MigrationSettings:
                 or os.environ.get("beanie_database_name")
             )
         else:
-            value = os.environ.get(
+            return os.environ.get(
                 f"BEANIE_{field_name.upper()}"
             ) or os.environ.get(f"beanie_{field_name.lower()}")
-        return value
 
     @staticmethod
     def get_from_toml(field_name) -> Any:

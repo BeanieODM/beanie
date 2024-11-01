@@ -41,7 +41,7 @@ async def notes(db):
 
 
 async def test_migration_free_fall(settings, notes, db):
-    if not db.client.is_mongos and not len(db.client.nodes) > 1:
+    if not db.client.is_mongos and len(db.client.nodes) <= 1:
         return pytest.skip(
             "MongoDB server does not support transactions as it is neighter a mongos instance not a replica set."
         )
