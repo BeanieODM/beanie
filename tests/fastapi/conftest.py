@@ -3,7 +3,14 @@ from asgi_lifespan import LifespanManager
 from httpx import ASGITransport, AsyncClient
 
 from tests.fastapi.app import app
-from tests.fastapi.models import DoorAPI, HouseAPI, RoofAPI, WindowAPI
+from tests.fastapi.models import (
+    DoorAPI,
+    House,
+    HouseAPI,
+    Person,
+    RoofAPI,
+    WindowAPI,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -19,7 +26,7 @@ async def api_client(clean_db):
 
 @pytest.fixture(autouse=True)
 async def clean_db(db):
-    models = [HouseAPI, WindowAPI, DoorAPI, RoofAPI]
+    models = [House, Person, HouseAPI, WindowAPI, DoorAPI, RoofAPI]
     yield None
 
     for model in models:
