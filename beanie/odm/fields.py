@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import Enum
@@ -18,6 +17,7 @@ from typing import (
 )
 from typing import OrderedDict as OrderedDictType
 
+from anyio import create_task_group
 from bson import DBRef, ObjectId
 from bson.errors import InvalidId
 from pydantic import BaseModel
@@ -363,10 +363,10 @@ class Link(Generic[T]):
 
     @classmethod
     async def fetch_many(cls, links: List[Link]):
-        coros = []
-        for link in links:
-            coros.append(link.fetch())
-        return await asyncio.gather(*coros)
+        if links:
+            async with create_task_group() as tg:
+                for link in links:
+                    tg.start_soon(link.fetch)
 
     if IS_PYDANTIC_V2:
 

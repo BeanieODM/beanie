@@ -1,7 +1,6 @@
-import asyncio
 import inspect
 from enum import Enum
-from functools import wraps
+from functools import partial, wraps
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -15,6 +14,7 @@ from typing import (
     Union,
 )
 
+from anyio import create_task_group, to_thread
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
@@ -76,7 +76,7 @@ class ActionRegistry:
         :param document_class: document class
         :param event_types: List[EventTypes]
         :param action_direction: ActionDirections - before or after
-        :param funct: Callable - function
+        :param funct: Callable - function must be either thread safe or async safe
         """
         if cls._actions.get(document_class) is None:
             cls._actions[document_class] = {
@@ -130,19 +130,23 @@ class ActionRegistry:
         actions_list = cls.get_action_list(
             document_class, event_type, action_direction
         )
-        coros = []
-        for action in actions_list:
-            if action.__name__ in exclude:
-                continue
+        async with create_task_group() as tg:
+            for action in actions_list:
+                if action.__name__ in exclude:
+                    continue
+                if inspect.iscoroutinefunction(action):
+                    tg.start_soon(action, instance)
+                elif inspect.isfunction(action):
+                    tg.start_soon(
+                        partial(
+                            to_thread.run_sync,
+                            partial(action, instance),
+                            abandon_on_cancel=True,
+                        )
+                    )
 
-            if inspect.iscoroutinefunction(action):
-                coros.append(action(instance))
-            elif inspect.isfunction(action):
-                action(instance)
-        await asyncio.gather(*coros)
 
-
-# `Any` because there is arbitrary attribute assignment on this type
+# `Any` because there is an arbitrary attribute assignment on this type
 F = TypeVar("F", bound=Any)
 
 

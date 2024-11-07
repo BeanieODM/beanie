@@ -1,7 +1,7 @@
-import asyncio
 import warnings
 from datetime import datetime, timezone
 from enum import Enum
+from functools import partial
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -20,6 +20,7 @@ from typing import (
 )
 from uuid import UUID, uuid4
 
+from anyio import create_task_group
 from bson import DBRef, ObjectId
 from lazy_model import LazyModel
 from motor.motor_asyncio import AsyncIOMotorClientSession
@@ -125,6 +126,10 @@ AsyncDocMethod: TypeAlias = Callable[
     Concatenate[DocType, P], Coroutine[Any, Any, R]
 ]
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
+
+
+def only_documents(objets: List[Any]):
+    return filter(lambda obj: isinstance(obj, Document), objets)
 
 
 def json_schema_extra(schema: Dict[str, Any], model: Type["Document"]) -> None:
@@ -353,16 +358,16 @@ class Document(
                         LinkTypes.OPTIONAL_LIST,
                     ]:
                         if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.save(
-                                        link_rule=WriteRules.WRITE,
-                                        session=session,
+                            async with create_task_group() as tg:
+                                for obj in only_documents(value):
+                                    tg.start_soon(
+                                        partial(
+                                            obj.save,
+                                            link_rule=WriteRules.WRITE,
+                                            session=session,
+                                        )
                                     )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
+
         result = await self.get_motor_collection().insert_one(
             get_dict(
                 self, to_db=True, keep_nulls=self.get_settings().keep_nulls
@@ -513,18 +518,17 @@ class Document(
                         LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.replace(
-                                        link_rule=link_rule,
-                                        bulk_writer=bulk_writer,
-                                        ignore_revision=ignore_revision,
-                                        session=session,
+                            async with create_task_group() as tg:
+                                for obj in only_documents(value):
+                                    tg.start_soon(
+                                        partial(
+                                            obj.replace,
+                                            link_rule=link_rule,
+                                            bulk_writer=bulk_writer,
+                                            ignore_revision=ignore_revision,
+                                            session=session,
+                                        )
                                     )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
 
         use_revision_id = self.get_settings().use_revision
         find_query: Dict[str, Any] = {"_id": self.id}
@@ -586,15 +590,15 @@ class Document(
                         LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.save(
-                                        link_rule=link_rule, session=session
+                            async with create_task_group() as tg:
+                                for obj in only_documents(value):
+                                    tg.start_soon(
+                                        partial(
+                                            obj.save,
+                                            link_rule=link_rule,
+                                            session=session,
+                                        )
                                     )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
 
         if self.get_settings().keep_nulls is False:
             return await self.update(
@@ -911,16 +915,15 @@ class Document(
                         LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
                         if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.delete(
-                                        link_rule=DeleteRules.DELETE_LINKS,
-                                        **pymongo_kwargs,
+                            async with create_task_group() as tg:
+                                for obj in only_documents(value):
+                                    tg.start_soon(
+                                        partial(
+                                            obj.delete,
+                                            link_rule=DeleteRules.DELETE_LINKS,
+                                            **pymongo_kwargs,
+                                        )
                                     )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
 
         return await self.find_one({"_id": self.id}).delete(
             session=session, bulk_writer=bulk_writer, **pymongo_kwargs
@@ -1182,12 +1185,11 @@ class Document(
             setattr(self, field, values)
 
     async def fetch_all_links(self):
-        coros = []
         link_fields = self.get_link_fields()
-        if link_fields is not None:
-            for ref in link_fields.values():
-                coros.append(self.fetch_link(ref.field_name))  # TODO lists
-        await asyncio.gather(*coros)
+        if link_fields is not None and len(link_fields.values()) > 0:
+            async with create_task_group() as tg:
+                for ref in link_fields.values():
+                    tg.start_soon(self.fetch_link, ref.field_name)
 
     @classmethod
     def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:

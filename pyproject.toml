@@ -29,6 +29,7 @@ dependencies = [
     "toml",
     "lazy-model==0.2.0",
     "typing-extensions>=4.7",
+    "anyio>=4.5.1" #todo when droping python 3.8 update to newest
 ]
 
 [project.optional-dependencies]
