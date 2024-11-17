@@ -1253,7 +1253,7 @@ class DocumentWithSoftDelete(Document):
     def find_many_in_all(  # type: ignore
         cls: Type[FindType],
         *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
+        projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
