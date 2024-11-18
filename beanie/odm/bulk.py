@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Mapping, Optional, Type, Union
 
+from motor.motor_asyncio import AsyncIOMotorClientSession
 from pydantic import BaseModel, Field
 from pymongo import (
     DeleteMany,
@@ -9,7 +10,6 @@ from pymongo import (
     UpdateMany,
     UpdateOne,
 )
-from pymongo.client_session import ClientSession
 from pymongo.results import BulkWriteResult
 
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
@@ -43,9 +43,14 @@ class Operation(BaseModel):
 
 
 class BulkWriter:
-    def __init__(self, session: Optional[ClientSession] = None):
+    def __init__(
+        self,
+        session: Optional[AsyncIOMotorClientSession] = None,
+        ordered: bool = True,
+    ):
         self.operations: List[Operation] = []
         self.session = session
+        self.ordered = ordered
 
     async def __aenter__(self):
         return self
@@ -73,12 +78,14 @@ class BulkWriter:
                     query = op.operation(op.first_query, **op.pymongo_kwargs)  # type: ignore
                 else:
                     query = op.operation(
-                        op.first_query, op.second_query, **op.pymongo_kwargs  # type: ignore
+                        op.first_query,
+                        op.second_query,
+                        **op.pymongo_kwargs,  # type: ignore
                     )
                 requests.append(query)
 
             return await obj_class.get_motor_collection().bulk_write(  # type: ignore
-                requests, session=self.session
+                requests, session=self.session, ordered=self.ordered
             )
         return None
 

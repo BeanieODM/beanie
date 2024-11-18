@@ -73,10 +73,10 @@ async def test_find_many_skip(preset_documents):
         assert sample.nested.optional is None
 
     len_result = 0
-    async for sample in Sample.find_many(Sample.increment > 2).find_many(
-        Sample.nested.optional == None
-    ).skip(
-        1
+    async for sample in (
+        Sample.find_many(Sample.increment > 2)
+        .find_many(Sample.nested.optional == None)
+        .skip(1)
     ):  # noqa
         assert sample in result
         len_result += 1
@@ -104,10 +104,11 @@ async def test_find_many_limit(preset_documents):
         assert a.nested.optional is None
 
     len_result = 0
-    async for a in Sample.find_many(Sample.increment > 2).find(
-        Sample.nested.optional == None
-    ).sort(Sample.increment).limit(
-        2
+    async for a in (
+        Sample.find_many(Sample.increment > 2)
+        .find(Sample.nested.optional == None)
+        .sort(Sample.increment)
+        .limit(2)
     ):  # noqa
         assert a in result
         len_result += 1
@@ -310,7 +311,8 @@ async def test_find_many_with_session(preset_documents, session):
 
 async def test_bson_encoders_filed_types():
     custom = DocumentWithBsonEncodersFiledsTypes(
-        color="7fffd4", timestamp=datetime.datetime.utcnow()
+        color="7fffd4",
+        timestamp=datetime.datetime.now(tz=datetime.timezone.utc),
     )
     c = await custom.insert()
     c_fromdb = await DocumentWithBsonEncodersFiledsTypes.find_one(
@@ -320,8 +322,12 @@ async def test_bson_encoders_filed_types():
 
 
 async def test_find_by_datetime(preset_documents):
-    datetime_1 = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-    datetime_2 = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+    datetime_1 = datetime.datetime.now(
+        tz=datetime.timezone.utc
+    ) - datetime.timedelta(days=7)
+    datetime_2 = datetime.datetime.now(
+        tz=datetime.timezone.utc
+    ) - datetime.timedelta(days=2)
     docs = await Sample.find(
         Sample.timestamp >= datetime_1,
         Sample.timestamp <= datetime_2,

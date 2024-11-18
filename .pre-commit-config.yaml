@@ -1,15 +1,12 @@
 repos:
-  - repo: https://github.com/psf/black
-    rev: 23.9.1
-    hooks:
-    - id: black
-      language_version: python3.10
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.290
+    rev: v0.6.9
     hooks:
       - id: ruff
+        args: [ --fix ]
+      - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
+    rev: v1.11.2
     hooks:
       - id: mypy
         additional_dependencies:

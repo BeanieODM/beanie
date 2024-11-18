@@ -1,5 +1,6 @@
 import re
 from datetime import date, datetime
+from enum import Enum
 from uuid import uuid4
 
 import pytest
@@ -9,15 +10,19 @@ from pydantic import AnyUrl
 from beanie.odm.utils.encoder import Encoder
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
+    BsonRegexDoc,
     Child,
+    DictEnum,
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
     DocumentWithComplexDictKey,
     DocumentWithDecimalField,
+    DocumentWithEnumKeysDict,
     DocumentWithHttpUrlField,
     DocumentWithKeepNullsFalse,
     DocumentWithStringField,
     ModelWithOptionalField,
+    NativeRegexDoc,
     SampleWithMutableObjects,
 )
 
@@ -169,3 +174,30 @@ async def test_dict_with_complex_key():
 
     assert isinstance(new_doc.dict_field, dict)
     assert new_doc.dict_field.get(uuid) == dt
+
+
+async def test_dict_with_enum_keys():
+    doc = DocumentWithEnumKeysDict(color={DictEnum.RED: "favorite"})
+    await doc.save()
+
+    assert isinstance(doc.color, dict)
+
+    for key in doc.color:
+        assert isinstance(key, Enum)
+        assert key == DictEnum.RED
+
+
+async def test_native_regex():
+    regex = re.compile(r"^1?$|^(11+?)\1+$", (re.I | re.M | re.S) ^ re.UNICODE)
+    doc = await NativeRegexDoc(regex=regex).insert()
+    new_doc = await NativeRegexDoc.get(doc.id)
+    assert new_doc.regex == regex
+    assert new_doc.regex.pattern == r"^1?$|^(11+?)\1+$"
+    assert new_doc.regex.flags == int(re.I | re.M | re.S ^ re.UNICODE)
+
+
+async def test_bson_regex():
+    regex = Regex(r"^1?$|^(11+?)\1+$")
+    doc = await BsonRegexDoc(regex=regex).insert()
+    new_doc = await BsonRegexDoc.get(doc.id)
+    assert new_doc.regex == Regex(pattern=r"^1?$|^(11+?)\1+$")

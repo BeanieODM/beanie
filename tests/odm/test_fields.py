@@ -42,7 +42,8 @@ def test_pydantic_object_id_bytes_input():
 
 async def test_bson_encoders_filed_types():
     custom = DocumentWithBsonEncodersFiledsTypes(
-        color="7fffd4", timestamp=datetime.datetime.utcnow()
+        color="7fffd4",
+        timestamp=datetime.datetime.now(tz=datetime.timezone.utc),
     )
     encoded = get_dict(custom)
     assert isinstance(encoded["timestamp"], str)
@@ -117,7 +118,7 @@ async def test_excluded(document):
         assert "test_list" not in document.dict()
 
 
-async def test_hidden():
+async def test_hidden(deprecated_init_beanie):
     document = DocumentWithDeprecatedHiddenField(test_hidden=["abc", "def"])
     await document.insert()
     document = await DocumentWithDeprecatedHiddenField.find_one()

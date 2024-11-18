@@ -4,23 +4,23 @@ from typing import Any, Dict, Mapping, Union
 from beanie.odm.operators.find import BaseFindOperator
 
 
-class BaseFindLogicalOperator(BaseFindOperator, ABC):
-    ...
+class BaseFindLogicalOperator(BaseFindOperator, ABC): ...
 
 
 class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
+    # todo: handle query return typing
     operator: str = ""
 
     def __init__(
         self,
         *expressions: Union[
-            BaseFindOperator, Dict[str, Any], Mapping[str, Any]
+            BaseFindOperator, Dict[str, Any], Mapping[str, Any], bool
         ],
     ):
         self.expressions = list(expressions)
 
     @property
-    def query(self) -> Mapping[str, Any]:
+    def query(self):
         if not self.expressions:
             raise AttributeError("At least one expression must be provided")
         if len(self.expressions) == 1:

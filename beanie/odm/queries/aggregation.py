@@ -41,11 +41,11 @@ class AggregationQuery(
         find_query: Mapping[str, Any],
         projection_model: Optional[Type[BaseModel]] = None,
         ignore_cache: bool = False,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ):
-        self.aggregation_pipeline: List[
-            Mapping[str, Any]
-        ] = aggregation_pipeline
+        self.aggregation_pipeline: List[Mapping[str, Any]] = (
+            aggregation_pipeline
+        )
         self.document_model = document_model
         self.projection_model = projection_model
         self.find_query = find_query

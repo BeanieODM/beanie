@@ -1,11 +1,11 @@
 import asyncio
 from inspect import isclass, signature
-from typing import List, Optional, Type, Union
+from typing import Any, List, Optional, Type, Union
 
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.migrations.utils import update_dict
 from beanie.odm.documents import Document
-from beanie.odm.utils.pydantic import parse_model
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, parse_model
 
 
 class DummyOutput:
@@ -52,17 +52,17 @@ def iterative_migration(
             )
             if input_signature is None:
                 raise RuntimeError("input_signature must not be None")
-            self.input_document_model: Type[
-                Document
-            ] = input_signature.annotation
+            self.input_document_model: Type[Document] = (
+                input_signature.annotation
+            )
             output_signature = self.function_signature.parameters.get(
                 "output_document"
             )
             if output_signature is None:
                 raise RuntimeError("output_signature must not be None")
-            self.output_document_model: Type[
-                Document
-            ] = output_signature.annotation
+            self.output_document_model: Type[Document] = (
+                output_signature.annotation
+            )
 
             if (
                 not isclass(self.input_document_model)
@@ -77,7 +77,7 @@ def iterative_migration(
 
             self.batch_size = batch_size
 
-        def __call__(self, *args, **kwargs):
+        def __call__(self, *args: Any, **kwargs: Any):
             pass
 
         @property
@@ -104,7 +104,11 @@ def iterative_migration(
                 if "self" in self.function_signature.parameters:
                     function_kwargs["self"] = None
                 await self.function(**function_kwargs)
-                output_dict = input_document.dict()
+                output_dict = (
+                    input_document.dict()
+                    if not IS_PYDANTIC_V2
+                    else input_document.model_dump()
+                )
                 update_dict(output_dict, output.dict())
                 output_document = parse_model(
                     self.output_document_model, output_dict

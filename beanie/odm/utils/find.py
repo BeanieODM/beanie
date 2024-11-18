@@ -66,7 +66,7 @@ def construct_query(
                     }
                 },
                 {
-                    "$set": {
+                    "$addFields": {
                         link_info.field_name: {
                             "$cond": {
                                 "if": {
@@ -81,7 +81,7 @@ def construct_query(
                         }
                     }
                 },
-                {"$unset": f"_link_{link_info.field_name}"},
+                {"$project": {f"_link_{link_info.field_name}": 0}},
             ]  # type: ignore
             new_depth = (
                 current_depth - 1 if current_depth is not None else None
@@ -122,7 +122,7 @@ def construct_query(
                     }
                 },
                 {
-                    "$set": {
+                    "$addFields": {
                         link_info.field_name: {
                             "$cond": {
                                 "if": {
@@ -137,7 +137,7 @@ def construct_query(
                         }
                     }
                 },
-                {"$unset": f"_link_{link_info.field_name}"},
+                {"$project": {f"_link_{link_info.field_name}": 0}},
             ]
             new_depth = (
                 current_depth - 1 if current_depth is not None else None
@@ -172,7 +172,7 @@ def construct_query(
                     }
                 },
                 {
-                    "$set": {
+                    "$addFields": {
                         link_info.field_name: {
                             "$cond": {
                                 "if": {
@@ -187,7 +187,7 @@ def construct_query(
                         }
                     }
                 },
-                {"$unset": f"_link_{link_info.field_name}"},
+                {"$project": {f"_link_{link_info.field_name}": 0}},
             ]  # type: ignore
             new_depth = (
                 current_depth - 1 if current_depth is not None else None
@@ -231,7 +231,7 @@ def construct_query(
                     }
                 },
                 {
-                    "$set": {
+                    "$addFields": {
                         link_info.field_name: {
                             "$cond": {
                                 "if": {
@@ -246,7 +246,7 @@ def construct_query(
                         }
                     }
                 },
-                {"$unset": f"_link_{link_info.field_name}"},
+                {"$project": {f"_link_{link_info.field_name}": 0}},
             ]
             new_depth = (
                 current_depth - 1 if current_depth is not None else None
@@ -373,7 +373,7 @@ def construct_query(
 
 
 def split_text_query(
-    query: Dict[str, Any]
+    query: Dict[str, Any],
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """Divide query into text and non-text matches
 

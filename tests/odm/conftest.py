@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+import warnings
+from datetime import datetime, timedelta, timezone
 from random import randint
 from typing import List
 
@@ -10,6 +11,7 @@ from tests.odm.models import (
     BDocument,
     Bicycle,
     Bike,
+    BsonRegexDoc,
     Bus,
     Car,
     Doc2NonRoot,
@@ -44,6 +46,7 @@ from tests.odm.models import (
     DocumentWithCustomInit,
     DocumentWithDecimalField,
     DocumentWithDeprecatedHiddenField,
+    DocumentWithEnumKeysDict,
     DocumentWithExtras,
     DocumentWithHttpUrlField,
     DocumentWithIndexedObjectId,
@@ -82,6 +85,7 @@ from tests.odm.models import (
     LongSelfLink,
     LoopedLinksA,
     LoopedLinksB,
+    NativeRegexDoc,
     Nested,
     Option1,
     Option2,
@@ -106,6 +110,105 @@ from tests.odm.models import (
 )
 from tests.odm.views import ViewForTest, ViewForTestWithLink
 
+TESTING_MODELS = [
+    DocumentWithExtras,
+    DocumentWithPydanticConfig,
+    DocumentTestModel,
+    DocumentTestModelWithSoftDelete,
+    DocumentTestModelWithLink,
+    DocumentTestModelWithCustomCollectionName,
+    DocumentTestModelWithSimpleIndex,
+    DocumentTestModelWithIndexFlags,
+    DocumentTestModelWithIndexFlagsAliases,
+    DocumentTestModelIndexFlagsAnnotated,
+    DocumentTestModelWithComplexIndex,
+    DocumentTestModelFailInspection,
+    DocumentWithBsonEncodersFiledsTypes,
+    DocumentWithCustomFiledsTypes,
+    DocumentWithCustomIdUUID,
+    DocumentWithCustomIdInt,
+    Sample,
+    DocumentWithActions,
+    DocumentWithTurnedOnStateManagement,
+    DocumentWithTurnedOnReplaceObjects,
+    DocumentWithTurnedOnSavePrevious,
+    DocumentWithTurnedOffStateManagement,
+    DocumentWithValidationOnSave,
+    DocumentWithRevisionTurnedOn,
+    DocumentWithHttpUrlField,
+    House,
+    Window,
+    WindowWithValidationOnSave,
+    Door,
+    Roof,
+    Yard,
+    Lock,
+    InheritedDocumentWithActions,
+    DocumentForEncodingTest,
+    DocumentForEncodingTestDate,
+    DocumentWithStringField,
+    ViewForTest,
+    ViewForTestWithLink,
+    DocumentMultiModelOne,
+    DocumentMultiModelTwo,
+    DocumentUnion,
+    HouseWithRevision,
+    WindowWithRevision,
+    LockWithRevision,
+    YardWithRevision,
+    DocumentWithActions2,
+    Vehicle,
+    Bicycle,
+    Bike,
+    Car,
+    Bus,
+    Owner,
+    SampleWithMutableObjects,
+    DocNonRoot,
+    Doc2NonRoot,
+    SampleLazyParsing,
+    RootDocument,
+    ADocument,
+    BDocument,
+    StateAndDecimalFieldModel,
+    Region,
+    UsersAddresses,
+    SelfLinked,
+    LoopedLinksA,
+    LoopedLinksB,
+    DocumentWithTurnedOnStateManagementWithCustomId,
+    DocumentWithDecimalField,
+    DocumentWithKeepNullsFalse,
+    PackageElemMatch,
+    DocumentWithLink,
+    DocumentWithBackLink,
+    DocumentWithListLink,
+    DocumentWithListBackLink,
+    DocumentWithListOfLinks,
+    DocumentToBeLinked,
+    DocumentWithTimeStampToTestConsistency,
+    DocumentWithIndexMerging1,
+    DocumentWithIndexMerging2,
+    DocumentWithCustomInit,
+    DocumentWithTextIndexAndLink,
+    LinkDocumentForTextSeacrh,
+    DocumentWithList,
+    DocumentWithBsonBinaryField,
+    DocumentWithRootModelAsAField,
+    DocWithCallWrapper,
+    DocumentWithOptionalBackLink,
+    DocumentWithOptionalListBackLink,
+    DocumentWithComplexDictKey,
+    DocumentWithIndexedObjectId,
+    DocumentToTestSync,
+    DocumentWithLinkForNesting,
+    DocumentWithBackLinkForNesting,
+    DocumentWithEnumKeysDict,
+    LongSelfLink,
+    BsonRegexDoc,
+    NativeRegexDoc,
+]
+
 
 @pytest.fixture
 def point():
@@ -119,7 +222,7 @@ def point():
 async def preset_documents(point):
     docs = []
     for i in range(10):
-        timestamp = datetime.utcnow() - timedelta(days=i)
+        timestamp = datetime.now(tz=timezone.utc) - timedelta(days=i)
         integer_1: int = i // 3
         integer_2: int = i // 2
         float_num = integer_1 + 0.3
@@ -175,7 +278,7 @@ def sample_doc_not_saved(point):
         ]
     )
     return Sample(
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(tz=timezone.utc),
         increment=0,
         integer=0,
         float_num=0,
@@ -194,114 +297,38 @@ async def session(cli):
     await s.end_session()
 
 
-@pytest.fixture(autouse=True)
-async def init(db):
-    models = [
-        DocumentWithExtras,
-        DocumentWithPydanticConfig,
-        DocumentTestModel,
-        DocumentTestModelWithSoftDelete,
-        DocumentTestModelWithLink,
-        DocumentTestModelWithCustomCollectionName,
-        DocumentTestModelWithSimpleIndex,
-        DocumentTestModelWithIndexFlags,
-        DocumentTestModelWithIndexFlagsAliases,
-        DocumentTestModelIndexFlagsAnnotated,
-        DocumentTestModelWithComplexIndex,
-        DocumentTestModelFailInspection,
-        DocumentWithBsonEncodersFiledsTypes,
-        DocumentWithDeprecatedHiddenField,
-        DocumentWithCustomFiledsTypes,
-        DocumentWithCustomIdUUID,
-        DocumentWithCustomIdInt,
-        Sample,
-        DocumentWithActions,
-        DocumentWithTurnedOnStateManagement,
-        DocumentWithTurnedOnReplaceObjects,
-        DocumentWithTurnedOnSavePrevious,
-        DocumentWithTurnedOffStateManagement,
-        DocumentWithValidationOnSave,
-        DocumentWithRevisionTurnedOn,
-        DocumentWithHttpUrlField,
-        House,
-        Window,
-        WindowWithValidationOnSave,
-        Door,
-        Roof,
-        Yard,
-        Lock,
-        InheritedDocumentWithActions,
-        DocumentForEncodingTest,
-        DocumentForEncodingTestDate,
-        DocumentWithStringField,
-        ViewForTest,
-        ViewForTestWithLink,
-        DocumentMultiModelOne,
-        DocumentMultiModelTwo,
-        DocumentUnion,
-        HouseWithRevision,
-        WindowWithRevision,
-        LockWithRevision,
-        YardWithRevision,
-        DocumentWithActions2,
-        Vehicle,
-        Bicycle,
-        Bike,
-        Car,
-        Bus,
-        Owner,
-        SampleWithMutableObjects,
-        DocNonRoot,
-        Doc2NonRoot,
-        SampleLazyParsing,
-        RootDocument,
-        ADocument,
-        BDocument,
-        StateAndDecimalFieldModel,
-        Region,
-        UsersAddresses,
-        SelfLinked,
-        LoopedLinksA,
-        LoopedLinksB,
-        DocumentWithTurnedOnStateManagementWithCustomId,
-        DocumentWithDecimalField,
-        DocumentWithKeepNullsFalse,
-        PackageElemMatch,
-        DocumentWithLink,
-        DocumentWithBackLink,
-        DocumentWithListLink,
-        DocumentWithListBackLink,
-        DocumentWithListOfLinks,
-        DocumentToBeLinked,
-        DocumentWithTimeStampToTestConsistency,
-        DocumentWithIndexMerging1,
-        DocumentWithIndexMerging2,
-        DocumentWithCustomInit,
-        DocumentWithTextIndexAndLink,
-        LinkDocumentForTextSeacrh,
-        DocumentWithList,
-        DocumentWithBsonBinaryField,
-        DocumentWithRootModelAsAField,
-        DocWithCallWrapper,
-        DocumentWithOptionalBackLink,
-        DocumentWithOptionalListBackLink,
-        DocumentWithComplexDictKey,
-        DocumentWithIndexedObjectId,
-        DocumentToTestSync,
-        DocumentWithLinkForNesting,
-        DocumentWithBackLinkForNesting,
-        LongSelfLink,
-    ]
-    await init_beanie(
-        database=db,
-        document_models=models,
-    )
-
-    yield None
-
-    for model in models:
+@pytest.fixture()
+async def deprecated_init_beanie(db):
+    for model in TESTING_MODELS:  # crude clear from init
         await model.get_motor_collection().drop()
         await model.get_motor_collection().drop_indexes()
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+
+        await init_beanie(
+            database=db,
+            document_models=[DocumentWithDeprecatedHiddenField],
+        )
+        assert len(w) == 1
+        assert issubclass(w[-1].category, DeprecationWarning)
+        assert (
+            "DocumentWithDeprecatedHiddenField: 'hidden=True' is deprecated, please use 'exclude=True'"
+            in str(w[-1].message)
+        )
+
+
+@pytest.fixture(autouse=True)
+async def init(db):
+    await init_beanie(
+        database=db,
+        document_models=TESTING_MODELS,
+    )
+    try:
+        yield None
+    finally:
+        for model in TESTING_MODELS:
+            await model.get_motor_collection().drop()
+            await model.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture

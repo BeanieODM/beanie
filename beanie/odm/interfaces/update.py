@@ -1,7 +1,8 @@
 from abc import abstractmethod
+from datetime import datetime
 from typing import Any, Dict, Mapping, Optional, Union
 
-from pymongo.client_session import ClientSession
+from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.fields import ExpressionField
@@ -21,18 +22,18 @@ class UpdateMethods:
     def update(
         self,
         *args: Mapping[str, Any],
-        session: Optional[ClientSession] = None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         return self
 
     def set(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
-        session: Optional[ClientSession] = None,
+        expression: Dict[Union[ExpressionField, str, Any], Any],
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Set values
@@ -50,9 +51,9 @@ class UpdateMethods:
 
         Uses [Set operator](operators/update.md#set)
 
-        :param expression: Dict[Union[ExpressionField, str], Any] - keys and
+        :param expression: Dict[Union[ExpressionField, str, Any], Any] - keys and
         values to set
-        :param session: Optional[ClientSession] - pymongo session
+        :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """
@@ -62,18 +63,18 @@ class UpdateMethods:
 
     def current_date(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
-        session: Optional[ClientSession] = None,
+        expression: Dict[Union[datetime, ExpressionField, str], Any],
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Set current date
 
         Uses [CurrentDate operator](operators/update.md#currentdate)
 
-        :param expression: Dict[Union[ExpressionField, str], Any]
-        :param session: Optional[ClientSession] - pymongo session
+        :param expression: Dict[Union[datetime, ExpressionField, str], Any]
+        :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """
@@ -86,10 +87,10 @@ class UpdateMethods:
 
     def inc(
         self,
-        expression: Dict[Union[ExpressionField, str], Any],
-        session: Optional[ClientSession] = None,
+        expression: Dict[Union[ExpressionField, float, int, str], Any],
+        session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Increment
@@ -107,8 +108,8 @@ class UpdateMethods:
 
         Uses [Inc operator](operators/update.md#inc)
 
-        :param expression: Dict[Union[ExpressionField, str], Any]
-        :param session: Optional[ClientSession] - pymongo session
+        :param expression: Dict[Union[ExpressionField, float, int, str], Any]
+        :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """

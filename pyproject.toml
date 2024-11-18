@@ -4,10 +4,10 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "beanie"
-version = "1.26.0"
+version = "1.27.0"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
-requires-python = ">=3.7,<4.0"
+requires-python = ">=3.8,<4.0"
 license = { file="LICENSE" }
 authors = [
     {name = "Roman Right", email = "roman-right@protonmail.com"}
@@ -23,22 +23,21 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pydantic>=1.10,<3.0",
+    "pydantic>=1.10.18,<3.0",
     "motor>=2.5.0,<4.0.0",
     "click>=7",
     "toml",
     "lazy-model==0.2.0",
-    "typing-extensions>=4.7; python_version < '3.11'",
+    "typing-extensions>=4.7",
 ]
 
 [project.optional-dependencies]
 test = [
-    "pre-commit>=2.3.0",
-    "pytest>=6.0.0",
-    "pytest-asyncio>=0.21.0",
-    "pytest-cov>=2.8.1",
+    "pre-commit>=3.5.0",
+    "pytest>=8.3.3",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
     "dnspython>=2.1.0",
-    "flake8>=3",
     "pyright>=0",
     "asgi-lifespan>=1.0.1",
     "httpx>=0.23.0",
@@ -56,6 +55,17 @@ doc = [
     "jinja2>=3.0.3"
 ]
 queue = ["beanie-batteries-queue>=0.2"]
+ci = [
+    "toml",
+    "requests",
+    "types-requests",
+]
+aws = ["motor[aws]>=2.5.0,<4.0.0"]
+encryption = ["motor[encryption]>=2.5.0,<4.0.0"]
+gssapi = ["motor[gssapi]>=2.5.0,<4.0.0"]
+ocsp = ["motor[ocsp]>=2.5.0,<4.0.0"]
+snappy = ["motor[snappy]>=2.5.0,<4.0.0"]
+zstd = ["motor[zstd]>=2.5.0,<4.0.0"]
 
 [project.urls]
 homepage = "https://beanie-odm.dev"
@@ -66,25 +76,8 @@ beanie = "beanie.executors.migrate:migrations"
 
 # TOOLS
 
-[tool.black]
-line-length = 79
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
-
 [tool.pytest.ini_options]
-minversion = "6.0"
+minversion = "8.0"
 addopts = "--cov-report term-missing --cov=beanie --cov-branch --cov-fail-under=80"
 testpaths = [
     "tests",
@@ -95,6 +88,7 @@ filterwarnings = [
     "ignore::UserWarning",
 ]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.beanie.migrations]
 path = "beanie/example_migration"
@@ -112,19 +106,14 @@ include = ["tests/typing", "beanie"]
 
 [tool.ruff]
 line-length = 79
+fix = true
+target-version = "py312"
+include = ["**/*.py", ".github/**/*.py"]
+
+[tool.ruff.lint]
 ignore = ["E501"]
 extend-select = ["I001"]
-fix = true
+per-file-ignores = { "tests/*" = ["E711"] }
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-# Assume Python 3.10.
-target-version = "py310"
-
-[tool.ruff.per-file-ignores]
-"tests/*" = ["E711"]
-
-[tool.ruff.mccabe]
-# Unlike Flake8, default to a complexity level of 10.
-max-complexity = 10

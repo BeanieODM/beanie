@@ -1,6 +1,8 @@
 import asyncio
 import sys
 
+from typing_extensions import Sequence, get_args, get_origin
+
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
     get_extra_field_info,
@@ -9,10 +11,10 @@ from beanie.odm.utils.pydantic import (
 )
 from beanie.odm.utils.typing import get_index_attributes
 
-if sys.version_info >= (3, 8):
-    from typing import get_args, get_origin
+if sys.version_info >= (3, 10):
+    from types import UnionType as TypesUnionType
 else:
-    from typing_extensions import get_args, get_origin
+    TypesUnionType = ()
 
 import importlib
 import inspect
@@ -45,7 +47,7 @@ from beanie.odm.registry import DocsRegistry
 from beanie.odm.settings.document import DocumentSettings, IndexModelField
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
-from beanie.odm.union_doc import UnionDoc
+from beanie.odm.union_doc import UnionDoc, UnionDocType
 from beanie.odm.views import View
 
 
@@ -60,7 +62,9 @@ class Initializer:
         database: AsyncIOMotorDatabase = None,
         connection_string: Optional[str] = None,
         document_models: Optional[
-            List[Union[Type["DocType"], Type["View"], str]]
+            Sequence[
+                Union[Type["DocType"], Type["UnionDocType"], Type["View"], str]
+            ]
         ] = None,
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
@@ -72,7 +76,7 @@ class Initializer:
 
         :param database: AsyncIOMotorDatabase - motor database instance
         :param connection_string: str - MongoDB connection string
-        :param document_models: List[Union[Type[DocType], str]] - model classes
+        :param document_models: List[Union[Type[DocType], Type[UnionDocType], str]] - model classes
         or strings with dot separated paths
         :param allow_index_dropping: bool - if index dropping is allowed.
         Default False
@@ -115,7 +119,9 @@ class Initializer:
             ModelType.View: 2,
         }
 
-        self.document_models: List[Union[Type[DocType], Type[View]]] = [
+        self.document_models: List[
+            Union[Type[DocType], Type[UnionDocType], Type[View]]
+        ] = [
             self.get_model(model) if isinstance(model, str) else model
             for model in document_models
         ]
@@ -173,9 +179,15 @@ class Initializer:
         :return: None
         """
         settings_class = getattr(cls, "Settings", None)
-        settings_vars = (
-            {} if settings_class is None else dict(vars(settings_class))
-        )
+        settings_vars = {}
+        if settings_class is not None:
+            # get all attributes of the Settings subclass (including inherited ones)
+            # without magic dunder methods
+            settings_vars = {
+                attr: getattr(settings_class, attr)
+                for attr in dir(settings_class)
+                if not attr.startswith("__")
+            }
         if issubclass(cls, Document):
             cls._document_settings = parse_model(
                 DocumentSettings, settings_vars
@@ -251,7 +263,9 @@ class Initializer:
                     return LinkInfo(
                         field_name=field_name,
                         lookup_field_name=field_name,
-                        document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(
+                            get_args(args[0])[0]
+                        ),  # type: ignore
                         link_type=LinkTypes.LIST,
                     )
                 if cls is BackLink:
@@ -260,24 +274,36 @@ class Initializer:
                         lookup_field_name=get_extra_field_info(  # type: ignore
                             field, "original_field"
                         ),
-                        document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(
+                            get_args(args[0])[0]
+                        ),  # type: ignore
                         link_type=LinkTypes.BACK_LIST,
                     )
 
             # Check if annotation is Optional[custom class] or Optional[List[custom class]]
-            elif origin is Union and len(args) == 2 and args[1] is type(None):
-                optional_origin = get_origin(args[0])
-                optional_args = get_args(args[0])
+            elif (
+                (origin is Union or origin is TypesUnionType)
+                and len(args) == 2
+                and type(None) in args
+            ):
+                if args[1] is type(None):
+                    optional = args[0]
+                else:
+                    optional = args[1]
+                optional_origin = get_origin(optional)
+                optional_args = get_args(optional)
 
                 if (
-                    isinstance(args[0], _GenericAlias)
-                    and args[0].__origin__ is cls
+                    isinstance(optional, _GenericAlias)
+                    and optional.__origin__ is cls
                 ):
                     if cls is Link:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field_name,
-                            document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                optional_args[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_DIRECT,
                         )
                     if cls is BackLink:
@@ -286,7 +312,9 @@ class Initializer:
                             lookup_field_name=get_extra_field_info(
                                 field, "original_field"
                             ),
-                            document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                optional_args[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
                         )
 
@@ -300,7 +328,9 @@ class Initializer:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field_name,
-                            document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                get_args(optional_args[0])[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_LIST,
                         )
                     if cls is BackLink:
@@ -309,7 +339,9 @@ class Initializer:
                             lookup_field_name=get_extra_field_info(
                                 field, "original_field"
                             ),
-                            document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(
+                                get_args(optional_args[0])[0]
+                            ),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_LIST,
                         )
         return None
@@ -390,7 +422,7 @@ class Initializer:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
 
-        cls.check_hidden_fields()
+        cls._check_hidden_fields()
 
     @staticmethod
     def init_actions(cls):
@@ -691,7 +723,7 @@ class Initializer:
 
     @staticmethod
     def check_deprecations(
-        cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        cls: Union[Type[Document], Type[View], Type[UnionDoc]],
     ):
         if hasattr(cls, "Collection"):
             raise Deprecation(
@@ -730,7 +762,7 @@ async def init_beanie(
     database: AsyncIOMotorDatabase = None,
     connection_string: Optional[str] = None,
     document_models: Optional[
-        List[Union[Type[Document], Type["View"], str]]
+        Sequence[Union[Type[Document], Type[UnionDoc], Type["View"], str]]
     ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
@@ -742,7 +774,7 @@ async def init_beanie(
 
     :param database: AsyncIOMotorDatabase - motor database instance
     :param connection_string: str - MongoDB connection string
-    :param document_models: List[Union[Type[DocType], str]] - model classes
+    :param document_models: List[Union[Type[DocType], Type[UnionDocType], str]] - model classes
     or strings with dot separated paths
     :param allow_index_dropping: bool - if index dropping is allowed.
     Default False
