@@ -335,3 +335,17 @@ async def test_index_on_custom_types(db):
     )
 
     await db.drop_collection("sample")
+
+
+async def test_init_beanie_with_skip_indexes(db):
+    class NewDocument(Document):
+        test_str: str
+
+    await init_beanie(
+        database=db,
+        document_models=[NewDocument],
+        skip_indexes=True,
+    )
+    collection: AsyncIOMotorCollection = NewDocument.get_motor_collection()
+    index_info = await collection.index_information()
+    assert len(index_info) == 1  # Only the default _id index should be present
