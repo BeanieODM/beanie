@@ -21,6 +21,7 @@ from typing import (
 
 import bson
 import pydantic
+from pydantic import AnyUrl
 
 import beanie
 from beanie.odm.fields import Link, LinkTypes
@@ -45,6 +46,7 @@ DEFAULT_CUSTOM_ENCODERS: MutableMapping[type, SingleArgCallable] = {
     decimal.Decimal: bson.Decimal128,
     uuid.UUID: bson.Binary.from_uuid,
     re.Pattern: bson.Regex.from_native,
+    AnyUrl: str,
 }
 if IS_PYDANTIC_V2:
     from pydantic_core import Url
