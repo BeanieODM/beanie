@@ -33,10 +33,14 @@ def get_model_fields(model):
 
 
 def parse_model(model_type: Type[BaseModel], data: Any):
-    if IS_PYDANTIC_V2:
-        return model_type.model_validate(data)
-    else:
-        return model_type.parse_obj(data)
+    try:
+        if IS_PYDANTIC_V2:
+            return model_type.model_validate(data)
+        else:
+            return model_type.parse_obj(data)
+    except Exception:
+        print(f"Error parsing model {model_type} with data {data}")
+        model_type.model_validate(data)
 
 
 def get_extra_field_info(field, parameter: str):

@@ -148,6 +148,7 @@ def test_should_encode_pydantic_v2_url_correctly():
     assert encoded_url == "https://example.com/"
 
 
+# this used to fail before now it does not
 async def test_should_be_able_to_save_retrieve_doc_with_url():
     doc = DocumentWithHttpUrlField(url_field="https://example.com")
     assert isinstance(doc.url_field, AnyUrl)

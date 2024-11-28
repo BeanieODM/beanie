@@ -52,7 +52,6 @@ if IS_PYDANTIC_V2:
     from pydantic.json_schema import JsonSchemaValue
     from pydantic_core import CoreSchema, core_schema
     from pydantic_core.core_schema import (
-        ValidationInfo,
         simple_ser_schema,
     )
 else:
@@ -64,8 +63,8 @@ if TYPE_CHECKING:
 
 if IS_PYDANTIC_V2:
     plain_validator = (
-        core_schema.with_info_plain_validator_function
-        if hasattr(core_schema, "with_info_plain_validator_function")
+        core_schema.no_info_plain_validator_function
+        if hasattr(core_schema, "no_info_plain_validator_function")
         else core_schema.general_plain_validator_function
     )
 else:
@@ -135,12 +134,14 @@ class PydanticObjectId(ObjectId):
 
     @classmethod
     def __get_validators__(cls):
-        yield cls.validate
+        yield cls._validate
 
     if IS_PYDANTIC_V2:
 
         @classmethod
-        def validate(cls, v, _: ValidationInfo):
+        def _validate(cls, v: str | PydanticObjectId, *_) -> PydanticObjectId:
+            if isinstance(v, ObjectId):
+                return PydanticObjectId(v)
             if isinstance(v, bytes):
                 v = v.decode("utf-8")
             try:
@@ -152,20 +153,14 @@ class PydanticObjectId(ObjectId):
         def __get_pydantic_core_schema__(
             cls, source_type: Any, handler: GetCoreSchemaHandler
         ) -> CoreSchema:  # type: ignore
-            return core_schema.json_or_python_schema(
-                python_schema=plain_validator(cls.validate),
-                json_schema=plain_validator(
-                    cls.validate,
-                    metadata={
-                        "pydantic_js_input_core_schema": core_schema.str_schema(
-                            pattern="^[0-9a-f]{24}$",
-                            min_length=24,
-                            max_length=24,
-                        )
-                    },
-                ),
-                serialization=core_schema.plain_serializer_function_ser_schema(
-                    lambda instance: str(instance), when_used="json"
+            return core_schema.no_info_after_validator_function(
+                cls,
+                schema=core_schema.json_or_python_schema(
+                    json_schema=core_schema.str_schema(),
+                    python_schema=plain_validator(cls._validate),
+                    serialization=core_schema.plain_serializer_function_ser_schema(
+                        lambda instance: str(instance), when_used="json"
+                    ),
                 ),
             )
 
@@ -185,7 +180,7 @@ class PydanticObjectId(ObjectId):
     else:
 
         @classmethod
-        def validate(cls, v):
+        def _validate(cls, v):
             if isinstance(v, bytes):
                 v = v.decode("utf-8")
             try:
@@ -378,7 +373,7 @@ class Link(Generic[T]):
 
         @classmethod
         def build_validation(cls, handler, source_type):
-            def validate(v: Union[DBRef, T], validation_info: ValidationInfo):
+            def validate(v: Union[DBRef, T], *_):
                 document_class = DocsRegistry.evaluate_fr(
                     get_args(source_type)[0]
                 )  # type: ignore  # noqa: F821
@@ -477,7 +472,7 @@ class BackLink(Generic[T]):
 
         @classmethod
         def build_validation(cls, handler, source_type):
-            def validate(v: Union[DBRef, T], field):
+            def validate(v: Union[DBRef, T], *_):
                 document_class = DocsRegistry.evaluate_fr(
                     get_args(source_type)[0]
                 )  # type: ignore  # noqa: F821
@@ -590,7 +585,7 @@ class IndexModelField:
         def __get_pydantic_core_schema__(
             cls, source_type: Any, handler: GetCoreSchemaHandler
         ) -> CoreSchema:  # type: ignore
-            def validate(v, _):
+            def validate(v, *_):
                 if isinstance(v, IndexModel):
                     return IndexModelField(v)
                 else:
