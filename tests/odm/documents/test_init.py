@@ -385,11 +385,18 @@ async def test_init_beanie_with_skip_indexes(db):
     class NewDocument(Document):
         test_str: str
 
+        class Settings:
+            indexes = ["test_str"]
+
     await init_beanie(
         database=db,
         document_models=[NewDocument],
         skip_indexes=True,
     )
+
+    # To force collection creation
+    await NewDocument(test_str="Roman Right").save()
+
     collection: AsyncIOMotorCollection = NewDocument.get_motor_collection()
     index_info = await collection.index_information()
     assert len(index_info) == 1  # Only the default _id index should be present
