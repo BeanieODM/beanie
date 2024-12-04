@@ -1,6 +1,8 @@
-import asyncio
+from functools import partial
 from inspect import isclass, signature
 from typing import Any, List, Optional, Type, Union
+
+from anyio import create_task_group
 
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.migrations.utils import update_dict
@@ -92,43 +94,46 @@ def iterative_migration(
 
         async def run(self, session):
             output_documents = []
-            all_migration_ops = []
-            async for input_document in self.input_document_model.find_all(
-                session=session
-            ):
-                output = DummyOutput()
-                function_kwargs = {
-                    "input_document": input_document,
-                    "output_document": output,
-                }
-                if "self" in self.function_signature.parameters:
-                    function_kwargs["self"] = None
-                await self.function(**function_kwargs)
-                output_dict = (
-                    input_document.dict()
-                    if not IS_PYDANTIC_V2
-                    else input_document.model_dump()
-                )
-                update_dict(output_dict, output.dict())
-                output_document = parse_model(
-                    self.output_document_model, output_dict
-                )
-                output_documents.append(output_document)
+            async with create_task_group() as tg:
+                async for input_document in self.input_document_model.find_all(
+                    session=session
+                ):
+                    output = DummyOutput()
+                    function_kwargs = {
+                        "input_document": input_document,
+                        "output_document": output,
+                    }
+                    if "self" in self.function_signature.parameters:
+                        function_kwargs["self"] = None
+                    await self.function(**function_kwargs)
+                    output_dict = (
+                        input_document.dict()
+                        if not IS_PYDANTIC_V2
+                        else input_document.model_dump()
+                    )
+                    update_dict(output_dict, output.dict())
+                    output_document = parse_model(
+                        self.output_document_model, output_dict
+                    )
+                    output_documents.append(output_document)
 
-                if len(output_documents) == self.batch_size:
-                    all_migration_ops.append(
-                        self.output_document_model.replace_many(
-                            documents=output_documents, session=session
+                    if len(output_documents) == self.batch_size:
+                        tg.start_soon(
+                            partial(
+                                self.output_document_model.replace_many,
+                                documents=output_documents,
+                                session=session,
+                            )
+                        )
+                        output_documents = []
+
+                if output_documents:
+                    tg.start_soon(
+                        partial(
+                            self.output_document_model.replace_many,
+                            documents=output_documents,
+                            session=session,
                         )
                     )
-                    output_documents = []
-
-            if output_documents:
-                all_migration_ops.append(
-                    self.output_document_model.replace_many(
-                        documents=output_documents, session=session
-                    )
-                )
-            await asyncio.gather(*all_migration_ops)
 
     return IterativeMigration

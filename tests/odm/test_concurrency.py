@@ -1,6 +1,7 @@
 import asyncio
 
 import motor.motor_asyncio
+from anyio import create_task_group
 
 from beanie import Document, init_beanie
 
@@ -31,5 +32,7 @@ class TestConcurrency:
                 docs = await SampleModel2.find(SampleModel2.i == 10).to_list()
                 return docs
 
-            await asyncio.gather(*[insert_find() for _ in range(10)])
+            async with create_task_group() as tg:
+                for _ in range(10):
+                    tg.start_soon(insert_find)
         await SampleModel2.delete_all()
