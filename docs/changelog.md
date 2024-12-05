@@ -2,6 +2,43 @@
 
 Beanie project
 
+## [1.28.0] - 2024-12-05
+### Fix kwargs/args untyped
+- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
+- PR <https://github.com/BeanieODM/beanie/pull/1049>
+### Update pre-commit
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/1046>
+### Drop support for python 3.7
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/1044>
+### Add missing type hint to `find_many_in_all` method
+- Author - [vasuman](https://github.com/vasuman)
+- PR <https://github.com/BeanieODM/beanie/pull/1068>
+### Add documentdb compatibility to fetch_links
+- Author - [whitfin](https://github.com/whitfin)
+- PR <https://github.com/BeanieODM/beanie/pull/1042>
+### Fix issues caused by #1044
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/1053>
+### Feat(skip_index): possibility added to skip index actions
+- Author - [jorma16](https://github.com/jorma16)
+- PR <https://github.com/BeanieODM/beanie/pull/942>
+### Fix pydanticobjectid fields being parsed into str
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/1060>
+### Modify tests to not raise deprecation warnings
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/1047>
+### Add python 3.13 and jit into testing
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/1051>
+### Handle limit and session in .count() method
+- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
+- PR <https://github.com/BeanieODM/beanie/pull/1040>
+
+[1.28.0]: https://pypi.org/project/beanie/1.28.0
+
 ## [1.27.0] - 2024-10-06
 ### Add tests on all major mongo version
 - Author - [07pepa](https://github.com/07pepa)
