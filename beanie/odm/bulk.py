@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo import (
@@ -21,27 +21,39 @@ class BulkWriter:
     """
     A utility class for managing and executing bulk operations in MongoDB using Motor.
 
-    This class allows for efficient execution of multiple database operations, such as inserts,
-    updates, deletes, and replacements, in a single batch. It supports asynchronous context management,
-    ensuring that all queued operations are committed when the context is exited.
+    This class facilitates the efficient execution of multiple database operations
+    (e.g., inserts, updates, deletes, replacements) in a single batch. It supports asynchronous
+    context management to ensure that all queued operations are committed upon exiting the context.
 
     Attributes:
         session (Optional[AsyncIOMotorClientSession]): The MongoDB session used for transactional operations.
             Defaults to None, meaning no session is used.
-        ordered (bool): If True (default), operations are executed sequentially, stopping at the first failure.
-            If False, operations are executed in parallel, and all operations are attempted regardless of failures.
+        ordered (bool): Specifies whether operations are executed sequentially (default) or in parallel.
+            - If True, operations are performed serially, stopping at the first failure.
+            - If False, operations may be executed in arbitrary order, and all operations are attempted
+              regardless of individual failures.
+        bypass_document_validation (bool): If True, document-level validation is bypassed for all operations
+            in the bulk write. This applies to MongoDB's schema validation rules, allowing documents that
+            do not meet validation criteria to be inserted or modified. Defaults to False.
+        comment (Optional[Any]): A user-provided comment attached to the bulk operation command, useful for
+            auditing and debugging purposes.
+        object_class (Optional[Type[Document]]): Optionally specifies the document class associated with the
+            operations. If provided, all operations should belong to this model class. Defaults to None, meaning
+            no specific model class is enforced.
         operations (List[Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]]):
-            A list of queued MongoDB operations to be executed in bulk.
-        object_class (Optional[Type[Document]]): The document model class associated with the operations.
-            If provided, all operations should belong to this model class. Defaults to None, meaning no model class is specified.
+            A list of MongoDB operations queued for bulk execution.
 
     Parameters:
         session (Optional[AsyncIOMotorClientSession]): The MongoDB session for transaction support.
             Defaults to None (no session).
         ordered (bool): Specifies whether operations are executed in sequence (True) or in parallel (False).
             Defaults to True.
-        object_class (Optional[Type[Document]]): Optionally specify the document class that represents the
-            data model for operations. Defaults to None.
+        bypass_document_validation (bool): Allows the bulk operation to bypass document-level validation.
+            This is particularly useful when working with schemas that are being phased in or for bulk imports
+            where strict validation may not be necessary. Defaults to False.
+        comment (Optional[Any]): A custom comment attached to the bulk operation.
+        object_class (Optional[Type[Document]]): An optional document model class representing the schema
+            for operations. Defaults to None.
     """
 
     def __init__(
@@ -49,6 +61,8 @@ class BulkWriter:
         session: Optional[AsyncIOMotorClientSession] = None,
         ordered: bool = True,
         object_class: Optional[Type[Document]] = None,
+        bypass_document_validation: bool = False,
+        comment: Optional[Any] = None,
     ):
         self.operations: List[
             Union[
@@ -63,6 +77,8 @@ class BulkWriter:
         self.session = session
         self.ordered = ordered
         self.object_class = object_class
+        self.bypass_document_validation = bypass_document_validation
+        self.comment = comment
 
     async def __aenter__(self):
         return self
@@ -90,7 +106,11 @@ class BulkWriter:
                 "The document model class must be specified before committing operations."
             )
         return await self.object_class.get_motor_collection().bulk_write(
-            self.operations, session=self.session, ordered=self.ordered
+            self.operations,
+            session=self.session,
+            ordered=self.ordered,
+            bypass_document_validation=self.bypass_document_validation,
+            comment=self.comment,
         )
 
     def add_operation(
