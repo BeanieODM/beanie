@@ -21,34 +21,34 @@ class BulkWriter:
     """
     A utility class for managing and executing bulk operations in MongoDB using Motor.
 
-    This class facilitates efficient execution of multiple database operations,
-    such as inserts, updates, deletes, and replacements, in a single batch.
-    It supports asynchronous context management, ensuring that all queued
-    operations are committed upon exiting the context.
+    This class allows for efficient execution of multiple database operations, such as inserts,
+    updates, deletes, and replacements, in a single batch. It supports asynchronous context management,
+    ensuring that all queued operations are committed when the context is exited.
 
     Attributes:
-        session (Optional[AsyncIOMotorClientSession]): The MongoDB session used
-            for transactional operations. Defaults to None.
-        ordered (bool): If True (default), operations are executed sequentially,
-            stopping on the first failure. If False, operations may execute in
-            parallel, and all operations are attempted regardless of failures.
+        session (Optional[AsyncIOMotorClientSession]): The MongoDB session used for transactional operations.
+            Defaults to None, meaning no session is used.
+        ordered (bool): If True (default), operations are executed sequentially, stopping at the first failure.
+            If False, operations are executed in parallel, and all operations are attempted regardless of failures.
         operations (List[Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]]):
             A list of queued MongoDB operations to be executed in bulk.
-        object_class (Optional[Type[Document]]): The document model class
-            associated with the operations. All operations must belong to the
-            same model class.
+        object_class (Optional[Type[Document]]): The document model class associated with the operations.
+            If provided, all operations should belong to this model class. Defaults to None, meaning no model class is specified.
 
     Parameters:
-        session (Optional[AsyncIOMotorClientSession]): The MongoDB session for
-            transaction support. Defaults to None.
-        ordered (bool): Specifies the execution order of bulk operations.
+        session (Optional[AsyncIOMotorClientSession]): The MongoDB session for transaction support.
+            Defaults to None (no session).
+        ordered (bool): Specifies whether operations are executed in sequence (True) or in parallel (False).
             Defaults to True.
+        object_class (Optional[Type[Document]]): Optionally specify the document class that represents the
+            data model for operations. Defaults to None.
     """
 
     def __init__(
         self,
         session: Optional[AsyncIOMotorClientSession] = None,
         ordered: bool = True,
+        object_class: Optional[Type[Document]] = None,
     ):
         self.operations: List[
             Union[
@@ -62,7 +62,7 @@ class BulkWriter:
         ] = []
         self.session = session
         self.ordered = ordered
-        self.object_class: Optional[Type[Document]] = None
+        self.object_class = object_class
 
     async def __aenter__(self):
         return self
