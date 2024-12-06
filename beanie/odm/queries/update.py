@@ -19,7 +19,7 @@ from pymongo import UpdateMany as UpdateManyPyMongo
 from pymongo import UpdateOne as UpdateOnePyMongo
 from pymongo.results import InsertOneResult, UpdateResult
 
-from beanie.odm.bulk import BulkWriter, Operation
+from beanie.odm.bulk import BulkWriter
 from beanie.odm.interfaces.clone import CloneInterface
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (
@@ -170,23 +170,16 @@ class UpdateMany(UpdateQuery):
 
     async def _update(self):
         if self.bulk_writer is None:
-            return (
-                await self.document_model.get_motor_collection().update_many(
-                    self.find_query,
-                    self.update_query,
-                    session=self.session,
-                    **self.pymongo_kwargs,
-                )
+            return await self.document_model.get_motor_collection().update_many(
+                self.find_query,
+                self.update_query,
+                session=self.session,
+                **self.pymongo_kwargs,
             )
         else:
             self.bulk_writer.add_operation(
-                Operation(
-                    operation=UpdateManyPyMongo,
-                    first_query=self.find_query,
-                    second_query=self.update_query,
-                    object_class=self.document_model,
-                    pymongo_kwargs=self.pymongo_kwargs,
-                )
+                self.document_model,
+                UpdateManyPyMongo(self.find_query, **self.pymongo_kwargs),
             )
 
     def __await__(
@@ -331,13 +324,10 @@ class UpdateOne(UpdateQuery):
                 return result
         else:
             self.bulk_writer.add_operation(
-                Operation(
-                    operation=UpdateOnePyMongo,
-                    first_query=self.find_query,
-                    second_query=self.update_query,
-                    object_class=self.document_model,
-                    pymongo_kwargs=self.pymongo_kwargs,
-                )
+                self.document_model,
+                UpdateOnePyMongo(
+                    self.find_query, self.update_query, **self.pymongo_kwargs
+                ),
             )
 
     def __await__(
@@ -358,8 +348,7 @@ class UpdateOne(UpdateQuery):
             and update_result is not None
             and update_result.matched_count == 0
         ) or (
-            self.response_type != UpdateResponse.UPDATE_RESULT
-            and update_result is None
+            self.response_type != UpdateResponse.UPDATE_RESULT and update_result is None
         ):
             return (
                 yield from self.document_model.insert_one(

@@ -1,7 +1,7 @@
-from typing import Any, Dict, List, Mapping, Optional, Type, Union
+from typing import List, Optional, Type, Union
 
+from beanie import Document
 from motor.motor_asyncio import AsyncIOMotorClientSession
-from pydantic import BaseModel, Field
 from pymongo import (
     DeleteMany,
     DeleteOne,
@@ -12,25 +12,11 @@ from pymongo import (
 )
 from pymongo.results import BulkWriteResult
 
+"""
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
 if IS_PYDANTIC_V2:
     from pydantic import ConfigDict
-
-
-class Operation(BaseModel):
-    operation: Union[
-        Type[InsertOne],
-        Type[DeleteOne],
-        Type[DeleteMany],
-        Type[ReplaceOne],
-        Type[UpdateOne],
-        Type[UpdateMany],
-    ]
-    first_query: Mapping[str, Any]
-    second_query: Optional[Dict[str, Any]] = None
-    pymongo_kwargs: Dict[str, Any] = Field(default_factory=dict)
-    object_class: Type
 
     if IS_PYDANTIC_V2:
         model_config = ConfigDict(
@@ -40,6 +26,7 @@ class Operation(BaseModel):
 
         class Config:
             arbitrary_types_allowed = True
+"""
 
 
 class BulkWriter:
@@ -48,9 +35,12 @@ class BulkWriter:
         session: Optional[AsyncIOMotorClientSession] = None,
         ordered: bool = True,
     ):
-        self.operations: List[Operation] = []
+        self.operations: List[
+            Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]
+        ] = []
         self.session = session
         self.ordered = ordered
+        self.object_class: Optional[Type[Document]] = None
 
     async def __aenter__(self):
         return self
@@ -63,31 +53,25 @@ class BulkWriter:
         Commit all the operations to the database
         :return:
         """
-        obj_class = None
-        requests = []
         if self.operations:
-            for op in self.operations:
-                if obj_class is None:
-                    obj_class = op.object_class
-
-                if obj_class != op.object_class:
-                    raise ValueError(
-                        "All the operations should be for a single document model"
-                    )
-                if op.operation in [InsertOne, DeleteOne]:
-                    query = op.operation(op.first_query, **op.pymongo_kwargs)  # type: ignore
-                else:
-                    query = op.operation(
-                        op.first_query,
-                        op.second_query,
-                        **op.pymongo_kwargs,  # type: ignore
-                    )
-                requests.append(query)
-
-            return await obj_class.get_motor_collection().bulk_write(  # type: ignore
-                requests, session=self.session, ordered=self.ordered
+            assert self.object_class
+            return await self.object_class.get_motor_collection().bulk_write(
+                self.operations, session=self.session, ordered=self.ordered
             )
         return None
 
-    def add_operation(self, operation: Operation):
+    def add_operation(
+        self,
+        object_class: Type[Document],
+        operation: Union[
+            DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne
+        ],
+    ):
+        if self.object_class is None:
+            self.object_class = object_class
+        else:
+            if object_class != self.object_class:
+                raise ValueError(
+                    "All the operations should be for a single document model"
+                )
         self.operations.append(operation)
