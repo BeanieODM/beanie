@@ -181,7 +181,9 @@ class UpdateMany(UpdateQuery):
         else:
             self.bulk_writer.add_operation(
                 self.document_model,
-                UpdateManyPyMongo(self.find_query, **self.pymongo_kwargs),
+                UpdateManyPyMongo(
+                    self.find_query, self.update_query, **self.pymongo_kwargs
+                ),
             )
 
     def __await__(
