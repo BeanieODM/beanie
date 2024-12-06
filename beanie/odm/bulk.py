@@ -37,9 +37,6 @@ class BulkWriter:
             do not meet validation criteria to be inserted or modified. Defaults to False.
         comment (Optional[Any]): A user-provided comment attached to the bulk operation command, useful for
             auditing and debugging purposes.
-        object_class (Optional[Type[Document]]): Optionally specifies the document class associated with the
-            operations. If provided, all operations should belong to this model class. Defaults to None, meaning
-            no specific model class is enforced.
         operations (List[Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]]):
             A list of MongoDB operations queued for bulk execution.
 
@@ -52,15 +49,12 @@ class BulkWriter:
             This is particularly useful when working with schemas that are being phased in or for bulk imports
             where strict validation may not be necessary. Defaults to False.
         comment (Optional[Any]): A custom comment attached to the bulk operation.
-        object_class (Optional[Type[Document]]): An optional document model class representing the schema
-            for operations. Defaults to None.
     """
 
     def __init__(
         self,
         session: Optional[AsyncIOMotorClientSession] = None,
         ordered: bool = True,
-        object_class: Optional[Type[Document]] = None,
         bypass_document_validation: bool = False,
         comment: Optional[Any] = None,
     ):
@@ -76,7 +70,7 @@ class BulkWriter:
         ] = []
         self.session = session
         self.ordered = ordered
-        self.object_class = object_class
+        self.object_class: Optional[Type[Document]] = None
         self.bypass_document_validation = bypass_document_validation
         self.comment = comment
 
@@ -107,9 +101,9 @@ class BulkWriter:
             )
         return await self.object_class.get_motor_collection().bulk_write(
             self.operations,
-            session=self.session,
             ordered=self.ordered,
             bypass_document_validation=self.bypass_document_validation,
+            session=self.session,
             comment=self.comment,
         )
 
