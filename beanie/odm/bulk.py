@@ -78,15 +78,20 @@ class BulkWriter:
         are no operations to commit, it returns None.
 
         :return: The result of the bulk write operation if operations are committed.
-                 Returns None if there are no operations to execute.
+                Returns None if there are no operations to execute.
         :rtype: Optional[BulkWriteResult]
+
+        :raises ValueError: If the object_class is not specified before committing.
         """
-        if self.operations:
-            assert self.object_class
-            return await self.object_class.get_motor_collection().bulk_write(
-                self.operations, session=self.session, ordered=self.ordered
+        if not self.operations:
+            return None
+        if not self.object_class:
+            raise ValueError(
+                "The document model class must be specified before committing operations."
             )
-        return None
+        return await self.object_class.get_motor_collection().bulk_write(
+            self.operations, session=self.session, ordered=self.ordered
+        )
 
     def add_operation(
         self,
