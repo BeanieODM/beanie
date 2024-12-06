@@ -170,11 +170,13 @@ class UpdateMany(UpdateQuery):
 
     async def _update(self):
         if self.bulk_writer is None:
-            return await self.document_model.get_motor_collection().update_many(
-                self.find_query,
-                self.update_query,
-                session=self.session,
-                **self.pymongo_kwargs,
+            return (
+                await self.document_model.get_motor_collection().update_many(
+                    self.find_query,
+                    self.update_query,
+                    session=self.session,
+                    **self.pymongo_kwargs,
+                )
             )
         else:
             self.bulk_writer.add_operation(
@@ -348,7 +350,8 @@ class UpdateOne(UpdateQuery):
             and update_result is not None
             and update_result.matched_count == 0
         ) or (
-            self.response_type != UpdateResponse.UPDATE_RESULT and update_result is None
+            self.response_type != UpdateResponse.UPDATE_RESULT
+            and update_result is None
         ):
             return (
                 yield from self.document_model.insert_one(

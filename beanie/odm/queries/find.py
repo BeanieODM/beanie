@@ -64,9 +64,9 @@ class FindQuery(
     Find Query base class
     """
 
-    UpdateQueryType: Union[Type[UpdateQuery], Type[UpdateMany], Type[UpdateOne]] = (
-        UpdateQuery
-    )
+    UpdateQueryType: Union[
+        Type[UpdateQuery], Type[UpdateMany], Type[UpdateOne]
+    ] = UpdateQuery
     DeleteQueryType: Union[Type[DeleteOne], Type[DeleteMany]] = DeleteMany
     AggregationQueryType = AggregationQuery
 
@@ -153,8 +153,10 @@ class FindQuery(
                 kwargs["limit"] = self.limit_number
             if self.skip_number:
                 kwargs["skip"] = self.skip_number
-        return await self.document_model.get_motor_collection().count_documents(
-            self.get_filter_query(), session=self.session, **kwargs
+        return (
+            await self.document_model.get_motor_collection().count_documents(
+                self.get_filter_query(), session=self.session, **kwargs
+            )
         )
 
     async def exists(self) -> bool:
@@ -232,7 +234,9 @@ class FindMany(
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
-    ) -> Union["FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"]:
+    ) -> Union[
+        "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
+    ]:
         """
         Find many documents by criteria
 
@@ -281,7 +285,9 @@ class FindMany(
     def project(
         self: "FindMany",
         projection_model: Optional[Type[FindQueryProjectionType]],
-    ) -> Union["FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"]:
+    ) -> Union[
+        "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
+    ]:
         """
         Apply projection parameter
 
@@ -339,7 +345,9 @@ class FindMany(
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
-    ) -> Union["FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"]:
+    ) -> Union[
+        "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
+    ]:
         """
         The same as `find_many(...)`
         """
@@ -361,7 +369,9 @@ class FindMany(
     def sort(
         self,
         *args: Optional[
-            Union[str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]]
+            Union[
+                str, Tuple[str, SortDirection], List[Tuple[str, SortDirection]]
+            ]
         ],
     ) -> "FindMany[FindQueryResultType]":
         """
@@ -381,11 +391,17 @@ class FindMany(
                 self.sort_expressions.append(arg)
             elif isinstance(arg, str):
                 if arg.startswith("+"):
-                    self.sort_expressions.append((arg[1:], SortDirection.ASCENDING))
+                    self.sort_expressions.append(
+                        (arg[1:], SortDirection.ASCENDING)
+                    )
                 elif arg.startswith("-"):
-                    self.sort_expressions.append((arg[1:], SortDirection.DESCENDING))
+                    self.sort_expressions.append(
+                        (arg[1:], SortDirection.DESCENDING)
+                    )
                 else:
-                    self.sort_expressions.append((arg, SortDirection.ASCENDING))
+                    self.sort_expressions.append(
+                        (arg, SortDirection.ASCENDING)
+                    )
             else:
                 raise TypeError("Wrong argument type")
         return self
@@ -509,7 +525,9 @@ class FindMany(
         # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
         return cast(
             DeleteMany,
-            self.delete(session=session, bulk_writer=bulk_writer, **pymongo_kwargs),
+            self.delete(
+                session=session, bulk_writer=bulk_writer, **pymongo_kwargs
+            ),
         )
 
     @overload
@@ -577,21 +595,29 @@ class FindMany(
         )
 
     def _get_cache(self):
-        if self.document_model.get_settings().use_cache and self.ignore_cache is False:
+        if (
+            self.document_model.get_settings().use_cache
+            and self.ignore_cache is False
+        ):
             return self.document_model._cache.get(self._cache_key)  # type: ignore
         else:
             return None
 
     def _set_cache(self, data):
-        if self.document_model.get_settings().use_cache and self.ignore_cache is False:
+        if (
+            self.document_model.get_settings().use_cache
+            and self.ignore_cache is False
+        ):
             return self.document_model._cache.set(self._cache_key, data)  # type: ignore
 
     def build_aggregation_pipeline(self, *extra_stages):
         if self.fetch_links:
-            aggregation_pipeline: List[Dict[str, Any]] = construct_lookup_queries(
-                self.document_model,
-                nesting_depth=self.nesting_depth,
-                nesting_depths_per_field=self.nesting_depths_per_field,
+            aggregation_pipeline: List[Dict[str, Any]] = (
+                construct_lookup_queries(
+                    self.document_model,
+                    nesting_depth=self.nesting_depth,
+                    nesting_depths_per_field=self.nesting_depths_per_field,
+                )
             )
         else:
             aggregation_pipeline = []
@@ -724,7 +750,9 @@ class FindOne(FindQuery[FindQueryResultType]):
     def project(
         self: "FindOne[FindQueryResultType]",
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
-    ) -> Union["FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"]:
+    ) -> Union[
+        "FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"
+    ]:
         """
         Apply projection parameter
         :param projection_model: Optional[Type[BaseModel]] - projection model
@@ -769,7 +797,9 @@ class FindOne(FindQuery[FindQueryResultType]):
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
-    ) -> Union["FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"]:
+    ) -> Union[
+        "FindOne[FindQueryResultType]", "FindOne[FindQueryProjectionType]"
+    ]:
         """
         Find one document by criteria
 
@@ -900,7 +930,9 @@ class FindOne(FindQuery[FindQueryResultType]):
         # See https://mypy.readthedocs.io/en/stable/common_issues.html#narrowing-and-inner-functions
         return cast(
             DeleteOne,
-            self.delete(session=session, bulk_writer=bulk_writer, **pymongo_kwargs),
+            self.delete(
+                session=session, bulk_writer=bulk_writer, **pymongo_kwargs
+            ),
         )
 
     async def replace_one(
@@ -918,17 +950,17 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         self.set_session(session=session)
         if bulk_writer is None:
-            result: (
-                UpdateResult
-            ) = await self.document_model.get_motor_collection().replace_one(
-                self.get_filter_query(),
-                get_dict(
-                    document,
-                    to_db=True,
-                    exclude={"_id"},
-                    keep_nulls=document.get_settings().keep_nulls,
-                ),
-                session=self.session,
+            result: UpdateResult = (
+                await self.document_model.get_motor_collection().replace_one(
+                    self.get_filter_query(),
+                    get_dict(
+                        document,
+                        to_db=True,
+                        exclude={"_id"},
+                        keep_nulls=document.get_settings().keep_nulls,
+                    ),
+                    session=self.session,
+                )
             )
 
             if not result.raw_result["updatedExisting"]:
@@ -976,7 +1008,10 @@ class FindOne(FindQuery[FindQueryResultType]):
         :return: BaseModel
         """
         # projection = get_projection(self.projection_model)
-        if self.document_model.get_settings().use_cache and self.ignore_cache is False:
+        if (
+            self.document_model.get_settings().use_cache
+            and self.ignore_cache is False
+        ):
             cache_key = LRUCache.create_key(
                 "FindOne",
                 self.get_filter_query(),
@@ -996,7 +1031,9 @@ class FindOne(FindQuery[FindQueryResultType]):
             return None
         if type(document) is self.projection_model:
             return cast(FindQueryResultType, document)
-        return cast(FindQueryResultType, parse_obj(self.projection_model, document))
+        return cast(
+            FindQueryResultType, parse_obj(self.projection_model, document)
+        )
 
     async def count(self) -> int:
         """
