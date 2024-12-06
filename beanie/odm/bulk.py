@@ -1,6 +1,6 @@
-from typing import List, Optional, Type, Union
+from __future__ import annotations
+from typing import List, Optional, Type, Union, TYPE_CHECKING
 
-from beanie import Document
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo import (
     DeleteMany,
@@ -11,6 +11,10 @@ from pymongo import (
     UpdateOne,
 )
 from pymongo.results import BulkWriteResult
+
+if TYPE_CHECKING:
+    from beanie import Document
+
 
 """
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
