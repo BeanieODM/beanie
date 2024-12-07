@@ -19,6 +19,7 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    Type,
     Union,
 )
 from uuid import UUID, uuid4
@@ -36,7 +37,6 @@ from pydantic import (
     SecretBytes,
     SecretStr,
 )
-from pydantic.fields import FieldInfo
 from pydantic_core import core_schema
 from pymongo import IndexModel
 from typing_extensions import Annotated
@@ -85,41 +85,33 @@ class Color:
         return self.value
 
     @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, value):
+    def _validate(cls, value: Any) -> "Color":
         if isinstance(value, Color):
             return value
         if isinstance(value, dict):
             return Color(value["value"])
         return Color(value)
 
-    @classmethod
-    def __get_pydantic_core_schema__(
-        cls,
-        _source_type: Any,
-        _handler: Callable[[Any], core_schema.CoreSchema],  # type: ignore
-    ) -> core_schema.CoreSchema:  # type: ignore
-        def validate(value, _: FieldInfo) -> Color:
-            if isinstance(value, Color):
-                return value
-            if isinstance(value, dict):
-                return Color(value["value"])
-            return Color(value)
+    if IS_PYDANTIC_V2:
 
-        vf = (
-            core_schema.with_info_plain_validator_function
-            if hasattr(core_schema, "with_info_plain_validator_function")
-            else core_schema.general_plain_validator_function
-        )
-        python_schema = vf(validate)
+        @classmethod
+        def __get_pydantic_core_schema__(
+            cls,
+            _source_type: Type[Any],
+            _handler: Callable[[Any], core_schema.CoreSchema],
+        ) -> core_schema.CoreSchema:
+            return core_schema.json_or_python_schema(
+                json_schema=core_schema.str_schema(),
+                python_schema=core_schema.no_info_plain_validator_function(
+                    cls._validate
+                ),
+            )
 
-        return core_schema.json_or_python_schema(
-            json_schema=core_schema.str_schema(),
-            python_schema=python_schema,
-        )
+    else:
+
+        @classmethod
+        def __get_validators__(cls):
+            yield cls._validate
 
 
 class Extra(str, Enum):
@@ -914,6 +906,11 @@ class PackageElemMatch(Document):
 
 class DocumentWithLink(Document):
     link: Link["DocumentWithBackLink"]
+    s: str = "TEST"
+
+
+class DocumentWithOptionalLink(Document):
+    link: Optional[Link["DocumentWithBackLink"]]
     s: str = "TEST"
 
 

@@ -5,7 +5,14 @@ from fastapi import FastAPI
 
 from beanie import init_beanie
 from tests.conftest import Settings
-from tests.fastapi.models import DoorAPI, HouseAPI, RoofAPI, WindowAPI
+from tests.fastapi.models import (
+    DoorAPI,
+    House,
+    HouseAPI,
+    Person,
+    RoofAPI,
+    WindowAPI,
+)
 from tests.fastapi.routes import house_router
 
 
@@ -17,7 +24,7 @@ async def live_span(_: FastAPI):
     # INIT BEANIE
     await init_beanie(
         client.beanie_db,
-        document_models=[HouseAPI, WindowAPI, DoorAPI, RoofAPI],
+        document_models=[House, Person, HouseAPI, WindowAPI, DoorAPI, RoofAPI],
     )
     yield
 
