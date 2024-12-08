@@ -2,126 +2,126 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://beanie-odm.dev/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/changelog/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/code-of-conduct/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/development/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/getting-started/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/api-documentation/document/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/api-documentation/fields/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/api-documentation/interfaces/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/api-documentation/query/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/api-documentation/operators/find/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/api-documentation/operators/update/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/batteries/queue/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/aggregation/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/cache/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/defining-a-document/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/event-based-actions/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/finding-documents/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/indexes/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/inheritance/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/initialization/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/inserting-into-the-database/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/lazy-parsing/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/migrations/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/multi-model-pattern/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/on-save-validation/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/relations/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/revision/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/state-management/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/time-series/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/updating-%26-deleting/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
     <url>
          <loc>https://beanie-odm.dev/tutorial/views/</loc>
-         <lastmod>2024-10-10</lastmod>
+         <lastmod>2024-12-08</lastmod>
     </url>
 </urlset>

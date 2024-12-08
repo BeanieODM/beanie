@@ -1918,7 +1918,7 @@
     <span class="n">with_children</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindOne</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindOne</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
 </code></pre></div>
 <blockquote>
@@ -1953,7 +1953,7 @@ When awaited this will either return a document or None if no document exists fo
     <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
 </code></pre></div>
 <blockquote>
@@ -1991,7 +1991,7 @@ When awaited this will either return a document or None if no document exists fo
     <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
 </code></pre></div>
 <blockquote>
@@ -2012,7 +2012,7 @@ When awaited this will either return a document or None if no document exists fo
     <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
 </code></pre></div>
 <blockquote>
@@ -2044,7 +2044,7 @@ When awaited this will either return a document or None if no document exists fo
     <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FindMany</span><span class="p">[</span><span class="n">FindType</span><span class="p">],</span> <span class="n">FindMany</span><span class="p">[</span><span class="s2">&quot;DocumentProjectionType&quot;</span><span class="p">]]</span>
 </code></pre></div>
 <blockquote>
@@ -2210,7 +2210,7 @@ When awaited this will either return a document or None if no document exists fo
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
 <p>Set values</p>
@@ -2236,7 +2236,7 @@ values to set</li>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">current_date</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
                  <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
 <p>Set current date</p>
@@ -2255,7 +2255,7 @@ values to set</li>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExpressionField</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
 <p>Increment</p>
@@ -2312,7 +2312,7 @@ values to set</li>
     <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">DocumentProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">AggregationQuery</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
         <span class="n">AggregationQuery</span><span class="p">[</span><span class="n">DocumentProjectionType</span><span class="p">],</span>

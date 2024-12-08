@@ -2376,7 +2376,7 @@
 <h4 id="findquerydelete">FindQuery.delete</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DeleteOne</span><span class="p">,</span> <span class="n">DeleteMany</span><span class="p">]</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DeleteOne</span><span class="p">,</span> <span class="n">DeleteMany</span><span class="p">]</span>
 </code></pre></div>
 <blockquote>
 <p>Provide search criteria to the Delete query</p>
@@ -2440,7 +2440,7 @@
     <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;FindMany[FindQueryResultType]&quot;</span><span class="p">,</span>
            <span class="s2">&quot;FindMany[FindQueryProjectionType]&quot;</span><span class="p">]</span>
 </code></pre></div>
@@ -2492,7 +2492,7 @@ for this query.</li>
     <span class="n">lazy_parse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;FindMany[FindQueryResultType]&quot;</span><span class="p">,</span>
            <span class="s2">&quot;FindMany[FindQueryProjectionType]&quot;</span><span class="p">]</span>
 </code></pre></div>
@@ -2547,7 +2547,7 @@ the sort order for this query.</li>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
            <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
 <p>Create Update with modifications query</p>
@@ -2566,7 +2566,7 @@ the sort order for this query.</li>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
            <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
            <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
 <p>Create Update with modifications query</p>
@@ -2586,7 +2586,7 @@ document in the collection</li>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_many</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
                 <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateMany</span>
+                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateMany</span>
 </code></pre></div>
 <blockquote>
 <p>Provide search criteria to the</p>
@@ -2603,7 +2603,7 @@ document in the collection</li>
 <h4 id="findmanydelete_many">FindMany.delete_many</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_many</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeleteMany</span>
+                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeleteMany</span>
 </code></pre></div>
 <blockquote>
 <p>Provide search criteria to the <a href="./#deletemany">DeleteMany</a> query</p>
@@ -2621,7 +2621,7 @@ document in the collection</li>
     <span class="n">projection_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">ignore_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">AggregationQuery</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
         <span class="n">AggregationQuery</span><span class="p">[</span><span class="n">FindQueryProjectionType</span><span class="p">],</span>
@@ -2688,7 +2688,7 @@ document in the collection</li>
     <span class="n">fetch_links</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">nesting_depth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">nesting_depths_per_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">pymongo_kwargs</span>
+    <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;FindOne[FindQueryResultType]&quot;</span><span class="p">,</span> <span class="s2">&quot;FindOne[FindQueryProjectionType]&quot;</span><span class="p">]</span>
 </code></pre></div>
 <blockquote>
@@ -2710,7 +2710,7 @@ document in the collection</li>
            <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
 <p>Create Update with modifications query</p>
@@ -2731,7 +2731,7 @@ document in the collection</li>
            <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
            <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
 <p>Create Update with modifications query</p>
@@ -2753,7 +2753,7 @@ document in the collection</li>
                <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateOne</span>
+               <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateOne</span>
 </code></pre></div>
 <blockquote>
 <p>Create <a href="./#updateone">UpdateOne</a> query using modifications and</p>
@@ -2771,7 +2771,7 @@ document in the collection</li>
 <h4 id="findonedelete_one">FindOne.delete_one</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_one</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeleteOne</span>
+               <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeleteOne</span>
 </code></pre></div>
 <blockquote>
 <p>Provide search criteria to the <a href="./#deleteone">DeleteOne</a> query</p>
@@ -2914,7 +2914,7 @@ which parse result with model</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
            <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
 </code></pre></div>
 <blockquote>
 <p>Provide modifications to the update query.</p>
@@ -2933,7 +2933,7 @@ which parse result with model</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">upsert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
            <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
            <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
 </code></pre></div>
 <blockquote>
 <p>Provide modifications to the upsert query.</p>
@@ -2953,7 +2953,7 @@ document in the collection</li>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_many</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
                 <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+                <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
 <p>Provide modifications to the update query</p>
@@ -2989,7 +2989,7 @@ document in the collection</li>
            <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
 </code></pre></div>
 <blockquote>
 <p>Provide modifications to the update query.</p>
@@ -3010,7 +3010,7 @@ document in the collection</li>
            <span class="n">on_insert</span><span class="p">:</span> <span class="s2">&quot;DocType&quot;</span><span class="p">,</span>
            <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
            <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
+           <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UpdateQuery&quot;</span>
 </code></pre></div>
 <blockquote>
 <p>Provide modifications to the upsert query.</p>
@@ -3032,7 +3032,7 @@ document in the collection</li>
                <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">bulk_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BulkWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UpdateResponse</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">)</span>
+               <span class="o">**</span><span class="n">pymongo_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
 <p>Provide modifications to the update query. The same as <code>update()</code></p>
