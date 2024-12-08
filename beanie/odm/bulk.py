@@ -131,7 +131,7 @@ class BulkWriter:
         if self.object_class is None:
             self.object_class = object_class
         else:
-            if object_class.get_collection_name() != self.object_class.get_collection_name:
+             if object_class.get_collection_name() != self.object_class.get_collection_name():
                 raise ValueError(
                     "All the operations should be for a same collection name"
                 )
