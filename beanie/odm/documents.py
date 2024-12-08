@@ -52,7 +52,7 @@ from beanie.odm.actions import (
     EventTypes,
     wrap_with_actions,
 )
-from beanie.odm.bulk import BulkWriter, Operation
+from beanie.odm.bulk import BulkWriter
 from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import (
@@ -418,15 +418,14 @@ class Document(
                     "Cascade insert with bulk writing not supported"
                 )
             bulk_writer.add_operation(
-                Operation(
-                    operation=InsertOne,
-                    first_query=get_dict(
+                type(document),
+                InsertOne(
+                    get_dict(
                         document,
                         to_db=True,
                         keep_nulls=document.get_settings().keep_nulls,
-                    ),
-                    object_class=type(document),
-                )
+                    )
+                ),
             )
             return None
 
