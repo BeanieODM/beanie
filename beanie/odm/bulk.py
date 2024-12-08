@@ -23,7 +23,7 @@ class BulkWriter:
 
     This class facilitates the efficient execution of multiple database operations
     (e.g., inserts, updates, deletes, replacements) in a single batch. It supports asynchronous
-    context management to ensure that all queued operations are committed upon exiting the context.
+    context management and ensure that all queued operations are committed upon exiting the context.
 
     Attributes:
         session (Optional[AsyncIOMotorClientSession]): The MongoDB session used for transactional operations.
@@ -70,7 +70,7 @@ class BulkWriter:
         ] = []
         self.session = session
         self.ordered = ordered
-        self.object_class: Optional[Type[Document]] = None
+        self.collection_name: Optional[str] = None
         self.bypass_document_validation = bypass_document_validation
         self.comment = comment
 
@@ -91,13 +91,13 @@ class BulkWriter:
                 Returns None if there are no operations to execute.
         :rtype: Optional[BulkWriteResult]
 
-        :raises ValueError: If the object_class is not specified before committing.
+        :raises ValueError: If the collection_name is not specified before committing.
         """
         if not self.operations:
             return None
-        if not self.object_class:
+        if not self.collection_name:
             raise ValueError(
-                "The document model class must be specified before committing operations."
+                "The collection name must be specified before committing operations."
             )
         return await self.object_class.get_motor_collection().bulk_write(
             self.operations,
@@ -118,21 +118,21 @@ class BulkWriter:
         Add an operation to the queue.
 
         This method adds a MongoDB operation to the BulkWriter's operation queue.
-        All operations in the queue must belong to the same document model class.
+        All operations in the queue must belong to the same collection.
 
         :param object_class: The document model class associated with the operation.
         :type object_class: Type[Document]
         :param operation: The MongoDB operation to add to the queue.
         :type operation: Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]
 
-        :raises ValueError: If the operation's document model class differs from
+        :raises ValueError: If the operation's collection name differs from
                             the one already associated with the BulkWriter.
         """
-        if self.object_class is None:
-            self.object_class = object_class
+        if self.collection_name is None:
+            self.collection_name = object_class.get_motor_collection()
         else:
-            if object_class != self.object_class:
+            if object_class.get_motor_collection() != self.collection_name:
                 raise ValueError(
-                    "All the operations should be for a single document model"
+                    "All the operations should be for a single collection"
                 )
         self.operations.append(operation)
