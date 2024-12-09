@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 import shutil
@@ -6,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import anyio
 import click
 import toml
 
@@ -197,7 +197,7 @@ def migrate(
     settings_kwargs["use_transaction"] = use_transaction
     settings = MigrationSettings(**settings_kwargs)
 
-    asyncio.run(run_migrate(settings))
+    anyio.run(run_migrate, settings)
 
 
 @migrations.command()
