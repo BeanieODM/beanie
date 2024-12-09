@@ -79,7 +79,7 @@ class BulkWriter:
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        if exc_type is not None:
+        if exc_type is None:
             await self.commit()
 
     async def commit(self) -> Optional[BulkWriteResult]:
