@@ -107,6 +107,11 @@ from tests.odm.models import (
     WindowWithValidationOnSave,
     Yard,
     YardWithRevision,
+    Parent,
+    One,
+    Two,
+    TestCollection1,
+    TestCollection2,
 )
 from tests.odm.views import ViewForTest, ViewForTestWithLink
 
@@ -207,6 +212,11 @@ TESTING_MODELS = [
     LongSelfLink,
     BsonRegexDoc,
     NativeRegexDoc,
+    Parent,
+    One,
+    Two,
+    TestCollection1,
+    TestCollection2,
 ]
 
 
