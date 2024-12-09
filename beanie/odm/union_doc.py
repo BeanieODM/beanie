@@ -42,4 +42,7 @@ class UnionDoc(
 
     @classmethod
     def bulk_write(cls):
+        """
+        Returns an instance of BulkWriter for use as an async context manager.
+        """
         return BulkWriter()
