@@ -169,10 +169,12 @@ class TestInsert:
 
         house = parse_model(House, house_not_inserted)
         await house.insert(link_rule=WriteRules.WRITE)
+
         if IS_PYDANTIC_V2:
-            house.model_dump_json()
+            json_str = house.model_dump_json()
         else:
-            house.json()
+            json_str = house.json()
+        assert json_str is not None
 
     async def test_multi_insert_links(self):
         house = House(name="random", windows=[], door=Door())
@@ -195,6 +197,7 @@ class TestInsert:
         assert new_window_2.id is not None
 
     async def test_fetch_after_insert(self, house_not_inserted):
+        # TODO: what is the point of this test if nothing was inserted to DB?
         await house_not_inserted.fetch_all_links()
 
 
