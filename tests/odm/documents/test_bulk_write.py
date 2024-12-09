@@ -195,12 +195,12 @@ async def test_different_models_same_collection(document):
 
 async def test_empty_operations(documents_not_inserted):
     bulk = BulkWriter()
-    assert bulk.commit() == None
+    assert await bulk.commit() == None
 
 
 async def test_comment(documents_not_inserted):
     bulk = BulkWriter(comment="test")
-    assert bulk.comment
+    assert bulk.comment == "test"
     bulk2 = BulkWriter()
     assert not bulk2.comment
 
