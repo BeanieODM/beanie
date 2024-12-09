@@ -73,12 +73,14 @@ class BulkWriter:
         self.object_class: Optional[Type[Document]] = None
         self.bypass_document_validation = bypass_document_validation
         self.comment = comment
+        self._colection_name: str
 
     async def __aenter__(self):
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        await self.commit()
+        if exc_type is not None:
+            await self.commit()
 
     async def commit(self) -> Optional[BulkWriteResult]:
         """
@@ -130,8 +132,9 @@ class BulkWriter:
         """
         if self.object_class is None:
             self.object_class = object_class
+            self._colection_name = object_class.get_collection_name()
         else:
-             if object_class.get_collection_name() != self.object_class.get_collection_name():
+            if object_class.get_collection_name() != self._colection_name:
                 raise ValueError(
                     "All the operations should be for a same collection name"
                 )

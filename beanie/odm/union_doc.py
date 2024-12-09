@@ -1,6 +1,7 @@
 from typing import ClassVar, Dict, Optional, Type, TypeVar
 
 from beanie.exceptions import UnionDocNotInited
+from beanie.odm.bulk import BulkWriter
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import DetectionInterface, ModelType
 from beanie.odm.interfaces.find import FindInterface
@@ -38,3 +39,7 @@ class UnionDoc(
     @classmethod
     def get_model_type(cls) -> ModelType:
         return ModelType.UnionDoc
+
+    @classmethod
+    def bulk_write(cls):
+        return BulkWriter()

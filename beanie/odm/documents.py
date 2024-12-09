@@ -1213,6 +1213,10 @@ class Document(
         ref = DBRef(id=id, collection=cls.get_collection_name())
         return Link(ref, document_class=cls)
 
+    @classmethod
+    def bulk_write(cls):
+        return BulkWriter()
+
 
 class DocumentWithSoftDelete(Document):
     deleted_at: Optional[datetime] = None
