@@ -3,7 +3,7 @@ from pymongo.errors import BulkWriteError
 
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.operators.update.general import Set
-from tests.odm.models import DocumentTestModel, SubDocument
+from tests.odm.models import DocumentTestModel, One, SubDocument, Two
 
 
 async def test_insert(documents_not_inserted):
@@ -182,3 +182,31 @@ async def test_native_upsert_not_found(documents, document_not_inserted):
         await bulk_writer.commit()
 
     assert await DocumentTestModel.count() == 6
+
+
+async def test_different_models_same_collection(document):
+    try:
+        async with BulkWriter() as bulk_writer:
+            await One.insert_one(One(), bulk_writer=bulk_writer)
+            await Two.insert_one(Two(), bulk_writer=bulk_writer)
+    except ValueError:
+        pytest.fail("ValueError raised unexpectedly")
+
+
+async def test_empty_operations(documents_not_inserted):
+    bulk = BulkWriter()
+    assert bulk.commit() == None
+
+
+async def test_comment(documents_not_inserted):
+    bulk = BulkWriter(comment="test")
+    assert bulk.comment
+    bulk2 = BulkWriter()
+    assert not bulk2.comment
+
+
+async def test_bypass_document_validation(documents_not_inserted):
+    bulk = BulkWriter(bypass_document_validation=True)
+    assert bulk.bypass_document_validation is True
+    bulk2 = BulkWriter()
+    assert bulk2.bypass_document_validation is False
