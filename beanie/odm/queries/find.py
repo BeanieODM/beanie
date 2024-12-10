@@ -23,7 +23,7 @@ from pymongo import ReplaceOne
 from pymongo.results import UpdateResult
 
 from beanie.exceptions import DocumentNotFound
-from beanie.odm.bulk import BulkWriter, Operation
+from beanie.odm.bulk import BulkWriter
 from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
 from beanie.odm.interfaces.aggregation_methods import AggregateMethods
@@ -968,18 +968,17 @@ class FindOne(FindQuery[FindQueryResultType]):
             return result
         else:
             bulk_writer.add_operation(
-                Operation(
-                    operation=ReplaceOne,
-                    first_query=self.get_filter_query(),
-                    second_query=get_dict(
+                self.document_model,
+                ReplaceOne(
+                    self.get_filter_query(),
+                    get_dict(
                         document,
                         to_db=True,
                         exclude={"_id"},
                         keep_nulls=document.get_settings().keep_nulls,
                     ),
-                    object_class=self.document_model,
-                    pymongo_kwargs=self.pymongo_kwargs,
-                )
+                    **self.pymongo_kwargs,
+                ),
             )
             return None
 

@@ -1169,3 +1169,38 @@ class BsonRegexDoc(Document):
 
 class NativeRegexDoc(Document):
     regex: Optional[re.Pattern]
+
+
+class Parent(UnionDoc):  # Union
+    class Settings:
+        name = "union_doc_collection"  # Collection name
+        class_id = "_class_id"  # _class_id is the default beanie internal field used to filter children Documents
+
+
+class One(Document):
+    int_field: int = 0
+
+    class Settings:
+        name = "One"
+        union_doc = Parent
+
+
+class Two(Document):
+    str_field: str = "test"
+
+    class Settings:
+        union_doc = Parent
+
+
+class TestCollection1(Document):
+    test_int: int = 1
+
+    class Settings:
+        name = "col1"
+
+
+class TestCollection2(Document):
+    test_int: int = 1
+
+    class Settings:
+        name = "col2"

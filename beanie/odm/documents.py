@@ -52,7 +52,7 @@ from beanie.odm.actions import (
     EventTypes,
     wrap_with_actions,
 )
-from beanie.odm.bulk import BulkWriter, Operation
+from beanie.odm.bulk import BulkWriter
 from beanie.odm.cache import LRUCache
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import (
@@ -418,15 +418,14 @@ class Document(
                     "Cascade insert with bulk writing not supported"
                 )
             bulk_writer.add_operation(
-                Operation(
-                    operation=InsertOne,
-                    first_query=get_dict(
+                type(document),
+                InsertOne(
+                    get_dict(
                         document,
                         to_db=True,
                         keep_nulls=document.get_settings().keep_nulls,
-                    ),
-                    object_class=type(document),
-                )
+                    )
+                ),
             )
             return None
 
@@ -1213,6 +1212,37 @@ class Document(
     def link_from_id(cls, id: Any):
         ref = DBRef(id=id, collection=cls.get_collection_name())
         return Link(ref, document_class=cls)
+
+    def bulk_write(
+        self,
+        session: Optional[AsyncIOMotorClientSession] = None,
+        ordered: bool = True,
+        bypass_document_validation: bool = False,
+        comment: Optional[Any] = None,
+    ):
+        """
+        Returns a BulkWriter instance for handling bulk write operations.
+
+        Parameters:
+        -----------
+        session : ClientSession
+            The session instance used for transactional operations.
+        ordered : bool
+            If True, operations are executed sequentially and stop on the first error.
+            If False, operations are executed in parallel, and all errors are reported.
+        bypass_document_validation : bool
+            If True, skips document validation during write operations.
+        comment : str
+            Optional comment associated with the bulk write operations for auditing purposes.
+
+        Returns:
+        --------
+        BulkWriter
+            An instance of BulkWriter configured with the provided settings.
+        """
+        return BulkWriter(
+            session, ordered, bypass_document_validation, comment
+        )
 
 
 class DocumentWithSoftDelete(Document):
