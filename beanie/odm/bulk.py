@@ -15,6 +15,16 @@ from pymongo.results import BulkWriteResult
 
 if TYPE_CHECKING:
     from beanie import Document
+    from beanie.odm.union_doc import UnionDoc
+
+_WriteOp = Union[
+    InsertOne,
+    DeleteOne,
+    DeleteMany,
+    ReplaceOne,
+    UpdateOne,
+    UpdateMany,
+]
 
 
 class BulkWriter:
@@ -23,7 +33,7 @@ class BulkWriter:
 
     This class facilitates the efficient execution of multiple database operations
     (e.g., inserts, updates, deletes, replacements) in a single batch. It supports asynchronous
-    context management and ensure that all queued operations are committed upon exiting the context.
+    context management and ensures that all queued operations are committed upon exiting the context.
 
     Attributes:
         session (Optional[AsyncIOMotorClientSession]): The motor session used for transactional operations.
@@ -41,7 +51,7 @@ class BulkWriter:
             A list of MongoDB operations queued for bulk execution.
 
     Parameters:
-        session (Optional[AsyncIOMotorClientSession]): The motot session for transaction support.
+        session (Optional[AsyncIOMotorClientSession]): The motor session for transaction support.
             Defaults to None (no session).
         ordered (bool): Specifies whether operations are executed in sequence (True) or in parallel (False).
             Defaults to True.
@@ -49,6 +59,7 @@ class BulkWriter:
             This is particularly useful when working with schemas that are being phased in or for bulk imports
             where strict validation may not be necessary. Defaults to False.
         comment (Optional[Any]): A custom comment attached to the bulk operation.
+            Defaults to None.
     """
 
     def __init__(
@@ -58,19 +69,10 @@ class BulkWriter:
         bypass_document_validation: bool = False,
         comment: Optional[Any] = None,
     ):
-        self.operations: List[
-            Union[
-                DeleteMany,
-                DeleteOne,
-                InsertOne,
-                ReplaceOne,
-                UpdateMany,
-                UpdateOne,
-            ]
-        ] = []
+        self.operations: List[_WriteOp] = []
         self.session = session
         self.ordered = ordered
-        self.object_class: Optional[Type[Document]] = None
+        self.object_class: Optional[Type[Union[Document, UnionDoc]]] = None
         self.bypass_document_validation = bypass_document_validation
         self.comment = comment
         self._colection_name: str
@@ -111,10 +113,8 @@ class BulkWriter:
 
     def add_operation(
         self,
-        object_class: Type[Document],
-        operation: Union[
-            DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne
-        ],
+        object_class: Type[Union[Document, UnionDoc]],
+        operation: _WriteOp,
     ):
         """
         Add an operation to the queue.
@@ -123,7 +123,7 @@ class BulkWriter:
         All operations in the queue must belong to the same collection.
 
         :param object_class: The document model class associated with the operation.
-        :type object_class: Type[Document]
+        :type object_class: Type[Union[Document, UnionDoc]]
         :param operation: The MongoDB operation to add to the queue.
         :type operation: Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]
 

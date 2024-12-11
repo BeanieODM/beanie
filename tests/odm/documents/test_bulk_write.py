@@ -20,7 +20,7 @@ async def test_insert(documents_not_inserted):
     assert len(new_documents) == 2
 
 
-async def test_update(documents, document_not_inserted):
+async def test_update(documents):
     await documents(5)
     doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 0)
     doc.test_int = 100
@@ -84,7 +84,7 @@ async def test_unordered_update(documents, document):
     )
 
 
-async def test_delete(documents, document_not_inserted):
+async def test_delete(documents):
     await documents(5)
     doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 0)
     async with BulkWriter() as bulk_writer:
@@ -184,7 +184,7 @@ async def test_native_upsert_not_found(documents, document_not_inserted):
     assert await DocumentTestModel.count() == 6
 
 
-async def test_different_models_same_collection(document):
+async def test_different_models_same_collection():
     try:
         async with BulkWriter() as bulk_writer:
             await One.insert_one(One(), bulk_writer=bulk_writer)
@@ -193,20 +193,35 @@ async def test_different_models_same_collection(document):
         pytest.fail("ValueError raised unexpectedly")
 
 
-async def test_empty_operations(documents_not_inserted):
+async def test_empty_operations():
     bulk = BulkWriter()
     assert await bulk.commit() == None
 
 
-async def test_comment(documents_not_inserted):
+async def test_comment():
     bulk = BulkWriter(comment="test")
     assert bulk.comment == "test"
     bulk2 = BulkWriter()
     assert not bulk2.comment
 
 
-async def test_bypass_document_validation(documents_not_inserted):
+async def test_bypass_document_validation():
     bulk = BulkWriter(bypass_document_validation=True)
     assert bulk.bypass_document_validation is True
     bulk2 = BulkWriter()
     assert bulk2.bypass_document_validation is False
+
+
+async def test_ordered_bulk(documents):
+    await documents(1)
+    doc = await DocumentTestModel.find_one()
+    assert doc
+    assert doc.id
+    with pytest.raises(BulkWriteError):
+        async with BulkWriter(ordered=True) as bulk_writer:
+            doc1 = One()
+            doc1.id = doc.id
+            await One.insert_one(doc1, bulk_writer=bulk_writer)
+            await One.insert_one(One(), bulk_writer=bulk_writer)
+
+        assert len(await DocumentTestModel.find_all().to_list()) == 1

@@ -42,7 +42,7 @@ class UnionDoc(
     def get_model_type(cls) -> ModelType:
         return ModelType.UnionDoc
 
-    def bulk_write(
+    def bulk_writer(
         self,
         session: Optional[AsyncIOMotorClientSession] = None,
         ordered: bool = True,
@@ -54,15 +54,17 @@ class UnionDoc(
 
         Parameters:
         -----------
-        session : ClientSession
+        :param session: ClientSession
             The session instance used for transactional operations.
-        ordered : bool
-            If True, operations are executed sequentially and stop on the first error.
-            If False, operations are executed in parallel, and all errors are reported.
-        bypass_document_validation : bool
-            If True, skips document validation during write operations.
-        comment : str
-            Optional comment associated with the bulk write operations for auditing purposes.
+        :param ordered: If ``True`` (the default) requests will be
+            performed on the server serially, in the order provided. If an error
+            occurs all remaining operations are aborted. If ``False`` requests
+            will be performed on the server in arbitrary order, possibly in
+            parallel, and all operations will be attempted.
+        :param bypass_document_validation: (optional) If ``True``, allows the
+            write to opt-out of document level validation. Default is
+            ``False``.
+        :param comment: A user-provided comment to attach to the BulkWriter
 
         Returns:
         --------
