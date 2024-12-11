@@ -7,6 +7,7 @@ from tests.odm.models import (
     DocumentMultiModelOne,
     DocumentMultiModelTwo,
     DocumentTestModel,
+    DocumentUnion,
     SubDocument,
 )
 
@@ -197,7 +198,7 @@ async def test_different_models_same_collection():
         await DocumentMultiModelTwo.insert_one(
             DocumentMultiModelTwo(), bulk_writer=bulk_writer
         )
-    assert len(await DocumentMultiModelOne.find().to_list()) == 2
+    assert len(await DocumentUnion.find(with_children=True).to_list()) == 2
 
 
 async def test_empty_operations():
@@ -231,4 +232,4 @@ async def test_ordered_bulk(documents):
                 DocumentMultiModelOne(), bulk_writer=bulk_writer
             )
 
-        assert len(await DocumentTestModel.find_all().to_list()) == 1
+        assert len(await DocumentMultiModelOne.find_all().to_list()) == 1
