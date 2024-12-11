@@ -75,7 +75,7 @@ class BulkWriter:
         self.object_class: Optional[Type[Union[Document, UnionDoc]]] = None
         self.bypass_document_validation = bypass_document_validation
         self.comment = comment
-        self._colection_name: str
+        self._collection_name: str
 
     async def __aenter__(self):
         return self
@@ -132,9 +132,9 @@ class BulkWriter:
         """
         if self.object_class is None:
             self.object_class = object_class
-            self._colection_name = object_class.get_collection_name()
+            self._collection_name = object_class.get_collection_name()
         else:
-            if object_class.get_collection_name() != self._colection_name:
+            if object_class.get_collection_name() != self._collection_name:
                 raise ValueError(
                     "All the operations should be for a same collection name"
                 )
