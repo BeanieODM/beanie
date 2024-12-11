@@ -529,7 +529,7 @@ class BackLink(Generic[T]):
         def __get_pydantic_core_schema__(
             cls, source_type: Type[Any], handler: GetCoreSchemaHandler
         ) -> CoreSchema:
-            # Note: BackLink's are only virtual fields, they shouldn't be serialized nor appear in the schema.
+            # NOTE: BackLinks are only virtual fields, they shouldn't be serialized nor appear in the schema.
             return json_or_python_schema(
                 python_schema=with_info_plain_validator_function(
                     cls.wrapped_validate(source_type, handler)
