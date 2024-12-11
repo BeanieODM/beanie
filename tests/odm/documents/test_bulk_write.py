@@ -220,12 +220,15 @@ async def test_ordered_bulk(documents):
     doc = await DocumentMultiModelOne.insert_one(DocumentMultiModelOne())
     assert doc
     assert doc.id
-    async with BulkWriter(ordered=True) as bulk_writer:
-        doc1 = DocumentMultiModelOne()
-        doc1.id = doc.id
-        await DocumentMultiModelOne.insert_one(doc1, bulk_writer=bulk_writer)
-        await DocumentMultiModelOne.insert_one(
-            DocumentMultiModelOne(), bulk_writer=bulk_writer
-        )
+    with pytest.raises(BulkWriteError):
+        async with BulkWriter(ordered=True) as bulk_writer:
+            doc1 = DocumentMultiModelOne()
+            doc1.id = doc.id
+            await DocumentMultiModelOne.insert_one(
+                doc1, bulk_writer=bulk_writer
+            )
+            await DocumentMultiModelOne.insert_one(
+                DocumentMultiModelOne(), bulk_writer=bulk_writer
+            )
 
-    assert len(await DocumentTestModel.find_all().to_list()) == 1
+        assert len(await DocumentTestModel.find_all().to_list()) == 1
