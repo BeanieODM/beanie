@@ -36,29 +36,33 @@ class BulkWriter:
     context management and ensures that all queued operations are committed upon exiting the context.
 
     Attributes:
-        session (Optional[AsyncIOMotorClientSession]): The motor session used for transactional operations.
+        session Optional[AsyncIOMotorClientSession]:
+            The motor session used for transactional operations.
             Defaults to None, meaning no session is used.
-        ordered (bool): Specifies whether operations are executed sequentially (default) or in parallel.
+        ordered Optional[bool]:
+            Specifies whether operations are executed sequentially (default) or in parallel.
             - If True, operations are performed serially, stopping at the first failure.
             - If False, operations may be executed in arbitrary order, and all operations are attempted
               regardless of individual failures.
-        bypass_document_validation (bool): If True, document-level validation is bypassed for all operations
+        bypass_document_validation Optional[bool]:
+            If True, document-level validation is bypassed for all operations
             in the bulk write. This applies to MongoDB's schema validation rules, allowing documents that
             do not meet validation criteria to be inserted or modified. Defaults to False.
-        comment (Optional[Any]): A user-provided comment attached to the bulk operation command, useful for
+        comment Optional[Any]:
+            A user-provided comment attached to the bulk operation command, useful for
             auditing and debugging purposes.
-        operations (List[Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]]):
+        operations List[Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]]:
             A list of MongoDB operations queued for bulk execution.
 
     Parameters:
-        session (Optional[AsyncIOMotorClientSession]): The motor session for transaction support.
+        session Optional[AsyncIOMotorClientSession]: The motor session for transaction support.
             Defaults to None (no session).
-        ordered (bool): Specifies whether operations are executed in sequence (True) or in parallel (False).
+        ordered Optional[bool]: Specifies whether operations are executed in sequence (True) or in parallel (False).
             Defaults to True.
-        bypass_document_validation (bool): Allows the bulk operation to bypass document-level validation.
+        bypass_document_validation Optional[bool]: Allows the bulk operation to bypass document-level validation.
             This is particularly useful when working with schemas that are being phased in or for bulk imports
             where strict validation may not be necessary. Defaults to False.
-        comment (Optional[Any]): A custom comment attached to the bulk operation.
+        comment Optional[Any]: A custom comment attached to the bulk operation.
             Defaults to None.
     """
 
@@ -89,13 +93,15 @@ class BulkWriter:
         Commit all queued operations to the database.
 
         Executes all queued operations in a single bulk write request. If there
-        are no operations to commit, it returns None.
+        are no operations to commit, it returns ``None``.
 
-        :return: The result of the bulk write operation if operations are committed.
-                Returns None if there are no operations to execute.
+        :return: Optional[BulkWriteResult]
+            The result of the bulk write operation if operations are committed.
+            Returns ``None`` if there are no operations to execute.
         :rtype: Optional[BulkWriteResult]
 
-        :raises ValueError: If the object_class is not specified before committing.
+        :raises ValueError:
+            If the object_class is not specified before committing.
         """
         if not self.operations:
             return None
@@ -122,13 +128,13 @@ class BulkWriter:
         This method adds a MongoDB operation to the BulkWriter's operation queue.
         All operations in the queue must belong to the same collection.
 
-        :param object_class: The document model class associated with the operation.
-        :type object_class: Type[Union[Document, UnionDoc]]
-        :param operation: The MongoDB operation to add to the queue.
-        :type operation: Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]
+        :param object_class: Type[Union[Document, UnionDoc]]
+            The document model class associated with the operation.
+        :param operation: Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]
+            The MongoDB operation to add to the queue.
 
-        :raises ValueError: If the collection differs from
-                            the one already associated with the BulkWriter.
+        :raises ValueError:
+            If the collection differs from the one already associated with the BulkWriter.
         """
         if self.object_class is None:
             self.object_class = object_class

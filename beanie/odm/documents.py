@@ -1223,24 +1223,28 @@ class Document(
         """
         Returns a BulkWriter instance for handling bulk write operations.
 
-        Parameters:
-        -----------
         :param session: ClientSession
             The session instance used for transactional operations.
-        :param ordered: If ``True`` (the default) requests will be
-            performed on the server serially, in the order provided. If an error
-            occurs all remaining operations are aborted. If ``False`` requests
-            will be performed on the server in arbitrary order, possibly in
-            parallel, and all operations will be attempted.
-        :param bypass_document_validation: (optional) If ``True``, allows the
-            write to opt-out of document level validation. Default is
-            ``False``.
-        :param comment: A user-provided comment to attach to the BulkWriter
+        :param ordered: bool
+            If ``True`` (the default), requests will be performed on the server serially, in the order provided. If an error
+            occurs, all remaining operations are aborted. If ``False``, requests will be performed on the server in
+            arbitrary order, possibly in parallel, and all operations will be attempted.
+        :param bypass_document_validation: bool, optional
+            If ``True``, allows the write to opt-out of document-level validation. Default is ``False``.
+        :param comment: str, optional
+            A user-provided comment to attach to the BulkWriter.
 
-        Returns:
-        --------
-        BulkWriter
+        :returns: BulkWriter
             An instance of BulkWriter configured with the provided settings.
+
+        Example Usage:
+        --------------
+        This method is typically used within an asynchronous context manager.
+
+        .. code-block:: python
+
+            async with Document.bulk_writer(ordered=True) as bulk:
+                await Document.insert_one(Document(field="value"), bulk_writer=bulk)
         """
         return BulkWriter(
             session, ordered, bypass_document_validation, comment

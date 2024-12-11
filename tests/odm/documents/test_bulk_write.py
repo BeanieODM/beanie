@@ -190,21 +190,29 @@ async def test_native_upsert_not_found(documents, document_not_inserted):
 
 
 async def test_different_models_same_collection():
-    try:
-        async with BulkWriter() as bulk_writer:
-            await DocumentMultiModelOne.insert_one(
-                DocumentMultiModelOne(), bulk_writer=bulk_writer
-            )
-            await DocumentMultiModelTwo.insert_one(
-                DocumentMultiModelTwo(), bulk_writer=bulk_writer
-            )
-    except ValueError:
-        pytest.fail("ValueError raised unexpectedly")
+    async with BulkWriter() as bulk_writer:
+        await DocumentMultiModelOne.insert_one(
+            DocumentMultiModelOne(), bulk_writer=bulk_writer
+        )
+        await DocumentMultiModelTwo.insert_one(
+            DocumentMultiModelTwo(), bulk_writer=bulk_writer
+        )
+    assert len(await DocumentMultiModelOne.find().to_list()) == 2
 
 
 async def test_empty_operations():
     bulk = BulkWriter()
-    assert await bulk.commit() == None
+    await DocumentMultiModelOne.insert_one(
+        DocumentMultiModelOne(), bulk_writer=bulk
+    )
+    await DocumentMultiModelOne.insert_one(
+        DocumentMultiModelOne(), bulk_writer=bulk
+    )
+    assert len(bulk.operations) == 2
+    bulk.operations = []
+    bulk_result = await bulk.commit()
+    assert bulk_result == None
+    assert len(await DocumentMultiModelOne.find().to_list()) == 0
 
 
 async def test_ordered_bulk(documents):
