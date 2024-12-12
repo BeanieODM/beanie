@@ -148,14 +148,14 @@ class Text(BaseFindEvaluationOperator):
         search: str,
         language: Optional[str] = None,
         case_sensitive: bool = False,
-        diacritic_sensitive: bool = False,
+        diacritic_sensitive: Optional[bool] = False,
     ):
         """
 
         :param search: str
         :param language: Optional[str] = None
         :param case_sensitive: bool = False
-        :param diacritic_sensitive: bool = False
+        :param diacritic_sensitive: Optional[bool] = False
         """
         self.search = search
         self.language = language
@@ -168,11 +168,14 @@ class Text(BaseFindEvaluationOperator):
             "$text": {
                 "$search": self.search,
                 "$caseSensitive": self.case_sensitive,
-                "$diacriticSensitive": self.diacritic_sensitive,
             }
         }
         if self.language:
             expression["$text"]["$language"] = self.language
+        if self.diacritic_sensitive is not None:
+            expression["$text"]["$diacriticSensitive"] = (
+                self.diacritic_sensitive
+            )
         return expression
 
 
