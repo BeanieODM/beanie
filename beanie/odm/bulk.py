@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Type, Union
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo import (
@@ -19,10 +19,10 @@ if TYPE_CHECKING:
     from beanie.odm.union_doc import UnionDoc
 
 _WriteOp = Union[
-    InsertOne,
+    InsertOne[Mapping[str, Any]],
     DeleteOne,
     DeleteMany,
-    ReplaceOne,
+    ReplaceOne[Mapping[str, Any]],
     UpdateOne,
     UpdateMany,
 ]
