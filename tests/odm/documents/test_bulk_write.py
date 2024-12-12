@@ -232,4 +232,4 @@ async def test_ordered_bulk(documents):
                 DocumentMultiModelOne(), bulk_writer=bulk_writer
             )
 
-        assert len(await DocumentMultiModelOne.find_all().to_list()) == 1
+    assert len(await DocumentMultiModelOne.find_all().to_list()) == 1

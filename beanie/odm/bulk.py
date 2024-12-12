@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from types import TracebackType
 from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
@@ -72,7 +73,7 @@ class BulkWriter:
         ordered: bool = True,
         bypass_document_validation: bool = False,
         comment: Optional[Any] = None,
-    ):
+    ) -> None:
         self.operations: List[_WriteOp] = []
         self.session = session
         self.ordered = ordered
@@ -81,10 +82,15 @@ class BulkWriter:
         self.comment = comment
         self._collection_name: str
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "BulkWriter":
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        tb: Optional[TracebackType],
+    ) -> None:
         if exc_type is None:
             await self.commit()
 

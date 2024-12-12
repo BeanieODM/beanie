@@ -1219,7 +1219,7 @@ class Document(
         ordered: bool = True,
         bypass_document_validation: bool = False,
         comment: Optional[Any] = None,
-    ):
+    ) -> BulkWriter:
         """
         Returns a BulkWriter instance for handling bulk write operations.
 
