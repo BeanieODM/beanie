@@ -70,7 +70,7 @@ Inserts work the same way as usual
 
 ```python
 client = AsyncIOMotorClient()
-await init_beanie(client.test_db, document_models=[Vehicle, Bicycle, Bike, Car, Bus])
+await init_beanie(client.test_db, document_models=[Vehicle, Bicycle, Bike, Car, Bus, Owner])
 
 bike_1 = await Bike(color='black', fuel='gasoline').insert()
 
