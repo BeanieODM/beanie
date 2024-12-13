@@ -20,7 +20,7 @@ class AggregateMethods:
         self,
         aggregation_pipeline,
         projection_model=None,
-        session=None,
+        session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
     ): ...
 

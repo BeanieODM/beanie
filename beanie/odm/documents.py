@@ -206,7 +206,7 @@ class Document(
     # Database
     _database_major_version: ClassVar[int] = 4
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Document, self).__init__(*args, **kwargs)
         self.get_motor_collection()
 
@@ -256,7 +256,7 @@ class Document(
         with_children: bool = False,
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional["DocType"]:
         """
         Get document by id, returns None if document does not exist
@@ -438,7 +438,7 @@ class Document(
         documents: Iterable[DocType],
         session: Optional[AsyncIOMotorClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> InsertManyResult:
         """
         Insert many documents to the collection
@@ -555,7 +555,7 @@ class Document(
         session: Optional[AsyncIOMotorClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         ignore_revision: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> Self:
         """
         Update an existing model in the database or
@@ -693,13 +693,13 @@ class Document(
     @save_state_after
     async def update(
         self: Self,
-        *args,
+        *args: Union[Dict[Any, Any], Mapping[Any, Any]],
         ignore_revision: bool = False,
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Self:
         """
         Partially update the document in the database
@@ -711,7 +711,7 @@ class Document(
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: self
         """
-        arguments = list(args)
+        arguments: list[Any] = list(args)
 
         if skip_sync is not None:
             raise DeprecationWarning(
@@ -752,7 +752,7 @@ class Document(
         *args: Union[dict, Mapping],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> UpdateMany:
         """
         Partially update all the documents
@@ -773,7 +773,7 @@ class Document(
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Coroutine[None, None, Self]:
         """
         Set values
@@ -812,7 +812,7 @@ class Document(
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Coroutine[None, None, Self]:
         """
         Set current date
@@ -839,7 +839,7 @@ class Document(
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Coroutine[None, None, Self]:
         """
         Increment
@@ -878,7 +878,7 @@ class Document(
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         """
         Delete the document
@@ -933,7 +933,7 @@ class Document(
         cls,
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         """
         Delete all the documents
@@ -1138,7 +1138,7 @@ class Document(
         return inspection_result
 
     @classmethod
-    def check_hidden_fields(cls):
+    def _check_hidden_fields(cls):
         hidden_fields = [
             (name, field)
             for name, field in get_model_fields(cls).items()
@@ -1149,6 +1149,7 @@ class Document(
         warnings.warn(
             f"{cls.__name__}: 'hidden=True' is deprecated, please use 'exclude=True'",
             DeprecationWarning,
+            stacklevel=2,
         )
         if IS_PYDANTIC_V2:
             for name, field in hidden_fields:
@@ -1162,7 +1163,7 @@ class Document(
                 cls.__exclude_fields__[name] = True
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
-    async def validate_self(self, *args, **kwargs):
+    async def validate_self(self, *args: Any, **kwargs: Any):
         # TODO: it can be sync, but needs some actions controller improvements
         if self.get_settings().validate_on_save:
             new_model = parse_model(self.__class__, get_model_dump(self))
@@ -1228,7 +1229,7 @@ class DocumentWithSoftDelete(Document):
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         return await super().delete(
             session=session,
@@ -1254,7 +1255,7 @@ class DocumentWithSoftDelete(Document):
     def find_many_in_all(  # type: ignore
         cls: Type[FindType],
         *args: Union[Mapping[str, Any], bool],
-        projection_model: None = None,
+        projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
         sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
@@ -1265,7 +1266,7 @@ class DocumentWithSoftDelete(Document):
         lazy_parse: bool = False,
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
         return cls._find_many_query_class(document_model=cls).find_many(
             *args,
@@ -1297,7 +1298,7 @@ class DocumentWithSoftDelete(Document):
         lazy_parse: bool = False,
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
         args = cls._add_class_id_filter(args, with_children) + (
             {"deleted_at": None},
@@ -1328,7 +1329,7 @@ class DocumentWithSoftDelete(Document):
         with_children: bool = False,
         nesting_depth: Optional[int] = None,
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
-        **pymongo_kwargs,
+        **pymongo_kwargs: Any,
     ) -> Union[FindOne[FindType], FindOne["DocumentProjectionType"]]:
         args = cls._add_class_id_filter(args, with_children) + (
             {"deleted_at": None},

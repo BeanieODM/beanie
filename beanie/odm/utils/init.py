@@ -69,6 +69,7 @@ class Initializer:
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
         multiprocessing_mode: bool = False,
+        skip_indexes: bool = False,
     ):
         """
         Beanie initializer
@@ -82,11 +83,13 @@ class Initializer:
         :param recreate_views: bool - if views should be recreated. Default False
         :param multiprocessing_mode: bool - if multiprocessing mode is on
         it will patch the motor client to use process's event loop.
+        :param skip_indexes: bool - if you want to skip working with indexes. Default False
         :return: None
         """
 
         self.inited_classes: List[Type] = []
         self.allow_index_dropping = allow_index_dropping
+        self.skip_indexes = skip_indexes
         self.recreate_views = recreate_views
 
         self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
@@ -419,7 +422,7 @@ class Initializer:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
 
-        cls.check_hidden_fields()
+        cls._check_hidden_fields()
 
     @staticmethod
     def init_actions(cls):
@@ -606,7 +609,8 @@ class Initializer:
                 cls._inheritance_inited = True
 
             await self.init_document_collection(cls)
-            await self.init_indexes(cls, self.allow_index_dropping)
+            if not self.skip_indexes:
+                await self.init_indexes(cls, self.allow_index_dropping)
             self.init_document_fields(cls)
             self.init_cache(cls)
             self.init_actions(cls)
@@ -763,6 +767,7 @@ async def init_beanie(
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
     multiprocessing_mode: bool = False,
+    skip_indexes: bool = False,
 ):
     """
     Beanie initialization
@@ -776,6 +781,8 @@ async def init_beanie(
     :param recreate_views: bool - if views should be recreated. Default False
     :param multiprocessing_mode: bool - if multiprocessing mode is on
         it will patch the motor client to use process's event loop. Default False
+    :param skip_indexes: bool - if you want to skip working with the indexes.
+        Default False
     :return: None
     """
 
@@ -786,4 +793,5 @@ async def init_beanie(
         allow_index_dropping=allow_index_dropping,
         recreate_views=recreate_views,
         multiprocessing_mode=multiprocessing_mode,
+        skip_indexes=skip_indexes,
     )

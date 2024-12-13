@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "beanie"
-version = "1.27.0"
+version = "1.28.0"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
@@ -23,8 +23,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pydantic>=1.10.18,<3.0; python_version <= '3.12.3'",
-    "pydantic>=1.10,<=2.0,>2.7.4,<3.0; python_version > '3.12.3'",#after 3.12.3 pydantic <2.7.4 is incompatible https://github.com/pydantic/pydantic/pull/9615
+    "pydantic>=1.10.18,<3.0",
     "motor>=2.5.0,<4.0.0",
     "click>=7",
     "toml",

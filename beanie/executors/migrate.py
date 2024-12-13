@@ -18,7 +18,7 @@ logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 
 class MigrationSettings:
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         self.direction = (
             kwargs.get("direction")
             or self.get_env_value("direction")
