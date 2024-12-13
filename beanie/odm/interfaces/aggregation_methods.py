@@ -16,8 +16,9 @@ class AggregateMethods:
     """
 
     @abstractmethod
+    @classmethod
     def aggregate(
-        self,
+        cls: Type[DocType],
         aggregation_pipeline,
         projection_model=None,
         session: Optional[AsyncIOMotorClientSession] = None,
