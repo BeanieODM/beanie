@@ -57,6 +57,13 @@ async def test_text():
             "$diacriticSensitive": True,
         }
     }
+    q = Text("something", diacritic_sensitive=None)
+    assert q == {
+        "$text": {
+            "$search": "something",
+            "$caseSensitive": False,
+        }
+    }
     q = Text("something", language="test")
     assert q == {
         "$text": {
