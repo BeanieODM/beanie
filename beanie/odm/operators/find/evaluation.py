@@ -141,6 +141,10 @@ class Text(BaseFindEvaluationOperator):
 
     MongoDB doc:
     <https://docs.mongodb.com/manual/reference/operator/query/text/>
+
+    Note: if you need to run a query against Azure Cosmos DB for MongoDB,
+    which does not support diacritic sensitivity yet, you can set
+    `diacritic_sensitive` argument to `None` to exclude it from the query.
     """
 
     def __init__(
