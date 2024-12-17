@@ -76,9 +76,24 @@ beanie = "beanie.executors.migrate:migrations"
 
 # TOOLS
 
+[tool.coverage.run]
+branch = true
+source = ["beanie"]
+
+[tool.coverage.report]
+ignore_errors = true
+show_missing = true
+fail_under = 80
+exclude_lines = [
+    'pragma: no cover',
+    'if TYPE_CHECKING:',
+    'if typing.TYPE_CHECKING:',
+    'if __name__ == .__main__.:'
+]
+
 [tool.pytest.ini_options]
 minversion = "8.0"
-addopts = "--cov-report term-missing --cov=beanie --cov-branch --cov-fail-under=80"
+addopts = "--cov"
 testpaths = [
     "tests",
 ]
