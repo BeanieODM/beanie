@@ -1,6 +1,6 @@
-import asyncio
 from typing import Any, ClassVar, Dict, Optional, Union
 
+from anyio import create_task_group
 from pydantic import BaseModel
 
 from beanie.exceptions import ViewWasNotInitialized
@@ -55,12 +55,11 @@ class View(
             setattr(self, field, values)
 
     async def fetch_all_links(self):
-        coros = []
         link_fields = self.get_link_fields()
-        if link_fields is not None:
-            for ref in link_fields.values():
-                coros.append(self.fetch_link(ref.field_name))  # TODO lists
-        await asyncio.gather(*coros)
+        if link_fields is not None and len(link_fields.values()) > 0:
+            async with create_task_group() as tg:
+                for ref in link_fields.values():
+                    tg.start_soon(self.fetch_link, ref.field_name)
 
     @classmethod
     def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:

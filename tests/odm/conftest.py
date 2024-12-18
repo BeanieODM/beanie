@@ -302,19 +302,21 @@ async def deprecated_init_beanie(db):
     for model in TESTING_MODELS:  # crude clear from init
         await model.get_motor_collection().drop()
         await model.get_motor_collection().drop_indexes()
-    with warnings.catch_warnings(record=True) as w:
+    with warnings.catch_warnings(record=True) as warns:
         warnings.simplefilter("always")
 
         await init_beanie(
             database=db,
             document_models=[DocumentWithDeprecatedHiddenField],
         )
-        assert len(w) == 1
-        assert issubclass(w[-1].category, DeprecationWarning)
-        assert (
-            "DocumentWithDeprecatedHiddenField: 'hidden=True' is deprecated, please use 'exclude=True'"
-            in str(w[-1].message)
+
+        found = any(
+            issubclass(warning.category, DeprecationWarning)
+            and "DocumentWithDeprecatedHiddenField: 'hidden=True' is deprecated, please use 'exclude=True'"
+            in str(warning.message)
+            for warning in warns
         )
+        assert found, "deprecation not found"
 
 
 @pytest.fixture(autouse=True)

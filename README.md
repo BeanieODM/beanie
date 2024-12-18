@@ -51,7 +51,7 @@ For more installation options (eg: `aws`, `gcp`, `srv` ...) you can look in the 
 ## Example
 
 ```python
-import asyncio
+import anyio
 from typing import Optional
 
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -94,7 +94,7 @@ async def example():
 
 
 if __name__ == "__main__":
-    asyncio.run(example())
+    anyio.run(example)
 ```
 
 ## Links
