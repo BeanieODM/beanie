@@ -141,6 +141,10 @@ class Text(BaseFindEvaluationOperator):
 
     MongoDB doc:
     <https://docs.mongodb.com/manual/reference/operator/query/text/>
+
+    Note: if you need to run a query against Azure Cosmos DB for MongoDB,
+    which does not support diacritic sensitivity yet, you can set
+    `diacritic_sensitive` argument to `None` to exclude it from the query.
     """
 
     def __init__(
@@ -148,14 +152,14 @@ class Text(BaseFindEvaluationOperator):
         search: str,
         language: Optional[str] = None,
         case_sensitive: bool = False,
-        diacritic_sensitive: bool = False,
+        diacritic_sensitive: Optional[bool] = False,
     ):
         """
 
         :param search: str
         :param language: Optional[str] = None
         :param case_sensitive: bool = False
-        :param diacritic_sensitive: bool = False
+        :param diacritic_sensitive: Optional[bool] = False
         """
         self.search = search
         self.language = language
@@ -168,11 +172,14 @@ class Text(BaseFindEvaluationOperator):
             "$text": {
                 "$search": self.search,
                 "$caseSensitive": self.case_sensitive,
-                "$diacriticSensitive": self.diacritic_sensitive,
             }
         }
         if self.language:
             expression["$text"]["$language"] = self.language
+        if self.diacritic_sensitive is not None:
+            expression["$text"]["$diacriticSensitive"] = (
+                self.diacritic_sensitive
+            )
         return expression
 
 
