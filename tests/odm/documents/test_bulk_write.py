@@ -233,3 +233,8 @@ async def test_ordered_bulk(documents):
             )
 
     assert len(await DocumentMultiModelOne.find_all().to_list()) == 1
+
+
+async def test_bulk_writer():
+    assert isinstance(DocumentMultiModelOne.bulk_writer(), BulkWriter)
+    assert isinstance(DocumentUnion.bulk_writer(), BulkWriter)

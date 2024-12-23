@@ -42,8 +42,9 @@ class UnionDoc(
     def get_model_type(cls) -> ModelType:
         return ModelType.UnionDoc
 
+    @classmethod
     def bulk_writer(
-        self,
+        cls,
         session: Optional[AsyncIOMotorClientSession] = None,
         ordered: bool = True,
         bypass_document_validation: bool = False,
@@ -76,5 +77,5 @@ class UnionDoc(
                 await Document.insert_one(Document(field="value"), bulk_writer=bulk)
         """
         return BulkWriter(
-            session, ordered, bypass_document_validation, comment
+            session, ordered, cls, bypass_document_validation, comment
         )

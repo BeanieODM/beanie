@@ -44,7 +44,7 @@ class BulkWriter:
             Specifies whether operations are executed sequentially (default) or in parallel.
             - If True, operations are performed serially, stopping at the first failure.
             - If False, operations may be executed in arbitrary order, and all operations are attempted
-              regardless of individual failures.
+            regardless of individual failures.
         bypass_document_validation Optional[bool]:
             If True, document-level validation is bypassed for all operations
             in the bulk write. This applies to MongoDB's schema validation rules, allowing documents that
@@ -54,6 +54,8 @@ class BulkWriter:
             auditing and debugging purposes.
         operations List[Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]]:
             A list of MongoDB operations queued for bulk execution.
+        object_class Type[Union[Document, UnionDoc]]:
+            The document model class associated with the operations.
 
     Parameters:
         session Optional[AsyncIOMotorClientSession]: The motor session for transaction support.
@@ -65,19 +67,21 @@ class BulkWriter:
             where strict validation may not be necessary. Defaults to False.
         comment Optional[Any]: A custom comment attached to the bulk operation.
             Defaults to None.
+        object_class Type[Union[Document, UnionDoc]]: The document model class associated with the operations.
     """
 
     def __init__(
         self,
         session: Optional[AsyncIOMotorClientSession] = None,
         ordered: bool = True,
+        object_class: Optional[Type[Union[Document, UnionDoc]]] = None,
         bypass_document_validation: bool = False,
         comment: Optional[Any] = None,
     ) -> None:
         self.operations: List[_WriteOp] = []
         self.session = session
         self.ordered = ordered
-        self.object_class: Optional[Type[Union[Document, UnionDoc]]] = None
+        self.object_class = object_class
         self.bypass_document_validation = bypass_document_validation
         self.comment = comment
         self._collection_name: str
@@ -101,9 +105,8 @@ class BulkWriter:
         Executes all queued operations in a single bulk write request. If there
         are no operations to commit, it returns ``None``.
 
-        :return: Optional[BulkWriteResult]
-            The result of the bulk write operation if operations are committed.
-            Returns ``None`` if there are no operations to execute.
+        :return: The result of the bulk write operation if operations are committed.
+                Returns ``None`` if there are no operations to execute.
         :rtype: Optional[BulkWriteResult]
 
         :raises ValueError:
@@ -138,7 +141,6 @@ class BulkWriter:
             The document model class associated with the operation.
         :param operation: Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]
             The MongoDB operation to add to the queue.
-
         :raises ValueError:
             If the collection differs from the one already associated with the BulkWriter.
         """

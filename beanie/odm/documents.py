@@ -1213,8 +1213,9 @@ class Document(
         ref = DBRef(id=id, collection=cls.get_collection_name())
         return Link(ref, document_class=cls)
 
+    @classmethod
     def bulk_writer(
-        self,
+        cls,
         session: Optional[AsyncIOMotorClientSession] = None,
         ordered: bool = True,
         bypass_document_validation: bool = False,
@@ -1247,7 +1248,7 @@ class Document(
                 await Document.insert_one(Document(field="value"), bulk_writer=bulk)
         """
         return BulkWriter(
-            session, ordered, bypass_document_validation, comment
+            session, ordered, cls, bypass_document_validation, comment
         )
 
 
