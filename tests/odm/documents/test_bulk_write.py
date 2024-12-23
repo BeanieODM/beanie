@@ -3,7 +3,13 @@ from pymongo.errors import BulkWriteError
 
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.operators.update.general import Set
-from tests.odm.models import DocumentTestModel, SubDocument
+from tests.odm.models import (
+    DocumentMultiModelOne,
+    DocumentMultiModelTwo,
+    DocumentTestModel,
+    DocumentUnion,
+    SubDocument,
+)
 
 
 async def test_insert(documents_not_inserted):
@@ -20,7 +26,7 @@ async def test_insert(documents_not_inserted):
     assert len(new_documents) == 2
 
 
-async def test_update(documents, document_not_inserted):
+async def test_update(documents):
     await documents(5)
     doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 0)
     doc.test_int = 100
@@ -84,7 +90,7 @@ async def test_unordered_update(documents, document):
     )
 
 
-async def test_delete(documents, document_not_inserted):
+async def test_delete(documents):
     await documents(5)
     doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 0)
     async with BulkWriter() as bulk_writer:
@@ -182,3 +188,53 @@ async def test_native_upsert_not_found(documents, document_not_inserted):
         await bulk_writer.commit()
 
     assert await DocumentTestModel.count() == 6
+
+
+async def test_different_models_same_collection():
+    async with BulkWriter() as bulk_writer:
+        await DocumentMultiModelOne.insert_one(
+            DocumentMultiModelOne(), bulk_writer=bulk_writer
+        )
+        await DocumentMultiModelTwo.insert_one(
+            DocumentMultiModelTwo(), bulk_writer=bulk_writer
+        )
+    assert len(await DocumentUnion.find(with_children=True).to_list()) == 2
+
+
+async def test_empty_operations():
+    bulk = BulkWriter()
+    await DocumentMultiModelOne.insert_one(
+        DocumentMultiModelOne(), bulk_writer=bulk
+    )
+    await DocumentMultiModelOne.insert_one(
+        DocumentMultiModelOne(), bulk_writer=bulk
+    )
+    assert len(bulk.operations) == 2
+    bulk.operations = []
+    bulk_result = await bulk.commit()
+    assert bulk_result == None
+    assert len(await DocumentMultiModelOne.find().to_list()) == 0
+
+
+async def test_ordered_bulk(documents):
+    await documents(1)
+    doc = await DocumentMultiModelOne.insert_one(DocumentMultiModelOne())
+    assert doc
+    assert doc.id
+    with pytest.raises(BulkWriteError):
+        async with BulkWriter(ordered=True) as bulk_writer:
+            doc1 = DocumentMultiModelOne()
+            doc1.id = doc.id
+            await DocumentMultiModelOne.insert_one(
+                doc1, bulk_writer=bulk_writer
+            )
+            await DocumentMultiModelOne.insert_one(
+                DocumentMultiModelOne(), bulk_writer=bulk_writer
+            )
+
+    assert len(await DocumentMultiModelOne.find_all().to_list()) == 1
+
+
+async def test_bulk_writer():
+    assert isinstance(DocumentMultiModelOne.bulk_writer(), BulkWriter)
+    assert isinstance(DocumentUnion.bulk_writer(), BulkWriter)
