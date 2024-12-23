@@ -1,9 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Body, status
 from pydantic import BaseModel
 
 from beanie import PydanticObjectId, WriteRules
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
-from tests.fastapi.models import HouseAPI, WindowAPI
+from tests.fastapi.models import House, HouseAPI, Person, WindowAPI
 
 house_router = APIRouter()
 if not IS_PYDANTIC_V2:
@@ -50,4 +50,17 @@ async def create_houses_with_window_link(window: WindowInput):
 @house_router.post("/houses_2/", response_model=HouseAPI)
 async def create_houses_2(house: HouseAPI):
     await house.insert(link_rule=WriteRules.WRITE)
+    return house
+
+
+@house_router.post(
+    "/house",
+    response_model=House,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_house_new(house: House = Body(...)):
+    person = Person(name="Bob")
+    house.owner = person
+    await house.save(link_rule=WriteRules.WRITE)
+    await house.sync()
     return house
