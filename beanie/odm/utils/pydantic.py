@@ -1,9 +1,22 @@
 from typing import Any, Type
 
 import pydantic
+from packaging.specifiers import SpecifierSet
+from packaging.version import Version
 from pydantic import BaseModel
 
-IS_PYDANTIC_V2 = int(pydantic.VERSION.split(".")[0]) >= 2
+
+def is_version_valid(version, requirement):
+    # Parse the requirement as a SpecifierSet
+    specifiers = SpecifierSet(requirement)
+    # Parse the version as a Version
+    v = Version(version)
+    # Check if the version satisfies the specifiers
+    return v in specifiers
+
+
+IS_PYDANTIC_V2 = is_version_valid(pydantic.VERSION, ">=2")
+IS_PYDANTIC_V2_10 = is_version_valid(pydantic.VERSION, ">=2.10")
 
 if IS_PYDANTIC_V2:
     from pydantic import TypeAdapter
