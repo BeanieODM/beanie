@@ -16,8 +16,8 @@ class OtherGettersInterface:
         return cls.get_settings().motor_collection
 
     @classmethod
-    def get_collection_name(cls):
-        return cls.get_settings().name
+    def get_collection_name(cls) -> str:
+        return cls.get_settings().name  # type: ignore
 
     @classmethod
     def get_bson_encoders(cls):

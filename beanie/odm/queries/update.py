@@ -19,7 +19,7 @@ from pymongo import UpdateMany as UpdateManyPyMongo
 from pymongo import UpdateOne as UpdateOnePyMongo
 from pymongo.results import InsertOneResult, UpdateResult
 
-from beanie.odm.bulk import BulkWriter, Operation
+from beanie.odm.bulk import BulkWriter
 from beanie.odm.interfaces.clone import CloneInterface
 from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import (
@@ -180,13 +180,10 @@ class UpdateMany(UpdateQuery):
             )
         else:
             self.bulk_writer.add_operation(
-                Operation(
-                    operation=UpdateManyPyMongo,
-                    first_query=self.find_query,
-                    second_query=self.update_query,
-                    object_class=self.document_model,
-                    pymongo_kwargs=self.pymongo_kwargs,
-                )
+                self.document_model,
+                UpdateManyPyMongo(
+                    self.find_query, self.update_query, **self.pymongo_kwargs
+                ),
             )
 
     def __await__(
@@ -331,13 +328,10 @@ class UpdateOne(UpdateQuery):
                 return result
         else:
             self.bulk_writer.add_operation(
-                Operation(
-                    operation=UpdateOnePyMongo,
-                    first_query=self.find_query,
-                    second_query=self.update_query,
-                    object_class=self.document_model,
-                    pymongo_kwargs=self.pymongo_kwargs,
-                )
+                self.document_model,
+                UpdateOnePyMongo(
+                    self.find_query, self.update_query, **self.pymongo_kwargs
+                ),
             )
 
     def __await__(

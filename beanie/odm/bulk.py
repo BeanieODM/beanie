@@ -1,7 +1,9 @@
-from typing import Any, Dict, List, Mapping, Optional, Type, Union
+from __future__ import annotations
+
+from types import TracebackType
+from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Type, Union
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
-from pydantic import BaseModel, Field
 from pymongo import (
     DeleteMany,
     DeleteOne,
@@ -12,82 +14,142 @@ from pymongo import (
 )
 from pymongo.results import BulkWriteResult
 
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
+if TYPE_CHECKING:
+    from beanie import Document
+    from beanie.odm.union_doc import UnionDoc
 
-if IS_PYDANTIC_V2:
-    from pydantic import ConfigDict
-
-
-class Operation(BaseModel):
-    operation: Union[
-        Type[InsertOne],
-        Type[DeleteOne],
-        Type[DeleteMany],
-        Type[ReplaceOne],
-        Type[UpdateOne],
-        Type[UpdateMany],
-    ]
-    first_query: Mapping[str, Any]
-    second_query: Optional[Dict[str, Any]] = None
-    pymongo_kwargs: Dict[str, Any] = Field(default_factory=dict)
-    object_class: Type
-
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            arbitrary_types_allowed=True,
-        )
-    else:
-
-        class Config:
-            arbitrary_types_allowed = True
+_WriteOp = Union[
+    InsertOne[Mapping[str, Any]],
+    DeleteOne,
+    DeleteMany,
+    ReplaceOne[Mapping[str, Any]],
+    UpdateOne,
+    UpdateMany,
+]
 
 
 class BulkWriter:
+    """
+    A utility class for managing and executing bulk operations.
+
+    This class facilitates the efficient execution of multiple database operations
+    (e.g., inserts, updates, deletes, replacements) in a single batch. It supports asynchronous
+    context management and ensures that all queued operations are committed upon exiting the context.
+
+    Attributes:
+        session Optional[AsyncIOMotorClientSession]:
+            The motor session used for transactional operations.
+            Defaults to None, meaning no session is used.
+        ordered Optional[bool]:
+            Specifies whether operations are executed sequentially (default) or in parallel.
+            - If True, operations are performed serially, stopping at the first failure.
+            - If False, operations may be executed in arbitrary order, and all operations are attempted
+            regardless of individual failures.
+        bypass_document_validation Optional[bool]:
+            If True, document-level validation is bypassed for all operations
+            in the bulk write. This applies to MongoDB's schema validation rules, allowing documents that
+            do not meet validation criteria to be inserted or modified. Defaults to False.
+        comment Optional[Any]:
+            A user-provided comment attached to the bulk operation command, useful for
+            auditing and debugging purposes.
+        operations List[Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]]:
+            A list of MongoDB operations queued for bulk execution.
+        object_class Type[Union[Document, UnionDoc]]:
+            The document model class associated with the operations.
+
+    Parameters:
+        session Optional[AsyncIOMotorClientSession]: The motor session for transaction support.
+            Defaults to None (no session).
+        ordered Optional[bool]: Specifies whether operations are executed in sequence (True) or in parallel (False).
+            Defaults to True.
+        bypass_document_validation Optional[bool]: Allows the bulk operation to bypass document-level validation.
+            This is particularly useful when working with schemas that are being phased in or for bulk imports
+            where strict validation may not be necessary. Defaults to False.
+        comment Optional[Any]: A custom comment attached to the bulk operation.
+            Defaults to None.
+        object_class Type[Union[Document, UnionDoc]]: The document model class associated with the operations.
+    """
+
     def __init__(
         self,
         session: Optional[AsyncIOMotorClientSession] = None,
         ordered: bool = True,
-    ):
-        self.operations: List[Operation] = []
+        object_class: Optional[Type[Union[Document, UnionDoc]]] = None,
+        bypass_document_validation: bool = False,
+        comment: Optional[Any] = None,
+    ) -> None:
+        self.operations: List[_WriteOp] = []
         self.session = session
         self.ordered = ordered
+        self.object_class = object_class
+        self.bypass_document_validation = bypass_document_validation
+        self.comment = comment
+        self._collection_name: str
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "BulkWriter":
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
-        await self.commit()
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        tb: Optional[TracebackType],
+    ) -> None:
+        if exc_type is None:
+            await self.commit()
 
     async def commit(self) -> Optional[BulkWriteResult]:
         """
-        Commit all the operations to the database
-        :return:
+        Commit all queued operations to the database.
+
+        Executes all queued operations in a single bulk write request. If there
+        are no operations to commit, it returns ``None``.
+
+        :return: The result of the bulk write operation if operations are committed.
+                Returns ``None`` if there are no operations to execute.
+        :rtype: Optional[BulkWriteResult]
+
+        :raises ValueError:
+            If the object_class is not specified before committing.
         """
-        obj_class = None
-        requests = []
-        if self.operations:
-            for op in self.operations:
-                if obj_class is None:
-                    obj_class = op.object_class
-
-                if obj_class != op.object_class:
-                    raise ValueError(
-                        "All the operations should be for a single document model"
-                    )
-                if op.operation in [InsertOne, DeleteOne]:
-                    query = op.operation(op.first_query, **op.pymongo_kwargs)  # type: ignore
-                else:
-                    query = op.operation(
-                        op.first_query,
-                        op.second_query,
-                        **op.pymongo_kwargs,  # type: ignore
-                    )
-                requests.append(query)
-
-            return await obj_class.get_motor_collection().bulk_write(  # type: ignore
-                requests, session=self.session, ordered=self.ordered
+        if not self.operations:
+            return None
+        if not self.object_class:
+            raise ValueError(
+                "The document model class must be specified before committing operations."
             )
-        return None
+        return await self.object_class.get_motor_collection().bulk_write(
+            self.operations,
+            ordered=self.ordered,
+            bypass_document_validation=self.bypass_document_validation,
+            session=self.session,
+            comment=self.comment,
+        )
 
-    def add_operation(self, operation: Operation):
+    def add_operation(
+        self,
+        object_class: Type[Union[Document, UnionDoc]],
+        operation: _WriteOp,
+    ):
+        """
+        Add an operation to the queue.
+
+        This method adds a MongoDB operation to the BulkWriter's operation queue.
+        All operations in the queue must belong to the same collection.
+
+        :param object_class: Type[Union[Document, UnionDoc]]
+            The document model class associated with the operation.
+        :param operation: Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]
+            The MongoDB operation to add to the queue.
+        :raises ValueError:
+            If the collection differs from the one already associated with the BulkWriter.
+        """
+        if self.object_class is None:
+            self.object_class = object_class
+            self._collection_name = object_class.get_collection_name()
+        else:
+            if object_class.get_collection_name() != self._collection_name:
+                raise ValueError(
+                    "All the operations should be for a same collection name"
+                )
         self.operations.append(operation)
