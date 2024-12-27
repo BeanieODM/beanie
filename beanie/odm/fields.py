@@ -616,10 +616,6 @@ class IndexModelField:
     def __repr__(self):
         return f"IndexModelField({self.name}, {self.fields}, {self.options})"
 
-    @staticmethod
-    def list_to_index_model(left: List[IndexModelField]):
-        return [index.index for index in left]
-
     @classmethod
     def from_motor_index_information(cls, index_info: dict):
         result = []

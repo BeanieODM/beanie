@@ -552,7 +552,7 @@ class Initializer:
         # create indices
         if found_indexes:
             new_indexes += await collection.create_indexes(
-                IndexModelField.list_to_index_model(new_indexes)
+                [index.index for index in new_indexes]
             )
 
     async def init_document(self, cls: Type[Document]) -> Optional[Output]:
