@@ -5,7 +5,7 @@ from pymongo import DeleteMany as DeleteManyPyMongo
 from pymongo import DeleteOne as DeleteOnePyMongo
 from pymongo.results import DeleteResult
 
-from beanie.odm.bulk import BulkWriter, Operation
+from beanie.odm.bulk import BulkWriter
 from beanie.odm.interfaces.clone import CloneInterface
 from beanie.odm.interfaces.session import SessionMethods
 
@@ -52,12 +52,8 @@ class DeleteMany(DeleteQuery):
             )
         else:
             self.bulk_writer.add_operation(
-                Operation(
-                    operation=DeleteManyPyMongo,
-                    first_query=self.find_query,
-                    object_class=self.document_model,
-                    pymongo_kwargs=self.pymongo_kwargs,
-                )
+                self.document_model,
+                DeleteManyPyMongo(self.find_query, **self.pymongo_kwargs),
             )
             return None
 
@@ -82,11 +78,8 @@ class DeleteOne(DeleteQuery):
             )
         else:
             self.bulk_writer.add_operation(
-                Operation(
-                    operation=DeleteOnePyMongo,
-                    first_query=self.find_query,
-                    object_class=self.document_model,
-                    pymongo_kwargs=self.pymongo_kwargs,
-                )
+                self.document_model,
+                DeleteOnePyMongo(self.find_query),
+                **self.pymongo_kwargs,
             )
             return None
