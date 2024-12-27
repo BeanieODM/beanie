@@ -149,35 +149,27 @@ class PydanticObjectId(ObjectId):
             cls, source_type: Type[Any], handler: GetCoreSchemaHandler
         ) -> CoreSchema:
             if not IS_PYDANTIC_V2_10:
-                return json_or_python_schema(
-                    python_schema=no_info_plain_validator_function(
-                        cls._validate
-                    ),
-                    json_schema=no_info_plain_validator_function(
-                        cls._validate,
-                        metadata={
-                            "pydantic_js_input_core_schema": str_schema(
-                                pattern="^[0-9a-f]{24}$",
-                                min_length=24,
-                                max_length=24,
-                            )
-                        },
-                    ),
+                return no_info_plain_validator_function(
+                    cls._validate,
+                    metadata={
+                        "pydantic_js_input_core_schema": str_schema(
+                            pattern="^[0-9a-f]{24}$",
+                            min_length=24,
+                            max_length=24,
+                        )
+                    },
                     serialization=plain_serializer_function_ser_schema(
                         lambda instance: str(instance),
                         return_schema=str_schema(),
                         when_used="json",
                     ),
                 )
-            return json_or_python_schema(
-                python_schema=no_info_plain_validator_function(cls._validate),
-                json_schema=no_info_plain_validator_function(
-                    cls._validate,
-                    json_schema_input_schema=str_schema(
-                        pattern="^[0-9a-f]{24}$",
-                        min_length=24,
-                        max_length=24,
-                    ),
+            return no_info_plain_validator_function(
+                cls._validate,
+                json_schema_input_schema=str_schema(
+                    pattern="^[0-9a-f]{24}$",
+                    min_length=24,
+                    max_length=24,
                 ),
                 serialization=plain_serializer_function_ser_schema(
                     lambda instance: str(instance),
