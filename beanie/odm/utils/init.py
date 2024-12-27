@@ -499,32 +499,17 @@ class Initializer:
         collection = cls.get_motor_collection()
         document_settings = cls.get_settings()
 
-        index_information = await collection.index_information()
-
-        old_indexes = IndexModelField.from_motor_index_information(
-            index_information
-        )
-        new_indexes = []
-
         # Indexed field wrapped with Indexed()
         indexed_fields = (
-            (k, fvalue, get_index_attributes(fvalue))
-            for k, fvalue in get_model_fields(cls).items()
+            (name, info, get_index_attributes(info))
+            for name, info in get_model_fields(cls).items()
         )
-        found_indexes = {
+        new_indexes = {
             IndexModelField(
-                IndexModel(
-                    [
-                        (
-                            fvalue.alias or k,
-                            indexed_attrs[0],
-                        )
-                    ],
-                    **indexed_attrs[1],
-                )
+                IndexModel([(info.alias or name, attrs[0])], **attrs[1])
             )
-            for k, fvalue, indexed_attrs in indexed_fields
-            if indexed_attrs is not None
+            for name, info, attrs in indexed_fields
+            if attrs is not None
         }
 
         if document_settings.merge_indexes:
@@ -536,22 +521,24 @@ class Initializer:
                     ):
                         await self.init_class(subclass)
                     if subclass.get_settings().indexes:
-                        found_indexes.update(subclass.get_settings().indexes)
+                        new_indexes.update(subclass.get_settings().indexes)
         else:
             if document_settings.indexes:
-                found_indexes.update(document_settings.indexes)
-
-        new_indexes += list(found_indexes)
+                new_indexes.update(document_settings.indexes)
 
         # delete indexes
         # Only drop indexes if the user specifically allows for it
         if allow_index_dropping:
-            for index in set(old_indexes) - set(new_indexes):
+            index_information = await collection.index_information()
+            old_indexes = set(
+                IndexModelField.from_motor_index_information(index_information)
+            )
+            for index in old_indexes - new_indexes:
                 await collection.drop_index(index.name)
 
         # create indices
-        if found_indexes:
-            new_indexes += await collection.create_indexes(
+        if new_indexes:
+            await collection.create_indexes(
                 [index.index for index in new_indexes]
             )
 
