@@ -511,7 +511,7 @@ class Initializer:
             (k, fvalue, get_index_attributes(fvalue))
             for k, fvalue in get_model_fields(cls).items()
         )
-        found_indexes = [
+        found_indexes = {
             IndexModelField(
                 IndexModel(
                     [
@@ -525,10 +525,9 @@ class Initializer:
             )
             for k, fvalue, indexed_attrs in indexed_fields
             if indexed_attrs is not None
-        ]
+        }
 
         if document_settings.merge_indexes:
-            result: List[IndexModelField] = []
             for subclass in reversed(cls.mro()):
                 if issubclass(subclass, Document) and not subclass == Document:
                     if (
@@ -537,27 +536,17 @@ class Initializer:
                     ):
                         await self.init_class(subclass)
                     if subclass.get_settings().indexes:
-                        result = IndexModelField.merge_indexes(
-                            result, subclass.get_settings().indexes
-                        )
-            found_indexes = IndexModelField.merge_indexes(
-                found_indexes, result
-            )
-
+                        found_indexes.update(subclass.get_settings().indexes)
         else:
             if document_settings.indexes:
-                found_indexes = IndexModelField.merge_indexes(
-                    found_indexes, document_settings.indexes
-                )
+                found_indexes.update(document_settings.indexes)
 
-        new_indexes += found_indexes
+        new_indexes += list(found_indexes)
 
         # delete indexes
         # Only drop indexes if the user specifically allows for it
         if allow_index_dropping:
-            for index in IndexModelField.list_difference(
-                old_indexes, new_indexes
-            ):
+            for index in set(old_indexes) - set(new_indexes):
                 await collection.drop_index(index.name)
 
         # create indices

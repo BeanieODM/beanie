@@ -607,21 +607,14 @@ class IndexModelField:
             )
         )
 
+    def __hash__(self) -> int:
+        return hash(self.fields + self.options)
+
     def __eq__(self, other):
         return self.fields == other.fields and self.options == other.options
 
     def __repr__(self):
         return f"IndexModelField({self.name}, {self.fields}, {self.options})"
-
-    @staticmethod
-    def list_difference(
-        left: List[IndexModelField], right: List[IndexModelField]
-    ):
-        result = []
-        for index in left:
-            if index not in right:
-                result.append(index)
-        return result
 
     @staticmethod
     def list_to_index_model(left: List[IndexModelField]):
@@ -653,15 +646,6 @@ class IndexModelField:
             if i.same_fields(index):
                 return i
         return None
-
-    @staticmethod
-    def merge_indexes(
-        left: List[IndexModelField], right: List[IndexModelField]
-    ):
-        left_dict = {index.fields: index for index in left}
-        right_dict = {index.fields: index for index in right}
-        left_dict.update(right_dict)
-        return list(left_dict.values())
 
     @classmethod
     def _validate(cls, v: Any) -> "IndexModelField":
