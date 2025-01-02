@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Body, status
 from pydantic import BaseModel
 
@@ -26,6 +28,11 @@ async def create_window(window: WindowAPI):
 @house_router.post("/windows_2/")
 async def create_window_2(window: WindowAPI):
     return await window.save()
+
+
+@house_router.get("/windows/{id}", response_model=Optional[WindowAPI])
+async def get_window(id: PydanticObjectId):
+    return await WindowAPI.get(id)
 
 
 @house_router.post("/houses/", response_model=HouseAPI)
