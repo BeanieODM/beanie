@@ -9,6 +9,22 @@ async def test_create_window(api_client):
     assert resp_json["y"] == 20
 
 
+async def test_get_window(api_client):
+    payload = {"x": 10, "y": 20}
+    data1 = (
+        (await api_client.post("/v1/windows/", json=payload))
+        .raise_for_status()
+        .json()
+    )
+    window_id = data1["_id"]
+    data2 = (
+        (await api_client.get(f"/v1/windows/{window_id}"))
+        .raise_for_status()
+        .json()
+    )
+    assert data2 == data1
+
+
 async def test_create_house(api_client):
     payload = {"x": 10, "y": 20}
     resp = await api_client.post("/v1/houses/", json=payload)
