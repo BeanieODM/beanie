@@ -4,6 +4,9 @@ import pydantic
 from pydantic import BaseModel
 
 IS_PYDANTIC_V2 = int(pydantic.VERSION.split(".")[0]) >= 2
+IS_PYDANTIC_V2_10 = (
+    IS_PYDANTIC_V2 and int(pydantic.VERSION.split(".")[1]) >= 10
+)
 
 if IS_PYDANTIC_V2:
     from pydantic import TypeAdapter
