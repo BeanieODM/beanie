@@ -2,6 +2,34 @@
 
 Beanie project
 
+## [1.29.0] - 2025-01-06
+### Fix serialization of link/backlink and openapi schema generation
+- Author - [staticxterm](https://github.com/staticxterm)
+- PR <https://github.com/BeanieODM/beanie/pull/1080>
+### Fix: `owner` model missing in `init_beanie` in inheritance documentation's inserts example
+- Author - [ksayer](https://github.com/ksayer)
+- PR <https://github.com/BeanieODM/beanie/pull/1090>
+### Make `diacritic_sensitive` parameter optional to support $text operator on cosmos db
+- Author - [mykolaskrynnyk](https://github.com/mykolaskrynnyk)
+- PR <https://github.com/BeanieODM/beanie/pull/1089>
+### Add tests with case of {id} in fastapi path
+- Author - [dantetemplar](https://github.com/dantetemplar)
+- PR <https://github.com/BeanieODM/beanie/pull/1100>
+### Use strings to specify mongodb versions in ci
+- Author - [Viicos](https://github.com/Viicos)
+- PR <https://github.com/BeanieODM/beanie/pull/1094>
+### fix: pydantic 2.10.x breaking change
+- Author - [mdaffad](https://github.com/mdaffad)
+- PR <https://github.com/BeanieODM/beanie/pull/1095>
+### Bulk writer improving & bulk_writer method for document and possibility to bypass mongo document validation + comment parameter
+- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
+- PR <https://github.com/BeanieODM/beanie/pull/1079>
+### Add coverage configuration to pyproject.toml
+- Author - [staticxterm](https://github.com/staticxterm)
+- PR <https://github.com/BeanieODM/beanie/pull/1091>
+
+[1.29.0]: https://pypi.org/project/beanie/1.29.0
+
 ## [1.28.0] - 2024-12-05
 ### Fix kwargs/args untyped
 - Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
