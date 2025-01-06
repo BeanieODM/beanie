@@ -186,3 +186,6 @@ tilt_modules
 # Poetry stuff
 poetry.lock
 .pdm-python
+
+# macOS
+**/.DS_Store
