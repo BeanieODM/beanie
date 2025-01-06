@@ -44,8 +44,14 @@ def test_schema_export_of_model_with_pydanticobjectid():
     if IS_PYDANTIC_V2:
         json_schema = doc.model_json_schema()
 
-        assert json_schema["properties"]["_id"]["anyOf"][0]["type"] == "string"
-        assert json_schema["properties"]["pyid"]["type"] == "string"
+        assert (
+            json_schema["properties"]["_id"]["anyOf"][0]["$ref"]
+            == "#/$defs/PydanticObjectId"
+        )
+        assert (
+            json_schema["properties"]["pyid"]["$ref"]
+            == "#/$defs/PydanticObjectId"
+        )
     else:
         json_schema = doc.schema()
 
