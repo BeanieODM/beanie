@@ -1111,6 +1111,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#documentbulk_writer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.bulk_writer
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1118,6 +1127,15 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage:
+    </span>
+  </a>
   
 </li>
       
@@ -1605,6 +1623,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#documentbulk_writer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document.bulk_writer
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1612,6 +1639,15 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage:
+    </span>
+  </a>
   
 </li>
       
@@ -2080,6 +2116,40 @@ values to set</li>
 <p>are compatible with the Document schema</p>
 <p><strong>Returns</strong>:</p>
 <p>InspectionResult</p>
+</blockquote>
+<p><a id="beanie.odm.documents.Document.bulk_writer"></a></p>
+<h4 id="documentbulk_writer">Document.bulk_writer</h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">bulk_writer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncIOMotorClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">ordered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">bypass_document_validation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="n">comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BulkWriter</span>
+</code></pre></div>
+<blockquote>
+<p>Returns a BulkWriter instance for handling bulk write operations.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>session</code>: ClientSession
+The session instance used for transactional operations.</li>
+<li><code>ordered</code>: bool
+If <code>True</code> (the default), requests will be performed on the server serially, in the order provided. If an error
+occurs, all remaining operations are aborted. If <code>False</code>, requests will be performed on the server in
+arbitrary order, possibly in parallel, and all operations will be attempted.</li>
+<li><code>bypass_document_validation</code>: bool, optional
+If <code>True</code>, allows the write to opt-out of document-level validation. Default is <code>False</code>.</li>
+<li><code>comment</code>: str, optional
+A user-provided comment to attach to the BulkWriter.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>BulkWriter
+An instance of BulkWriter configured with the provided settings.</p>
+<h2 id="example-usage">Example Usage:</h2>
+<p>This method is typically used within an asynchronous context manager.</p>
+<p>.. code-block:: python</p>
+<div class="highlight"><pre><span></span><code>async with Document.bulk_writer(ordered=True) as bulk:
+    await Document.insert_one(Document(field=&quot;value&quot;), bulk_writer=bulk)
+</code></pre></div>
 </blockquote>
 
 

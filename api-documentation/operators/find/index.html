@@ -2583,13 +2583,18 @@ https://docs.mongodb.com/manual/reference/operator/query/bitsAnySet/</p>
 </code></pre></div>
 <p>MongoDB doc:
   <a href="https://docs.mongodb.com/manual/reference/operator/query/text/">https://docs.mongodb.com/manual/reference/operator/query/text/</a></p>
+<ul>
+<li><code>Note</code> - if you need to run a query against Azure Cosmos DB for MongoDB,
+  which does not support diacritic sensitivity yet, you can set
+  <code>diacritic_sensitive</code> argument to <code>None</code> to exclude it from the query.</li>
+</ul>
 </blockquote>
 <p><a id="beanie.odm.operators.find.evaluation.Text.__init__"></a></p>
 <h4 id="text__init__">Text.__init__</h4>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">search</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
              <span class="n">language</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
              <span class="n">case_sensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-             <span class="n">diacritic_sensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+             <span class="n">diacritic_sensitive</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
 <blockquote>
 <p><strong>Arguments</strong>:</p>
@@ -2597,7 +2602,7 @@ https://docs.mongodb.com/manual/reference/operator/query/bitsAnySet/</p>
 <li><code>search</code>: str</li>
 <li><code>language</code>: Optional[str] = None</li>
 <li><code>case_sensitive</code>: bool = False</li>
-<li><code>diacritic_sensitive</code>: bool = False</li>
+<li><code>diacritic_sensitive</code>: Optional[bool] = False</li>
 </ul>
 </blockquote>
 <p><a id="beanie.odm.operators.find.evaluation.Where"></a></p>
