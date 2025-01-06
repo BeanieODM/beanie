@@ -1,9 +1,13 @@
 from abc import abstractmethod
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, TypeVar, Union, cast
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
+from pydantic import BaseModel
 
 from beanie.odm.fields import ExpressionField
+
+DocType = TypeVar("DocType", bound="AggregateMethods")
+DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
 class AggregateMethods:
@@ -66,7 +70,7 @@ class AggregateMethods:
 
     async def avg(
         self,
-        field,
+        field: Union[str, ExpressionField],
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:

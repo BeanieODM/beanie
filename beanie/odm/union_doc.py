@@ -5,6 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClientSession
 from beanie.exceptions import UnionDocNotInited
 from beanie.odm.bulk import BulkWriter
 from beanie.odm.interfaces.aggregate import AggregateInterface
+from beanie.odm.interfaces.aggregation_methods import AggregateMethods
 from beanie.odm.interfaces.detector import DetectionInterface, ModelType
 from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
@@ -16,6 +17,7 @@ UnionDocType = TypeVar("UnionDocType", bound="UnionDoc")
 class UnionDoc(
     FindInterface,
     AggregateInterface,
+    AggregateMethods,
     OtherGettersInterface,
     DetectionInterface,
 ):
