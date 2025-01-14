@@ -4,8 +4,14 @@ from types import TracebackType
 from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Type, Union
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
-from pymongo import (DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany,
-                     UpdateOne)
+from pymongo import (
+    DeleteMany,
+    DeleteOne,
+    InsertOne,
+    ReplaceOne,
+    UpdateMany,
+    UpdateOne,
+)
 from pymongo.results import BulkWriteResult
 
 if TYPE_CHECKING:
@@ -78,7 +84,9 @@ class BulkWriter:
         self.object_class = object_class
         self.bypass_document_validation = bypass_document_validation
         self.comment = comment
-        self._collection_name: str = object_class.get_collection_name() if object_class else None
+        self._collection_name: Optional[str] = (
+            object_class.get_collection_name() if object_class else None
+        )
 
     async def __aenter__(self) -> "BulkWriter":
         return self
