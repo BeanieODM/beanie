@@ -6,11 +6,14 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
+    Concatenate,
+    Coroutine,
     Dict,
     List,
     Optional,
     Tuple,
     Type,
+    TypeAlias,
     TypeVar,
     Union,
 )
@@ -18,10 +21,14 @@ from typing import (
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import AsyncDocMethod, DocType, Document
+    from beanie.odm.documents import DocType, Document
 
 P = ParamSpec("P")
 R = TypeVar("R")
+
+AsyncDocMethod: TypeAlias = Callable[
+    Concatenate[DocType, P], Coroutine[Any, Any, R]
+]
 
 
 class EventTypes(str, Enum):
