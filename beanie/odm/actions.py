@@ -6,19 +6,17 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Concatenate,
     Coroutine,
     Dict,
     List,
     Optional,
     Tuple,
     Type,
-    TypeAlias,
     TypeVar,
     Union,
 )
 
-from typing_extensions import ParamSpec
+from typing_extensions import Concatenate, ParamSpec, TypeAlias
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType, Document
