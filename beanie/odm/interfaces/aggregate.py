@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Any, Dict, Optional, Type, TypeVar, Union, overload
 
-from motor.motor_asyncio import AsyncIOMotorClientSession
 from pydantic import BaseModel
+from pymongo.asynchronous.client_session import AsyncClientSession
 
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindMany
@@ -23,7 +23,7 @@ class AggregateInterface:
         cls: Type[DocType],
         aggregation_pipeline: list,
         projection_model: None = None,
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
     ) -> AggregationQuery[Dict[str, Any]]: ...
@@ -34,7 +34,7 @@ class AggregateInterface:
         cls: Type[DocType],
         aggregation_pipeline: list,
         projection_model: Type[DocumentProjectionType],
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
     ) -> AggregationQuery[DocumentProjectionType]: ...
@@ -44,7 +44,7 @@ class AggregateInterface:
         cls: Type[DocType],
         aggregation_pipeline: list,
         projection_model: Optional[Type[DocumentProjectionType]] = None,
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
     ) -> Union[
@@ -56,7 +56,7 @@ class AggregateInterface:
         Returns [AggregationQuery](query.md#aggregationquery) query object
         :param aggregation_pipeline: list - aggregation pipeline
         :param projection_model: Type[BaseModel]
-        :param session: Optional[AsyncIOMotorClientSession]
+        :param session: Optional[AsyncClientSession]
         :param ignore_cache: bool
         :param **pymongo_kwargs: pymongo native parameters for aggregate operation
         :return: [AggregationQuery](query.md#aggregationquery)

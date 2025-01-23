@@ -4,7 +4,8 @@ from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from typing import List, Optional, Type
 
-from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
+from pymongo.asynchronous.client_session import AsyncClientSession
+from pymongo.asynchronous.database import AsyncDatabase
 
 from beanie.migrations.controllers.iterative import BaseMigrationController
 from beanie.migrations.database import DBHandler
@@ -177,9 +178,9 @@ class MigrationNode:
     async def run_migrations(
         self,
         migrations: List[BaseMigrationController],
-        db: AsyncIOMotorDatabase,
+        db: AsyncDatabase,
         allow_index_dropping: bool,
-        session: AsyncIOMotorClientSession,
+        session: AsyncClientSession,
     ) -> None:
         for migration in migrations:
             for model in migration.models:

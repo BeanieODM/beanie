@@ -50,8 +50,10 @@ async def test_validate_on_save_keep_the_id_type():
         doc = doc.copy(update=update.dict(exclude_unset=True))
     doc.num_2 = 1000
     await doc.save()
-    in_db = await DocumentWithValidationOnSave.get_motor_collection().find_one(
-        {"_id": doc.id}
+    in_db = (
+        await DocumentWithValidationOnSave.get_pymongo_collection().find_one(
+            {"_id": doc.id}
+        )
     )
     assert isinstance(in_db["related"], ObjectId)
     new_doc = await DocumentWithValidationOnSave.get(doc.id)

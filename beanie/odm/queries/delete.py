@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, Any, Dict, Generator, Mapping, Optional, Type
 
-from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo import DeleteMany as DeleteManyPyMongo
 from pymongo import DeleteOne as DeleteOnePyMongo
+from pymongo.asynchronous.client_session import AsyncClientSession
 from pymongo.results import DeleteResult
 
 from beanie.odm.bulk import BulkWriter
@@ -27,7 +27,7 @@ class DeleteQuery(SessionMethods, CloneInterface):
     ):
         self.document_model = document_model
         self.find_query = find_query
-        self.session: Optional[AsyncIOMotorClientSession] = None
+        self.session: Optional[AsyncClientSession] = None
         self.bulk_writer = bulk_writer
         self.pymongo_kwargs: Dict[str, Any] = pymongo_kwargs
 
@@ -42,7 +42,7 @@ class DeleteMany(DeleteQuery):
         """
         if self.bulk_writer is None:
             return (
-                yield from self.document_model.get_motor_collection()
+                yield from self.document_model.get_pymongo_collection()
                 .delete_many(
                     self.find_query,
                     session=self.session,
@@ -68,7 +68,7 @@ class DeleteOne(DeleteQuery):
         """
         if self.bulk_writer is None:
             return (
-                yield from self.document_model.get_motor_collection()
+                yield from self.document_model.get_pymongo_collection()
                 .delete_one(
                     self.find_query,
                     session=self.session,
