@@ -292,7 +292,7 @@ def sample_doc_not_saved(point):
 
 @pytest.fixture()
 async def session(cli):
-    s = await cli.start_session()
+    s = cli.start_session()
     yield s
     await s.end_session()
 
@@ -300,8 +300,8 @@ async def session(cli):
 @pytest.fixture()
 async def deprecated_init_beanie(db):
     for model in TESTING_MODELS:  # crude clear from init
-        await model.get_motor_collection().drop()
-        await model.get_motor_collection().drop_indexes()
+        await model.get_pymongo_collection().drop()
+        await model.get_pymongo_collection().drop_indexes()
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
 
@@ -327,8 +327,8 @@ async def init(db):
         yield None
     finally:
         for model in TESTING_MODELS:
-            await model.get_motor_collection().drop()
-            await model.get_motor_collection().drop_indexes()
+            await model.get_pymongo_collection().drop()
+            await model.get_pymongo_collection().drop_indexes()
 
 
 @pytest.fixture

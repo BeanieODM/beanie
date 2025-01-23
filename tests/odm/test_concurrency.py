@@ -1,6 +1,6 @@
 import asyncio
 
-import motor.motor_asyncio
+from pymongo import AsyncMongoClient
 
 from beanie import Document, init_beanie
 
@@ -19,7 +19,7 @@ class SampleModel3(SampleModel2): ...
 class TestConcurrency:
     async def test_without_init(self, settings):
         for i in range(10):
-            cli = motor.motor_asyncio.AsyncIOMotorClient(settings.mongodb_dsn)
+            cli = AsyncMongoClient(settings.mongodb_dsn)
             cli.get_io_loop = asyncio.get_running_loop
             db = cli[settings.mongodb_db_name]
             await init_beanie(

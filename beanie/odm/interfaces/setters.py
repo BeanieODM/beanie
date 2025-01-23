@@ -11,14 +11,14 @@ class SettersInterface:
         """
         Collection setter
         """
-        cls._document_settings.motor_collection = collection
+        cls._document_settings.pymongo_collection = collection
 
     @classmethod
     def set_database(cls, database):
         """
         Database setter
         """
-        cls._document_settings.motor_db = database
+        cls._document_settings.pymongo_db = database
 
     @classmethod
     def set_collection_name(cls, name: str):

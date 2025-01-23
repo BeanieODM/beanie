@@ -15,7 +15,6 @@ To set the root model you have to set `is_root = True` in the inner Settings cla
 
 ```py hl_lines="20 20"
 from typing import Optional, List
-from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from beanie import Document, Link, init_beanie
 
@@ -69,7 +68,7 @@ class Owner(Document):
 Inserts work the same way as usual
 
 ```python
-client = AsyncIOMotorClient()
+client = AsyncMongoClient()
 await init_beanie(client.test_db, document_models=[Vehicle, Bicycle, Bike, Car, Bus, Owner])
 
 bike_1 = await Bike(color='black', fuel='gasoline').insert()

@@ -72,7 +72,7 @@ async def test_insert_keep_nulls_false():
     assert new_doc.o is None
 
     raw_data = (
-        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
+        await DocumentWithKeepNullsFalse.get_pymongo_collection().find_one(
             {"_id": doc.id}
         )
     )
@@ -101,7 +101,7 @@ async def test_insert_many_keep_nulls_false():
     assert new_docs[1].o is None
 
     raw_data = (
-        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
+        await DocumentWithKeepNullsFalse.get_pymongo_collection().find_one(
             {"_id": new_docs[0].id}
         )
     )
@@ -110,7 +110,7 @@ async def test_insert_many_keep_nulls_false():
         "m": {"i": 10},
     }
     raw_data = (
-        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
+        await DocumentWithKeepNullsFalse.get_pymongo_collection().find_one(
             {"_id": new_docs[1].id}
         )
     )

@@ -1,6 +1,6 @@
 from typing import Any, ClassVar, Dict, Optional, Type, TypeVar
 
-from motor.motor_asyncio import AsyncIOMotorClientSession
+from pymongo.asynchronous.client_session import AsyncClientSession
 
 from beanie.exceptions import UnionDocNotInited
 from beanie.odm.bulk import BulkWriter
@@ -45,7 +45,7 @@ class UnionDoc(
     @classmethod
     def bulk_writer(
         cls,
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session: Optional[AsyncClientSession] = None,
         ordered: bool = True,
         bypass_document_validation: bool = False,
         comment: Optional[Any] = None,
