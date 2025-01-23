@@ -164,7 +164,7 @@ class MigrationNode:
         db = DBHandler.get_db()
         if client is None:
             raise RuntimeError("client must not be None")
-        async with await client.start_session() as s:
+        async with client.start_session() as s:
             if use_transaction:
                 async with s.start_transaction():
                     await self.run_migrations(
