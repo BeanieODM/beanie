@@ -692,10 +692,12 @@ class FindMany(
         """
         Returns the first found element or None if no elements were found
         """
-        res = await self.limit(1).to_list()
-        if not res:
-            return None
-        return res[0]
+        existing_limit = self.limit_number
+        try:
+            result = await self.limit(1).to_list()
+            return result[0] if result else None
+        finally:
+            self.limit_number = existing_limit
 
     async def count(self) -> int:
         """
