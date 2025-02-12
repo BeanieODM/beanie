@@ -13,14 +13,14 @@ from tests.odm.models import (
 )
 
 
-async def test_validate_on_insert():
+async def test_validate_on_insert(suppress_user_warning):
     doc = DocumentWithValidationOnSave(num_1=1, num_2=2)
     doc.num_1 = "wrong_value"
     with pytest.raises(ValidationError):
         await doc.insert()
 
 
-async def test_validate_on_replace():
+async def test_validate_on_replace(suppress_user_warning):
     doc = DocumentWithValidationOnSave(num_1=1, num_2=2)
     await doc.insert()
     doc.num_1 = "wrong_value"
@@ -28,7 +28,7 @@ async def test_validate_on_replace():
         await doc.replace()
 
 
-async def test_validate_on_save_changes():
+async def test_validate_on_save_changes(suppress_user_warning):
     doc = DocumentWithValidationOnSave(num_1=1, num_2=2)
     await doc.insert()
     doc.num_1 = "wrong_value"

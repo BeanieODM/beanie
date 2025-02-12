@@ -425,15 +425,17 @@ class Initializer:
         """
         ActionRegistry.clean_actions(cls)
         for attr in dir(cls):
+            if attr.startswith("_"):  # Skip all private/magic attributes
+                continue
+
             f = getattr(cls, attr)
-            if inspect.isfunction(f):
-                if hasattr(f, "has_action"):
-                    ActionRegistry.add_action(
-                        document_class=cls,
-                        event_types=f.event_types,  # type: ignore
-                        action_direction=f.action_direction,  # type: ignore
-                        funct=f,
-                    )
+            if inspect.isfunction(f) and hasattr(f, "has_action"):
+                ActionRegistry.add_action(
+                    document_class=cls,
+                    event_types=f.event_types,  # type: ignore
+                    action_direction=f.action_direction,  # type: ignore
+                    funct=f,
+                )
 
     async def init_document_collection(self, cls):
         """

@@ -301,12 +301,18 @@ async def session(cli):
 
 
 @pytest.fixture
+def suppress_user_warning(recwarn):
+    warnings.simplefilter("ignore", UserWarning)
+    yield
+
+
+@pytest.fixture
 def recwarn_always(recwarn):
     warnings.simplefilter("always")
     # ResourceWarnings about unclosed sockets can occur nondeterministically
     # (during GC) which throws off the tests
     warnings.simplefilter("ignore", ResourceWarning)
-    return recwarn
+    yield recwarn
 
 
 @pytest.fixture()

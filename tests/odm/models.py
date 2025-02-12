@@ -866,7 +866,7 @@ class DocWithCollectionInnerClass(Document):
 class DocumentWithDecimalField(Document):
     amt: DecimalAnnotation
     other_amt: DecimalAnnotation = Field(
-        decimal_places=1, multiple_of=0.5, default=0
+        decimal_places=1, multiple_of=0.5, default=DecimalAnnotation(0)
     )
 
     if IS_PYDANTIC_V2:
