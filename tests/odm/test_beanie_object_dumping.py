@@ -8,13 +8,13 @@ from tests.odm.models import (
 )
 
 
-class TestModel(BaseModel):
+class ModelForTest(BaseModel):
     my_id: PydanticObjectId = Field(default_factory=PydanticObjectId)
     fake_doc: Link[DocumentTestModelWithSoftDelete]
 
 
 def data_maker():
-    return TestModel(
+    return ModelForTest(
         my_id="5f4e3f3b7c0c9d001f7d4c8e",
         fake_doc=DocumentTestModelWithSoftDelete(
             test_int=1, test_str="test", id="5f4e3f3b7c0c9d001f7d4c8f"
