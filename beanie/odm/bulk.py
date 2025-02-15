@@ -84,7 +84,9 @@ class BulkWriter:
         self.object_class = object_class
         self.bypass_document_validation = bypass_document_validation
         self.comment = comment
-        self._collection_name: str
+        self._collection_name: Optional[str] = (
+            object_class.get_collection_name() if object_class else None
+        )
 
     async def __aenter__(self) -> "BulkWriter":
         return self
