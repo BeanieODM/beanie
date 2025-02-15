@@ -336,12 +336,13 @@ async def test_find_by_datetime(preset_documents):
 
 
 async def test_find_first_or_none(preset_documents):
-    doc = (
-        await Sample.find(Sample.increment > 1)
-        .sort(-Sample.increment)
-        .first_or_none()
-    )
+    q = Sample.find(Sample.increment > 1).sort(-Sample.increment)
+    doc = await q.first_or_none()
+    assert doc is not None
     assert doc.increment == 9
+
+    docs = await q.to_list()
+    assert len(docs) == 8
 
     doc = (
         await Sample.find(Sample.increment > 9)
