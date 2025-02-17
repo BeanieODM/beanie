@@ -627,6 +627,17 @@ class DocumentMultiModelTwo(Document):
         class_id = "123"
 
 
+class DocumentTestModelWithModelConfigExtraAllow(Document):
+
+    class Settings:
+        use_cache = True
+        cache_expiration_time = datetime.timedelta(seconds=10)
+        cache_capacity = 5
+        use_state_management = True
+
+    model_config = ConfigDict(extra='allow')
+
+
 class YardWithRevision(Document):
     v: int
     w: int
