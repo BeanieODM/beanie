@@ -628,14 +628,13 @@ class DocumentMultiModelTwo(Document):
 
 
 class DocumentTestModelWithModelConfigExtraAllow(Document):
-
-    class Settings:
-        use_cache = True
-        cache_expiration_time = datetime.timedelta(seconds=10)
-        cache_capacity = 5
-        use_state_management = True
-
-    model_config = ConfigDict(extra='allow')
+    if IS_PYDANTIC_V2:
+        model_config = ConfigDict(
+            extra="allow",
+        )
+    else:
+        class Config:
+            extra = Extra.allow
 
 
 class YardWithRevision(Document):
