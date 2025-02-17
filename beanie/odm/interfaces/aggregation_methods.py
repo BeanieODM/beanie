@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Union, cast
 
-from motor.motor_asyncio import AsyncIOMotorClientSession
+from pymongo.asynchronous.client_session import AsyncClientSession
 
 from beanie.odm.fields import ExpressionField
 
@@ -16,14 +16,14 @@ class AggregateMethods:
         self,
         aggregation_pipeline,
         projection_model=None,
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ): ...
 
     async def sum(
         self,
         field: Union[str, ExpressionField],
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
         """
@@ -42,7 +42,7 @@ class AggregateMethods:
         ```
 
         :param field: Union[str, ExpressionField]
-        :param session: Optional[AsyncIOMotorClientSession] - motor session
+        :param session: Optional[AsyncClientSession] - pymongo session
         :param ignore_cache: bool
         :return: float - sum. None if there are no items.
         """
@@ -67,7 +67,7 @@ class AggregateMethods:
     async def avg(
         self,
         field,
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
         """
@@ -85,7 +85,7 @@ class AggregateMethods:
         ```
 
         :param field: Union[str, ExpressionField]
-        :param session: Optional[AsyncIOMotorClientSession] - motor session
+        :param session: Optional[AsyncClientSession] - pymongo session
         :param ignore_cache: bool
         :return: Optional[float] - avg. None if there are no items.
         """
@@ -109,7 +109,7 @@ class AggregateMethods:
     async def max(
         self,
         field: Union[str, ExpressionField],
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
         """
@@ -127,7 +127,7 @@ class AggregateMethods:
         ```
 
         :param field: Union[str, ExpressionField]
-        :param session: Optional[AsyncIOMotorClientSession] - motor session
+        :param session: Optional[AsyncClientSession] - pymongo session
         :return: float - max. None if there are no items.
         """
         pipeline = [
@@ -150,7 +150,7 @@ class AggregateMethods:
     async def min(
         self,
         field: Union[str, ExpressionField],
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
         """
@@ -168,7 +168,7 @@ class AggregateMethods:
         ```
 
         :param field: Union[str, ExpressionField]
-        :param session: Optional[AsyncIOMotorClientSession] - motor session
+        :param session: Optional[AsyncClientSession] - pymongo session
         :return: float - min. None if there are no items.
         """
         pipeline = [

@@ -11,6 +11,6 @@ if IS_PYDANTIC_V2:
             new_doc = await DocumentWithRootModelAsAField.get(doc.id)
             assert new_doc.pets.root == ["dog", "cat", "fish"]
 
-            collection = DocumentWithRootModelAsAField.get_motor_collection()
+            collection = DocumentWithRootModelAsAField.get_pymongo_collection()
             raw_doc = await collection.find_one({"_id": doc.id})
             assert raw_doc["pets"] == ["dog", "cat", "fish"]

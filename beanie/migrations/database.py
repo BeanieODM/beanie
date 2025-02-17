@@ -1,10 +1,10 @@
-import motor.motor_asyncio
+from pymongo import AsyncMongoClient
 
 
 class DBHandler:
     @classmethod
     def set_db(cls, uri, db_name):
-        cls.client = motor.motor_asyncio.AsyncIOMotorClient(uri)
+        cls.client = AsyncMongoClient(uri)
         cls.database = cls.client[db_name]
 
     @classmethod
