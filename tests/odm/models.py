@@ -633,6 +633,7 @@ class DocumentTestModelWithModelConfigExtraAllow(Document):
             extra="allow",
         )
     else:
+
         class Config:
             extra = Extra.allow
 
