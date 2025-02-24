@@ -736,26 +736,26 @@ class VehicleWithCustomClassId(Document):
 
 
 class BicycleWithCustomClassId(VehicleWithCustomClassId):
-    _class_id: ClassVar[str | None] = "bicycle"
+    _class_id: ClassVar[Optional[str]] = "bicycle"
     type: str = "bicycle"
     frame: int
     wheels: int
 
 
 class CarWithCustomClassId(VehicleWithCustomClassId, Fuelled):
-    _class_id: ClassVar[str | None] = "car"
+    _class_id: ClassVar[Optional[str]] = "car"
     type: str = "car"
     body: str
 
 
 class BikeWithCustomClassId(VehicleWithCustomClassId, Fuelled):
-    _class_id: ClassVar[str | None] = "bike"
+    _class_id: ClassVar[Optional[str]] = "bike"
     type: str = "bike"
 
 
 class BusWithCustomClassId(CarWithCustomClassId, Fuelled):
     # Do not set, must be inferred from class name and parent class.
-    # _class_id: ClassVar[str | None] = "bus"
+    # _class_id: ClassVar[Optional[str]] = "bus"
     type: str = "car.BusWithCustomClassId"
     seats: int
 
