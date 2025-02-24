@@ -711,6 +711,60 @@ class Owner(Document):
     vehicles: List[Link[Vehicle]] = []
 
 
+# classes for inheritance test with custom class_ids
+class VehicleWithCustomClassId(Document):
+    """Root parent for testing flat inheritance"""
+
+    #               Vehicle
+    #              /   |   \
+    #             /    |    \
+    #        Bicycle  Bike  Car
+    #                         \
+    #                          \
+    #                          Bus
+    color: str
+
+    @after_event(Insert)
+    def on_object_create(self):
+        # this event will be triggered for all children too (self will have corresponding type)
+        ...
+
+    class Settings:
+        is_root = True
+        name = "vehicles-custom-class-id"
+        class_id = "type"
+
+
+class BicycleWithCustomClassId(VehicleWithCustomClassId):
+    _class_id: ClassVar[str | None] = "bicycle"
+    type: str = "bicycle"
+    frame: int
+    wheels: int
+
+
+class CarWithCustomClassId(VehicleWithCustomClassId, Fuelled):
+    _class_id: ClassVar[str | None] = "car"
+    type: str = "car"
+    body: str
+
+
+class BikeWithCustomClassId(VehicleWithCustomClassId, Fuelled):
+    _class_id: ClassVar[str | None] = "bike"
+    type: str = "bike"
+
+
+class BusWithCustomClassId(CarWithCustomClassId, Fuelled):
+    # Do not set, must be inferred from class name and parent class.
+    # _class_id: ClassVar[str | None] = "bus"
+    type: str = "car.BusWithCustomClassId"
+    seats: int
+
+
+class OwnerLinksToCustomClassId(Document):
+    name: str
+    vehicles: List[Link[VehicleWithCustomClassId]] = []
+
+
 class MixinNonRoot(BaseModel):
     id: int = Field(..., ge=1, le=254)
 
