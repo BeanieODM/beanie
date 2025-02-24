@@ -376,7 +376,8 @@ class Initializer:
         cls._children = dict()
         cls._parent = None
         cls._inheritance_inited = False
-        cls._class_id = None
+        if not hasattr(cls, "_class_id"):
+            cls._class_id = None
         cls._link_fields = None
 
     @staticmethod
@@ -598,11 +599,13 @@ class Initializer:
                     class_name=cls.__name__,
                     collection_name=cls.get_collection_name(),
                 )
-                cls._class_id = cls.__name__
+                if cls._class_id is None:
+                    cls._class_id = cls.__name__
                 cls._inheritance_inited = True
             elif output is not None:
                 output.class_name = f"{output.class_name}.{cls.__name__}"
-                cls._class_id = output.class_name
+                if cls._class_id is None:
+                    cls._class_id = output.class_name
                 cls.set_collection_name(output.collection_name)
                 parent.add_child(cls._class_id, cls)
                 cls._parent = parent
