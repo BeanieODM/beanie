@@ -376,7 +376,7 @@ class Initializer:
         cls._children = dict()
         cls._parent = None
         cls._inheritance_inited = False
-        if not hasattr(cls, "_class_id"):
+        if "_class_id" not in cls.__dict__:
             cls._class_id = None
         cls._link_fields = None
 
