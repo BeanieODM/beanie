@@ -28,8 +28,15 @@ except (ValueError, beanie.exceptions.DocumentNotFound):
     print("Can't replace a non existing document")
 ```
 
-Note that these methods require multiple queries to the database and replace the entire document with the new version. 
-A more tailored solution can often be created by applying update queries directly on the database level.
+> ⚠️ **Important**: Both `save()` and `replace()` methods update the **entire document** in the database, even if you only changed one field. This can lead to:
+> 
+> - **Performance issues**: Sending and processing the entire document is less efficient than updating just changed fields
+> - **Data loss**: If another process modified different fields of the same document since you retrieved it, those changes will be overwritten
+
+To avoid these issues, two alternatives are available:
+
+1. **State Management**: Use [State Management](state_management.md) with `save_changes()` method to track and update only modified fields
+2. **Update Queries**: Use database-level update operations as described below for direct field updates
 
 ## Update queries
 

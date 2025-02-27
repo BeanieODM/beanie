@@ -77,6 +77,7 @@ from beanie.odm.models import (
     InspectionStatuses,
 )
 from beanie.odm.operators.find.comparison import In
+from beanie.odm.operators.update.array import Push
 from beanie.odm.operators.update.general import (
     CurrentDate,
     Inc,
@@ -626,6 +627,65 @@ class Document(
             )
 
     @saved_state_needed
+    def _build_update_operations_from_changes(
+        self,
+    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        """
+        Analyze document changes and build appropriate MongoDB update operations.
+        Separates list append operations (for $push) from regular field updates (for $set).
+
+        Returns:
+            Tuple[Dict[str, Any], Dict[str, Any]]: A tuple of (set_operations, push_operations)
+        """
+        changes = self.get_changes()
+
+        set_operations = {}
+        push_operations = {}
+
+        # Analyze changes to determine operation type
+        for field_name, field_value in changes.items():
+            saved_value = None
+            field_path = field_name.split(".")
+            current_dict = self._saved_state
+
+            # Navigate to the correct nested field in saved state
+            for path_part in field_path:
+                if current_dict is None:
+                    break
+                if (
+                    isinstance(current_dict, dict)
+                    and path_part in current_dict
+                ):
+                    saved_value = current_dict[path_part]
+                    current_dict = saved_value
+                else:
+                    saved_value = None
+                    break
+
+            # Check if this is a list append operation
+            if (
+                isinstance(saved_value, list)
+                and isinstance(field_value, list)
+                and not self.state_management_replace_objects()
+            ):
+                # If the new list is longer and contains all elements from the old list at the beginning
+                if len(field_value) > len(saved_value) and all(
+                    field_value[i] == saved_value[i]
+                    for i in range(len(saved_value))
+                ):
+                    # we can partially update list
+                    appended_items = field_value[len(saved_value) :]
+                    push_operations[field_name] = {"$each": appended_items}
+                else:
+                    # This is a more complex list modification (element changed or removed)
+                    set_operations[field_name] = field_value
+            else:
+                # Regular field update
+                set_operations[field_name] = field_value
+
+        return set_operations, push_operations
+
+    @saved_state_needed
     @wrap_with_actions(EventTypes.SAVE_CHANGES)
     @validate_self_before
     async def save_changes(
@@ -638,29 +698,37 @@ class Document(
         """
         Save changes.
         State management usage must be turned on
-
         :param ignore_revision: bool - ignore revision id, if revision is turned on
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: Optional[self]
         """
         if not self.is_changed:
             return None
-        changes = self.get_changes()
+
+        set_operations, push_operations = (
+            self._build_update_operations_from_changes()
+        )
+
+        update_operations: List[Union[SetOperator, Push, Unset]] = []
+
+        if set_operations:
+            update_operations.append(SetOperator(set_operations))
+
+        if push_operations:
+            update_operations.append(Push(push_operations))
+
         if self.get_settings().keep_nulls is False:
+            update_operations.append(Unset(get_top_level_nones(self)))
+
+        if update_operations:
             return await self.update(
-                SetOperator(changes),
-                Unset(get_top_level_nones(self)),
+                *update_operations,
                 ignore_revision=ignore_revision,
                 session=session,
                 bulk_writer=bulk_writer,
             )
-        else:
-            return await self.set(
-                changes,
-                ignore_revision=ignore_revision,
-                session=session,
-                bulk_writer=bulk_writer,
-            )
+
+        return self
 
     @classmethod
     async def replace_many(
@@ -708,7 +776,7 @@ class Document(
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: self
         """
-        arguments: list[Any] = list(args)
+        arguments: List[Any] = list(args)
 
         if skip_sync is not None:
             raise DeprecationWarning(
@@ -1031,9 +1099,7 @@ class Document(
         Args:
             old_dict: dict1
             new_dict: dict2
-
         Returns: dictionary with updates
-
         """
         updates = {}
         if old_dict.keys() - new_dict.keys():

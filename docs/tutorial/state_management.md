@@ -1,5 +1,13 @@
 # State Management
 
+## Why Use State Management?
+
+- **Prevents Data Loss**: When queries update the same document simultaneously, changes to different fields won't overwrite each other
+- **Improved Performance**: Only changed fields are sent to MongoDB, reducing network traffic and database load
+- **Change Control**: Track modifications and roll back changes if needed
+
+## Configuration
+
 Beanie can keep the document state synced with the database in order to find local changes and save only them.
 
 This feature must be explicitly turned on in the `Settings` inner class:
@@ -39,6 +47,18 @@ await s.save_changes()
 
 The `save_changes()` method can only be used with already inserted documents.
 
+## Array Operations
+
+When using state management with arrays, only top-level append operations (`append()`) generate `$push` MongoDB operations, as they are the only array modification that is _mostly_ safe in concurrent scenarios.
+
+For arrays containing Pydantic models, the behavior is as follows:
+
+- Appending a new model object uses `$push` with the model's dictionary representation
+- Modifying a model's fields in an existing array element replaces that entire model since we can't atomically update nested model fields
+- With `state_management_replace_objects = True`, any change to a nested model replaces the entire array
+- Changing elements or lists inside lists updates whole values, because update by index is unsafe
+
+All other array modifications use standard update operations since they can create race conditions in concurrent updates.
 
 ## Interacting with changes
 
@@ -73,7 +93,6 @@ s.has_changed == True
 s.get_previous_changes() == {"num": 200}
 s.get_changes() == {}
 ```
-
 
 ## Options
 
@@ -125,7 +144,7 @@ i = Item(name="Test", attributes={"attribute_1": 1.0, "attribute_2": 2.0})
 await i.insert()
 i.attributes.attribute_1 = 1.0
 await i.save_changes()
-# Changes will consist of: {"attributes.attribute_1": 1.0, "attributes.attribute_2": 2.0}
+# Changes will consist of: {"attributes": {"attribute_1": 1.0, "attribute_2": 2.0}}
 # Keeping attribute_2
 ```
 
@@ -138,4 +157,3 @@ i.attributes = {"attribute_1": 1.0}
 await i.save_changes()
 # Changes will consist of: {"attributes": {"attribute_1": 1.0}}
 # Removing attribute_2
-```
