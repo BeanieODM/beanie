@@ -27,7 +27,7 @@ beanie migrate -uri 'mongodb+srv://user:pass@host' -db db -p relative/path/to/mi
 To roll all forward migrations, run:
 
 ```shell
-beanie migrate -uri 'mongodb://user:pass@host' -db db -p relative/path/to/migrations/directory/
+beanie migrate -uri 'mongodb+srv://user:pass@host' -db db -p relative/path/to/migrations/directory/
 ```
 
 To roll one backward migration, run:
@@ -96,7 +96,7 @@ class Note(Document):
 
 ```
 
-To migrate from `OldNote` to `Note`, file `name` has to be renamed to `title`.
+To migrate from `OldNote` to `Note`, field `name` has to be renamed to `title`.
 
 Forward migration:
 
