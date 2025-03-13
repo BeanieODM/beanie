@@ -189,7 +189,7 @@ class FindMany(
     @overload
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -206,7 +206,7 @@ class FindMany(
     @overload
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -222,7 +222,7 @@ class FindMany(
 
     def find_many(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -240,7 +240,7 @@ class FindMany(
         """
         Find many documents by criteria
 
-        :param args: *Mapping[str, Any] - search criteria
+        :param args: *Mapping[Any, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key
@@ -300,7 +300,7 @@ class FindMany(
     @overload
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -317,7 +317,7 @@ class FindMany(
     @overload
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -333,7 +333,7 @@ class FindMany(
 
     def find(
         self: "FindMany[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -764,7 +764,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -777,7 +777,7 @@ class FindOne(FindQuery[FindQueryResultType]):
     @overload
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Type[FindQueryProjectionType],
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -789,7 +789,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     def find_one(
         self: "FindOne[FindQueryResultType]",
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type[FindQueryProjectionType]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -803,7 +803,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         Find one document by criteria
 
-        :param args: *Mapping[str, Any] - search criteria
+        :param args: *Mapping[Any, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[AsyncIOMotorClientSession] - motor session
         :param ignore_cache: bool

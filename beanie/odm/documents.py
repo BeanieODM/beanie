@@ -1199,8 +1199,8 @@ class Document(
     @classmethod
     async def distinct(
         cls,
-        key: str,
-        filter: Optional[Mapping[str, Any]] = None,
+        key: Any,
+        filter: Optional[Mapping[Any, Any]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         **kwargs: Any,
     ) -> list:
@@ -1289,7 +1289,7 @@ class DocumentWithSoftDelete(Document):
     @classmethod
     def find_many_in_all(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -1321,7 +1321,7 @@ class DocumentWithSoftDelete(Document):
     @classmethod
     def find_many(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -1356,7 +1356,7 @@ class DocumentWithSoftDelete(Document):
     @classmethod
     def find_one(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
