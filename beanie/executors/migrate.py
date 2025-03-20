@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import click
-import toml
+import tomli
 
 from beanie.migrations import template
 from beanie.migrations.database import DBHandler
@@ -89,9 +89,10 @@ class MigrationSettings:
     def get_from_toml(field_name) -> Any:
         path = Path("pyproject.toml")
         if path.is_file():
+            with path.open("rb") as f:
+                toml_data = tomli.load(f)
             val = (
-                toml.load(path)
-                .get("tool", {})
+                toml_data.get("tool", {})
                 .get("beanie", {})
                 .get("migrations", {})
             )

@@ -2,7 +2,8 @@ import subprocess
 from pathlib import Path
 
 import requests  # type: ignore
-import toml
+import tomli
+import tomli_w
 from gh import GitHubHandler
 
 
@@ -57,7 +58,8 @@ class VersionHandler:
 
     @staticmethod
     def parse_version_from_pyproject(pyproject: Path) -> SemVer:
-        toml_data = toml.loads(pyproject.read_text())
+        with pyproject.open("rb") as f:
+            toml_data = tomli.load(f)
         return SemVer(toml_data["project"]["version"])
 
     def get_version_from_pypi(self) -> SemVer:
@@ -74,9 +76,11 @@ class VersionHandler:
         self.update_changelog()
 
     def update_pyproject_version(self):
-        pyproject = toml.loads(self.pyproject.read_text())
+        with self.pyproject.open("rb") as f:
+            pyproject = tomli.load(f)
         pyproject["project"]["version"] = str(self.current_version)
-        self.pyproject.write_text(toml.dumps(pyproject))
+        with self.pyproject.open("wb") as f:
+            tomli_w.dump(pyproject, f)
 
     def update_file_versions(self, files_to_update):
         for file_path in files_to_update:
