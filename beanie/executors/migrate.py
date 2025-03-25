@@ -2,12 +2,17 @@ import asyncio
 import logging
 import os
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import click
-import tomli
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 from beanie.migrations import template
 from beanie.migrations.database import DBHandler
@@ -90,7 +95,7 @@ class MigrationSettings:
         path = Path("pyproject.toml")
         if path.is_file():
             with path.open("rb") as f:
-                toml_data = tomli.load(f)
+                toml_data = tomllib.load(f)
             val = (
                 toml_data.get("tool", {})
                 .get("beanie", {})

@@ -1,8 +1,13 @@
 import subprocess
+import sys
 from pathlib import Path
 
 import requests  # type: ignore
-import tomli
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 import tomli_w
 from gh import GitHubHandler
 
@@ -59,7 +64,7 @@ class VersionHandler:
     @staticmethod
     def parse_version_from_pyproject(pyproject: Path) -> SemVer:
         with pyproject.open("rb") as f:
-            toml_data = tomli.load(f)
+            toml_data = tomllib.load(f)
         return SemVer(toml_data["project"]["version"])
 
     def get_version_from_pypi(self) -> SemVer:
@@ -77,7 +82,7 @@ class VersionHandler:
 
     def update_pyproject_version(self):
         with self.pyproject.open("rb") as f:
-            pyproject = tomli.load(f)
+            pyproject = tomllib.load(f)
         pyproject["project"]["version"] = str(self.current_version)
         with self.pyproject.open("wb") as f:
             tomli_w.dump(pyproject, f)
