@@ -57,7 +57,7 @@ doc = [
 queue = ["beanie-batteries-queue>=0.2"]
 ci = [
     "tomli>=2.2.1,<3.0.0; python_version < '3.11'",
-    "tomli-w>=1.2.0,<2.0.0",
+    "tomli-w>=1.0.0,<2.0.0",
     "requests",
     "types-requests",
 ]
