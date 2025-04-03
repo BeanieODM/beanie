@@ -207,7 +207,7 @@ def after_event(
 def wrap_with_actions(
     event_type: EventTypes,
 ) -> Callable[
-    ["AsyncDocMethod[DocType, P, R]"], "AsyncDocMethod[DocType, P, R]"
+    ["AsyncDocMethod[DocType, P, R]"], Optional["AsyncDocMethod[DocType, P, R]"]
 ]:
     """
     Helper function to wrap Document methods with
