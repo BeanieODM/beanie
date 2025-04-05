@@ -15,10 +15,15 @@ pip install beanie
 ```shell
 poetry add beanie
 ```
+### Uv
+
+```shell
+uv add beanie
+```
 
 ### Optional dependencies
 
-Beanie supports some optional dependencies from PyMongo (`pip` or `poetry` can be used).
+Beanie supports some optional dependencies from PyMongo (`pip`, `poetry` or `uv` can be used).
 
 GSSAPI authentication requires `gssapi` extra dependency:
 
