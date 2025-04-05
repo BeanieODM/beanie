@@ -58,7 +58,7 @@ class FindInterface:
     @classmethod
     def find_one(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -73,7 +73,7 @@ class FindInterface:
     @classmethod
     def find_one(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Type["DocumentProjectionType"],
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -87,7 +87,7 @@ class FindInterface:
     @classmethod
     def find_one(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
@@ -102,7 +102,7 @@ class FindInterface:
         Returns [FindOne](query.md#findone) query object.
         When awaited this will either return a document or None if no document exists for the search criteria.
 
-        :param args: *Mapping[str, Any] - search criteria
+        :param args: *Mapping[Any, Any] - search criteria
         :param projection_model: Optional[Type[BaseModel]] - projection model
         :param session: Optional[AsyncIOMotorClientSession] - motor session instance
         :param ignore_cache: bool
@@ -125,7 +125,7 @@ class FindInterface:
     @classmethod
     def find_many(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -144,7 +144,7 @@ class FindInterface:
     @classmethod
     def find_many(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -162,7 +162,7 @@ class FindInterface:
     @classmethod
     def find_many(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -180,7 +180,7 @@ class FindInterface:
         Find many documents by criteria.
         Returns [FindMany](query.md#findmany) query object
 
-        :param args: *Mapping[str, Any] - search criteria
+        :param args: *Mapping[Any, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
         :param sort: Union[None, str, List[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
@@ -211,7 +211,7 @@ class FindInterface:
     @classmethod
     def find(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -230,7 +230,7 @@ class FindInterface:
     @classmethod
     def find(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Type["DocumentProjectionType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
@@ -248,7 +248,7 @@ class FindInterface:
     @classmethod
     def find(  # type: ignore
         cls: Type[FindType],
-        *args: Union[Mapping[str, Any], bool],
+        *args: Union[Mapping[Any, Any], bool],
         projection_model: Optional[Type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
