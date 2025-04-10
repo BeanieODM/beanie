@@ -16,16 +16,25 @@ All the dependencies and build configs are set in the `pyproject.toml` file. The
 
 And there are other extra dependency sections for Beanie batteries. For example, the `queue` section contains dependencies that extend features of Beanie with a queue.
 
-To install all required dependencies, including test dependencies, in a virtual environment, run the following command in the root directory of the Beanie project:
+To install all required dependencies, including test dependencies, you need to have uv installed.
+Please find installation instruction for your platform [here](https://docs.astral.sh/uv/getting-started/installation/).
+
+After uv installation, run the following command in the root directory of the Beanie project:
 
 ```shell
-pip install -e .[test]
+uv sync --group test
 ```
 
 To install dependencies required for building the documentation, run:
 
 ```shell
-pip install -e .[doc]
+uv sync --group doc
+```
+
+To install everything run:
+
+```shell
+uv sync --all-extras --dev
 ```
 
 ### Database connection
@@ -39,7 +48,7 @@ Beanie uses [pytest](https://docs.pytest.org) for unit testing. To ensure the st
 - All the features will be covered and stay covered.
 - There is independence from other features and test cases.
 
-To run the test suite, make sure that you have MongoDB running and run `pytest`.
+To run the test suite, make sure that you have MongoDB running and run `uv run pytest`.
 
 ## Submitting new code
 
@@ -50,7 +59,7 @@ You can submit your changes through a pull request on GitHub. Please take into a
 To ensure code consistency, Beanie uses Black and Ruff through pre-commit. To set it up, run:
 
 ```shell
-pre-commit install
+uv run pre-commit install
 ```
 
 This will add the pre-commit command to your git's pre-commit hooks and make sure you never forget to run these.
@@ -68,7 +77,7 @@ Please write clear documentation for any new functionality you add. Docstrings w
 The documentation is generated using `pydoc-markdown`. To see a preview of any edits you make, you can run:
 
 ```shell
-pydoc-markdown --server
+uv run pydoc-markdown --server
 ```
 
 and visit the printed address (usually `localhost:8000`) in your browser. Beware, the auto-recompiling might not work for everyone.

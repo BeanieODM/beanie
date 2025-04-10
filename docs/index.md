@@ -45,6 +45,11 @@ pip install beanie
 ```shell
 poetry add beanie
 ```
+### Uv
+```shell
+uv add beanie
+```
+
 ## Example
 
 ```python

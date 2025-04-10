@@ -1,6 +1,6 @@
 repos:
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.6.9
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.4
     hooks:
       - id: ruff
         args: [ --fix ]
@@ -13,3 +13,8 @@ repos:
           - types-click
           - types-toml
         exclude: ^tests/
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.6.13
+    hooks:
+      - id: uv-lock
