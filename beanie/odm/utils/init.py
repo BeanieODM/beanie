@@ -233,7 +233,8 @@ class Initializer:
             # Check if annotation is one of the custom classes
             if (
                 isinstance(field.annotation, _GenericAlias)
-                and field.annotation.__origin__ is cls
+                and inspect.isclass(field.annotation.__origin__)
+                and issubclass(field.annotation.__origin__, cls)
             ):
                 if cls is Link:
                     return LinkInfo(
@@ -253,11 +254,13 @@ class Initializer:
                     )
 
             # Check if annotation is List[custom class]
+
             elif (
                 (origin is List or origin is list)
                 and len(args) == 1
                 and isinstance(args[0], _GenericAlias)
-                and args[0].__origin__ is cls
+                and inspect.isclass(args[0].__origin__)
+                and issubclass(args[0].__origin__, cls)
             ):
                 if cls is Link:
                     return LinkInfo(
@@ -295,7 +298,8 @@ class Initializer:
 
                 if (
                     isinstance(optional, _GenericAlias)
-                    and optional.__origin__ is cls
+                    and inspect.isclass(optional.__origin__)
+                    and issubclass(optional.__origin__, cls)
                 ):
                     if cls is Link:
                         return LinkInfo(
@@ -322,7 +326,8 @@ class Initializer:
                     (optional_origin is List or optional_origin is list)
                     and len(optional_args) == 1
                     and isinstance(optional_args[0], _GenericAlias)
-                    and optional_args[0].__origin__ is cls
+                    and inspect.isclass(optional_args[0].__origin__)
+                    and issubclass(optional_args[0].__origin__, cls)
                 ):
                     if cls is Link:
                         return LinkInfo(
