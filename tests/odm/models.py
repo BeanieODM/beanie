@@ -165,7 +165,7 @@ class DocumentTestModel(Document):
     test_int: int
     test_doc: SubDocument
     test_str: str
-    test_list: List[SubDocument] = Field(exclude=True)
+    test_list: List[SubDocument]
 
     class Settings:
         use_cache = True
@@ -568,7 +568,7 @@ class House(Document):
     roof: Optional[Link[Roof]] = None
     yards: Optional[List[Link[Yard]]] = None
     height: Indexed(int) = 2
-    name: Indexed(str) = Field(exclude=True)
+    name: Indexed(str)
 
     if IS_PYDANTIC_V2:
         model_config = ConfigDict(
