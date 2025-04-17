@@ -894,6 +894,11 @@ class DocumentWithKeepNullsFalse(Document):
         use_state_management = True
 
 
+class DocumentWithExcludedField(Document):
+    included_field: int
+    excluded_field: Optional[int] = Field(default=None, exclude=True)
+
+
 class ReleaseElemMatch(BaseModel):
     major_ver: int
     minor_ver: int

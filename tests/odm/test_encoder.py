@@ -18,6 +18,7 @@ from tests.odm.models import (
     DocumentWithComplexDictKey,
     DocumentWithDecimalField,
     DocumentWithEnumKeysDict,
+    DocumentWithExcludedField,
     DocumentWithHttpUrlField,
     DocumentWithKeepNullsFalse,
     DocumentWithStringField,
@@ -136,6 +137,21 @@ def test_keep_nulls_false():
     encoder = Encoder(keep_nulls=False, to_db=True)
     encoded_doc = encoder.encode(doc)
     assert encoded_doc == {"m": {"i": 10}}
+
+
+async def test_excluded_field():
+    assert isinstance(Encoder().encode(datetime.now()), datetime)
+
+    doc = DocumentWithExcludedField(included_field=1, excluded_field=2)
+    encoded_doc = Encoder().encode(doc)
+    assert "included_field" in encoded_doc
+    assert "excluded_field" not in encoded_doc
+
+    await doc.insert()
+    stored_doc = await DocumentWithExcludedField.get(doc.id)
+    assert stored_doc is not None
+    assert "included_field" in stored_doc.model_dump()
+    assert "excluded_field" not in stored_doc.model_dump()
 
 
 @pytest.mark.skipif(not IS_PYDANTIC_V2, reason="Test only for Pydantic v2")
