@@ -160,7 +160,11 @@ class Encoder:
             field_info = get_model_field(key)
             if field_info is not None:
                 key = field_info.alias or key
-            if key not in exclude and (value is not None or keep_nulls):
+            if (
+                key not in exclude
+                and (value is not None or keep_nulls)
+                and not (field_info is not None and field_info.exclude is True)
+            ):
                 yield key, value
 
 
