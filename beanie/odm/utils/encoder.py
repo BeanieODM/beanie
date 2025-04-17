@@ -163,7 +163,15 @@ class Encoder:
             if (
                 key not in exclude
                 and (value is not None or keep_nulls)
-                and not (field_info is not None and field_info.exclude is True)
+                and not (
+                    field_info is not None
+                    and (
+                        field_info.exclude
+                        if IS_PYDANTIC_V2
+                        else getattr(field_info.field_info.exclude, "exclude")
+                    )
+                    is True
+                )
             ):
                 yield key, value
 
