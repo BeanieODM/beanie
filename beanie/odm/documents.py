@@ -358,7 +358,7 @@ class Document(
                                 ]
                             )
         result = await self.get_motor_collection().insert_one(
-            get_dict(self, to_db=True, keep_nulls=self.get_settings().keep_nulls, keep_defaults=self.get_settings().keep_defaults)
+            get_dict(self, to_db=True, keep_nulls=self.get_settings().keep_nulls, keep_defaults=self.get_settings().keep_defaults),
             session=session,
         )
         new_id = result.inserted_id
