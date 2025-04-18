@@ -121,9 +121,7 @@ R = TypeVar("R")
 # can describe both sync and async, where R itself is a coroutine
 AnyDocMethod: TypeAlias = Callable[Concatenate[DocType, P], R]
 # describes only async
-AsyncDocMethod: TypeAlias = Callable[
-    Concatenate[DocType, P], Coroutine[Any, Any, R]
-]
+AsyncDocMethod: TypeAlias = Callable[Concatenate[DocType, P], Coroutine[Any, Any, R]]
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
@@ -226,9 +224,7 @@ class Document(
                     and field_name not in values
                 ):
                     values[field_name] = [
-                        BackLink[link_info.document_class](
-                            link_info.document_class
-                        )
+                        BackLink[link_info.document_class](link_info.document_class)
                     ]
         return values
 
@@ -309,9 +305,7 @@ class Document(
             new_state = document.get_saved_state()
             if new_state is None:
                 raise DocumentWasNotSaved
-            changes_to_apply = self._collect_updates(
-                new_state, original_changes
-            )
+            changes_to_apply = self._collect_updates(new_state, original_changes)
             merge_models(self, document)
             apply_changes(changes_to_apply, self)
         elif merge_strategy == MergeStrategy.remote:
@@ -364,9 +358,7 @@ class Document(
                                 ]
                             )
         result = await self.get_motor_collection().insert_one(
-            get_dict(
-                self, to_db=True, keep_nulls=self.get_settings().keep_nulls
-            ),
+            get_dict(self, to_db=True, keep_nulls=self.get_settings().keep_nulls, keep_defaults=self.get_settings().keep_defaults)
             session=session,
         )
         new_id = result.inserted_id
@@ -407,16 +399,12 @@ class Document(
         :return: DocType
         """
         if not isinstance(document, cls):
-            raise TypeError(
-                "Inserting document must be of the original document class"
-            )
+            raise TypeError("Inserting document must be of the original document class")
         if bulk_writer is None:
             return await document.insert(link_rule=link_rule, session=session)
         else:
             if link_rule == WriteRules.WRITE:
-                raise NotSupported(
-                    "Cascade insert with bulk writing not supported"
-                )
+                raise NotSupported("Cascade insert with bulk writing not supported")
             bulk_writer.add_operation(
                 type(document),
                 InsertOne(
@@ -424,6 +412,7 @@ class Document(
                         document,
                         to_db=True,
                         keep_nulls=document.get_settings().keep_nulls,
+                        keep_defaults=document.get_settings().keep_defaults
                     )
                 ),
             )
@@ -446,14 +435,13 @@ class Document(
         :return: InsertManyResult
         """
         if link_rule == WriteRules.WRITE:
-            raise NotSupported(
-                "Cascade insert not supported for insert many method"
-            )
+            raise NotSupported("Cascade insert not supported for insert many method")
         documents_list = [
             get_dict(
                 document,
                 to_db=True,
                 keep_nulls=document.get_settings().keep_nulls,
+                keep_defaults=document.get_settings().keep_defaults
             )
             for document in documents
         ]
@@ -575,9 +563,7 @@ class Document(
                         LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
-                            await value.save(
-                                link_rule=link_rule, session=session
-                            )
+                            await value.save(link_rule=link_rule, session=session)
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
@@ -587,9 +573,7 @@ class Document(
                         if isinstance(value, List):
                             await asyncio.gather(
                                 *[
-                                    obj.save(
-                                        link_rule=link_rule, session=session
-                                    )
+                                    obj.save(link_rule=link_rule, session=session)
                                     for obj in value
                                     if isinstance(obj, Document)
                                 ]
@@ -602,6 +586,7 @@ class Document(
                         self,
                         to_db=True,
                         keep_nulls=self.get_settings().keep_nulls,
+                        keep_defaults=self.get_settings().keep_defaults
                     )
                 ),
                 Unset(get_top_level_nones(self)),
@@ -617,6 +602,7 @@ class Document(
                         self,
                         to_db=True,
                         keep_nulls=self.get_settings().keep_nulls,
+                        keep_defaults=self.get_settings().keep_defaults
                     )
                 ),
                 session=session,
@@ -677,14 +663,10 @@ class Document(
         """
         ids_list = [document.id for document in documents]
         if await cls.find(In(cls.id, ids_list)).count() != len(ids_list):
-            raise ReplaceError(
-                "Some of the documents are not exist in the collection"
-            )
+            raise ReplaceError("Some of the documents are not exist in the collection")
         async with BulkWriter(session=session) as bulk_writer:
             for document in documents:
-                await document.replace(
-                    bulk_writer=bulk_writer, session=session
-                )
+                await document.replace(bulk_writer=bulk_writer, session=session)
 
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
@@ -983,6 +965,7 @@ class Document(
                 self,
                 to_db=True,
                 keep_nulls=self.get_settings().keep_nulls,
+                keep_defaults=self.get_settings().keep_defaults,
                 exclude={"revision_id"},
             )
 
@@ -1007,6 +990,7 @@ class Document(
             self,
             to_db=True,
             keep_nulls=self.get_settings().keep_nulls,
+            keep_defaults=self.get_settings().keep_defaults
             exclude={"revision_id"},
         ):
             return False
@@ -1070,6 +1054,7 @@ class Document(
                 self,
                 to_db=True,
                 keep_nulls=self.get_settings().keep_nulls,
+                keep_defaults=self.get_settings().keep_defaults
                 exclude={"revision_id"},
             ),
         )
@@ -1119,18 +1104,14 @@ class Document(
         :return: InspectionResult
         """
         inspection_result = InspectionResult()
-        async for json_document in cls.get_motor_collection().find(
-            {}, session=session
-        ):
+        async for json_document in cls.get_motor_collection().find({}, session=session):
             try:
                 parse_model(cls, json_document)
             except ValidationError as e:
                 if inspection_result.status == InspectionStatuses.OK:
                     inspection_result.status = InspectionStatuses.FAIL
                 inspection_result.errors.append(
-                    InspectionError(
-                        document_id=json_document["_id"], error=str(e)
-                    )
+                    InspectionError(document_id=json_document["_id"], error=str(e))
                 )
         return inspection_result
 
@@ -1204,9 +1185,7 @@ class Document(
         session: Optional[AsyncIOMotorClientSession] = None,
         **kwargs: Any,
     ) -> list:
-        return await cls.get_motor_collection().distinct(
-            key, filter, session, **kwargs
-        )
+        return await cls.get_motor_collection().distinct(key, filter, session, **kwargs)
 
     @classmethod
     def link_from_id(cls, id: Any):
@@ -1247,9 +1226,7 @@ class Document(
             async with Document.bulk_writer(ordered=True) as bulk:
                 await Document.insert_one(Document(field="value"), bulk_writer=bulk)
         """
-        return BulkWriter(
-            session, ordered, cls, bypass_document_validation, comment
-        )
+        return BulkWriter(session, ordered, cls, bypass_document_validation, comment)
 
 
 class DocumentWithSoftDelete(Document):
@@ -1335,9 +1312,7 @@ class DocumentWithSoftDelete(Document):
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
-        args = cls._add_class_id_filter(args, with_children) + (
-            {"deleted_at": None},
-        )
+        args = cls._add_class_id_filter(args, with_children) + ({"deleted_at": None},)
         return cls._find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
@@ -1366,9 +1341,7 @@ class DocumentWithSoftDelete(Document):
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindOne[FindType], FindOne["DocumentProjectionType"]]:
-        args = cls._add_class_id_filter(args, with_children) + (
-            {"deleted_at": None},
-        )
+        args = cls._add_class_id_filter(args, with_children) + ({"deleted_at": None},)
         return cls._find_one_query_class(document_model=cls).find_one(
             *args,
             projection_model=projection_model,

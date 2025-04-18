@@ -83,11 +83,10 @@ class Encoder:
     """
 
     exclude: Container[str] = frozenset()
-    custom_encoders: Mapping[type, SingleArgCallable] = dc.field(
-        default_factory=dict
-    )
+    custom_encoders: Mapping[type, SingleArgCallable] = dc.field(default_factory=dict)
     to_db: bool = False
     keep_nulls: bool = True
+    keep_defaults: bool = False
 
     def _encode_document(self, obj: "beanie.Document") -> Mapping[str, Any]:
         obj.parse_store()
@@ -151,15 +150,19 @@ class Encoder:
 
         raise ValueError(f"Cannot encode {obj!r}")
 
-    def _iter_model_items(
-        self, obj: pydantic.BaseModel
-    ) -> Iterable[Tuple[str, Any]]:
-        exclude, keep_nulls = self.exclude, self.keep_nulls
-        get_model_field = get_model_fields(obj).get
+    def _iter_model_items(self, obj: pydantic.BaseModel) -> Iterable[Tuple[str, Any]]:
+        exclude, keep_nulls, exclude_defaults = (
+            self.exclude,
+            self.keep_nulls,
+            self.keep_defaults,
+        )
+        fields = get_model_fields(obj)
         for key, value in obj.__iter__():
-            field_info = get_model_field(key)
+            field_info = fields.get(key)
             if field_info is not None:
                 key = field_info.alias or key
+                if exclude_defaults and value == field_info.default:
+                    continue
             if key not in exclude and (value is not None or keep_nulls):
                 yield key, value
 

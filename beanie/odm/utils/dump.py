@@ -11,6 +11,7 @@ def get_dict(
     to_db: bool = False,
     exclude: Optional[Set[str]] = None,
     keep_nulls: bool = True,
+    keep_defaults: bool = False,  # <-- New argument
 ):
     if exclude is None:
         exclude = set()
@@ -18,7 +19,12 @@ def get_dict(
         exclude.add("_id")
     if not document.get_settings().use_revision:
         exclude.add("revision_id")
-    encoder = Encoder(exclude=exclude, to_db=to_db, keep_nulls=keep_nulls)
+    encoder = Encoder(
+        exclude=exclude,
+        to_db=to_db,
+        keep_nulls=keep_nulls,
+        keep_defaults=keep_defaults,  # <-- Passed here
+    )
     return encoder.encode(document)
 
 
