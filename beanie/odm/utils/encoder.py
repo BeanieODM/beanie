@@ -151,7 +151,7 @@ class Encoder:
         raise ValueError(f"Cannot encode {obj!r}")
 
     def _iter_model_items(self, obj: pydantic.BaseModel) -> Iterable[Tuple[str, Any]]:
-        exclude, keep_nulls, exclude_defaults = (
+        exclude, keep_nulls, keep_defaults = (
             self.exclude,
             self.keep_nulls,
             self.keep_defaults,
@@ -161,7 +161,7 @@ class Encoder:
             field_info = fields.get(key)
             if field_info is not None:
                 key = field_info.alias or key
-                if exclude_defaults and value == field_info.default:
+                if keep_defaults is False and value == field_info.default:
                     continue
             if key not in exclude and (value is not None or keep_nulls):
                 yield key, value
