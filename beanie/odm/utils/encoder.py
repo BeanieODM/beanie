@@ -83,7 +83,9 @@ class Encoder:
     """
 
     exclude: Container[str] = frozenset()
-    custom_encoders: Mapping[type, SingleArgCallable] = dc.field(default_factory=dict)
+    custom_encoders: Mapping[type, SingleArgCallable] = dc.field(
+        default_factory=dict
+    )
     to_db: bool = False
     keep_nulls: bool = True
     keep_defaults: bool = False
@@ -150,7 +152,9 @@ class Encoder:
 
         raise ValueError(f"Cannot encode {obj!r}")
 
-    def _iter_model_items(self, obj: pydantic.BaseModel) -> Iterable[Tuple[str, Any]]:
+    def _iter_model_items(
+        self, obj: pydantic.BaseModel
+    ) -> Iterable[Tuple[str, Any]]:
         exclude, keep_nulls, keep_defaults = (
             self.exclude,
             self.keep_nulls,
