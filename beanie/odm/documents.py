@@ -358,7 +358,12 @@ class Document(
                                 ]
                             )
         result = await self.get_motor_collection().insert_one(
-            get_dict(self, to_db=True, keep_nulls=self.get_settings().keep_nulls, keep_defaults=self.get_settings().keep_defaults),
+            get_dict(
+                self,
+                to_db=True,
+                keep_nulls=self.get_settings().keep_nulls,
+                keep_defaults=self.get_settings().keep_defaults,
+            ),
             session=session,
         )
         new_id = result.inserted_id
@@ -412,7 +417,7 @@ class Document(
                         document,
                         to_db=True,
                         keep_nulls=document.get_settings().keep_nulls,
-                        keep_defaults=document.get_settings().keep_defaults
+                        keep_defaults=document.get_settings().keep_defaults,
                     )
                 ),
             )
@@ -441,7 +446,7 @@ class Document(
                 document,
                 to_db=True,
                 keep_nulls=document.get_settings().keep_nulls,
-                keep_defaults=document.get_settings().keep_defaults
+                keep_defaults=document.get_settings().keep_defaults,
             )
             for document in documents
         ]
@@ -586,7 +591,7 @@ class Document(
                         self,
                         to_db=True,
                         keep_nulls=self.get_settings().keep_nulls,
-                        keep_defaults=self.get_settings().keep_defaults
+                        keep_defaults=self.get_settings().keep_defaults,
                     )
                 ),
                 Unset(get_top_level_nones(self)),
@@ -602,7 +607,7 @@ class Document(
                         self,
                         to_db=True,
                         keep_nulls=self.get_settings().keep_nulls,
-                        keep_defaults=self.get_settings().keep_defaults
+                        keep_defaults=self.get_settings().keep_defaults,
                     )
                 ),
                 session=session,
@@ -990,7 +995,7 @@ class Document(
             self,
             to_db=True,
             keep_nulls=self.get_settings().keep_nulls,
-            keep_defaults=self.get_settings().keep_defaults
+            keep_defaults=self.get_settings().keep_defaults,
             exclude={"revision_id"},
         ):
             return False
@@ -1054,7 +1059,7 @@ class Document(
                 self,
                 to_db=True,
                 keep_nulls=self.get_settings().keep_nulls,
-                keep_defaults=self.get_settings().keep_defaults
+                keep_defaults=self.get_settings().keep_defaults,
                 exclude={"revision_id"},
             ),
         )
