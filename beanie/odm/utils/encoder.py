@@ -160,9 +160,9 @@ class Encoder:
             self.keep_nulls,
             self.keep_defaults,
         )
-        fields = get_model_fields(obj)
+        get_model_field = get_model_fields(obj).get
         for key, value in obj.__iter__():
-            field_info = fields.get(key)
+            field_info = get_model_field(key)
             if field_info is not None:
                 key = field_info.alias or key
                 if keep_defaults is False and value == field_info.default:
