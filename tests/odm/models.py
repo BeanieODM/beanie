@@ -61,7 +61,7 @@ from beanie.odm.union_doc import UnionDoc
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
 if IS_PYDANTIC_V2:
-    from pydantic import RootModel, validate_call
+    from pydantic import RootModel, computed_field, validate_call
 
 if sys.version_info >= (3, 10):
 
@@ -910,6 +910,30 @@ class DocumentWithKeepNullsFalse(Document):
 class DocumentWithExcludedField(Document):
     included_field: int
     excluded_field: Optional[int] = Field(default=None, exclude=True)
+
+
+class DocumentWithComputedField(Document):
+    num: int
+
+    _cached_uuid: Optional[str] = None
+
+    if IS_PYDANTIC_V2:
+
+        @computed_field
+        @property
+        def doubled(self) -> int:
+            return self.num * 2
+
+        @computed_field
+        @property
+        def cacheable_uuid(self) -> str:
+            if self._cached_uuid is None:
+                self._cached_uuid = str(uuid4())
+            return self._cached_uuid
+
+        @cacheable_uuid.setter
+        def cacheable_uuid(self, new: str) -> None:
+            self._cached_uuid = new
 
 
 class ReleaseElemMatch(BaseModel):

@@ -276,6 +276,61 @@ class ExpressionField(str):
         return self
 
 
+class ExpressionFieldProperty(property):
+    def __init__(
+        self, original_property: property, expression_field: ExpressionField
+    ):
+        self._original = original_property
+        self._expression_field = expression_field
+        super().__init__(
+            original_property.fget,
+            original_property.fset,
+            original_property.fdel,
+            original_property.__doc__,
+        )
+
+    def __getitem__(self, item):
+        return ExpressionField(f"{self._expression_field}.{item}")
+
+    def __getattr__(self, item):
+        return ExpressionField(f"{self._expression_field}.{item}")
+
+    def __hash__(self):
+        return hash(str(self._expression_field))
+
+    def __eq__(self, other):
+        if isinstance(other, ExpressionField):
+            return super(ExpressionField, self._expression_field).__eq__(other)
+        return Eq(field=self._expression_field, other=other)
+
+    def __gt__(self, other):
+        return GT(field=self._expression_field, other=other)
+
+    def __ge__(self, other):
+        return GTE(field=self._expression_field, other=other)
+
+    def __lt__(self, other):
+        return LT(field=self._expression_field, other=other)
+
+    def __le__(self, other):
+        return LTE(field=self._expression_field, other=other)
+
+    def __ne__(self, other):
+        return NE(field=self._expression_field, other=other)
+
+    def __pos__(self):
+        return self._expression_field, SortDirection.ASCENDING
+
+    def __neg__(self):
+        return self._expression_field, SortDirection.DESCENDING
+
+    def __copy__(self):
+        return self._expression_field
+
+    def __deepcopy__(self, memo):
+        return self._expression_field
+
+
 class DeleteRules(str, Enum):
     DO_NOTHING = "DO_NOTHING"
     DELETE_LINKS = "DELETE_LINKS"
