@@ -23,6 +23,7 @@ from beanie.odm.documents import DocType, Document
 from beanie.odm.fields import (
     BackLink,
     ExpressionField,
+    ExpressionFieldProperty,
     Link,
     LinkInfo,
     LinkTypes,
@@ -35,6 +36,7 @@ from beanie.odm.settings.view import ViewSettings
 from beanie.odm.union_doc import UnionDoc, UnionDocType
 from beanie.odm.utils.pydantic import (
     get_extra_field_info,
+    get_field_type,
     get_model_fields,
     parse_model,
 )
@@ -211,9 +213,9 @@ class Initializer:
         :param field: ModelField
         :return: Optional[LinkInfo]
         """
-
-        origin = get_origin(field.annotation)
-        args = get_args(field.annotation)
+        annotation = get_field_type(field)
+        origin = get_origin(annotation)
+        args = get_args(annotation)
         classes = [
             Link,
             BackLink,
@@ -221,7 +223,7 @@ class Initializer:
 
         for cls in classes:
             # Check if annotation is one of the custom classes
-            if get_origin(field.annotation) is cls:
+            if get_origin(annotation) is cls:
                 if cls is Link:
                     return LinkInfo(
                         field_name=field_name,
@@ -268,7 +270,7 @@ class Initializer:
 
             # Check if annotation is Optional[custom class] or Optional[List[custom class]]
             elif (
-                (origin is Union or isinstance(field.annotation, UnionType))
+                (origin is Union or isinstance(annotation, UnionType))
                 and len(args) == 2
                 and type(None) in args
             ):
@@ -382,9 +384,18 @@ class Initializer:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
             path = v.alias or k
+            attr = getattr(cls, k, None)
             annotation = getattr(v, "annotation", None)
             resolution = ExpressionField._resolve_field(annotation)
-            setattr(cls, k, ExpressionField(path, field_resolution=resolution))
+            expression_field = ExpressionField(
+                path, field_resolution=resolution
+            )
+            if isinstance(attr, property):
+                setattr(
+                    cls, k, ExpressionFieldProperty(attr, expression_field)
+                )
+            else:
+                setattr(cls, k, expression_field)
 
             link_info = self.detect_link(v, k)
             depth_level = cls.get_settings().max_nesting_depths_per_field.get(

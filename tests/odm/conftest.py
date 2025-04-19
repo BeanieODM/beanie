@@ -47,6 +47,7 @@ from tests.odm.models import (
     DocumentWithBsonBinaryField,
     DocumentWithBsonEncodersFiledsTypes,
     DocumentWithComplexDictKey,
+    DocumentWithComputedField,
     DocumentWithCustomFiledsTypes,
     DocumentWithCustomIdInt,
     DocumentWithCustomIdUUID,
@@ -242,6 +243,7 @@ TESTING_MODELS = [
     DocumentWithNestedAlias,
     DocumentWithDeepNestedAlias,
     DocumentWithAliasedLink,
+    DocumentWithComputedField,
 ]
 
 TESTING_MODELS.append(DocumentWithCustomIterRootModel)

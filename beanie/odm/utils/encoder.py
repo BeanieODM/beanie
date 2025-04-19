@@ -20,11 +20,13 @@ from typing import Any
 import bson
 import pydantic
 from pydantic import AnyUrl
+from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_core import Url
 
 import beanie
 from beanie.odm.fields import Link, LinkTypes
 from beanie.odm.utils.pydantic import (
+    get_model_all_items,
     get_model_fields,
 )
 
@@ -148,7 +150,7 @@ class Encoder:
     ) -> Iterable[tuple[str, Any]]:
         keep_nulls = self.keep_nulls
         get_model_field = get_model_fields(obj).get
-        for key, value in obj.__iter__():
+        for key, value in get_model_all_items(obj).items():
             field_info = get_model_field(key)
             if field_info is not None:
                 key = field_info.alias or key
@@ -158,13 +160,15 @@ class Encoder:
                 yield key, value
 
     def _should_exclude_field(
-        self, key: str, field_info: pydantic.fields.FieldInfo | None
+        self,
+        key: str,
+        field_info: FieldInfo | ComputedFieldInfo | None,
     ):
         if key in self.include:
             return False
 
         is_pydantic_excluded_field = (
-            field_info is not None and field_info.exclude is True
+            isinstance(field_info, FieldInfo) and field_info.exclude is True
         )
         return key in self.exclude or is_pydantic_excluded_field
 
