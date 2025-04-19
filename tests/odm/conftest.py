@@ -40,6 +40,7 @@ from tests.odm.models import (
     DocumentWithBsonBinaryField,
     DocumentWithBsonEncodersFiledsTypes,
     DocumentWithComplexDictKey,
+    DocumentWithComputedField,
     DocumentWithCustomFiledsTypes,
     DocumentWithCustomIdInt,
     DocumentWithCustomIdUUID,
@@ -209,6 +210,7 @@ TESTING_MODELS = [
     BsonRegexDoc,
     NativeRegexDoc,
     DocumentWithExcludedField,
+    DocumentWithComputedField,
 ]
 
 

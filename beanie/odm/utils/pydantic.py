@@ -10,6 +10,7 @@ IS_PYDANTIC_V2_10 = (
 
 if IS_PYDANTIC_V2:
     from pydantic import TypeAdapter
+    from pydantic.fields import ComputedFieldInfo
 else:
     from pydantic import parse_obj_as
 
@@ -23,16 +24,34 @@ def parse_object_as(object_type: Type, data: Any):
 
 def get_field_type(field):
     if IS_PYDANTIC_V2:
-        return field.annotation
+        if isinstance(field, ComputedFieldInfo):
+            return field.return_type
+        else:
+            return field.annotation
     else:
         return field.outer_type_
 
 
 def get_model_fields(model):
     if IS_PYDANTIC_V2:
-        return model.model_fields
+        return {**model.model_fields, **model.model_computed_fields}
     else:
         return model.__fields__
+
+
+def get_model_all_items(model):
+    if IS_PYDANTIC_V2:
+        return {
+            **dict(model.__iter__()),
+            **{
+                key: getattr(model, key)
+                for key in {
+                    **model.model_computed_fields,
+                }.keys()
+            },
+        }
+    else:
+        return dict(model.__iter__())
 
 
 def parse_model(model_type: Type[BaseModel], data: Any):
