@@ -2,6 +2,9 @@
 
 [![shields badge](https://shields.io/badge/-docs-blue)](https://beanie-odm.dev)
 [![pypi](https://img.shields.io/pypi/v/beanie.svg)](https://pypi.python.org/pypi/beanie)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/BeanieODM/beanie/main.svg)](https://results.pre-commit.ci/latest/github/BeanieODM/beanie/main)
+
+
 
 ## 📢 Important Update 📢
 
