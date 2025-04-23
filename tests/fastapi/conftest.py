@@ -31,4 +31,3 @@ async def clean_db(db):
 
     for model in models:
         await model.get_pymongo_collection().drop()
-        await model.get_pymongo_collection().drop_indexes()
