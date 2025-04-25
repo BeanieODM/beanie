@@ -23,7 +23,7 @@ class TimeSeriesConfig(BaseModel):
     meta_field: Optional[str] = None
     granularity: Optional[Granularity] = None
     bucket_max_span_seconds: Optional[int] = None
-    bucket_rounding_second: Optional[int] = None
+    bucket_rounding_seconds: Optional[int] = None
     expire_after_seconds: Optional[int] = None
 
     def build_query(self, collection_name: str) -> Dict[str, Any]:
@@ -35,8 +35,8 @@ class TimeSeriesConfig(BaseModel):
             timeseries["granularity"] = self.granularity
         if self.bucket_max_span_seconds is not None:
             timeseries["bucketMaxSpanSeconds"] = self.bucket_max_span_seconds
-        if self.bucket_rounding_second is not None:
-            timeseries["bucketRoundingSeconds"] = self.bucket_rounding_second
+        if self.bucket_rounding_seconds is not None:
+            timeseries["bucketRoundingSeconds"] = self.bucket_rounding_seconds
         res["timeseries"] = timeseries
         if self.expire_after_seconds is not None:
             res["expireAfterSeconds"] = self.expire_after_seconds
