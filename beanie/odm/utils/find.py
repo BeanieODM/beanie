@@ -1,4 +1,13 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Type,
+)
 
 from beanie.odm.fields import LinkInfo, LinkTypes
 
@@ -373,7 +382,7 @@ def construct_query(
 
 
 def split_text_query(
-    query: Dict[str, Any],
+    query: Mapping[str, Any],
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """Divide query into text and non-text matches
 
