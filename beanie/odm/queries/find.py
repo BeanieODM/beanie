@@ -85,6 +85,8 @@ class FindQuery(
         self.lazy_parse = False
         self.nesting_depth: Optional[int] = None
         self.nesting_depths_per_field: Optional[Dict[str, int]] = None
+        self.extra_initial_stages: List[Dict[str, Any]] = []
+        self.extra_final_stages: List[Dict[str, Any]] = []
 
     def prepare_find_expressions(self):
         if self.document_model.get_link_fields() is not None:
@@ -426,6 +428,28 @@ class FindMany(
             self.limit_number = n
         return self
 
+    def additional_stages(
+        self,
+        *stages: Union[Dict[str, Any], List[Dict[str, Any]]],
+        pre: bool = False,
+    ) -> "FindMany[FindQueryResultType]":
+        """
+        Add additional aggregation stages to the query pipeline
+        
+        :param stages: MongoDB aggregation stages
+        :param pre: If True, add stages at the beginning of the pipeline, otherwise at the end
+        :return: self
+        """
+        target_list = self.extra_initial_stages if pre else self.extra_final_stages
+        
+        for stage in stages:
+            if isinstance(stage, list):
+                target_list.extend(stage)
+            else:
+                target_list.append(stage)
+                
+        return self    
+
     def update(
         self,
         *args: Mapping[str, Any],
@@ -610,19 +634,21 @@ class FindMany(
         ):
             return self.document_model._cache.set(self._cache_key, data)  # type: ignore
 
-    def build_aggregation_pipeline(self, *extra_stages):
+    def build_aggregation_pipeline(self, *extra_stages) -> List[Dict[str, Any]]:
+        aggregation_pipeline: List[Dict[str, Any]] = []
+        if self.extra_initial_stages:
+            aggregation_pipeline.extend(self.extra_initial_stages)
+            
         if self.fetch_links:
-            aggregation_pipeline: List[Dict[str, Any]] = (
+            aggregation_pipeline.extend(
                 construct_lookup_queries(
                     self.document_model,
                     nesting_depth=self.nesting_depth,
                     nesting_depths_per_field=self.nesting_depths_per_field,
                 )
             )
-        else:
-            aggregation_pipeline = []
-        filter_query = self.get_filter_query()
 
+        filter_query = self.get_filter_query()
         if filter_query:
             text_queries, non_text_queries = split_text_query(filter_query)
 
@@ -651,6 +677,9 @@ class FindMany(
 
         if extra_stages:
             aggregation_pipeline.extend(extra_stages)
+        if self.extra_final_stages:
+            aggregation_pipeline.extend(self.extra_final_stages)
+
         sort_pipeline = {"$sort": {i[0]: i[1] for i in self.sort_expressions}}
         if sort_pipeline["$sort"]:
             aggregation_pipeline.append(sort_pipeline)
@@ -662,7 +691,8 @@ class FindMany(
 
     @property
     def motor_cursor(self):
-        if self.fetch_links:
+        is_aggregation_required = self.fetch_links or self.extra_initial_stages or self.extra_final_stages
+        if is_aggregation_required:
             aggregation_pipeline: List[Dict[str, Any]] = (
                 self.build_aggregation_pipeline()
             )
@@ -819,6 +849,28 @@ class FindOne(FindQuery[FindQueryResultType]):
         self.nesting_depth = nesting_depth
         self.nesting_depths_per_field = nesting_depths_per_field
         return self
+
+    def additional_stages(
+        self,
+        *stages: Union[Dict[str, Any], List[Dict[str, Any]]],
+        pre: bool = False,
+    ) -> "FindOne[FindQueryResultType]":
+        """
+        Add additional aggregation stages to the query pipeline
+        
+        :param stages: MongoDB aggregation stages
+        :param pre: If True, add stages at the beginning of the pipeline, otherwise at the end
+        :return: self
+        """
+        target_list = self.extra_initial_stages if pre else self.extra_final_stages
+        
+        for stage in stages:
+            if isinstance(stage, list):
+                target_list.extend(stage)
+            else:
+                target_list.append(stage)
+                
+        return self    
 
     def update(
         self,
@@ -983,7 +1035,8 @@ class FindOne(FindQuery[FindQueryResultType]):
             return None
 
     async def _find_one(self):
-        if self.fetch_links:
+        is_aggregation_required = self.fetch_links or self.extra_initial_stages or self.extra_final_stages
+        if is_aggregation_required:
             return await self.document_model.find_many(
                 *self.find_expressions,
                 session=self.session,
@@ -992,6 +1045,10 @@ class FindOne(FindQuery[FindQueryResultType]):
                 nesting_depth=self.nesting_depth,
                 nesting_depths_per_field=self.nesting_depths_per_field,
                 **self.pymongo_kwargs,
+            ).additional_stages(
+                *self.extra_initial_stages, pre=True
+            ).additional_stages(
+                *self.extra_final_stages
             ).first_or_none()
         return await self.document_model.get_motor_collection().find_one(
             filter=self.get_filter_query(),
