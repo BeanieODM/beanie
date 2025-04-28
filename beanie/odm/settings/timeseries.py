@@ -26,11 +26,10 @@ class TimeSeriesConfig(BaseModel):
     bucket_rounding_second: Annotated[
         Optional[int],
         Field(
-            default=None,
             deprecated="This field is deprecated in favor of "
             "'bucket_rounding_seconds'.",
         ),
-    ]
+    ] = None
     bucket_rounding_seconds: Optional[int] = None
     expire_after_seconds: Optional[int] = None
 
