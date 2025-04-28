@@ -27,9 +27,9 @@ class TimeSeriesConfig(BaseModel):
         Optional[int],
         Field(
             default=None,
-            deprecated=f"This field is deprecated in favor of "
-            f"'bucket_rounding_seconds'."
-        )
+            deprecated="This field is deprecated in favor of "
+            "'bucket_rounding_seconds'.",
+        ),
     ]
     bucket_rounding_seconds: Optional[int] = None
     expire_after_seconds: Optional[int] = None
@@ -43,7 +43,7 @@ class TimeSeriesConfig(BaseModel):
             timeseries["granularity"] = self.granularity
         if self.bucket_max_span_seconds is not None:
             timeseries["bucketMaxSpanSeconds"] = self.bucket_max_span_seconds
-        if self.bucket_rounding_second is not None: # Deprecated field
+        if self.bucket_rounding_second is not None:  # Deprecated field
             timeseries["bucketRoundingSeconds"] = self.bucket_rounding_second
         if self.bucket_rounding_seconds is not None:
             timeseries["bucketRoundingSeconds"] = self.bucket_rounding_seconds
