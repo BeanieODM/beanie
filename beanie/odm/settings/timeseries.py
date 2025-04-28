@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Dict, Optional
 
-from pydantic import Annotated, BaseModel
+from pydantic import Annotated, BaseModel, Field
 
 
 class Granularity(str, Enum):
