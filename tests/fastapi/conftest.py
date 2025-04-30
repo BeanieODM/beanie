@@ -17,7 +17,7 @@ from tests.fastapi.models import (
 async def api_client(clean_db):
     """api client fixture."""
     async with LifespanManager(app, startup_timeout=100, shutdown_timeout=100):
-        server_name = "https://localhost"
+        server_name = "http://localhost"
         async with AsyncClient(
             transport=ASGITransport(app=app), base_url=server_name
         ) as ac:
