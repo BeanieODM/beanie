@@ -117,6 +117,11 @@ async def run_migrate(settings: MigrationSettings):
         use_transaction=settings.use_transaction,
     )
 
+    # Cleanup
+    client = DBHandler.get_cli()
+    if client:
+        client.close()
+
 
 @migrations.command()
 @click.option(

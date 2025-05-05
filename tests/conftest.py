@@ -1,5 +1,5 @@
-import motor.motor_asyncio
 import pytest
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
@@ -21,7 +21,11 @@ def settings():
 
 @pytest.fixture()
 def cli(settings):
-    return motor.motor_asyncio.AsyncIOMotorClient(settings.mongodb_dsn)
+    client = AsyncIOMotorClient(settings.mongodb_dsn)
+
+    yield client
+
+    client.close()
 
 
 @pytest.fixture()
