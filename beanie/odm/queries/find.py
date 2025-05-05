@@ -949,6 +949,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         :return: UpdateResult
         """
         self.set_session(session=session)
+        settings = document.get_settings()
         if bulk_writer is None:
             result: UpdateResult = (
                 await self.document_model.get_motor_collection().replace_one(
@@ -957,7 +958,8 @@ class FindOne(FindQuery[FindQueryResultType]):
                         document,
                         to_db=True,
                         exclude={"_id"},
-                        keep_nulls=document.get_settings().keep_nulls,
+                        keep_nulls=settings.keep_nulls,
+                        keep_defaults=settings.keep_defaults,
                     ),
                     session=self.session,
                 )
@@ -967,6 +969,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 raise DocumentNotFound
             return result
         else:
+            settings = document.get_settings()
             bulk_writer.add_operation(
                 self.document_model,
                 ReplaceOne(
@@ -975,7 +978,8 @@ class FindOne(FindQuery[FindQueryResultType]):
                         document,
                         to_db=True,
                         exclude={"_id"},
-                        keep_nulls=document.get_settings().keep_nulls,
+                        keep_nulls=settings.keep_nulls,
+                        keep_defaults=settings.keep_defaults,
                     ),
                     **self.pymongo_kwargs,
                 ),

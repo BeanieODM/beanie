@@ -25,6 +25,8 @@ class DocumentSettings(ItemSettings):
 
     lazy_parsing: bool = False
 
+    keep_defaults: bool = True
+
     keep_nulls: bool = True
 
     max_nesting_depths_per_field: dict = Field(default_factory=dict)

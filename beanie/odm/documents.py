@@ -363,9 +363,13 @@ class Document(
                                     if isinstance(obj, Document)
                                 ]
                             )
+        settings = self.get_settings()
         result = await self.get_motor_collection().insert_one(
             get_dict(
-                self, to_db=True, keep_nulls=self.get_settings().keep_nulls
+                self,
+                to_db=True,
+                keep_nulls=settings.keep_nulls,
+                keep_defaults=settings.keep_defaults,
             ),
             session=session,
         )
@@ -417,13 +421,15 @@ class Document(
                 raise NotSupported(
                     "Cascade insert with bulk writing not supported"
                 )
+            settings = document.get_settings()
             bulk_writer.add_operation(
                 type(document),
                 InsertOne(
                     get_dict(
                         document,
                         to_db=True,
-                        keep_nulls=document.get_settings().keep_nulls,
+                        keep_nulls=settings.keep_nulls,
+                        keep_defaults=settings.keep_defaults,
                     )
                 ),
             )
@@ -454,6 +460,7 @@ class Document(
                 document,
                 to_db=True,
                 keep_nulls=document.get_settings().keep_nulls,
+                keep_defaults=document.get_settings().keep_defaults,
             )
             for document in documents
         ]
@@ -596,12 +603,14 @@ class Document(
                             )
 
         if self.get_settings().keep_nulls is False:
+            settings = self.get_settings()
             return await self.update(
                 SetOperator(
                     get_dict(
                         self,
                         to_db=True,
-                        keep_nulls=self.get_settings().keep_nulls,
+                        keep_nulls=settings.keep_nulls,
+                        keep_defaults=settings.keep_defaults,
                     )
                 ),
                 Unset(get_top_level_nones(self)),
@@ -611,12 +620,14 @@ class Document(
                 **kwargs,
             )
         else:
+            settings = self.get_settings()
             return await self.update(
                 SetOperator(
                     get_dict(
                         self,
                         to_db=True,
-                        keep_nulls=self.get_settings().keep_nulls,
+                        keep_nulls=settings.keep_nulls,
+                        keep_defaults=settings.keep_defaults,
                     )
                 ),
                 session=session,
@@ -979,10 +990,12 @@ class Document(
             if self.state_management_save_previous():
                 self._previous_saved_state = self._saved_state
 
+            settings = self.get_settings()
             self._saved_state = get_dict(
                 self,
                 to_db=True,
-                keep_nulls=self.get_settings().keep_nulls,
+                keep_nulls=settings.keep_nulls,
+                keep_defaults=settings.keep_defaults,
                 exclude={"revision_id"},
             )
 
@@ -1003,10 +1016,12 @@ class Document(
     @property
     @saved_state_needed
     def is_changed(self) -> bool:
+        settings = self.get_settings()
         if self._saved_state == get_dict(
             self,
             to_db=True,
-            keep_nulls=self.get_settings().keep_nulls,
+            keep_nulls=settings.keep_nulls,
+            keep_defaults=settings.keep_defaults,
             exclude={"revision_id"},
         ):
             return False
@@ -1064,12 +1079,14 @@ class Document(
 
     @saved_state_needed
     def get_changes(self) -> Dict[str, Any]:
+        settings = self.get_settings()
         return self._collect_updates(
             self._saved_state,  # type: ignore
             get_dict(
                 self,
                 to_db=True,
-                keep_nulls=self.get_settings().keep_nulls,
+                keep_nulls=settings.keep_nulls,
+                keep_defaults=settings.keep_defaults,
                 exclude={"revision_id"},
             ),
         )
