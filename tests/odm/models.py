@@ -61,7 +61,7 @@ from beanie.odm.union_doc import UnionDoc
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
 if IS_PYDANTIC_V2:
-    from pydantic import RootModel, validate_call
+    from pydantic import RootModel, computed_field, validate_call
 
 if sys.version_info >= (3, 10):
 
@@ -165,7 +165,7 @@ class DocumentTestModel(Document):
     test_int: int
     test_doc: SubDocument
     test_str: str
-    test_list: List[SubDocument] = Field(exclude=True)
+    test_list: List[SubDocument]
 
     class Settings:
         use_cache = True
@@ -268,9 +268,11 @@ class DocumentTestModelFailInspection(Document):
 
 class DocumentWithDeprecatedHiddenField(Document):
     if IS_PYDANTIC_V2:
-        test_hidden: List[str] = Field(json_schema_extra={"hidden": True})
+        test_hidden: Optional[List[str]] = Field(
+            default=None, json_schema_extra={"hidden": True}
+        )
     else:
-        test_hidden: List[str] = Field(hidden=True)
+        test_hidden: Optional[List[str]] = Field(default=None, hidden=True)
 
 
 class DocumentWithCustomIdUUID(Document):
@@ -568,7 +570,7 @@ class House(Document):
     roof: Optional[Link[Roof]] = None
     yards: Optional[List[Link[Yard]]] = None
     height: Indexed(int) = 2
-    name: Indexed(str) = Field(exclude=True)
+    name: Indexed(str)
 
     if IS_PYDANTIC_V2:
         model_config = ConfigDict(
@@ -892,6 +894,35 @@ class DocumentWithKeepNullsFalse(Document):
     class Settings:
         keep_nulls = False
         use_state_management = True
+
+
+class DocumentWithExcludedField(Document):
+    included_field: int
+    excluded_field: Optional[int] = Field(default=None, exclude=True)
+
+
+class DocumentWithComputedField(Document):
+    num: int
+
+    _cached_uuid: Optional[str] = None
+
+    if IS_PYDANTIC_V2:
+
+        @computed_field
+        @property
+        def doubled(self) -> int:
+            return self.num * 2
+
+        @computed_field
+        @property
+        def cacheable_uuid(self) -> str:
+            if self._cached_uuid is None:
+                self._cached_uuid = str(uuid4())
+            return self._cached_uuid
+
+        @cacheable_uuid.setter
+        def cacheable_uuid(self, new: str) -> None:
+            self._cached_uuid = new
 
 
 class ReleaseElemMatch(BaseModel):
