@@ -382,7 +382,7 @@ def split_text_query(
         respectively
     """
 
-    root_text_query_args: Dict[str, Any] = query.get("$text", None)
+    root_text_query_args: Dict[str, Any] | None = query.get("$text")
     root_non_text_queries: Dict[str, Any] = {
         k: v for k, v in query.items() if k not in {"$text", "$and"}
     }

@@ -63,7 +63,7 @@ class View(
         await asyncio.gather(*coros)
 
     @classmethod
-    def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:
+    def get_link_fields(cls) -> Optional[dict[str, LinkInfo]]:
         return cls._link_fields
 
     @classmethod

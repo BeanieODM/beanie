@@ -1,6 +1,7 @@
 from abc import abstractmethod
+from collections.abc import Mapping
 from datetime import datetime
-from typing import Any, Dict, Mapping, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 

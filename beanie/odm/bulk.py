@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo import (
@@ -88,7 +89,7 @@ class BulkWriter:
             object_class.get_collection_name() if object_class else None
         )
 
-    async def __aenter__(self) -> "BulkWriter":
+    async def __aenter__(self) -> BulkWriter:
         return self
 
     async def __aexit__(

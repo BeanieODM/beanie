@@ -222,9 +222,9 @@ def wrap_with_actions(
         @wraps(f)
         async def wrapper(  # type: ignore
             self: "DocType",
-            *args: P.args,
+            *args: Any,
             skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
-            **kwargs: P.kwargs,
+            **kwargs: Any,
         ) -> R:
             if skip_actions is None:
                 skip_actions = []

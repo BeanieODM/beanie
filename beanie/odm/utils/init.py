@@ -1,10 +1,10 @@
 import asyncio
 import sys
+from collections.abc import Sequence
 
-from typing_extensions import Sequence, get_args, get_origin
+from typing_extensions import get_args, get_origin
 
 from beanie.odm.utils.pydantic import (
-    IS_PYDANTIC_V2,
     get_extra_field_info,
     get_model_fields,
     parse_model,
@@ -197,19 +197,6 @@ class Initializer:
         if issubclass(cls, UnionDoc):
             cls._settings = parse_model(UnionDocSettings, settings_vars)
 
-    if not IS_PYDANTIC_V2:
-
-        def update_forward_refs(self, cls: Type[BaseModel]):
-            """
-            Update forward refs
-
-            :param cls: Type[BaseModel] - class to update forward refs
-            :return: None
-            """
-            if cls not in self.models_with_updated_forward_refs:
-                cls.update_forward_refs()
-                self.models_with_updated_forward_refs.append(cls)
-
     # General. Relations
 
     def detect_link(
@@ -286,10 +273,7 @@ class Initializer:
                 and len(args) == 2
                 and type(None) in args
             ):
-                if args[1] is type(None):
-                    optional = args[0]
-                else:
-                    optional = args[1]
+                optional = args[0] if args[1] is type(None) else args[1]
                 optional_origin = get_origin(optional)
                 optional_args = get_args(optional)
 
@@ -397,9 +381,6 @@ class Initializer:
         :return: None
         """
 
-        if not IS_PYDANTIC_V2:
-            self.update_forward_refs(cls)
-
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
@@ -432,14 +413,13 @@ class Initializer:
         ActionRegistry.clean_actions(cls)
         for attr in dir(cls):
             f = getattr(cls, attr)
-            if inspect.isfunction(f):
-                if hasattr(f, "has_action"):
-                    ActionRegistry.add_action(
-                        document_class=cls,
-                        event_types=f.event_types,  # type: ignore
-                        action_direction=f.action_direction,  # type: ignore
-                        funct=f,
-                    )
+            if inspect.isfunction(f) and hasattr(f, "has_action"):
+                ActionRegistry.add_action(
+                    document_class=cls,
+                    event_types=f.event_types,  # type: ignore
+                    action_direction=f.action_direction,  # type: ignore
+                    funct=f,
+                )
 
     async def init_document_collection(self, cls):
         """
@@ -530,11 +510,8 @@ class Initializer:
         if document_settings.merge_indexes:
             result: List[IndexModelField] = []
             for subclass in reversed(cls.mro()):
-                if issubclass(subclass, Document) and not subclass == Document:
-                    if (
-                        subclass not in self.inited_classes
-                        and not subclass == cls
-                    ):
+                if issubclass(subclass, Document) and subclass != Document:
+                    if subclass not in self.inited_classes and subclass != cls:
                         await self.init_class(subclass)
                     if subclass.get_settings().indexes:
                         result = IndexModelField.merge_indexes(
