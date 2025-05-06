@@ -1,12 +1,11 @@
 from abc import abstractmethod
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
     ClassVar,
     Dict,
     List,
-    Mapping,
     Optional,
     Tuple,
     Type,
@@ -436,11 +435,9 @@ class FindInterface:
     def _add_class_id_filter(cls, args: Tuple, with_children: bool = False):
         # skip if _class_id is already added
         if any(
-            (
-                True
-                for a in args
-                if isinstance(a, Iterable) and cls.get_settings().class_id in a
-            )
+            True
+            for a in args
+            if isinstance(a, Iterable) and cls.get_settings().class_id in a
         ):
             return args
 
@@ -455,7 +452,7 @@ class FindInterface:
                     {
                         cls.get_settings().class_id: {
                             "$in": [cls._class_id]
-                            + [cname for cname in cls._children.keys()]
+                            + [cname for cname in cls._children]
                         }
                     },
                 )

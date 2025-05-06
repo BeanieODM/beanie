@@ -2,7 +2,6 @@ from abc import abstractmethod
 from collections.abc import Mapping
 from copy import copy, deepcopy
 from typing import Any, Dict
-from typing import Mapping as MappingType
 
 
 class BaseOperator(Mapping):
@@ -12,7 +11,7 @@ class BaseOperator(Mapping):
 
     @property
     @abstractmethod
-    def query(self) -> MappingType[str, Any]: ...
+    def query(self) -> Mapping[str, Any]: ...
 
     def __getitem__(self, item: str):
         return self.query[item]

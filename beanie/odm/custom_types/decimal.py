@@ -1,12 +1,14 @@
-import decimal
+from decimal import Decimal
+from typing import Annotated
 
-import bson
-import pydantic
-from typing_extensions import Annotated
+from bson import Decimal128
+from pydantic import BeforeValidator
 
 DecimalAnnotation = Annotated[
-    decimal.Decimal,
-    pydantic.BeforeValidator(
-        lambda v: v.to_decimal() if isinstance(v, bson.Decimal128) else v
+    Decimal,
+    BeforeValidator(
+        lambda v: v.to_decimal() if isinstance(v, Decimal128) else v
     ),
 ]
+
+__all__ = ["DecimalAnnotation"]

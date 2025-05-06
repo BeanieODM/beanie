@@ -1,34 +1,13 @@
-import sys
-
-from pymongo.asynchronous.database import AsyncDatabase
-from typing_extensions import Sequence, get_args, get_origin
-
-from beanie.odm.utils.pydantic import (
-    IS_PYDANTIC_V2,
-    get_extra_field_info,
-    get_model_fields,
-    parse_model,
-)
-from beanie.odm.utils.typing import get_index_attributes
-
-if sys.version_info >= (3, 10):
-    from types import UnionType as TypesUnionType
-else:
-    TypesUnionType = ()
-
 import importlib
 import inspect
-from typing import (  # type: ignore
-    List,
-    Optional,
-    Type,
-    Union,
-    _GenericAlias,
-)
+import sys
+from collections.abc import Sequence
+from typing import List, Optional, Type, Union, get_args, get_origin
 
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 from pymongo import AsyncMongoClient, IndexModel
+from pymongo.asynchronous.database import AsyncDatabase
 
 from beanie.exceptions import Deprecation, MongoDBVersionError
 from beanie.odm.actions import ActionRegistry
@@ -47,7 +26,20 @@ from beanie.odm.settings.document import DocumentSettings, IndexModelField
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
 from beanie.odm.union_doc import UnionDoc, UnionDocType
+from beanie.odm.utils.pydantic import (
+    get_extra_field_info,
+    get_model_fields,
+    parse_model,
+)
+from beanie.odm.utils.typing import get_index_attributes
 from beanie.odm.views import View
+
+if sys.version_info >= (3, 10):
+    from types import UnionType
+
+    UNION_TYPES = (Union, UnionType)
+else:
+    UNION_TYPES = (Union,)
 
 
 class Output(BaseModel):
@@ -58,7 +50,7 @@ class Output(BaseModel):
 class Initializer:
     def __init__(
         self,
-        database: AsyncDatabase = None,
+        database: Optional[AsyncDatabase] = None,
         connection_string: Optional[str] = None,
         document_models: Optional[
             Sequence[
@@ -84,12 +76,11 @@ class Initializer:
         :return: None
         """
 
-        self.inited_classes: List[Type] = []
+        self.inited_classes: List[Type[DocType]] = []
         self.allow_index_dropping = allow_index_dropping
         self.skip_indexes = skip_indexes
         self.recreate_views = recreate_views
-
-        self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
+        self.models_with_updated_forward_refs: List[Type[DocType]] = []
 
         if (connection_string is None and database is None) or (
             connection_string is not None and database is not None
@@ -105,6 +96,7 @@ class Initializer:
                 connection_string
             ).get_default_database()
 
+        assert database is not None
         self.database: AsyncDatabase = database
 
         sort_order = {
@@ -191,18 +183,17 @@ class Initializer:
         if issubclass(cls, UnionDoc):
             cls._settings = parse_model(UnionDocSettings, settings_vars)
 
-    if not IS_PYDANTIC_V2:
+    def update_forward_refs(self, cls: Type[DocType]) -> None:
+        """
+        Update forward refs
 
-        def update_forward_refs(self, cls: Type[BaseModel]):
-            """
-            Update forward refs
-
-            :param cls: Type[BaseModel] - class to update forward refs
-            :return: None
-            """
-            if cls not in self.models_with_updated_forward_refs:
-                cls.update_forward_refs()
-                self.models_with_updated_forward_refs.append(cls)
+        :param cls: Type[DocType] - class to update forward refs
+        :return: None
+        """
+        if cls not in self.models_with_updated_forward_refs:
+            # Rebuilding the model triggers alias generation etc.
+            cls.model_rebuild()
+            self.models_with_updated_forward_refs.append(cls)
 
     # General. Relations
 
@@ -225,10 +216,7 @@ class Initializer:
 
         for cls in classes:
             # Check if annotation is one of the custom classes
-            if (
-                isinstance(field.annotation, _GenericAlias)
-                and field.annotation.__origin__ is cls
-            ):
+            if origin is cls:
                 if cls is Link:
                     return LinkInfo(
                         field_name=field_name,
@@ -250,8 +238,7 @@ class Initializer:
             elif (
                 (origin is List or origin is list)
                 and len(args) == 1
-                and isinstance(args[0], _GenericAlias)
-                and args[0].__origin__ is cls
+                and get_origin(args[0]) is cls
             ):
                 if cls is Link:
                     return LinkInfo(
@@ -276,21 +263,13 @@ class Initializer:
 
             # Check if annotation is Optional[custom class] or Optional[List[custom class]]
             elif (
-                (origin is Union or origin is TypesUnionType)
-                and len(args) == 2
-                and type(None) in args
+                origin in UNION_TYPES and len(args) == 2 and type(None) in args
             ):
-                if args[1] is type(None):
-                    optional = args[0]
-                else:
-                    optional = args[1]
+                optional = args[0] if args[1] is type(None) else args[1]
                 optional_origin = get_origin(optional)
                 optional_args = get_args(optional)
 
-                if (
-                    isinstance(optional, _GenericAlias)
-                    and optional.__origin__ is cls
-                ):
+                if optional_origin is cls:
                     if cls is Link:
                         return LinkInfo(
                             field_name=field_name,
@@ -315,8 +294,7 @@ class Initializer:
                 elif (
                     (optional_origin is List or optional_origin is list)
                     and len(optional_args) == 1
-                    and isinstance(optional_args[0], _GenericAlias)
-                    and optional_args[0].__origin__ is cls
+                    and get_origin(optional_args[0]) is cls
                 ):
                     if cls is Link:
                         return LinkInfo(
@@ -391,8 +369,7 @@ class Initializer:
         :return: None
         """
 
-        if not IS_PYDANTIC_V2:
-            self.update_forward_refs(cls)
+        self.update_forward_refs(cls)
 
         if cls._link_fields is None:
             cls._link_fields = {}
@@ -426,14 +403,13 @@ class Initializer:
         ActionRegistry.clean_actions(cls)
         for attr in dir(cls):
             f = getattr(cls, attr)
-            if inspect.isfunction(f):
-                if hasattr(f, "has_action"):
-                    ActionRegistry.add_action(
-                        document_class=cls,
-                        event_types=f.event_types,  # type: ignore
-                        action_direction=f.action_direction,  # type: ignore
-                        funct=f,
-                    )
+            if inspect.isfunction(f) and hasattr(f, "has_action"):
+                ActionRegistry.add_action(
+                    document_class=cls,
+                    event_types=f.event_types,  # type: ignore
+                    action_direction=f.action_direction,  # type: ignore
+                    funct=f,
+                )
 
     async def init_document_collection(self, cls):
         """
@@ -524,11 +500,8 @@ class Initializer:
         if document_settings.merge_indexes:
             result: List[IndexModelField] = []
             for subclass in reversed(cls.mro()):
-                if issubclass(subclass, Document) and not subclass == Document:
-                    if (
-                        subclass not in self.inited_classes
-                        and not subclass == cls
-                    ):
+                if issubclass(subclass, Document) and subclass != Document:
+                    if subclass not in self.inited_classes and subclass != cls:
                         await self.init_class(subclass)
                     if subclass.get_settings().indexes:
                         result = IndexModelField.merge_indexes(
@@ -615,6 +588,7 @@ class Initializer:
 
         else:
             if cls._inheritance_inited is True:
+                assert cls._class_id is not None
                 return Output(
                     class_name=cls._class_id,
                     collection_name=cls.get_collection_name(),

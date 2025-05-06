@@ -1,13 +1,11 @@
+from collections.abc import Coroutine, Generator, Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Coroutine,
     Dict,
-    Generator,
     Generic,
     List,
-    Mapping,
     Optional,
     Tuple,
     Type,
@@ -32,7 +30,7 @@ from beanie.odm.interfaces.session import SessionMethods
 from beanie.odm.interfaces.update import UpdateMethods
 from beanie.odm.operators.find.logical import And
 from beanie.odm.queries.aggregation import AggregationQuery
-from beanie.odm.queries.cursor import BaseCursorQuery
+from beanie.odm.queries.cursor import BaseCursorQuery, CursorType
 from beanie.odm.queries.delete import (
     DeleteMany,
     DeleteOne,
@@ -594,35 +592,37 @@ class FindMany(
             }
         )
 
-    def _get_cache(self):
+    def _get_cache(self) -> Optional[Any]:
         if (
             self.document_model.get_settings().use_cache
             and self.ignore_cache is False
+            and self.document_model._cache is not None
         ):
-            return self.document_model._cache.get(self._cache_key)  # type: ignore
+            return self.document_model._cache.get(self._cache_key)
         else:
             return None
 
-    def _set_cache(self, data):
+    def _set_cache(self, data: Any) -> None:
         if (
             self.document_model.get_settings().use_cache
             and self.ignore_cache is False
+            and self.document_model._cache is not None
         ):
-            return self.document_model._cache.set(self._cache_key, data)  # type: ignore
+            return self.document_model._cache.set(self._cache_key, data)
 
-    def build_aggregation_pipeline(self, *extra_stages):
+    def build_aggregation_pipeline(
+        self, *extra_stages
+    ) -> List[Dict[str, Any]]:
+        aggregation_pipeline: List[Dict[str, Any]] = []
+
         if self.fetch_links:
-            aggregation_pipeline: List[Dict[str, Any]] = (
-                construct_lookup_queries(
-                    self.document_model,
-                    nesting_depth=self.nesting_depth,
-                    nesting_depths_per_field=self.nesting_depths_per_field,
-                )
+            aggregation_pipeline = construct_lookup_queries(
+                self.document_model,
+                nesting_depth=self.nesting_depth,
+                nesting_depths_per_field=self.nesting_depths_per_field,
             )
-        else:
-            aggregation_pipeline = []
-        filter_query = self.get_filter_query()
 
+        filter_query = self.get_filter_query()
         if filter_query:
             text_queries, non_text_queries = split_text_query(filter_query)
 
@@ -660,7 +660,7 @@ class FindMany(
             aggregation_pipeline.append({"$limit": self.limit_number})
         return aggregation_pipeline
 
-    async def get_cursor(self):
+    async def get_cursor(self) -> CursorType:
         if self.fetch_links:
             aggregation_pipeline: List[Dict[str, Any]] = (
                 self.build_aggregation_pipeline()
@@ -964,6 +964,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 )
             )
 
+            assert result.raw_result is not None
             if not result.raw_result["updatedExisting"]:
                 raise DocumentNotFound
             return result

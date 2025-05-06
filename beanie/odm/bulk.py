@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 
 from pymongo import (
     DeleteMany,
@@ -15,6 +16,8 @@ from pymongo.asynchronous.client_session import AsyncClientSession
 from pymongo.results import BulkWriteResult
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from beanie import Document
     from beanie.odm.union_doc import UnionDoc
 
@@ -88,7 +91,7 @@ class BulkWriter:
             object_class.get_collection_name() if object_class else None
         )
 
-    async def __aenter__(self) -> "BulkWriter":
+    async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(

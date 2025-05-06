@@ -13,7 +13,7 @@ class OtherGettersInterface:
 
     @classmethod
     def get_pymongo_collection(cls) -> AsyncCollection:
-        return cls.get_settings().pymongo_collection
+        return cls.get_settings().pymongo_collection  # type: ignore
 
     @classmethod
     def get_collection_name(cls) -> str:

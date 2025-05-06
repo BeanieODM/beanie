@@ -1,12 +1,6 @@
 import pytest
+from pydantic_settings import BaseSettings
 from pymongo import AsyncMongoClient
-
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
-
-if IS_PYDANTIC_V2:
-    from pydantic_settings import BaseSettings
-else:
-    from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):

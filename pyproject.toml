@@ -52,6 +52,7 @@ test = [
     "pydantic-settings>=2",
     "pydantic-extra-types>=2",
     "pydantic[email]",
+    "mypy>=1.15.0",
 ]
 doc = [
     "Pygments>=2.8.0",
@@ -118,6 +119,7 @@ path = "beanie/example_migration"
 database_name = "beanie_db"
 
 [tool.mypy]
+python_version = "3.9"
 ignore_missing_imports = true
 
 [tool.pyright]
@@ -130,8 +132,8 @@ target-version = "py39"
 include = ["**/*.py", ".github/**/*.py"]
 
 [tool.ruff.lint]
-ignore = ["E501"]
-extend-select = ["I001"]
+ignore = ["E501","SIM112"]
+extend-select = ["I","TID","W","SIM","E","F","T10","ASYNC"]
 per-file-ignores = { "tests/*" = ["E711"] }
 
 # Allow unused variables when underscore-prefixed.

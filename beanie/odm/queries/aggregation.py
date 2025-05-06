@@ -1,21 +1,21 @@
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
+    Dict,
     Generic,
     List,
-    Mapping,
     Optional,
     Type,
     TypeVar,
 )
 
 from pydantic import BaseModel
-from pymongo.asynchronous.command_cursor import AsyncCommandCursor
 
 from beanie.odm.cache import LRUCache
 from beanie.odm.interfaces.clone import CloneInterface
 from beanie.odm.interfaces.session import SessionMethods
-from beanie.odm.queries.cursor import BaseCursorQuery
+from beanie.odm.queries.cursor import BaseCursorQuery, CursorType
 from beanie.odm.utils.projection import get_projection
 
 if TYPE_CHECKING:
@@ -37,15 +37,13 @@ class AggregationQuery(
     def __init__(
         self,
         document_model: Type["DocType"],
-        aggregation_pipeline: List[Mapping[str, Any]],
+        aggregation_pipeline: List[Dict[str, Any]],
         find_query: Mapping[str, Any],
         projection_model: Optional[Type[BaseModel]] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
     ):
-        self.aggregation_pipeline: List[Mapping[str, Any]] = (
-            aggregation_pipeline
-        )
+        self.aggregation_pipeline: List[Dict[str, Any]] = aggregation_pipeline
         self.document_model = document_model
         self.projection_model = projection_model
         self.find_query = find_query
@@ -66,21 +64,23 @@ class AggregationQuery(
             }
         )
 
-    def _get_cache(self):
+    def _get_cache(self) -> Optional[Any]:
         if (
             self.document_model.get_settings().use_cache
             and self.ignore_cache is False
+            and self.document_model._cache is not None
         ):
-            return self.document_model._cache.get(self._cache_key)  # type: ignore
+            return self.document_model._cache.get(self._cache_key)
         else:
             return None
 
-    def _set_cache(self, data):
+    def _set_cache(self, data: Any) -> None:
         if (
             self.document_model.get_settings().use_cache
             and self.ignore_cache is False
+            and self.document_model._cache is not None
         ):
-            return self.document_model._cache.set(self._cache_key, data)  # type: ignore
+            return self.document_model._cache.set(self._cache_key, data)
 
     def get_aggregation_pipeline(
         self,
@@ -95,7 +95,7 @@ class AggregationQuery(
                 projection_pipeline = [{"$project": projection}]
         return match_pipeline + self.aggregation_pipeline + projection_pipeline
 
-    async def get_cursor(self) -> AsyncCommandCursor:
+    async def get_cursor(self) -> CursorType:
         aggregation_pipeline = self.get_aggregation_pipeline()
         return await self.document_model.get_pymongo_collection().aggregate(
             aggregation_pipeline, session=self.session, **self.pymongo_kwargs

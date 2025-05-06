@@ -1,23 +1,13 @@
-from typing import Any
+from typing import Annotated, Any
 
-import bson
-import pydantic
-from typing_extensions import Annotated
-
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
+from bson import Binary
+from pydantic import PlainValidator
 
 
-def _to_bson_binary(value: Any) -> bson.Binary:
-    return value if isinstance(value, bson.Binary) else bson.Binary(value)
+def _to_bson_binary(value: Any) -> Binary:
+    return value if isinstance(value, Binary) else Binary(value)
 
 
-if IS_PYDANTIC_V2:
-    BsonBinary = Annotated[
-        bson.Binary, pydantic.PlainValidator(_to_bson_binary)
-    ]
-else:
+BsonBinary = Annotated[Binary, PlainValidator(_to_bson_binary)]
 
-    class BsonBinary(bson.Binary):  # type: ignore[no-redef]
-        @classmethod
-        def __get_validators__(cls):
-            yield _to_bson_binary
+__all__ = ["BsonBinary"]

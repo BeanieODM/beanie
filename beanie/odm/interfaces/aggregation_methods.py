@@ -18,7 +18,7 @@ class AggregateMethods:
         projection_model=None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
-    ): ...
+    ) -> Any: ...
 
     async def sum(
         self,
@@ -58,7 +58,7 @@ class AggregateMethods:
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
-            ).to_list(),  # type: ignore # TODO: pyright issue, fix
+            ).to_list(),
         )
         if not result:
             return None
@@ -100,7 +100,7 @@ class AggregateMethods:
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
-            ).to_list(),  # type: ignore # TODO: pyright issue, fix
+            ).to_list(),
         )
         if not result:
             return None
@@ -141,7 +141,7 @@ class AggregateMethods:
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
-            ).to_list(),  # type: ignore # TODO: pyright issue, fix
+            ).to_list(),
         )
         if not result:
             return None
@@ -182,7 +182,7 @@ class AggregateMethods:
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
-            ).to_list(),  # type: ignore # TODO: pyright issue, fix
+            ).to_list(),
         )
         if not result:
             return None

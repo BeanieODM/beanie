@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Dict, Generator, Mapping, Optional, Type
+from collections.abc import Generator, Mapping
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type
 
 from pymongo import DeleteMany as DeleteManyPyMongo
 from pymongo import DeleteOne as DeleteOnePyMongo

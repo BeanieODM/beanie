@@ -1,5 +1,6 @@
 import asyncio
 import warnings
+from collections.abc import Coroutine, Iterable, Mapping
 from datetime import datetime, timezone
 from enum import Enum
 from typing import (
@@ -7,11 +8,8 @@ from typing import (
     Any,
     Callable,
     ClassVar,
-    Coroutine,
     Dict,
-    Iterable,
     List,
-    Mapping,
     Optional,
     Tuple,
     Type,
@@ -20,15 +18,15 @@ from typing import (
 )
 from uuid import UUID, uuid4
 
-from bson import DBRef, ObjectId
+from bson import DBRef
 from lazy_model import LazyModel
 from pydantic import (
     ConfigDict,
     Field,
     PrivateAttr,
     ValidationError,
+    model_validator,
 )
-from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
 from pymongo import InsertOne
 from pymongo.asynchronous.client_session import AsyncClientSession
@@ -92,7 +90,6 @@ from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict, get_top_level_nones
 from beanie.odm.utils.parsing import apply_changes, merge_models
 from beanie.odm.utils.pydantic import (
-    IS_PYDANTIC_V2,
     get_extra_field_info,
     get_field_type,
     get_model_dump,
@@ -107,9 +104,6 @@ from beanie.odm.utils.state import (
     saved_state_needed,
 )
 from beanie.odm.utils.typing import extract_id_class
-
-if IS_PYDANTIC_V2:
-    from pydantic import model_validator
 
 if TYPE_CHECKING:
     from beanie.odm.views import View
@@ -136,8 +130,7 @@ def json_schema_extra(schema: Dict[str, Any], model: Type["Document"]) -> None:
         k = field.alias or k
         if k not in properties:
             continue
-        field_info = field if IS_PYDANTIC_V2 else field.field_info
-        if field_info.exclude:
+        if field.exclude:
             del properties[k]
 
 
@@ -169,19 +162,11 @@ class Document(
     Mapped to the PydanticObjectId class
     """
 
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            json_schema_extra=json_schema_extra,
-            populate_by_name=True,
-            alias_generator=document_alias_generator,
-        )
-    else:
-
-        class Config:
-            json_encoders = {ObjectId: str}
-            allow_population_by_field_name = True
-            fields = {"id": "_id"}
-            schema_extra = staticmethod(json_schema_extra)
+    model_config = ConfigDict(
+        json_schema_extra=json_schema_extra,
+        populate_by_name=True,
+        alias_generator=document_alias_generator,
+    )
 
     id: Optional[PydanticObjectId] = Field(
         default=None, description="MongoDB document ObjectID"
@@ -232,17 +217,9 @@ class Document(
                     ]
         return values
 
-    if IS_PYDANTIC_V2:
-
-        @model_validator(mode="before")
-        def fill_back_refs(cls, values):
-            return cls._fill_back_refs(values)
-
-    else:
-
-        @root_validator(pre=True)
-        def fill_back_refs(cls, values):
-            return cls._fill_back_refs(values)
+    @model_validator(mode="before")
+    def fill_back_refs(cls, values):
+        return cls._fill_back_refs(values)
 
     @classmethod
     async def get(
@@ -345,26 +322,24 @@ class Document(
                     if field_info.link_type in [
                         LinkTypes.DIRECT,
                         LinkTypes.OPTIONAL_DIRECT,
-                    ]:
-                        if isinstance(value, Document):
-                            await value.save(
-                                link_rule=WriteRules.WRITE, session=session
-                            )
+                    ] and isinstance(value, Document):
+                        await value.save(
+                            link_rule=WriteRules.WRITE, session=session
+                        )
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
-                    ]:
-                        if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.save(
-                                        link_rule=WriteRules.WRITE,
-                                        session=session,
-                                    )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
+                    ] and isinstance(value, List):
+                        await asyncio.gather(
+                            *[
+                                obj.save(
+                                    link_rule=WriteRules.WRITE,
+                                    session=session,
+                                )
+                                for obj in value
+                                if isinstance(obj, Document)
+                            ]
+                        )
         result = await self.get_pymongo_collection().insert_one(
             get_dict(
                 self, to_db=True, keep_nulls=self.get_settings().keep_nulls
@@ -499,33 +474,31 @@ class Document(
                         LinkTypes.OPTIONAL_DIRECT,
                         LinkTypes.BACK_DIRECT,
                         LinkTypes.OPTIONAL_BACK_DIRECT,
-                    ]:
-                        if isinstance(value, Document):
-                            await value.replace(
-                                link_rule=link_rule,
-                                bulk_writer=bulk_writer,
-                                ignore_revision=ignore_revision,
-                                session=session,
-                            )
+                    ] and isinstance(value, Document):
+                        await value.replace(
+                            link_rule=link_rule,
+                            bulk_writer=bulk_writer,
+                            ignore_revision=ignore_revision,
+                            session=session,
+                        )
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
                         LinkTypes.BACK_LIST,
                         LinkTypes.OPTIONAL_BACK_LIST,
-                    ]:
-                        if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.replace(
-                                        link_rule=link_rule,
-                                        bulk_writer=bulk_writer,
-                                        ignore_revision=ignore_revision,
-                                        session=session,
-                                    )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
+                    ] and isinstance(value, List):
+                        await asyncio.gather(
+                            *[
+                                obj.replace(
+                                    link_rule=link_rule,
+                                    bulk_writer=bulk_writer,
+                                    ignore_revision=ignore_revision,
+                                    session=session,
+                                )
+                                for obj in value
+                                if isinstance(obj, Document)
+                            ]
+                        )
 
         use_revision_id = self.get_settings().use_revision
         find_query: Dict[str, Any] = {"_id": self.id}
@@ -575,27 +548,21 @@ class Document(
                         LinkTypes.OPTIONAL_DIRECT,
                         LinkTypes.BACK_DIRECT,
                         LinkTypes.OPTIONAL_BACK_DIRECT,
-                    ]:
-                        if isinstance(value, Document):
-                            await value.save(
-                                link_rule=link_rule, session=session
-                            )
+                    ] and isinstance(value, Document):
+                        await value.save(link_rule=link_rule, session=session)
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
                         LinkTypes.BACK_LIST,
                         LinkTypes.OPTIONAL_BACK_LIST,
-                    ]:
-                        if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.save(
-                                        link_rule=link_rule, session=session
-                                    )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
+                    ] and isinstance(value, List):
+                        await asyncio.gather(
+                            *[
+                                obj.save(link_rule=link_rule, session=session)
+                                for obj in value
+                                if isinstance(obj, Document)
+                            ]
+                        )
 
         if self.get_settings().keep_nulls is False:
             return await self.update(
@@ -899,29 +866,27 @@ class Document(
                         LinkTypes.OPTIONAL_DIRECT,
                         LinkTypes.BACK_DIRECT,
                         LinkTypes.OPTIONAL_BACK_DIRECT,
-                    ]:
-                        if isinstance(value, Document):
-                            await value.delete(
-                                link_rule=DeleteRules.DELETE_LINKS,
-                                **pymongo_kwargs,
-                            )
+                    ] and isinstance(value, Document):
+                        await value.delete(
+                            link_rule=DeleteRules.DELETE_LINKS,
+                            **pymongo_kwargs,
+                        )
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
                         LinkTypes.BACK_LIST,
                         LinkTypes.OPTIONAL_BACK_LIST,
-                    ]:
-                        if isinstance(value, List):
-                            await asyncio.gather(
-                                *[
-                                    obj.delete(
-                                        link_rule=DeleteRules.DELETE_LINKS,
-                                        **pymongo_kwargs,
-                                    )
-                                    for obj in value
-                                    if isinstance(obj, Document)
-                                ]
-                            )
+                    ] and isinstance(value, List):
+                        await asyncio.gather(
+                            *[
+                                obj.delete(
+                                    link_rule=DeleteRules.DELETE_LINKS,
+                                    **pymongo_kwargs,
+                                )
+                                for obj in value
+                                if isinstance(obj, Document)
+                            ]
+                        )
 
         return await self.find_one({"_id": self.id}).delete(
             session=session, bulk_writer=bulk_writer, **pymongo_kwargs
@@ -1005,25 +970,21 @@ class Document(
     @property
     @saved_state_needed
     def is_changed(self) -> bool:
-        if self._saved_state == get_dict(
+        return self._saved_state != get_dict(
             self,
             to_db=True,
             keep_nulls=self.get_settings().keep_nulls,
             exclude={"revision_id"},
-        ):
-            return False
-        return True
+        )
 
     @property
     @saved_state_needed
     @previous_saved_state_needed
     def has_changed(self) -> bool:
-        if (
-            self._previous_saved_state is None
-            or self._previous_saved_state == self._saved_state
-        ):
-            return False
-        return True
+        return (
+            self._previous_saved_state is not None
+            and self._previous_saved_state != self._saved_state
+        )
 
     def _collect_updates(
         self, old_dict: Dict[str, Any], new_dict: Dict[str, Any]
@@ -1152,16 +1113,11 @@ class Document(
             DeprecationWarning,
             stacklevel=2,
         )
-        if IS_PYDANTIC_V2:
-            for name, field in hidden_fields:
-                field.exclude = True
-                del field.json_schema_extra["hidden"]
-            cls.model_rebuild(force=True)
-        else:
-            for name, field in hidden_fields:
-                field.field_info.exclude = True
-                del field.field_info.extra["hidden"]
-                cls.__exclude_fields__[name] = True
+
+        for name, field in hidden_fields:
+            field.exclude = True
+            del field.json_schema_extra["hidden"]
+        cls.model_rebuild(force=True)
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args: Any, **kwargs: Any):

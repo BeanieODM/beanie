@@ -1,6 +1,7 @@
-from typing import Any, Callable, Coroutine
+from collections.abc import Coroutine
+from typing import Any, Callable, Protocol
 
-from typing_extensions import Protocol, TypeAlias, assert_type
+from typing_extensions import TypeAlias, assert_type
 
 from beanie import Document
 from beanie.odm.actions import EventTypes, wrap_with_actions

@@ -3,12 +3,10 @@ from datetime import date, datetime
 from enum import Enum
 from uuid import uuid4
 
-import pytest
 from bson import Binary, Regex
 from pydantic import AnyUrl
 
 from beanie.odm.utils.encoder import Encoder
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
     BsonRegexDoc,
     Child,
@@ -146,8 +144,7 @@ async def test_excluded():
     assert "excluded_field" not in encoded_doc
 
 
-@pytest.mark.skipif(not IS_PYDANTIC_V2, reason="Test only for Pydantic v2")
-def test_should_encode_pydantic_v2_url_correctly():
+def test_should_encode_url_correctly():
     url = AnyUrl("https://example.com")
     encoder = Encoder()
     encoded_url = encoder.encode(url)

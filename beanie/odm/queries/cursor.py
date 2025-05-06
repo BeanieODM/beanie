@@ -7,14 +7,20 @@ from typing import (
     Optional,
     Type,
     TypeVar,
+    Union,
     cast,
 )
 
 from pydantic.main import BaseModel
+from pymongo.asynchronous.command_cursor import AsyncCommandCursor
+from pymongo.asynchronous.cursor import AsyncCursor
 
 from beanie.odm.utils.parsing import parse_obj
 
 CursorResultType = TypeVar("CursorResultType")
+CursorType = Union[
+    AsyncCursor[Dict[str, Any]], AsyncCommandCursor[Dict[str, Any]]
+]
 
 
 class BaseCursorQuery(Generic[CursorResultType]):
@@ -30,39 +36,39 @@ class BaseCursorQuery(Generic[CursorResultType]):
     def get_projection_model(self) -> Optional[Type[BaseModel]]: ...
 
     @abstractmethod
-    async def get_cursor(self): ...
-
-    def _cursor_params(self): ...
+    async def get_cursor(
+        self,
+    ) -> CursorType: ...
 
     def __aiter__(self):
         return self
 
-    async def __anext__(self) -> CursorResultType:
+    async def __anext__(self) -> Any:
         if self.cursor is None:
             self.cursor = await self.get_cursor()
         next_item = await self.cursor.__anext__()
         projection = self.get_projection_model()
         if projection is None:
             return next_item
-        return parse_obj(projection, next_item, lazy_parse=self.lazy_parse)  # type: ignore
+        return parse_obj(projection, next_item, lazy_parse=self.lazy_parse)
 
     @abstractmethod
-    def _get_cache(self) -> List[Dict[str, Any]]: ...
+    def _get_cache(self) -> Optional[Any]: ...
 
     @abstractmethod
-    def _set_cache(self, data): ...
+    def _set_cache(self, data: Any) -> None: ...
 
     async def to_list(
         self, length: Optional[int] = None
-    ) -> List[CursorResultType]:  # noqa
+    ) -> List[CursorResultType]:
         """
         Get list of documents
 
         :param length: Optional[int] - length of the list
-        :return: Union[List[BaseModel], List[Dict[str, Any]]]
+        :return: List[CursorResultType]
         """
         cursor = await self.get_cursor()
-        pymongo_list: List[Dict[str, Any]] = self._get_cache()
+        pymongo_list = self._get_cache()
 
         if pymongo_list is None:
             pymongo_list = await cursor.to_list(length)

@@ -12,7 +12,6 @@ from beanie.odm.fields import (
     WriteRules,
 )
 from beanie.odm.utils.pydantic import (
-    IS_PYDANTIC_V2,
     get_model_fields,
     parse_model,
 )
@@ -170,10 +169,7 @@ class TestInsert:
         house = parse_model(House, house_not_inserted)
         await house.insert(link_rule=WriteRules.WRITE)
 
-        if IS_PYDANTIC_V2:
-            json_str = house.model_dump_json()
-        else:
-            json_str = house.json()
+        json_str = house.model_dump_json()
         assert json_str is not None
 
     async def test_multi_insert_links(self):
@@ -899,26 +895,16 @@ class HouseForReversedOrderInit(Document):
 class DoorForReversedOrderInit(Document):
     height: int = 2
     width: int = 1
-    if IS_PYDANTIC_V2:
-        house: BackLink[HouseForReversedOrderInit] = Field(
-            json_schema_extra={"original_field": "door"}
-        )
-    else:
-        house: BackLink[HouseForReversedOrderInit] = Field(
-            original_field="door"
-        )
+    house: BackLink[HouseForReversedOrderInit] = Field(
+        json_schema_extra={"original_field": "door"}
+    )
 
 
 class PersonForReversedOrderInit(Document):
     name: str
-    if IS_PYDANTIC_V2:
-        house: List[BackLink[HouseForReversedOrderInit]] = Field(
-            json_schema_extra={"original_field": "owners"}
-        )
-    else:
-        house: List[BackLink[HouseForReversedOrderInit]] = Field(
-            original_field="owners"
-        )
+    house: List[BackLink[HouseForReversedOrderInit]] = Field(
+        json_schema_extra={"original_field": "owners"}
+    )
 
 
 class TestDeleteBackLinks:

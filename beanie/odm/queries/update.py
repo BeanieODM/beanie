@@ -1,13 +1,12 @@
 from abc import abstractmethod
+from collections.abc import Generator, Mapping
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
     Dict,
-    Generator,
     List,
-    Mapping,
     Optional,
     Type,
     Union,
@@ -267,7 +266,7 @@ class UpdateOne(UpdateQuery):
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: UpdateMany query
         """
-        self.upsert_insert_doc = on_insert  # type: ignore
+        self.upsert_insert_doc = on_insert
         self.update(
             *args,
             response_type=response_type,
