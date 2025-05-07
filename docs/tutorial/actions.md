@@ -4,6 +4,7 @@ You can register methods as pre- or post- actions for document events.
 
 Currently supported events:
 
+- Save
 - Insert
 - Replace
 - Update
@@ -20,7 +21,7 @@ Current operations creating events:
 
 - `insert()` for Insert
 - `replace()` for Replace
-- `save()` triggers Insert if it is creating a new document, triggers Replace if it replaces an existing document
+- `save()` for Save and triggers Insert if it is creating a new document, or triggers Replace if it replaces an existing document
 - `save_changes()` for SaveChanges
 - `insert()`, `replace()`, `save_changes()`, and `save()` for ValidateOnSave
 - `set()`, `update()` for Update
@@ -29,7 +30,7 @@ Current operations creating events:
 To register an action, you can use `@before_event` and `@after_event` decorators respectively:
 
 ```python
-from beanie import Insert, Replace
+from beanie import Insert, Replace, before_event, after_event
 
 
 class Sample(Document):
@@ -48,7 +49,7 @@ class Sample(Document):
 It is possible to register action for several events:
 
 ```python
-from beanie import Insert, Replace
+from beanie import Insert, Replace, before_event
 
 
 class Sample(Document):
@@ -65,7 +66,7 @@ This will capitalize the `name` field value before each document's Insert and Re
 And sync and async methods could work as actions.
 
 ```python
-from beanie import Insert, Replace
+from beanie import Insert, Replace, after_event
 
 
 class Sample(Document):
@@ -81,7 +82,7 @@ Actions can be selectively skipped by passing the `skip_actions` argument when c
 the operations that trigger events. `skip_actions` accepts a list of directions and action names.
 
 ```python
-from beanie import After, Before, Insert, Replace
+from beanie import After, Before, Insert, Replace, before_event, after_event
 
 
 class Sample(Document):
