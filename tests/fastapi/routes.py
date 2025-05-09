@@ -71,3 +71,8 @@ async def create_house_new(house: House = Body(...)):
     await house.save(link_rule=WriteRules.WRITE)
     await house.sync()
     return house
+
+
+@house_router.get("/person/{id}", response_model=Person)
+async def get_person(id: PydanticObjectId):
+    return await Person.get(id, fetch_links=True, nesting_depth=1)

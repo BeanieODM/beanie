@@ -516,6 +516,11 @@ class Link(Generic[T]):
                 }
             )
 
+        def serialize(self):
+            if isinstance(self, Link):
+                return self.to_dict()
+            return self.dict()
+
     def to_ref(self):
         return self.ref
 
@@ -524,7 +529,7 @@ class Link(Generic[T]):
 
 
 if not IS_PYDANTIC_V2:
-    ENCODERS_BY_TYPE[Link] = lambda o: o.to_dict()
+    ENCODERS_BY_TYPE[Link] = lambda o: o.serialize()
 
 
 class BackLink(Generic[T]):
@@ -534,6 +539,12 @@ class BackLink(Generic[T]):
         self.document_class = document_class
 
     if IS_PYDANTIC_V2:
+
+        @staticmethod
+        def serialize(value: Union[BackLink[T], BaseModel]):
+            if isinstance(value, BackLink):
+                return value.to_dict()
+            return value.model_dump(mode="json")
 
         @classmethod
         def wrapped_validate(
@@ -565,7 +576,7 @@ class BackLink(Generic[T]):
                     values_schema=core_schema.any_schema(),
                 ),
                 serialization=core_schema.plain_serializer_function_ser_schema(
-                    lambda instance: cls.to_dict(instance),
+                    lambda instance: cls.serialize(instance),
                     return_schema=core_schema.dict_schema(),
                     when_used="json-unless-none",
                 ),
@@ -610,13 +621,18 @@ class BackLink(Generic[T]):
                 }
             )
 
+        def serialize(self):
+            if isinstance(self, BackLink):
+                return self.to_dict()
+            return self.dict()
+
     def to_dict(self) -> dict[str, str]:
         document_class = DocsRegistry.evaluate_fr(self.document_class)  # type: ignore
         return {"collection": document_class.get_collection_name()}
 
 
 if not IS_PYDANTIC_V2:
-    ENCODERS_BY_TYPE[BackLink] = lambda o: o.to_dict()
+    ENCODERS_BY_TYPE[BackLink] = lambda o: o.serialize()
 
 
 class IndexModelField:
