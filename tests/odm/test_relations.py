@@ -613,6 +613,15 @@ class TestOther:
         )
 
         assert addresses_count[0] == {"count": 10}
+    
+    async def test_dump_model_with_fetched_backlink(self, link_and_backlink_doc_pair):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+
+        document_with_fetched_backlinks = await DocumentWithBackLink.get(back_link_doc.id, fetch_links=True, nesting_depth=1)
+        
+        assert document_with_fetched_backlinks is not None
+        document_with_fetched_backlinks.model_dump_json()
+            
 
     async def test_with_chaining_aggregation_and_text_search(self):
         # ARRANGE
