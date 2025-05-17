@@ -57,7 +57,7 @@ For more installation options (eg: `aws`, `gcp`, `srv` ...) you can look in the 
 import asyncio
 from typing import Optional
 
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient
 from pydantic import BaseModel
 
 from beanie import Document, Indexed, init_beanie
@@ -77,8 +77,8 @@ class Product(Document):
 
 # This is an asynchronous example, so we will access it from an async function
 async def example():
-    # Beanie uses Motor async client under the hood 
-    client = AsyncIOMotorClient("mongodb://user:pass@host:27017")
+    # Beanie uses Pymongo async client under the hood 
+    client = AsyncMongoClient("mongodb://user:pass@host:27017")
 
     # Initialize beanie with the Product document class
     await init_beanie(database=client.db_name, document_models=[Product])
