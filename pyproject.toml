@@ -26,9 +26,8 @@ dependencies = [
     "pydantic>=1.10.18,<3.0",
     "click>=7",
     "toml",
-    "lazy-model==0.2.0",
-    "typing-extensions>=4.7",
-    "pymongo>=4.10.1",
+    "lazy-model==0.3.0",
+    "pymongo>=4.11.0,<5.0.0",
 ]
 
 [project.optional-dependencies]
@@ -60,12 +59,12 @@ ci = [
     "requests",
     "types-requests",
 ]
-aws = ["motor[aws]>=2.5.0,<4.0.0"]
-encryption = ["motor[encryption]>=2.5.0,<4.0.0"]
-gssapi = ["motor[gssapi]>=2.5.0,<4.0.0"]
-ocsp = ["motor[ocsp]>=2.5.0,<4.0.0"]
-snappy = ["motor[snappy]>=2.5.0,<4.0.0"]
-zstd = ["motor[zstd]>=2.5.0,<4.0.0"]
+aws = ["pymongo[aws]>=4.11.0,<5.0.0"]
+encryption = ["pymongo[encryption]>=4.11.0,<5.0.0"]
+gssapi = ["pymongo[gssapi]>=4.11.0,<5.0.0"]
+ocsp = ["pymongo[ocsp]>=4.11.0,<5.0.0"]
+snappy = ["pymongo[snappy]>=4.11.0,<5.0.0"]
+zstd = ["pymongo[zstd]>=4.11.0,<5.0.0"]
 
 [project.urls]
 homepage = "https://beanie-odm.dev"

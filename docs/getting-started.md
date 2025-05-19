@@ -18,7 +18,7 @@ poetry add beanie
 
 ### Optional dependencies
 
-Beanie supports some optional dependencies from Pymongo (`pip` or `poetry` can be used).
+Beanie supports some optional dependencies from PyMongo (`pip` or `poetry` can be used).
 
 GSSAPI authentication requires `gssapi` extra dependency:
 

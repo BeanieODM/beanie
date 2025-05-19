@@ -11,7 +11,7 @@ class SessionMethods:
     def set_session(self, session: Optional[AsyncClientSession] = None):
         """
         Set session
-        :param session: Optional[AsyncClientSession] - session
+        :param session: Optional[AsyncClientSession] - pymongo session
         :return:
         """
         if session is not None:

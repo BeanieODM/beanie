@@ -1,4 +1,3 @@
-import asyncio
 import sys
 
 from pymongo.asynchronous.database import AsyncDatabase
@@ -68,7 +67,6 @@ class Initializer:
         ] = None,
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
-        multiprocessing_mode: bool = False,
         skip_indexes: bool = False,
     ):
         """
@@ -81,7 +79,6 @@ class Initializer:
         :param allow_index_dropping: bool - if index dropping is allowed.
         Default False
         :param recreate_views: bool - if views should be recreated. Default False
-        :param multiprocessing_mode: bool - if multiprocessing mode is on
         it will patch the pymongo client to use process's event loop.
         :param skip_indexes: bool - if you want to skip working with indexes. Default False
         :return: None
@@ -109,9 +106,6 @@ class Initializer:
             ).get_default_database()
 
         self.database: AsyncDatabase = database
-
-        if multiprocessing_mode:
-            self.database.client.get_io_loop = asyncio.get_running_loop
 
         sort_order = {
             ModelType.UnionDoc: 0,
@@ -759,30 +753,27 @@ class Initializer:
 
 
 async def init_beanie(
-    database: AsyncDatabase = None,
+    database: Optional[AsyncDatabase] = None,
     connection_string: Optional[str] = None,
     document_models: Optional[
         Sequence[Union[Type[Document], Type[UnionDoc], Type["View"], str]]
     ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
-    multiprocessing_mode: bool = False,
     skip_indexes: bool = False,
 ):
     """
     Beanie initialization
 
-    :param database: AsyncDatabase - pymongo database instance
-    :param connection_string: str - MongoDB connection string
+    :param database: Optional[AsyncDatabase] - pymongo database instance. Defaults to None.
+    :param connection_string: Optional[str] - MongoDB connection string.  Defaults to None.
     :param document_models: List[Union[Type[DocType], Type[UnionDocType], str]] - model classes
-    or strings with dot separated paths
+        or strings with dot separated paths. Defaults to None.
     :param allow_index_dropping: bool - if index dropping is allowed.
-    Default False
-    :param recreate_views: bool - if views should be recreated. Default False
-    :param multiprocessing_mode: bool - if multiprocessing mode is on
-        it will patch the pymongo client to use process's event loop. Default False
+        Defaults to False.
+    :param recreate_views: bool - if views should be recreated. Defaults to False.
     :param skip_indexes: bool - if you want to skip working with the indexes.
-        Default False
+        Defaults to False.
     :return: None
     """
 
@@ -792,6 +783,5 @@ async def init_beanie(
         document_models=document_models,
         allow_index_dropping=allow_index_dropping,
         recreate_views=recreate_views,
-        multiprocessing_mode=multiprocessing_mode,
         skip_indexes=skip_indexes,
     )

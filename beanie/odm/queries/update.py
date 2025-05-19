@@ -115,7 +115,7 @@ class UpdateMany(UpdateQuery):
         Provide modifications to the update query.
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
-        :param session: Optional[AsyncClientSession]
+        :param session: Optional[AsyncClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter]
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: UpdateMany query
@@ -140,7 +140,7 @@ class UpdateMany(UpdateQuery):
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param on_insert: DocType - document to insert if there is no matched
         document in the collection
-        :param session: Optional[AsyncClientSession]
+        :param session: Optional[AsyncClientSession] - pymongo session
         :param **pymongo_kwargs: pymongo native parameters for update operation
         :return: UpdateMany query
         """
@@ -159,7 +159,7 @@ class UpdateMany(UpdateQuery):
         Provide modifications to the update query
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
-        :param session: Optional[AsyncClientSession]
+        :param session: Optional[AsyncClientSession] - pymongo session
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: UpdateMany query
@@ -233,7 +233,7 @@ class UpdateOne(UpdateQuery):
         Provide modifications to the update query.
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
-        :param session: Optional[AsyncClientSession]
+        :param session: Optional[AsyncClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter]
         :param response_type: UpdateResponse
         :param pymongo_kwargs: pymongo native parameters for update operation
@@ -262,7 +262,7 @@ class UpdateOne(UpdateQuery):
         :param args: *Union[dict, Mapping] - the modifications to apply.
         :param on_insert: DocType - document to insert if there is no matched
         document in the collection
-        :param session: Optional[AsyncClientSession]
+        :param session: Optional[AsyncClientSession] - pymongo session
         :param response_type: Optional[UpdateResponse]
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: UpdateMany query
@@ -288,7 +288,7 @@ class UpdateOne(UpdateQuery):
         Provide modifications to the update query. The same as `update()`
 
         :param args: *Union[dict, Mapping] - the modifications to apply.
-        :param session: Optional[AsyncClientSession]
+        :param session: Optional[AsyncClientSession] - pymongo session
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :param response_type: Optional[UpdateResponse]
         :param pymongo_kwargs: pymongo native parameters for update operation

@@ -56,7 +56,7 @@ class AggregateInterface:
         Returns [AggregationQuery](query.md#aggregationquery) query object
         :param aggregation_pipeline: list - aggregation pipeline
         :param projection_model: Type[BaseModel]
-        :param session: Optional[AsyncClientSession]
+        :param session: Optional[AsyncClientSession] - pymongo session.
         :param ignore_cache: bool
         :param **pymongo_kwargs: pymongo native parameters for aggregate operation
         :return: [AggregationQuery](query.md#aggregationquery)

@@ -21,7 +21,6 @@ class TestConcurrency:
         clients = []
         for _ in range(10):
             client = AsyncMongoClient(settings.mongodb_dsn)
-            client.get_io_loop = asyncio.get_running_loop
             clients.append(client)
             db = client[settings.mongodb_db_name]
             await init_beanie(

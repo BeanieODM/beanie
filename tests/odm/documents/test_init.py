@@ -1,6 +1,5 @@
 import pytest
 from pymongo import IndexModel
-from pymongo.asynchronous.collection import AsyncCollection
 
 from beanie import Document, Indexed, init_beanie
 from beanie.exceptions import CollectionWasNotInitialized
@@ -64,16 +63,14 @@ async def test_init_wrong_params(settings, db):
 
 
 async def test_collection_with_custom_name():
-    collection: AsyncCollection = (
+    collection = (
         DocumentTestModelWithCustomCollectionName.get_pymongo_collection()
     )
     assert collection.name == "custom"
 
 
 async def test_simple_index_creation():
-    collection: AsyncCollection = (
-        DocumentTestModelWithSimpleIndex.get_pymongo_collection()
-    )
+    collection = DocumentTestModelWithSimpleIndex.get_pymongo_collection()
     index_info = await collection.index_information()
     assert index_info["test_int_1"] == {"key": [("test_int", 1)], "v": 2}
     assert index_info["test_str_text"]["key"] == [
@@ -83,9 +80,7 @@ async def test_simple_index_creation():
 
 
 async def test_flagged_index_creation():
-    collection: AsyncCollection = (
-        DocumentTestModelWithIndexFlags.get_pymongo_collection()
-    )
+    collection = DocumentTestModelWithIndexFlags.get_pymongo_collection()
     index_info = await collection.index_information()
     assert index_info["test_int_1"] == {
         "key": [("test_int", 1)],
@@ -100,7 +95,7 @@ async def test_flagged_index_creation():
 
 
 async def test_flagged_index_creation_with_alias():
-    collection: AsyncCollection = (
+    collection = (
         DocumentTestModelWithIndexFlagsAliases.get_pymongo_collection()
     )
     index_info = await collection.index_information()
@@ -117,9 +112,7 @@ async def test_flagged_index_creation_with_alias():
 
 
 async def test_annotated_index_creation():
-    collection: AsyncCollection = (
-        DocumentTestModelIndexFlagsAnnotated.get_pymongo_collection()
-    )
+    collection = DocumentTestModelIndexFlagsAnnotated.get_pymongo_collection()
     index_info = await collection.index_information()
     assert index_info["str_index_text"]["key"] == [
         ("_fts", "text"),
@@ -144,9 +137,7 @@ async def test_annotated_index_creation():
 
 
 async def test_complex_index_creation():
-    collection: AsyncCollection = (
-        DocumentTestModelWithComplexIndex.get_pymongo_collection()
-    )
+    collection = DocumentTestModelWithComplexIndex.get_pymongo_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
@@ -163,9 +154,7 @@ async def test_index_dropping_is_allowed(db):
     await init_beanie(
         database=db, document_models=[DocumentTestModelWithComplexIndex]
     )
-    collection: AsyncCollection = (
-        DocumentTestModelWithComplexIndex.get_pymongo_collection()
-    )
+    collection = DocumentTestModelWithComplexIndex.get_pymongo_collection()
 
     await init_beanie(
         database=db,
@@ -173,9 +162,7 @@ async def test_index_dropping_is_allowed(db):
         allow_index_dropping=True,
     )
 
-    collection: AsyncCollection = (
-        DocumentTestModelWithComplexIndex.get_pymongo_collection()
-    )
+    collection = DocumentTestModelWithComplexIndex.get_pymongo_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
@@ -193,9 +180,7 @@ async def test_index_dropping_is_not_allowed(db):
         allow_index_dropping=False,
     )
 
-    collection: AsyncCollection = (
-        DocumentTestModelWithComplexIndex.get_pymongo_collection()
-    )
+    collection = DocumentTestModelWithComplexIndex.get_pymongo_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
@@ -217,9 +202,7 @@ async def test_index_dropping_is_not_allowed_as_default(db):
         document_models=[DocumentTestModelWithDroppedIndex],
     )
 
-    collection: AsyncCollection = (
-        DocumentTestModelWithComplexIndex.get_pymongo_collection()
-    )
+    collection = DocumentTestModelWithComplexIndex.get_pymongo_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
@@ -397,6 +380,6 @@ async def test_init_beanie_with_skip_indexes(db):
     # To force collection creation
     await NewDocument(test_str="Roman Right").save()
 
-    collection: AsyncCollection = NewDocument.get_pymongo_collection()
+    collection = NewDocument.get_pymongo_collection()
     index_info = await collection.index_information()
     assert len(index_info) == 1  # Only the default _id index should be present

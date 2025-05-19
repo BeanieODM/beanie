@@ -166,7 +166,7 @@ class MigrationNode:
             raise RuntimeError("client must not be None")
         async with client.start_session() as s:
             if use_transaction:
-                async with s.start_transaction():
+                async with await s.start_transaction():
                     await self.run_migrations(
                         migrations, db, allow_index_dropping, s
                     )

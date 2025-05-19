@@ -206,7 +206,6 @@ class Document(
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Document, self).__init__(*args, **kwargs)
-        self.get_pymongo_collection()
 
     @classmethod
     def _fill_back_refs(cls, values):
@@ -331,6 +330,8 @@ class Document(
     ) -> Self:
         """
         Insert the document (self) to the collection
+        :param link_rule: WriteRules - if "WriteRules.WRITE", it will insert Link Documents to db.
+        :param session: AsyncClientSession - pymongo session
         :return: self
         """
         if self.get_settings().use_revision:
@@ -1116,6 +1117,8 @@ class Document(
         Check, if documents, stored in the MongoDB collection
         are compatible with the Document schema
 
+        :param session: Optional[AsyncClientSession] - pymongo session
+            The session instance used for transactional operations. Defaults to None.
         :return: InspectionResult
         """
         inspection_result = InspectionResult()
@@ -1205,7 +1208,7 @@ class Document(
         **kwargs: Any,
     ) -> list:
         return await cls.get_pymongo_collection().distinct(
-            key, filter, session, **kwargs
+            key=key, filter=filter, session=session, **kwargs
         )
 
     @classmethod
@@ -1218,13 +1221,13 @@ class Document(
         cls,
         session: Optional[AsyncClientSession] = None,
         ordered: bool = True,
-        bypass_document_validation: bool = False,
+        bypass_document_validation: Optional[bool] = False,
         comment: Optional[Any] = None,
     ) -> BulkWriter:
         """
         Returns a BulkWriter instance for handling bulk write operations.
 
-        :param session: ClientSession
+        :param session: Optional[AsyncClientSession] - pymongo session.
             The session instance used for transactional operations.
         :param ordered: bool
             If ``True`` (the default), requests will be performed on the server serially, in the order provided. If an error

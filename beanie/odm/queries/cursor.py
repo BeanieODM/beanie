@@ -19,7 +19,7 @@ CursorResultType = TypeVar("CursorResultType")
 
 class BaseCursorQuery(Generic[CursorResultType]):
     """
-    BaseCursorQuery class. Wrapper over Async Cursor,
+    BaseCursorQuery class. Wrapper over AsyncCursor,
     which parse result with model
     """
 

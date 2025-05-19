@@ -290,11 +290,10 @@ def sample_doc_not_saved(point):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 async def session(cli):
-    s = cli.start_session()
-    yield s
-    await s.end_session()
+    async with cli.start_session() as s:
+        yield s
 
 
 @pytest.fixture

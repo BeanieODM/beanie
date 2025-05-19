@@ -75,7 +75,7 @@ class BulkWriter:
         session: Optional[AsyncClientSession] = None,
         ordered: bool = True,
         object_class: Optional[Type[Union[Document, UnionDoc]]] = None,
-        bypass_document_validation: bool = False,
+        bypass_document_validation: Optional[bool] = False,
         comment: Optional[Any] = None,
     ) -> None:
         self.operations: List[_WriteOp] = []

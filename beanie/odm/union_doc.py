@@ -53,7 +53,7 @@ class UnionDoc(
         """
         Returns a BulkWriter instance for handling bulk write operations.
 
-        :param session: ClientSession
+        :param session: Optional[AsyncClientSession] - pymongo session.
             The session instance used for transactional operations.
         :param ordered: bool
             If ``True`` (the default), requests will be performed on the server serially, in the order provided. If an error

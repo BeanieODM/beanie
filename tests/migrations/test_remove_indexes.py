@@ -1,6 +1,5 @@
 import pytest
 from pydantic.main import BaseModel
-from pymongo.asynchronous.collection import AsyncCollection
 
 from beanie import init_beanie
 from beanie.executors.migrate import MigrationSettings, run_migrate
@@ -52,7 +51,7 @@ async def test_remove_index_allowed(settings, notes, db):
     await init_beanie(
         database=db, document_models=[Note], allow_index_dropping=False
     )
-    collection: AsyncCollection = Note.get_pymongo_collection()
+    collection = Note.get_pymongo_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
@@ -70,7 +69,7 @@ async def test_remove_index_default(settings, notes, db):
     await init_beanie(
         database=db, document_models=[Note], allow_index_dropping=False
     )
-    collection: AsyncCollection = Note.get_pymongo_collection()
+    collection = Note.get_pymongo_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
@@ -90,7 +89,7 @@ async def test_remove_index_not_allowed(settings, notes, db):
     await init_beanie(
         database=db, document_models=[Note], allow_index_dropping=False
     )
-    collection: AsyncCollection = Note.get_pymongo_collection()
+    collection = Note.get_pymongo_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},

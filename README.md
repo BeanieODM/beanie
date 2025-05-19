@@ -77,7 +77,7 @@ class Product(Document):
 
 # This is an asynchronous example, so we will access it from an async function
 async def example():
-    # Beanie uses Pymongo async client under the hood 
+    # Beanie uses PyMongo async client under the hood
     client = AsyncMongoClient("mongodb://user:pass@host:27017")
 
     # Initialize beanie with the Product document class
