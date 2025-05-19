@@ -614,6 +614,24 @@ class TestOther:
 
         assert addresses_count[0] == {"count": 10}
 
+    @pytest.mark.skipif(
+        not IS_PYDANTIC_V2,
+        reason="model dumping support is more complete with pydantic v2",
+    )
+    async def test_dump_model_with_fetched_backlink(
+        self, link_and_backlink_doc_pair
+    ):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+
+        document_with_fetched_backlinks = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True, nesting_depth=1
+        )
+
+        assert document_with_fetched_backlinks is not None
+        model_json = document_with_fetched_backlinks.model_dump(mode="json")
+
+        assert model_json["back_link"] == {"collection": "DocumentWithLink"}
+
     async def test_with_chaining_aggregation_and_text_search(self):
         # ARRANGE
         NUM_DOCS = 10
