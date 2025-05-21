@@ -206,6 +206,7 @@ class Document(
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Document, self).__init__(*args, **kwargs)
+        self.get_pymongo_collection()
 
     @classmethod
     def _fill_back_refs(cls, values):
