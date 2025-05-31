@@ -721,12 +721,15 @@ class Document(
         else:
             find_query = {"_id": PydanticObjectId()}
 
-        if use_revision_id and not ignore_revision:
-            find_query["revision_id"] = self.revision_id
-
         if use_revision_id:
             new_revision_id = uuid4()
             arguments.append(SetRevisionId(new_revision_id))
+
+        if use_revision_id and not ignore_revision:
+            fetch_result = await self.find_one(find_query)
+            if fetch_result and fetch_result.revision_id != self.revision_id:
+                raise RevisionIdWasChanged
+
         try:
             result = await self.find_one(find_query).update(
                 *arguments,
@@ -735,8 +738,9 @@ class Document(
                 bulk_writer=bulk_writer,
                 **pymongo_kwargs,
             )
-        except DuplicateKeyError:
-            raise RevisionIdWasChanged
+        except DuplicateKeyError as e:
+            raise e
+
         if bulk_writer is None:
             if use_revision_id and not ignore_revision and result is None:
                 raise RevisionIdWasChanged
