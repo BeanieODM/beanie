@@ -36,13 +36,13 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
         if isinstance(right_value, list):
             links_found = False
             for i in right_value:
-                if isinstance(i, (Link,BackLink)):
+                if isinstance(i, (Link, BackLink)):
                     links_found = True
                     break
             if links_found:
                 continue
             left.__setattr__(k, right_value)
-        elif not isinstance(right_value, (Link,BackLink)):
+        elif not isinstance(right_value, (Link, BackLink)):
             left.__setattr__(k, right_value)
 
 
