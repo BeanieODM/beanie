@@ -359,7 +359,7 @@ class FindMany(
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
-            fetch_links=fetch_links or self.fetch_links, 
+            fetch_links=fetch_links or self.fetch_links,
             lazy_parse=lazy_parse,
             nesting_depth=nesting_depth,
             nesting_depths_per_field=nesting_depths_per_field,
