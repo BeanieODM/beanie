@@ -21,7 +21,7 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
     :param right: right model
     :return: None
     """
-    from beanie.odm.fields import Link
+    from beanie.odm.fields import BackLink, Link
 
     for k, right_value in right.__iter__():
         left_value = getattr(left, k, None)
@@ -36,13 +36,13 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
         if isinstance(right_value, list):
             links_found = False
             for i in right_value:
-                if isinstance(i, Link):
+                if isinstance(i, (Link, BackLink)):
                     links_found = True
                     break
             if links_found:
                 continue
             left.__setattr__(k, right_value)
-        elif not isinstance(right_value, Link):
+        elif not isinstance(right_value, (Link, BackLink)):
             left.__setattr__(k, right_value)
 
 
