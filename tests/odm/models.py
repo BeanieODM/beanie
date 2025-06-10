@@ -627,6 +627,17 @@ class DocumentMultiModelTwo(Document):
         class_id = "123"
 
 
+class DocumentTestModelWithModelConfigExtraAllow(Document):
+    if IS_PYDANTIC_V2:
+        model_config = ConfigDict(
+            extra="allow",
+        )
+    else:
+
+        class Config:
+            extra = Extra.allow
+
+
 class YardWithRevision(Document):
     v: int
     w: int

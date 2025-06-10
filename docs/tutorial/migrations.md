@@ -9,7 +9,9 @@ To create a new migration, run:
 beanie new-migration -n migration_name -p relative/path/to/migrations/directory/
 ```
 
-It will create a file named `*_migration_name.py` in the directory `relative/path/to/migrations/directory/`
+It will create a file named `YYYYMMDDHHMMSS_migration_name.py` in the directory `relative/path/to/migrations/directory/` (e.g. `20240315123456_migration_name.py`).
+
+> **Note**: Migrations are executed in alphabetical order based on their filenames. While you can name migration files anything, it's recommended to keep the generated timestamp or use explicit ordering numbers (like `001_`, `002_`, etc.). Files starting with underscore (`_`) are ignored by the migration system (e.g. `__init__.py`).
 
 Migration file contains two classes: `Forward` and `Backward`. 
 Each one contains instructions to roll migration respectively forward and backward.

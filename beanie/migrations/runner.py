@@ -205,7 +205,8 @@ class MigrationNode:
         """
         logger.info("Building migration list")
         names = []
-        for modulepath in path.glob("*.py"):
+        # Skip migrations that start with an underscore
+        for modulepath in path.glob("[!_]*.py"):
             names.append(modulepath.name)
         names.sort()
 
