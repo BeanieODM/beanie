@@ -126,7 +126,7 @@ async def run_migrate(settings: MigrationSettings):
     # Cleanup
     client = DBHandler.get_cli()
     if client:
-        client.close()
+        await client.close()
 
 
 @migrations.command()

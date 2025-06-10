@@ -30,5 +30,5 @@ async def clean_db(db):
     yield None
 
     for model in models:
-        await model.get_motor_collection().drop()
-        await model.get_motor_collection().drop_indexes()
+        await model.get_pymongo_collection().drop()
+        await model.get_pymongo_collection().drop_indexes()

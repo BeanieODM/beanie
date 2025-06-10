@@ -654,7 +654,7 @@ class IndexModelField:
         return [index.index for index in left]
 
     @classmethod
-    def from_motor_index_information(cls, index_info: dict):
+    def from_pymongo_index_information(cls, index_info: dict):
         result = []
         for name, details in index_info.items():
             fields = details["key"]

@@ -3,7 +3,6 @@ from __future__ import annotations
 from types import TracebackType
 from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Type, Union
 
-from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo import (
     DeleteMany,
     DeleteOne,
@@ -12,6 +11,7 @@ from pymongo import (
     UpdateMany,
     UpdateOne,
 )
+from pymongo.asynchronous.client_session import AsyncClientSession
 from pymongo.results import BulkWriteResult
 
 if TYPE_CHECKING:
@@ -37,8 +37,8 @@ class BulkWriter:
     context management and ensures that all queued operations are committed upon exiting the context.
 
     Attributes:
-        session Optional[AsyncIOMotorClientSession]:
-            The motor session used for transactional operations.
+        session Optional[AsyncClientSession]:
+            The pymongo session used for transactional operations.
             Defaults to None, meaning no session is used.
         ordered Optional[bool]:
             Specifies whether operations are executed sequentially (default) or in parallel.
@@ -58,7 +58,7 @@ class BulkWriter:
             The document model class associated with the operations.
 
     Parameters:
-        session Optional[AsyncIOMotorClientSession]: The motor session for transaction support.
+        session Optional[AsyncClientSession]: The pymongo session for transaction support.
             Defaults to None (no session).
         ordered Optional[bool]: Specifies whether operations are executed in sequence (True) or in parallel (False).
             Defaults to True.
@@ -72,10 +72,10 @@ class BulkWriter:
 
     def __init__(
         self,
-        session: Optional[AsyncIOMotorClientSession] = None,
+        session: Optional[AsyncClientSession] = None,
         ordered: bool = True,
         object_class: Optional[Type[Union[Document, UnionDoc]]] = None,
-        bypass_document_validation: bool = False,
+        bypass_document_validation: Optional[bool] = False,
         comment: Optional[Any] = None,
     ) -> None:
         self.operations: List[_WriteOp] = []
@@ -120,7 +120,7 @@ class BulkWriter:
             raise ValueError(
                 "The document model class must be specified before committing operations."
             )
-        return await self.object_class.get_motor_collection().bulk_write(
+        return await self.object_class.get_pymongo_collection().bulk_write(
             self.operations,
             ordered=self.ordered,
             bypass_document_validation=self.bypass_document_validation,
