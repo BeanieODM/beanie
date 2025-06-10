@@ -7,28 +7,23 @@ import operator
 import pathlib
 import re
 import uuid
+from collections.abc import Container, Iterable, Mapping, MutableMapping
 from enum import Enum
 from typing import (
     Any,
     Callable,
-    Container,
-    Iterable,
-    Mapping,
-    MutableMapping,
     Optional,
     Tuple,
 )
 
 import bson
 import pydantic
+from pydantic import AnyUrl
+from pydantic_core import Url
 
 import beanie
 from beanie.odm.fields import Link, LinkTypes
-from beanie.odm.utils.pydantic import (
-    IS_PYDANTIC_V2,
-    IS_PYDANTIC_V2_10,
-    get_model_fields,
-)
+from beanie.odm.utils.pydantic import get_model_fields
 
 SingleArgCallable = Callable[[Any], Any]
 DEFAULT_CUSTOM_ENCODERS: MutableMapping[type, SingleArgCallable] = {
@@ -49,16 +44,9 @@ DEFAULT_CUSTOM_ENCODERS: MutableMapping[type, SingleArgCallable] = {
     decimal.Decimal: bson.Decimal128,
     uuid.UUID: bson.Binary.from_uuid,
     re.Pattern: bson.Regex.from_native,
+    Url: str,
+    AnyUrl: str,
 }
-if IS_PYDANTIC_V2:
-    from pydantic_core import Url
-
-    DEFAULT_CUSTOM_ENCODERS[Url] = str
-
-if IS_PYDANTIC_V2_10:
-    from pydantic import AnyUrl
-
-    DEFAULT_CUSTOM_ENCODERS[AnyUrl] = str
 
 BSON_SCALAR_TYPES = (
     type(None),
@@ -136,7 +124,7 @@ class Encoder:
 
         if isinstance(obj, beanie.Document):
             return self._encode_document(obj)
-        if IS_PYDANTIC_V2 and isinstance(obj, pydantic.RootModel):
+        if isinstance(obj, pydantic.RootModel):
             return self.encode(obj.root)
         if isinstance(obj, pydantic.BaseModel):
             items = self._iter_model_items(obj)

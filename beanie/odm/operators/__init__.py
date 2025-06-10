@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from collections.abc import Mapping
+from collections.abc import Mapping as MappingType
 from copy import copy, deepcopy
 from typing import Any, Dict
-from typing import Mapping as MappingType
 
 
 class BaseOperator(Mapping):

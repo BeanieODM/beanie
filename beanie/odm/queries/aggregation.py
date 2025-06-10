@@ -1,9 +1,9 @@
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
     Generic,
     List,
-    Mapping,
     Optional,
     Type,
     TypeVar,

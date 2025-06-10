@@ -1,13 +1,12 @@
 from abc import abstractmethod
+from collections.abc import Generator, Mapping
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
     Dict,
-    Generator,
     List,
-    Mapping,
     Optional,
     Type,
     Union,
@@ -55,7 +54,7 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
         self.update_expressions: List[Mapping[str, Any]] = []
         self.session = None
         self.is_upsert = False
-        self.upsert_insert_doc: Optional["DocType"] = None
+        self.upsert_insert_doc: Optional[DocType] = None
         self.encoders: Dict[Any, Callable[[Any], Any]] = {}
         self.bulk_writer: Optional[BulkWriter] = None
         self.encoders = self.document_model.get_settings().bson_encoders

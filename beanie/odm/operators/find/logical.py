@@ -1,5 +1,6 @@
 from abc import ABC
-from typing import Any, Dict, Mapping, Union
+from collections.abc import Mapping
+from typing import Any, Dict, Union
 
 from beanie.odm.operators.find import BaseFindOperator
 
