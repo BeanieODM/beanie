@@ -201,6 +201,18 @@ chocolates = await Product.find(
     Product.category.name == "Chocolate").project(ProductView).to_list()
 ```
 
+### Chaining `.find()` with `fetch_links=True`
+
+You can now safely chain `.find()` calls and preserve the `fetch_links` flag automatically:
+
+```python
+query = Conversation.find(Conversation.user == user_id, fetch_links=True)
+if updated_at_from is not None:
+    query = query.find(Conversation.updated_at >= updated_at_from)
+
+conversations = await query.to_list()
+
+```
 ### Finding all documents
 
 If you ever want to find all documents, you can use the `find_all()` class method. This is equivalent to `find({})`.
