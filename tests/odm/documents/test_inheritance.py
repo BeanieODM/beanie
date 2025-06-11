@@ -19,25 +19,15 @@ class TestInheritance:
         bike_1 = await Bike(color="black", fuel="gasoline").insert()
 
         car_1 = await Car(color="grey", body="sedan", fuel="gasoline").insert()
-        car_2 = await Car(
-            color="white", body="crossover", fuel="diesel"
-        ).insert()
+        car_2 = await Car(color="white", body="crossover", fuel="diesel").insert()
 
-        bus_1 = await Bus(
-            color="white", seats=80, body="bus", fuel="diesel"
-        ).insert()
-        bus_2 = await Bus(
-            color="yellow", seats=26, body="minibus", fuel="diesel"
-        ).insert()
+        bus_1 = await Bus(color="white", seats=80, body="bus", fuel="diesel").insert()
+        bus_2 = await Bus(color="yellow", seats=26, body="minibus", fuel="diesel").insert()
 
-        white_vehicles = await Vehicle.find(
-            Vehicle.color == "white", with_children=True
-        ).to_list()
+        white_vehicles = await Vehicle.find(Vehicle.color == "white", with_children=True).to_list()
 
         cars_only = await Car.find().to_list()
-        cars_and_buses = await Car.find(
-            Car.fuel == "diesel", with_children=True
-        ).to_list()
+        cars_and_buses = await Car.find(Car.fuel == "diesel", with_children=True).to_list()
 
         big_bicycles = await Bicycle.find(Bicycle.wheels > 28).to_list()
 
@@ -78,13 +68,9 @@ class TestInheritance:
 
     async def test_links(self, db):
         car_1 = await Car(color="grey", body="sedan", fuel="gasoline").insert()
-        car_2 = await Car(
-            color="white", body="crossover", fuel="diesel"
-        ).insert()
+        car_2 = await Car(color="white", body="crossover", fuel="diesel").insert()
 
-        bus_1 = await Bus(
-            color="white", seats=80, body="bus", fuel="diesel"
-        ).insert()
+        bus_1 = await Bus(color="white", seats=80, body="bus", fuel="diesel").insert()
 
         owner = await Owner(name="John").insert()
         owner.vehicles = [car_1, car_2, bus_1]

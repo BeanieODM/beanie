@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
@@ -52,8 +52,8 @@ class AggregateMethods:
         ]
 
         # As we did not supply a projection we can safely cast the type (hinting to mypy that we know the type)
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
+        result: list[dict[str, Any]] = cast(
+            list[dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
@@ -94,8 +94,8 @@ class AggregateMethods:
             {"$project": {"_id": 0, "avg": 1}},
         ]
 
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
+        result: list[dict[str, Any]] = cast(
+            list[dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
@@ -135,8 +135,8 @@ class AggregateMethods:
             {"$project": {"_id": 0, "max": 1}},
         ]
 
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
+        result: list[dict[str, Any]] = cast(
+            list[dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
@@ -176,8 +176,8 @@ class AggregateMethods:
             {"$project": {"_id": 0, "min": 1}},
         ]
 
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
+        result: list[dict[str, Any]] = cast(
+            list[dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,

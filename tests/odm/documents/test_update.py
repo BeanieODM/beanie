@@ -29,26 +29,20 @@ from tests.odm.models import (
 
 async def test_replace_many(documents):
     await documents(10, "foo")
-    created_documents = await DocumentTestModel.find_many(
-        {"test_str": "foo"}
-    ).to_list()
+    created_documents = await DocumentTestModel.find_many({"test_str": "foo"}).to_list()
     to_replace = []
     for document in created_documents[:5]:
         document.test_str = "REPLACED_VALUE"
         to_replace.append(document)
     await DocumentTestModel.replace_many(to_replace)
 
-    replaced_documetns = await DocumentTestModel.find_many(
-        {"test_str": "REPLACED_VALUE"}
-    ).to_list()
+    replaced_documetns = await DocumentTestModel.find_many({"test_str": "REPLACED_VALUE"}).to_list()
     assert len(replaced_documetns) == 5
 
 
 async def test_replace_many_not_all_the_docs_found(documents):
     await documents(10, "foo")
-    created_documents = await DocumentTestModel.find_many(
-        {"test_str": "foo"}
-    ).to_list()
+    created_documents = await DocumentTestModel.find_many({"test_str": "foo"}).to_list()
     to_replace = []
     created_documents[0].id = PydanticObjectId()
     for document in created_documents[:5]:
@@ -98,10 +92,7 @@ async def test_save(document):
 
 async def test_save_not_saved(document_not_inserted):
     await document_not_inserted.save()
-    assert (
-        hasattr(document_not_inserted, "id")
-        and document_not_inserted.id is not None
-    )
+    assert hasattr(document_not_inserted, "id") and document_not_inserted.id is not None
     from_db = await DocumentTestModel.get(document_not_inserted.id)
     assert from_db == document_not_inserted
 
@@ -109,10 +100,7 @@ async def test_save_not_saved(document_not_inserted):
 async def test_save_not_found(document_not_inserted):
     document_not_inserted.id = PydanticObjectId()
     await document_not_inserted.save()
-    assert (
-        hasattr(document_not_inserted, "id")
-        and document_not_inserted.id is not None
-    )
+    assert hasattr(document_not_inserted, "id") and document_not_inserted.id is not None
     from_db = await DocumentTestModel.get(document_not_inserted.id)
     assert from_db == document_not_inserted
 
@@ -121,9 +109,9 @@ async def test_save_not_found(document_not_inserted):
 
 
 async def test_update_one(document):
-    await DocumentTestModel.find_one(
-        {"_id": document.id, "test_list.test_str": "foo"}
-    ).update({"$set": {"test_list.$.test_str": "foo_foo"}})
+    await DocumentTestModel.find_one({"_id": document.id, "test_list.test_str": "foo"}).update(
+        {"$set": {"test_list.$.test_str": "foo_foo"}}
+    )
     new_document = await DocumentTestModel.get(document.id)
     assert new_document.test_list[0].test_str == "foo_foo"
 
@@ -139,16 +127,10 @@ async def test_update_one_set_extra_field():
 async def test_update_many(documents):
     await documents(10, "foo")
     await documents(7, "bar")
-    await DocumentTestModel.find_many({"test_str": "foo"}).update(
-        {"$set": {"test_str": "bar"}}
-    )
-    bar_documetns = await DocumentTestModel.find_many(
-        {"test_str": "bar"}
-    ).to_list()
+    await DocumentTestModel.find_many({"test_str": "foo"}).update({"$set": {"test_str": "bar"}})
+    bar_documetns = await DocumentTestModel.find_many({"test_str": "bar"}).to_list()
     assert len(bar_documetns) == 17
-    foo_documetns = await DocumentTestModel.find_many(
-        {"test_str": "foo"}
-    ).to_list()
+    foo_documetns = await DocumentTestModel.find_many({"test_str": "foo"}).to_list()
     assert len(foo_documetns) == 0
 
 
@@ -158,17 +140,11 @@ async def test_update_all(documents):
     await DocumentTestModel.update_all(
         {"$set": {"test_str": "smth_else"}},
     )
-    bar_documetns = await DocumentTestModel.find_many(
-        {"test_str": "bar"}
-    ).to_list()
+    bar_documetns = await DocumentTestModel.find_many({"test_str": "bar"}).to_list()
     assert len(bar_documetns) == 0
-    foo_documetns = await DocumentTestModel.find_many(
-        {"test_str": "foo"}
-    ).to_list()
+    foo_documetns = await DocumentTestModel.find_many({"test_str": "foo"}).to_list()
     assert len(foo_documetns) == 0
-    smth_else_documetns = await DocumentTestModel.find_many(
-        {"test_str": "smth_else"}
-    ).to_list()
+    smth_else_documetns = await DocumentTestModel.find_many({"test_str": "smth_else"}).to_list()
     assert len(smth_else_documetns) == 17
 
 
@@ -186,11 +162,7 @@ async def test_save_keep_nulls_false():
     assert from_db.o is None
     assert from_db.m.s is None
 
-    raw_data = (
-        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
-            {"_id": doc.id}
-        )
-    )
+    raw_data = await DocumentWithKeepNullsFalse.get_motor_collection().find_one({"_id": doc.id})
     assert raw_data == {"_id": doc.id, "m": {"i": 10}}
 
 
@@ -209,11 +181,7 @@ async def test_save_changes_keep_nulls_false():
     assert from_db.o is None
     assert from_db.m.s is None
 
-    raw_data = (
-        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
-            {"_id": doc.id}
-        )
-    )
+    raw_data = await DocumentWithKeepNullsFalse.get_motor_collection().find_one({"_id": doc.id})
     assert raw_data == {"_id": doc.id, "m": {"i": 10}}
 
 
@@ -313,9 +281,7 @@ async def test_update_list():
 
 
 async def test_update_using_pipeline(preset_documents):
-    await Sample.all().update(
-        [{"$set": {"integer": 10000}}, {"$set": {"string": "TEST3"}}]
-    )
+    await Sample.all().update([{"$set": {"integer": 10000}}, {"$set": {"string": "TEST3"}}])
     all_docs = await Sample.find_many({}).to_list()
     for doc in all_docs:
         assert doc.integer == 10000

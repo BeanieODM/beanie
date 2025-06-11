@@ -30,7 +30,7 @@ async def test_integer_id():
     not IS_PYDANTIC_V2,
     reason="supports only pydantic v2",
 )
-async def test_pydantic_object_id_validation_json():
+def test_pydantic_object_id_validation_json():
     deserialized = A.model_validate_json('{"id": "5eb7cf5a86d9755df3a6c593"}')
     assert isinstance(deserialized.id, PydanticObjectId)
     assert str(deserialized.id) == "5eb7cf5a86d9755df3a6c593"
@@ -48,7 +48,7 @@ async def test_pydantic_object_id_validation_json():
         PydanticObjectId("5eb7cf5a86d9755df3a6c593"),
     ],
 )
-async def test_pydantic_object_id_serialization(data):
+def test_pydantic_object_id_serialization(data):
     deserialized = A(**{"id": data})
     assert isinstance(deserialized.id, PydanticObjectId)
     assert str(deserialized.id) == "5eb7cf5a86d9755df3a6c593"

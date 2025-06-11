@@ -28,7 +28,7 @@ async def test_pydantic_extras_kw():
     assert loaded_doc.extra_value == "foo"
 
 
-async def test_fail_with_no_extras():
+def test_fail_with_no_extras():
     doc = DocumentWithPydanticConfig(num_1=2)
     with pytest.raises(ValueError):
         doc.extra_value = "foo"

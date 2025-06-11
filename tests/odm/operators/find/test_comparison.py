@@ -11,7 +11,7 @@ from beanie.odm.operators.find.comparison import (
 from tests.odm.models import Sample
 
 
-async def test_eq():
+def test_eq():
     q = Sample.integer == 1
     assert q == {"integer": 1}
 
@@ -22,7 +22,7 @@ async def test_eq():
     assert q == {"integer": 1}
 
 
-async def test_gt():
+def test_gt():
     q = Sample.integer > 1
     assert q == {"integer": {"$gt": 1}}
 
@@ -33,7 +33,7 @@ async def test_gt():
     assert q == {"integer": {"$gt": 1}}
 
 
-async def test_gte():
+def test_gte():
     q = Sample.integer >= 1
     assert q == {"integer": {"$gte": 1}}
 
@@ -44,7 +44,7 @@ async def test_gte():
     assert q == {"integer": {"$gte": 1}}
 
 
-async def test_in():
+def test_in():
     q = In(Sample.integer, [1])
     assert q == {"integer": {"$in": [1]}}
 
@@ -52,7 +52,7 @@ async def test_in():
     assert q == {"integer": {"$in": [1]}}
 
 
-async def test_lt():
+def test_lt():
     q = Sample.integer < 1
     assert q == {"integer": {"$lt": 1}}
 
@@ -63,7 +63,7 @@ async def test_lt():
     assert q == {"integer": {"$lt": 1}}
 
 
-async def test_lte():
+def test_lte():
     q = Sample.integer <= 1
     assert q == {"integer": {"$lte": 1}}
 
@@ -74,7 +74,7 @@ async def test_lte():
     assert q == {"integer": {"$lte": 1}}
 
 
-async def test_ne():
+def test_ne():
     q = Sample.integer != 1
     assert q == {"integer": {"$ne": 1}}
 
@@ -85,7 +85,7 @@ async def test_ne():
     assert q == {"integer": {"$ne": 1}}
 
 
-async def test_nin():
+def test_nin():
     q = NotIn(Sample.integer, [1])
     assert q == {"integer": {"$nin": [1]}}
 

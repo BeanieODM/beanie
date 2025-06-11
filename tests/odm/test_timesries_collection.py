@@ -11,14 +11,10 @@ async def test_timeseries_collection(db):
     major_version = int(mongo_version.split(".")[0])
     if major_version < 5:
         with pytest.raises(MongoDBVersionError):
-            await init_beanie(
-                database=db, document_models=[DocumentWithTimeseries]
-            )
+            await init_beanie(database=db, document_models=[DocumentWithTimeseries])
 
     if major_version >= 5:
-        await init_beanie(
-            database=db, document_models=[DocumentWithTimeseries]
-        )
+        await init_beanie(database=db, document_models=[DocumentWithTimeseries])
         info = await db.command(
             {
                 "listCollections": 1,

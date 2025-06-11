@@ -1,6 +1,7 @@
 from abc import abstractmethod
+from collections.abc import Mapping
 from datetime import datetime
-from typing import Any, Dict, Mapping, Optional, Union
+from typing import Any, Optional, Union
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
@@ -30,7 +31,7 @@ class UpdateMethods:
 
     def set(
         self,
-        expression: Dict[Union[ExpressionField, str, Any], Any],
+        expression: dict[Union[ExpressionField, str, Any], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
@@ -57,13 +58,11 @@ class UpdateMethods:
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """
-        return self.update(
-            Set(expression), session=session, bulk_writer=bulk_writer, **kwargs
-        )
+        return self.update(Set(expression), session=session, bulk_writer=bulk_writer, **kwargs)
 
     def current_date(
         self,
-        expression: Dict[Union[datetime, ExpressionField, str], Any],
+        expression: dict[Union[datetime, ExpressionField, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
@@ -87,7 +86,7 @@ class UpdateMethods:
 
     def inc(
         self,
-        expression: Dict[Union[ExpressionField, float, int, str], Any],
+        expression: dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
@@ -113,6 +112,4 @@ class UpdateMethods:
         :param bulk_writer: Optional[BulkWriter] - bulk writer
         :return: self
         """
-        return self.update(
-            Inc(expression), session=session, bulk_writer=bulk_writer, **kwargs
-        )
+        return self.update(Inc(expression), session=session, bulk_writer=bulk_writer, **kwargs)

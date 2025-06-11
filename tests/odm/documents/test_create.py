@@ -36,9 +36,7 @@ async def test_create_twice(document_not_inserted):
 
 
 async def test_insert_one_with_session(document_not_inserted, session):
-    result = await DocumentTestModel.insert_one(
-        document_not_inserted, session=session
-    )
+    result = await DocumentTestModel.insert_one(document_not_inserted, session=session)
     document = await DocumentTestModel.get(result.id, session=session)
     assert document is not None
     assert document.test_int == document_not_inserted.test_int
@@ -47,9 +45,7 @@ async def test_insert_one_with_session(document_not_inserted, session):
 
 
 async def test_insert_many_with_session(documents_not_inserted, session):
-    await DocumentTestModel.insert_many(
-        documents_not_inserted(10), session=session
-    )
+    await DocumentTestModel.insert_many(documents_not_inserted(10), session=session)
     documents = await DocumentTestModel.find_all(session=session).to_list()
     assert len(documents) == 10
 
@@ -71,11 +67,7 @@ async def test_insert_keep_nulls_false():
     assert new_doc.m.s is None
     assert new_doc.o is None
 
-    raw_data = (
-        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
-            {"_id": doc.id}
-        )
-    )
+    raw_data = await DocumentWithKeepNullsFalse.get_motor_collection().find_one({"_id": doc.id})
     assert raw_data == {
         "_id": doc.id,
         "m": {"i": 10},
@@ -100,19 +92,15 @@ async def test_insert_many_keep_nulls_false():
     assert new_docs[1].m.s is None
     assert new_docs[1].o is None
 
-    raw_data = (
-        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
-            {"_id": new_docs[0].id}
-        )
+    raw_data = await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
+        {"_id": new_docs[0].id}
     )
     assert raw_data == {
         "_id": new_docs[0].id,
         "m": {"i": 10},
     }
-    raw_data = (
-        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
-            {"_id": new_docs[1].id}
-        )
+    raw_data = await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
+        {"_id": new_docs[1].id}
     )
     assert raw_data == {
         "_id": new_docs[1].id,

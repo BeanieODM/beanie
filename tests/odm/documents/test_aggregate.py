@@ -23,9 +23,7 @@ async def test_aggregate_with_filter(documents):
     await documents(1, "cuatro")
     result = (
         await DocumentTestModel.find(DocumentTestModel.test_int >= 1)
-        .aggregate(
-            [{"$group": {"_id": "$test_str", "total": {"$sum": "$test_int"}}}]
-        )
+        .aggregate([{"$group": {"_id": "$test_str", "total": {"$sum": "$test_int"}}}])
         .to_list()
     )
     assert len(result) == 2

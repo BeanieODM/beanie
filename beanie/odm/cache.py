@@ -22,10 +22,7 @@ class LRUCache:
     def get(self, key) -> Optional[CachedItem]:
         try:
             item: CachedItem = self.cache.pop(key)
-            if (
-                datetime.datetime.now(tz=timezone.utc) - item.timestamp
-                > self.expiration_time
-            ):
+            if datetime.datetime.now(tz=timezone.utc) - item.timestamp > self.expiration_time:
                 return None
             self.cache[key] = item
             return item.value

@@ -1,4 +1,5 @@
-from typing import Any, Callable, Coroutine
+from collections.abc import Coroutine
+from typing import Any, Callable
 
 from typing_extensions import Protocol, TypeAlias, assert_type
 
@@ -29,9 +30,7 @@ async def async_func(doc_self: Document, arg1: str, arg2: int, /) -> Document:
     raise NotImplementedError
 
 
-AsyncFunc: TypeAlias = Callable[
-    [Document, str, int], Coroutine[Any, Any, Document]
-]
+AsyncFunc: TypeAlias = Callable[[Document, str, int], Coroutine[Any, Any, Document]]
 
 
 def test_wrap_with_actions_preserves_signature() -> None:

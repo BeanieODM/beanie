@@ -30,9 +30,7 @@ fixed_id = PydanticObjectId("6076f1f3e4b7f6b7a0f6e5a0")
 
 class Forward:
     @iterative_migration(batch_size=2)
-    async def name_to_title(
-        self, input_document: OldNote, output_document: Note
-    ):
+    async def name_to_title(self, input_document: OldNote, output_document: Note):
         output_document.title = input_document.name
         if output_document.title > "5":
             output_document.name = "5"
@@ -40,7 +38,5 @@ class Forward:
 
 class Backward:
     @iterative_migration()
-    async def title_to_name(
-        self, input_document: Note, output_document: OldNote
-    ):
+    async def title_to_name(self, input_document: Note, output_document: OldNote):
         output_document.name = input_document.title

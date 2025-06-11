@@ -1,7 +1,6 @@
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Set
 
 import requests  # type: ignore
 
@@ -31,7 +30,7 @@ class ChangelogGenerator:
         self.commits = self.get_commits_after_tag(current_version)
         self.prs = self.get_prs_for_commits(self.commits)
 
-    def get_commits_after_tag(self, tag: str) -> List[str]:
+    def get_commits_after_tag(self, tag: str) -> list[str]:
         result = subprocess.run(
             ["git", "log", f"{tag}..HEAD", "--pretty=format:%H"],
             stdout=subprocess.PIPE,
@@ -52,9 +51,9 @@ class ChangelogGenerator:
             url=pr_data["html_url"],
         )
 
-    def get_prs_for_commits(self, commit_shas: List[str]) -> List[PullRequest]:
-        prs: List[PullRequest] = []
-        unique_prs: Set[int] = set()
+    def get_prs_for_commits(self, commit_shas: list[str]) -> list[PullRequest]:
+        prs: list[PullRequest] = []
+        unique_prs: set[int] = set()
         for commit_sha in commit_shas:
             pr = self.get_pr_for_commit(commit_sha)
             pr_id = pr.number

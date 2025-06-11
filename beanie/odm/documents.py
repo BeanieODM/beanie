@@ -1,5 +1,6 @@
 import asyncio
 import warnings
+from collections.abc import Coroutine, Iterable, Mapping
 from datetime import datetime, timezone
 from enum import Enum
 from typing import (
@@ -7,14 +8,7 @@ from typing import (
     Any,
     Callable,
     ClassVar,
-    Coroutine,
-    Dict,
-    Iterable,
-    List,
-    Mapping,
     Optional,
-    Tuple,
-    Type,
     TypeVar,
     Union,
 )
@@ -121,13 +115,11 @@ R = TypeVar("R")
 # can describe both sync and async, where R itself is a coroutine
 AnyDocMethod: TypeAlias = Callable[Concatenate[DocType, P], R]
 # describes only async
-AsyncDocMethod: TypeAlias = Callable[
-    Concatenate[DocType, P], Coroutine[Any, Any, R]
-]
+AsyncDocMethod: TypeAlias = Callable[Concatenate[DocType, P], Coroutine[Any, Any, R]]
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
-def json_schema_extra(schema: Dict[str, Any], model: Type["Document"]) -> None:
+def json_schema_extra(schema: dict[str, Any], model: type["Document"]) -> None:
     # remove excluded fields from the json schema
     properties = schema.get("properties")
     if not properties:
@@ -183,17 +175,15 @@ class Document(
             fields = {"id": "_id"}
             schema_extra = staticmethod(json_schema_extra)
 
-    id: Optional[PydanticObjectId] = Field(
-        default=None, description="MongoDB document ObjectID"
-    )
+    id: Optional[PydanticObjectId] = Field(default=None, description="MongoDB document ObjectID")
 
     # State
     revision_id: Optional[UUID] = Field(default=None, exclude=True)
-    _saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
-    _previous_saved_state: Optional[Dict[str, Any]] = PrivateAttr(default=None)
+    _saved_state: Optional[dict[str, Any]] = PrivateAttr(default=None)
+    _previous_saved_state: Optional[dict[str, Any]] = PrivateAttr(default=None)
 
     # Relations
-    _link_fields: ClassVar[Optional[Dict[str, LinkInfo]]] = None
+    _link_fields: ClassVar[Optional[dict[str, LinkInfo]]] = None
 
     # Cache
     _cache: ClassVar[Optional[LRUCache]] = None
@@ -205,7 +195,7 @@ class Document(
     _database_major_version: ClassVar[int] = 4
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super(Document, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.get_motor_collection()
 
     @classmethod
@@ -213,22 +203,18 @@ class Document(
         if cls._link_fields:
             for field_name, link_info in cls._link_fields.items():
                 if (
-                    link_info.link_type
-                    in [LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT]
+                    link_info.link_type in [LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT]
                     and field_name not in values
                 ):
                     values[field_name] = BackLink[link_info.document_class](
                         link_info.document_class
                     )
                 if (
-                    link_info.link_type
-                    in [LinkTypes.BACK_LIST, LinkTypes.OPTIONAL_BACK_LIST]
+                    link_info.link_type in [LinkTypes.BACK_LIST, LinkTypes.OPTIONAL_BACK_LIST]
                     and field_name not in values
                 ):
                     values[field_name] = [
-                        BackLink[link_info.document_class](
-                            link_info.document_class
-                        )
+                        BackLink[link_info.document_class](link_info.document_class)
                     ]
         return values
 
@@ -246,14 +232,14 @@ class Document(
 
     @classmethod
     async def get(
-        cls: Type["DocType"],
+        cls: type["DocType"],
         document_id: Any,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
         nesting_depth: Optional[int] = None,
-        nesting_depths_per_field: Optional[Dict[str, int]] = None,
+        nesting_depths_per_field: Optional[dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Optional["DocType"]:
         """
@@ -269,9 +255,7 @@ class Document(
             document_id,
             extract_id_class(get_field_type(get_model_fields(cls)["id"])),
         ):
-            document_id = parse_object_as(
-                get_field_type(get_model_fields(cls)["id"]), document_id
-            )
+            document_id = parse_object_as(get_field_type(get_model_fields(cls)["id"]), document_id)
 
         return await cls.find_one(
             {"_id": document_id},
@@ -295,9 +279,7 @@ class Document(
             merge_strategy == MergeStrategy.local
             and self.get_settings().use_state_management is False
         ):
-            raise ValueError(
-                "State management must be turned on to use local merge strategy"
-            )
+            raise ValueError("State management must be turned on to use local merge strategy")
         if self.id is None:
             raise DocumentWasNotSaved
         document = await self.find_one({"_id": self.id})
@@ -309,9 +291,7 @@ class Document(
             new_state = document.get_saved_state()
             if new_state is None:
                 raise DocumentWasNotSaved
-            changes_to_apply = self._collect_updates(
-                new_state, original_changes
-            )
+            changes_to_apply = self._collect_updates(new_state, original_changes)
             merge_models(self, document)
             apply_changes(changes_to_apply, self)
         elif merge_strategy == MergeStrategy.remote:
@@ -327,7 +307,7 @@ class Document(
         *,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
         session: Optional[AsyncIOMotorClientSession] = None,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        skip_actions: Optional[list[Union[ActionDirections, str]]] = None,
     ) -> Self:
         """
         Insert the document (self) to the collection
@@ -345,14 +325,12 @@ class Document(
                         LinkTypes.OPTIONAL_DIRECT,
                     ]:
                         if isinstance(value, Document):
-                            await value.save(
-                                link_rule=WriteRules.WRITE, session=session
-                            )
+                            await value.save(link_rule=WriteRules.WRITE, session=session)
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
                     ]:
-                        if isinstance(value, List):
+                        if isinstance(value, list):
                             await asyncio.gather(
                                 *[
                                     obj.save(
@@ -364,9 +342,7 @@ class Document(
                                 ]
                             )
         result = await self.get_motor_collection().insert_one(
-            get_dict(
-                self, to_db=True, keep_nulls=self.get_settings().keep_nulls
-            ),
+            get_dict(self, to_db=True, keep_nulls=self.get_settings().keep_nulls),
             session=session,
         )
         new_id = result.inserted_id
@@ -374,9 +350,7 @@ class Document(
             new_id,
             extract_id_class(get_field_type(get_model_fields(self)["id"])),
         ):
-            new_id = parse_object_as(
-                get_field_type(get_model_fields(self)["id"]), new_id
-            )
+            new_id = parse_object_as(get_field_type(get_model_fields(self)["id"]), new_id)
         self.id = new_id
         return self
 
@@ -392,7 +366,7 @@ class Document(
 
     @classmethod
     async def insert_one(
-        cls: Type[DocType],
+        cls: type[DocType],
         document: DocType,
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional["BulkWriter"] = None,
@@ -407,16 +381,12 @@ class Document(
         :return: DocType
         """
         if not isinstance(document, cls):
-            raise TypeError(
-                "Inserting document must be of the original document class"
-            )
+            raise TypeError("Inserting document must be of the original document class")
         if bulk_writer is None:
             return await document.insert(link_rule=link_rule, session=session)
         else:
             if link_rule == WriteRules.WRITE:
-                raise NotSupported(
-                    "Cascade insert with bulk writing not supported"
-                )
+                raise NotSupported("Cascade insert with bulk writing not supported")
             bulk_writer.add_operation(
                 type(document),
                 InsertOne(
@@ -431,7 +401,7 @@ class Document(
 
     @classmethod
     async def insert_many(
-        cls: Type[DocType],
+        cls: type[DocType],
         documents: Iterable[DocType],
         session: Optional[AsyncIOMotorClientSession] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
@@ -446,9 +416,7 @@ class Document(
         :return: InsertManyResult
         """
         if link_rule == WriteRules.WRITE:
-            raise NotSupported(
-                "Cascade insert not supported for insert many method"
-            )
+            raise NotSupported("Cascade insert not supported for insert many method")
         documents_list = [
             get_dict(
                 document,
@@ -470,7 +438,7 @@ class Document(
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: WriteRules = WriteRules.DO_NOTHING,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        skip_actions: Optional[list[Union[ActionDirections, str]]] = None,
     ) -> Self:
         """
         Fully update the document in the database
@@ -511,7 +479,7 @@ class Document(
                         LinkTypes.BACK_LIST,
                         LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
-                        if isinstance(value, List):
+                        if isinstance(value, list):
                             await asyncio.gather(
                                 *[
                                     obj.replace(
@@ -526,7 +494,7 @@ class Document(
                             )
 
         use_revision_id = self.get_settings().use_revision
-        find_query: Dict[str, Any] = {"_id": self.id}
+        find_query: dict[str, Any] = {"_id": self.id}
 
         if use_revision_id and not ignore_revision:
             find_query["revision_id"] = self.revision_id
@@ -575,21 +543,17 @@ class Document(
                         LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
-                            await value.save(
-                                link_rule=link_rule, session=session
-                            )
+                            await value.save(link_rule=link_rule, session=session)
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
                         LinkTypes.BACK_LIST,
                         LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
-                        if isinstance(value, List):
+                        if isinstance(value, list):
                             await asyncio.gather(
                                 *[
-                                    obj.save(
-                                        link_rule=link_rule, session=session
-                                    )
+                                    obj.save(link_rule=link_rule, session=session)
                                     for obj in value
                                     if isinstance(obj, Document)
                                 ]
@@ -633,7 +597,7 @@ class Document(
         ignore_revision: bool = False,
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        skip_actions: Optional[list[Union[ActionDirections, str]]] = None,
     ) -> Optional[Self]:
         """
         Save changes.
@@ -664,8 +628,8 @@ class Document(
 
     @classmethod
     async def replace_many(
-        cls: Type[DocType],
-        documents: List[DocType],
+        cls: type[DocType],
+        documents: list[DocType],
         session: Optional[AsyncIOMotorClientSession] = None,
     ) -> None:
         """
@@ -677,24 +641,20 @@ class Document(
         """
         ids_list = [document.id for document in documents]
         if await cls.find(In(cls.id, ids_list)).count() != len(ids_list):
-            raise ReplaceError(
-                "Some of the documents are not exist in the collection"
-            )
+            raise ReplaceError("Some of the documents are not exist in the collection")
         async with BulkWriter(session=session) as bulk_writer:
             for document in documents:
-                await document.replace(
-                    bulk_writer=bulk_writer, session=session
-                )
+                await document.replace(bulk_writer=bulk_writer, session=session)
 
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
     async def update(
         self: Self,
-        *args: Union[Dict[Any, Any], Mapping[Any, Any]],
+        *args: Union[dict[Any, Any], Mapping[Any, Any]],
         ignore_revision: bool = False,
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        skip_actions: Optional[list[Union[ActionDirections, str]]] = None,
         skip_sync: Optional[bool] = None,
         **pymongo_kwargs: Any,
     ) -> Self:
@@ -717,7 +677,7 @@ class Document(
         use_revision_id = self.get_settings().use_revision
 
         if self.id is not None:
-            find_query: Dict[str, Any] = {"_id": self.id}
+            find_query: dict[str, Any] = {"_id": self.id}
         else:
             find_query = {"_id": PydanticObjectId()}
 
@@ -766,7 +726,7 @@ class Document(
 
     def set(
         self: Self,
-        expression: Dict[Union[ExpressionField, str, Any], Any],
+        expression: dict[Union[ExpressionField, str, Any], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -805,7 +765,7 @@ class Document(
 
     def current_date(
         self: Self,
-        expression: Dict[Union[datetime, ExpressionField, str], Any],
+        expression: dict[Union[datetime, ExpressionField, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -832,7 +792,7 @@ class Document(
 
     def inc(
         self: Self,
-        expression: Dict[Union[ExpressionField, float, int, str], Any],
+        expression: dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         skip_sync: Optional[bool] = None,
@@ -874,7 +834,7 @@ class Document(
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        skip_actions: Optional[list[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         """
@@ -909,7 +869,7 @@ class Document(
                         LinkTypes.BACK_LIST,
                         LinkTypes.OPTIONAL_BACK_LIST,
                     ]:
-                        if isinstance(value, List):
+                        if isinstance(value, list):
                             await asyncio.gather(
                                 *[
                                     obj.delete(
@@ -986,14 +946,14 @@ class Document(
                 exclude={"revision_id"},
             )
 
-    def get_saved_state(self) -> Optional[Dict[str, Any]]:
+    def get_saved_state(self) -> Union[dict[str, Any], None]:
         """
         Saved state getter. It is protected property.
         :return: Optional[Dict[str, Any]] - saved state
         """
         return self._saved_state
 
-    def get_previous_saved_state(self) -> Optional[Dict[str, Any]]:
+    def get_previous_saved_state(self) -> Union[dict[str, Any], None]:
         """
         Previous state getter. It is a protected property.
         :return: Optional[Dict[str, Any]] - previous state
@@ -1016,16 +976,13 @@ class Document(
     @saved_state_needed
     @previous_saved_state_needed
     def has_changed(self) -> bool:
-        if (
-            self._previous_saved_state is None
-            or self._previous_saved_state == self._saved_state
-        ):
+        if self._previous_saved_state is None or self._previous_saved_state == self._saved_state:
             return False
         return True
 
     def _collect_updates(
-        self, old_dict: Dict[str, Any], new_dict: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, old_dict: dict[str, Any], new_dict: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Compares old_dict with new_dict and returns field paths that have been updated
         Args:
@@ -1042,8 +999,7 @@ class Document(
             for field_name, field_value in new_dict.items():
                 if field_value != old_dict.get(field_name):
                     if not self.state_management_replace_objects() and (
-                        isinstance(field_value, dict)
-                        and isinstance(old_dict.get(field_name), dict)
+                        isinstance(field_value, dict) and isinstance(old_dict.get(field_name), dict)
                     ):
                         if old_dict.get(field_name) is None:
                             updates[field_name] = field_value
@@ -1063,9 +1019,11 @@ class Document(
         return updates
 
     @saved_state_needed
-    def get_changes(self) -> Dict[str, Any]:
+    def get_changes(self) -> dict[str, Any]:
+        assert self._saved_state is not None
+
         return self._collect_updates(
-            self._saved_state,  # type: ignore
+            self._saved_state,
             get_dict(
                 self,
                 to_db=True,
@@ -1076,21 +1034,25 @@ class Document(
 
     @saved_state_needed
     @previous_saved_state_needed
-    def get_previous_changes(self) -> Dict[str, Any]:
+    def get_previous_changes(self) -> dict[str, Any]:
+        assert self._saved_state is not None
+
         if self._previous_saved_state is None:
             return {}
 
         return self._collect_updates(
             self._previous_saved_state,
-            self._saved_state,  # type: ignore
+            self._saved_state,
         )
 
     @saved_state_needed
     def rollback(self) -> None:
+        assert self._saved_state is not None
+
         if self.is_changed:
-            for key, value in self._saved_state.items():  # type: ignore
+            for key, value in self._saved_state.items():
                 if key == "_id":
-                    setattr(self, "id", value)
+                    self.id = value
                 else:
                     setattr(self, key, value)
 
@@ -1119,18 +1081,14 @@ class Document(
         :return: InspectionResult
         """
         inspection_result = InspectionResult()
-        async for json_document in cls.get_motor_collection().find(
-            {}, session=session
-        ):
+        async for json_document in cls.get_motor_collection().find({}, session=session):
             try:
                 parse_model(cls, json_document)
             except ValidationError as e:
                 if inspection_result.status == InspectionStatuses.OK:
                     inspection_result.status = InspectionStatuses.FAIL
                 inspection_result.errors.append(
-                    InspectionError(
-                        document_id=json_document["_id"], error=str(e)
-                    )
+                    InspectionError(document_id=json_document["_id"], error=str(e))
                 )
         return inspection_result
 
@@ -1149,7 +1107,7 @@ class Document(
             stacklevel=2,
         )
         if IS_PYDANTIC_V2:
-            for name, field in hidden_fields:
+            for _name, field in hidden_fields:
                 field.exclude = True
                 del field.json_schema_extra["hidden"]
             cls.model_rebuild(force=True)
@@ -1189,7 +1147,7 @@ class Document(
         await asyncio.gather(*coros)
 
     @classmethod
-    def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:
+    def get_link_fields(cls) -> Optional[dict[str, LinkInfo]]:
         return cls._link_fields
 
     @classmethod
@@ -1204,9 +1162,7 @@ class Document(
         session: Optional[AsyncIOMotorClientSession] = None,
         **kwargs: Any,
     ) -> list:
-        return await cls.get_motor_collection().distinct(
-            key, filter, session, **kwargs
-        )
+        return await cls.get_motor_collection().distinct(key, filter, session, **kwargs)
 
     @classmethod
     def link_from_id(cls, id: Any):
@@ -1247,9 +1203,7 @@ class Document(
             async with Document.bulk_writer(ordered=True) as bulk:
                 await Document.insert_one(Document(field="value"), bulk_writer=bulk)
         """
-        return BulkWriter(
-            session, ordered, cls, bypass_document_validation, comment
-        )
+        return BulkWriter(session, ordered, cls, bypass_document_validation, comment)
 
 
 class DocumentWithSoftDelete(Document):
@@ -1263,7 +1217,7 @@ class DocumentWithSoftDelete(Document):
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        skip_actions: Optional[list[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
         return await super().delete(
@@ -1279,7 +1233,7 @@ class DocumentWithSoftDelete(Document):
         session: Optional[AsyncIOMotorClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         link_rule: DeleteRules = DeleteRules.DO_NOTHING,
-        skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+        skip_actions: Optional[list[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         self.deleted_at = datetime.now(tz=timezone.utc)
@@ -1288,19 +1242,19 @@ class DocumentWithSoftDelete(Document):
 
     @classmethod
     def find_many_in_all(  # type: ignore
-        cls: Type[FindType],
+        cls: type[FindType],
         *args: Union[Mapping[Any, Any], bool],
-        projection_model: Optional[Type["DocumentProjectionType"]] = None,
+        projection_model: Optional[type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
         nesting_depth: Optional[int] = None,
-        nesting_depths_per_field: Optional[Dict[str, int]] = None,
+        nesting_depths_per_field: Optional[dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
         return cls._find_many_query_class(document_model=cls).find_many(
@@ -1320,24 +1274,22 @@ class DocumentWithSoftDelete(Document):
 
     @classmethod
     def find_many(  # type: ignore
-        cls: Type[FindType],
+        cls: type[FindType],
         *args: Union[Mapping[Any, Any], bool],
-        projection_model: Optional[Type["DocumentProjectionType"]] = None,
+        projection_model: Optional[type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, List[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
         lazy_parse: bool = False,
         nesting_depth: Optional[int] = None,
-        nesting_depths_per_field: Optional[Dict[str, int]] = None,
+        nesting_depths_per_field: Optional[dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
-        args = cls._add_class_id_filter(args, with_children) + (
-            {"deleted_at": None},
-        )
+        args = cls._add_class_id_filter(args, with_children) + ({"deleted_at": None},)
         return cls._find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
@@ -1355,20 +1307,18 @@ class DocumentWithSoftDelete(Document):
 
     @classmethod
     def find_one(  # type: ignore
-        cls: Type[FindType],
+        cls: type[FindType],
         *args: Union[Mapping[Any, Any], bool],
-        projection_model: Optional[Type["DocumentProjectionType"]] = None,
+        projection_model: Optional[type["DocumentProjectionType"]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
         with_children: bool = False,
         nesting_depth: Optional[int] = None,
-        nesting_depths_per_field: Optional[Dict[str, int]] = None,
+        nesting_depths_per_field: Optional[dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindOne[FindType], FindOne["DocumentProjectionType"]]:
-        args = cls._add_class_id_filter(args, with_children) + (
-            {"deleted_at": None},
-        )
+        args = cls._add_class_id_filter(args, with_children) + ({"deleted_at": None},)
         return cls._find_one_query_class(document_model=cls).find_one(
             *args,
             projection_model=projection_model,

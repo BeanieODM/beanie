@@ -14,10 +14,7 @@ async def test_inspect_fail(documents):
     result = await DocumentTestModelFailInspection.inspect_collection()
     assert result.status == InspectionStatuses.FAIL
     assert len(result.errors) == 10
-    assert (
-        "1 validation error for DocumentTestModelFailInspection"
-        in result.errors[0].error
-    )
+    assert "1 validation error for DocumentTestModelFailInspection" in result.errors[0].error
 
 
 async def test_inspect_ok_with_session(documents, session):

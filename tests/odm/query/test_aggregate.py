@@ -9,9 +9,7 @@ from tests.odm.models import DocumentWithTextIndexAndLink, Sample
 
 
 async def test_aggregate(preset_documents):
-    q = Sample.aggregate(
-        [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}]
-    )
+    q = Sample.aggregate([{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}])
     assert q.get_aggregation_pipeline() == [
         {"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}
     ]
@@ -135,7 +133,7 @@ async def test_aggregate_pymongo_kwargs(preset_documents):
         )
 
 
-async def test_clone(preset_documents):
+def test_clone(preset_documents):
     q = Sample.find(Sample.increment >= 4).aggregate(
         [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}]
     )
@@ -154,9 +152,7 @@ async def test_clone(preset_documents):
 
 @pytest.mark.parametrize("text_query_count", [0, 1, 2])
 @pytest.mark.parametrize("non_text_query_count", [0, 1, 2])
-async def test_with_text_queries(
-    text_query_count: int, non_text_query_count: int
-):
+def test_with_text_queries(text_query_count: int, non_text_query_count: int):
     text_query = {"$text": {"$search": "text_search"}}
     non_text_query = {"s": "test_string"}
     aggregation_pipeline = [{"$count": "count"}]
@@ -182,9 +178,7 @@ async def test_with_text_queries(
             else {"$match": {"$and": [text_query, text_query]}}
         )
 
-    expected_aggregation_pipeline.extend(
-        construct_lookup_queries(query.document_model)
-    )
+    expected_aggregation_pipeline.extend(construct_lookup_queries(query.document_model))
 
     if non_text_query_count:
         expected_aggregation_pipeline.append(
@@ -195,7 +189,4 @@ async def test_with_text_queries(
 
     expected_aggregation_pipeline.extend(aggregation_pipeline)
 
-    assert (
-        query.build_aggregation_pipeline(*aggregation_pipeline)
-        == expected_aggregation_pipeline
-    )
+    assert query.build_aggregation_pipeline(*aggregation_pipeline) == expected_aggregation_pipeline

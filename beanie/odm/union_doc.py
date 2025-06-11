@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Dict, Optional, Type, TypeVar
+from typing import Any, ClassVar, Optional, TypeVar
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
@@ -19,7 +19,7 @@ class UnionDoc(
     OtherGettersInterface,
     DetectionInterface,
 ):
-    _document_models: ClassVar[Optional[Dict[str, Type]]] = None
+    _document_models: ClassVar[Optional[dict[str, type]]] = None
     _is_inited: ClassVar[bool] = False
     _settings: ClassVar[UnionDocSettings]
 
@@ -28,7 +28,7 @@ class UnionDoc(
         return cls._settings
 
     @classmethod
-    def register_doc(cls, name: str, doc_model: Type):
+    def register_doc(cls, name: str, doc_model: type):
         if cls._document_models is None:
             cls._document_models = {}
 
@@ -76,6 +76,4 @@ class UnionDoc(
             async with Document.bulk_writer(ordered=True) as bulk:
                 await Document.insert_one(Document(field="value"), bulk_writer=bulk)
         """
-        return BulkWriter(
-            session, ordered, cls, bypass_document_validation, comment
-        )
+        return BulkWriter(session, ordered, cls, bypass_document_validation, comment)

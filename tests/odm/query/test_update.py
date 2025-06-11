@@ -7,12 +7,8 @@ from beanie.odm.queries.update import UpdateResponse
 from tests.odm.models import Sample
 
 
-async def test_update_query():
-    q = (
-        Sample.find_many(Sample.integer == 1)
-        .update(Set({Sample.integer: 10}))
-        .update_query
-    )
+def test_update_query():
+    q = Sample.find_many(Sample.integer == 1).update(Set({Sample.integer: 10})).update_query
     assert q == {"$set": {"integer": 10}}
 
     q = (
@@ -54,7 +50,7 @@ async def test_update_many(preset_documents):
         Sample.find_many(Sample.increment > 4)
         .find_many(Sample.nested.optional == None)
         .update(Set({Sample.increment: 100}))
-    )  # noqa
+    )
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3
     for sample in result:
@@ -66,7 +62,7 @@ async def test_update_many_linked_method(preset_documents):
         Sample.find_many(Sample.increment > 4)
         .find_many(Sample.nested.optional == None)
         .update_many(Set({Sample.increment: 100}))
-    )  # noqa
+    )
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3
     for sample in result:
@@ -86,16 +82,12 @@ async def test_update_all(preset_documents):
 
 
 async def test_update_one(preset_documents):
-    await Sample.find_one(Sample.integer == 1).update(
-        Set({Sample.integer: 100})
-    )
+    await Sample.find_one(Sample.integer == 1).update(Set({Sample.integer: 100}))
     result = await Sample.find_many(Sample.integer == 100).to_list()
     assert len(result) == 1
     assert result[0].integer == 100
 
-    await Sample.find_one(Sample.integer == 1).update_one(
-        Set({Sample.integer: 101})
-    )
+    await Sample.find_one(Sample.integer == 1).update_one(Set({Sample.integer: 101}))
     result = await Sample.find_many(Sample.integer == 101).to_list()
     assert len(result) == 1
     assert result[0].integer == 101
@@ -134,70 +126,52 @@ async def test_update_many_with_session(preset_documents, session):
     )
     assert q.session == session
 
-    await q  # noqa
+    await q
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3
     for sample in result:
         assert sample.increment == 100
 
 
-async def test_update_many_upsert_with_insert(
-    preset_documents, sample_doc_not_saved
-):
+async def test_update_many_upsert_with_insert(preset_documents, sample_doc_not_saved):
     await Sample.find_many(Sample.integer > 100000).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
     await asyncio.sleep(2)
-    new_docs = await Sample.find_many(
-        Sample.string == sample_doc_not_saved.string
-    ).to_list()
+    new_docs = await Sample.find_many(Sample.string == sample_doc_not_saved.string).to_list()
     assert len(new_docs) == 1
     doc = new_docs[0]
     assert doc.integer == sample_doc_not_saved.integer
 
 
-async def test_update_many_upsert_without_insert(
-    preset_documents, sample_doc_not_saved
-):
+async def test_update_many_upsert_without_insert(preset_documents, sample_doc_not_saved):
     await Sample.find_many(Sample.integer > 1).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
     await asyncio.sleep(2)
-    new_docs = await Sample.find_many(
-        Sample.string == sample_doc_not_saved.string
-    ).to_list()
+    new_docs = await Sample.find_many(Sample.string == sample_doc_not_saved.string).to_list()
     assert len(new_docs) == 0
 
 
-async def test_update_one_upsert_with_insert(
-    preset_documents, sample_doc_not_saved
-):
+async def test_update_one_upsert_with_insert(preset_documents, sample_doc_not_saved):
     await Sample.find_one(Sample.integer > 100000).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
-    new_docs = await Sample.find_many(
-        Sample.string == sample_doc_not_saved.string
-    ).to_list()
+    new_docs = await Sample.find_many(Sample.string == sample_doc_not_saved.string).to_list()
     assert len(new_docs) == 1
     doc = new_docs[0]
     assert doc.integer == sample_doc_not_saved.integer
 
 
-async def test_update_one_upsert_without_insert(
-    preset_documents, sample_doc_not_saved
-):
+async def test_update_one_upsert_without_insert(preset_documents, sample_doc_not_saved):
     await Sample.find_one(Sample.integer > 1).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
-    new_docs = await Sample.find_many(
-        Sample.string == sample_doc_not_saved.string
-    ).to_list()
+    new_docs = await Sample.find_many(Sample.string == sample_doc_not_saved.string).to_list()
     assert len(new_docs) == 0
 
 
-async def test_update_one_upsert_without_insert_return_doc(
-    preset_documents, sample_doc_not_saved
-):
+async def test_update_one_upsert_without_insert_return_doc(preset_documents, sample_doc_not_saved):
     result = await Sample.find_one(Sample.integer > 1).upsert(
         Set({Sample.integer: 100}),
         on_insert=sample_doc_not_saved,
@@ -205,9 +179,7 @@ async def test_update_one_upsert_without_insert_return_doc(
     )
     assert isinstance(result, Sample)
 
-    new_docs = await Sample.find_many(
-        Sample.string == sample_doc_not_saved.string
-    ).to_list()
+    new_docs = await Sample.find_many(Sample.string == sample_doc_not_saved.string).to_list()
     assert len(new_docs) == 0
 
 

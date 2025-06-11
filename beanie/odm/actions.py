@@ -6,11 +6,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
-    List,
     Optional,
-    Tuple,
-    Type,
     TypeVar,
     Union,
 )
@@ -53,21 +49,21 @@ After = ActionDirections.AFTER
 
 
 class ActionRegistry:
-    _actions: Dict[
-        Type["Document"],
-        Dict[EventTypes, Dict[ActionDirections, List[Callable[..., Any]]]],
+    _actions: dict[
+        type["Document"],
+        dict[EventTypes, dict[ActionDirections, list[Callable[..., Any]]]],
     ] = {}
 
     @classmethod
-    def clean_actions(cls, document_class: Type["Document"]):
+    def clean_actions(cls, document_class: type["Document"]):
         if cls._actions.get(document_class) is not None:
             del cls._actions[document_class]
 
     @classmethod
     def add_action(
         cls,
-        document_class: Type["Document"],
-        event_types: List[EventTypes],
+        document_class: type["Document"],
+        event_types: list[EventTypes],
         action_direction: ActionDirections,
         funct: Callable,
     ):
@@ -80,24 +76,19 @@ class ActionRegistry:
         """
         if cls._actions.get(document_class) is None:
             cls._actions[document_class] = {
-                action_type: {
-                    action_direction: []
-                    for action_direction in ActionDirections
-                }
+                action_type: {action_direction: [] for action_direction in ActionDirections}
                 for action_type in EventTypes
             }
         for event_type in event_types:
-            cls._actions[document_class][event_type][action_direction].append(
-                funct
-            )
+            cls._actions[document_class][event_type][action_direction].append(funct)
 
     @classmethod
     def get_action_list(
         cls,
-        document_class: Type["Document"],
+        document_class: type["Document"],
         event_type: EventTypes,
         action_direction: ActionDirections,
-    ) -> List[Callable]:
+    ) -> list[Callable]:
         """
         Get stored action list
         :param document_class: Type - document class
@@ -115,7 +106,7 @@ class ActionRegistry:
         instance: "Document",
         event_type: EventTypes,
         action_direction: ActionDirections,
-        exclude: List[Union[ActionDirections, str]],
+        exclude: list[Union[ActionDirections, str]],
     ):
         """
         Run actions
@@ -127,9 +118,7 @@ class ActionRegistry:
             return
 
         document_class = instance.__class__
-        actions_list = cls.get_action_list(
-            document_class, event_type, action_direction
-        )
+        actions_list = cls.get_action_list(document_class, event_type, action_direction)
         coros = []
         for action in actions_list:
             if action.__name__ in exclude:
@@ -147,7 +136,7 @@ F = TypeVar("F", bound=Any)
 
 
 def register_action(
-    event_types: Tuple[Union[List[EventTypes], EventTypes], ...],
+    event_types: tuple[Union[list[EventTypes], EventTypes], ...],
     action_direction: ActionDirections,
 ) -> Callable[[F], F]:
     """
@@ -174,7 +163,7 @@ def register_action(
 
 
 def before_event(
-    *args: Union[List[EventTypes], EventTypes],
+    *args: Union[list[EventTypes], EventTypes],
 ) -> Callable[[F], F]:
     """
     Decorator. It adds action, which should run before mentioned one
@@ -183,13 +172,11 @@ def before_event(
     :param args: Union[List[EventTypes], EventTypes] - event types
     :return: None
     """
-    return register_action(
-        action_direction=ActionDirections.BEFORE, event_types=args
-    )
+    return register_action(action_direction=ActionDirections.BEFORE, event_types=args)
 
 
 def after_event(
-    *args: Union[List[EventTypes], EventTypes],
+    *args: Union[list[EventTypes], EventTypes],
 ) -> Callable[[F], F]:
     """
     Decorator. It adds action, which should run after mentioned one
@@ -199,16 +186,12 @@ def after_event(
     :return: None
     """
 
-    return register_action(
-        action_direction=ActionDirections.AFTER, event_types=args
-    )
+    return register_action(action_direction=ActionDirections.AFTER, event_types=args)
 
 
 def wrap_with_actions(
     event_type: EventTypes,
-) -> Callable[
-    ["AsyncDocMethod[DocType, P, R]"], "AsyncDocMethod[DocType, P, R]"
-]:
+) -> Callable[["AsyncDocMethod[DocType, P, R]"], "AsyncDocMethod[DocType, P, R]"]:
     """
     Helper function to wrap Document methods with
     before and after event listeners
@@ -223,7 +206,7 @@ def wrap_with_actions(
         async def wrapper(  # type: ignore
             self: "DocType",
             *args: P.args,
-            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
+            skip_actions: Optional[list[Union[ActionDirections, str]]] = None,
             **kwargs: P.kwargs,
         ) -> R:
             if skip_actions is None:

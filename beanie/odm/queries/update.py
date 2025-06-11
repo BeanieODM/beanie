@@ -1,15 +1,11 @@
 from abc import abstractmethod
+from collections.abc import Generator, Mapping
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
-    Generator,
-    List,
-    Mapping,
     Optional,
-    Type,
     Union,
 )
 
@@ -47,23 +43,23 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
 
     def __init__(
         self,
-        document_model: Type["DocType"],
+        document_model: type["DocType"],
         find_query: Mapping[str, Any],
     ):
         self.document_model = document_model
         self.find_query = find_query
-        self.update_expressions: List[Mapping[str, Any]] = []
+        self.update_expressions: list[Mapping[str, Any]] = []
         self.session = None
         self.is_upsert = False
-        self.upsert_insert_doc: Optional["DocType"] = None
-        self.encoders: Dict[Any, Callable[[Any], Any]] = {}
+        self.upsert_insert_doc: Optional["DocType"] = None  # noqa: UP037
+        self.encoders: dict[Any, Callable[[Any], Any]] = {}
         self.bulk_writer: Optional[BulkWriter] = None
         self.encoders = self.document_model.get_settings().bson_encoders
-        self.pymongo_kwargs: Dict[str, Any] = {}
+        self.pymongo_kwargs: dict[str, Any] = {}
 
     @property
-    def update_query(self) -> Dict[str, Any]:
-        query: Union[Dict[str, Any], List[Dict[str, Any]], None] = None
+    def update_query(self) -> dict[str, Any]:
+        query: Union[dict[str, Any], list[dict[str, Any]], None] = None
         for expression in self.update_expressions:
             if isinstance(expression, BaseUpdateOperator):
                 if query is None:
@@ -164,33 +160,25 @@ class UpdateMany(UpdateQuery):
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: UpdateMany query
         """
-        return self.update(
-            *args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs
-        )
+        return self.update(*args, session=session, bulk_writer=bulk_writer, **pymongo_kwargs)
 
     async def _update(self):
         if self.bulk_writer is None:
-            return (
-                await self.document_model.get_motor_collection().update_many(
-                    self.find_query,
-                    self.update_query,
-                    session=self.session,
-                    **self.pymongo_kwargs,
-                )
+            return await self.document_model.get_motor_collection().update_many(
+                self.find_query,
+                self.update_query,
+                session=self.session,
+                **self.pymongo_kwargs,
             )
         else:
             self.bulk_writer.add_operation(
                 self.document_model,
-                UpdateManyPyMongo(
-                    self.find_query, self.update_query, **self.pymongo_kwargs
-                ),
+                UpdateManyPyMongo(self.find_query, self.update_query, **self.pymongo_kwargs),
             )
 
     def __await__(
         self,
-    ) -> Generator[
-        Any, None, Union[UpdateResult, InsertOneResult, Optional["DocType"]]
-    ]:
+    ) -> Generator[Any, None, Union[UpdateResult, InsertOneResult, Optional["DocType"]]]:
         """
         Run the query
         :return:
@@ -218,7 +206,7 @@ class UpdateOne(UpdateQuery):
     """
 
     def __init__(self, *args: Any, **kwargs: Any):
-        super(UpdateOne, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.response_type = UpdateResponse.UPDATE_RESULT
 
     def update(
@@ -329,16 +317,12 @@ class UpdateOne(UpdateQuery):
         else:
             self.bulk_writer.add_operation(
                 self.document_model,
-                UpdateOnePyMongo(
-                    self.find_query, self.update_query, **self.pymongo_kwargs
-                ),
+                UpdateOnePyMongo(self.find_query, self.update_query, **self.pymongo_kwargs),
             )
 
     def __await__(
         self,
-    ) -> Generator[
-        Any, None, Union[UpdateResult, InsertOneResult, Optional["DocType"]]
-    ]:
+    ) -> Generator[Any, None, Union[UpdateResult, InsertOneResult, Optional["DocType"]]]:
         """
         Run the query
         :return:
@@ -351,10 +335,7 @@ class UpdateOne(UpdateQuery):
             self.response_type == UpdateResponse.UPDATE_RESULT
             and update_result is not None
             and update_result.matched_count == 0
-        ) or (
-            self.response_type != UpdateResponse.UPDATE_RESULT
-            and update_result is None
-        ):
+        ) or (self.response_type != UpdateResponse.UPDATE_RESULT and update_result is None):
             return (
                 yield from self.document_model.insert_one(
                     document=self.upsert_insert_doc,
