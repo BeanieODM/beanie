@@ -1,13 +1,19 @@
 from beanie import Link
 from tests.odm.models import (
     Bicycle,
+    BicycleWithCustomClassId,
     Bike,
+    BikeWithCustomClassId,
     Bus,
+    BusWithCustomClassId,
     Car,
+    CarWithCustomClassId,
     Doc2NonRoot,
     DocNonRoot,
     Owner,
+    OwnerLinksToCustomClassId,
     Vehicle,
+    VehicleWithCustomClassId,
 )
 
 
@@ -122,3 +128,154 @@ class TestInheritance:
         assert Bicycle._class_id == "Vehicle.Bicycle"
         assert Bicycle.get_collection_name() == "Vehicle"
         assert Owner._class_id is None
+
+
+class TestInheritanceWithCustomClassId:
+    async def test_inheritance(self, db):
+        bicycle_1 = await BicycleWithCustomClassId(
+            color="white", frame=54, wheels=29
+        ).insert()
+        bicycle_2 = await BicycleWithCustomClassId(
+            color="red", frame=52, wheels=28
+        ).insert()
+
+        bike_1 = await BikeWithCustomClassId(
+            color="black", fuel="gasoline"
+        ).insert()
+
+        car_1 = await CarWithCustomClassId(
+            color="grey", body="sedan", fuel="gasoline"
+        ).insert()
+        car_2 = await CarWithCustomClassId(
+            color="white", body="crossover", fuel="diesel"
+        ).insert()
+
+        bus_1 = await BusWithCustomClassId(
+            color="white", seats=80, body="bus", fuel="diesel"
+        ).insert()
+        bus_2 = await BusWithCustomClassId(
+            color="yellow", seats=26, body="minibus", fuel="diesel"
+        ).insert()
+
+        white_vehicles = await VehicleWithCustomClassId.find(
+            VehicleWithCustomClassId.color == "white", with_children=True
+        ).to_list()
+
+        cars_only = await CarWithCustomClassId.find().to_list()
+        cars_and_buses = await CarWithCustomClassId.find(
+            CarWithCustomClassId.fuel == "diesel", with_children=True
+        ).to_list()
+
+        big_bicycles = await BicycleWithCustomClassId.find(
+            BicycleWithCustomClassId.wheels > 28
+        ).to_list()
+
+        await BikeWithCustomClassId.find().update(
+            {"$set": {BikeWithCustomClassId.color: "yellow"}}
+        )
+        sedan = await CarWithCustomClassId.find_one(
+            CarWithCustomClassId.body == "sedan"
+        )
+
+        sedan.color = "yellow"
+        await sedan.save()
+
+        # get using Vehicle should return Bike instance
+        updated_bike = await VehicleWithCustomClassId.get(
+            bike_1.id, with_children=True
+        )
+
+        assert isinstance(sedan, CarWithCustomClassId)
+
+        assert isinstance(updated_bike, BikeWithCustomClassId)
+        assert updated_bike.color == "yellow"
+
+        assert BusWithCustomClassId._parent is CarWithCustomClassId
+
+        assert len(big_bicycles) == 1
+        assert big_bicycles[0].wheels > 28
+
+        assert len(white_vehicles) == 3
+        assert len(cars_only) == 2
+
+        assert {CarWithCustomClassId, BusWithCustomClassId} == set(
+            i.__class__ for i in cars_and_buses
+        )
+        assert {
+            BicycleWithCustomClassId,
+            CarWithCustomClassId,
+            BusWithCustomClassId,
+        } == set(i.__class__ for i in white_vehicles)
+
+        white_vehicles_2 = await CarWithCustomClassId.find(
+            VehicleWithCustomClassId.color == "white"
+        ).to_list()
+        assert len(white_vehicles_2) == 1
+
+        for i in cars_and_buses:
+            assert i.fuel == "diesel"
+
+        for e in (bicycle_1, bicycle_2, bike_1, car_1, car_2, bus_1, bus_2):
+            assert isinstance(e, VehicleWithCustomClassId)
+            await e.delete()
+
+    async def test_links(self, db):
+        car_1 = await CarWithCustomClassId(
+            color="grey", body="sedan", fuel="gasoline"
+        ).insert()
+        car_2 = await CarWithCustomClassId(
+            color="white", body="crossover", fuel="diesel"
+        ).insert()
+
+        bus_1 = await BusWithCustomClassId(
+            color="white", seats=80, body="bus", fuel="diesel"
+        ).insert()
+
+        owner = await OwnerLinksToCustomClassId(name="John").insert()
+        owner.vehicles = [car_1, car_2, bus_1]
+        await owner.save()
+
+        # re-fetch from DB w/o links
+        owner = await OwnerLinksToCustomClassId.get(owner.id)
+        assert {Link} == set(i.__class__ for i in owner.vehicles)
+        await owner.fetch_all_links()
+        assert {CarWithCustomClassId, BusWithCustomClassId} == set(
+            i.__class__ for i in owner.vehicles
+        )
+
+        # re-fetch from DB with resolved links
+        owner = await OwnerLinksToCustomClassId.get(owner.id, fetch_links=True)
+        assert {CarWithCustomClassId, BusWithCustomClassId} == set(
+            i.__class__ for i in owner.vehicles
+        )
+
+        for e in (owner, car_1, car_2, bus_1):
+            await e.delete()
+
+    def test_class_ids(self):
+        assert VehicleWithCustomClassId._class_id == "VehicleWithCustomClassId"
+        assert (
+            VehicleWithCustomClassId.get_collection_name()
+            == "vehicles-custom-class-id"
+        )
+        assert CarWithCustomClassId._class_id == "car"
+        assert (
+            CarWithCustomClassId.get_collection_name()
+            == "vehicles-custom-class-id"
+        )
+        assert BusWithCustomClassId._class_id == "car.BusWithCustomClassId"
+        assert (
+            BusWithCustomClassId.get_collection_name()
+            == "vehicles-custom-class-id"
+        )
+        assert BikeWithCustomClassId._class_id == "bike"
+        assert (
+            BikeWithCustomClassId.get_collection_name()
+            == "vehicles-custom-class-id"
+        )
+        assert BicycleWithCustomClassId._class_id == "bicycle"
+        assert (
+            BicycleWithCustomClassId.get_collection_name()
+            == "vehicles-custom-class-id"
+        )
+        assert OwnerLinksToCustomClassId._class_id is None
