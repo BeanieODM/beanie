@@ -49,6 +49,7 @@ from beanie import (
     Insert,
     Replace,
     Save,
+    SoftDelete,
     Update,
     ValidateOnSave,
 )
@@ -421,6 +422,115 @@ class DocumentWithActions2(Document):
 
 
 class InheritedDocumentWithActions(DocumentWithActions): ...
+
+
+class DocumentWithSoftDeleteWithActions(DocumentWithSoftDelete):
+    name: str
+    num_1: int = 0
+    num_2: int = 10
+    num_3: int = 100
+    _private_num: int = PrivateAttr(default=100)
+
+    class Inner:
+        inner_num_1 = 0
+        inner_num_2 = 0
+
+    @before_event(Insert)
+    def capitalize_name(self):
+        self.name = self.name.capitalize()
+
+    @before_event([Insert, Replace, Save])
+    async def add_one(self):
+        self.num_1 += 1
+
+    @after_event(Insert)
+    def num_2_change(self):
+        self.num_2 -= 1
+
+    @after_event(Replace)
+    def num_3_change(self):
+        self.num_3 -= 1
+
+    @before_event(Delete)
+    def inner_num_to_one(self):
+        self.Inner.inner_num_1 = 1
+
+    @after_event(Delete)
+    def inner_num_to_two(self):
+        self.Inner.inner_num_2 = 2
+
+    @before_event(Update)
+    def inner_num_to_one_2(self):
+        self._private_num += 1
+
+    @after_event(Update)
+    def inner_num_to_two_2(self):
+        self.num_2 -= 1
+
+    @before_event(SoftDelete)
+    async def num_1_add(self):
+        self.num_1 += 1
+
+    @after_event(SoftDelete)
+    def num_2_subtract(self):
+        self.num_2 -= 1
+
+
+class DocumentWithSoftDeleteWithActions2(DocumentWithSoftDelete):
+    name: str
+    num_1: int = 0
+    num_2: int = 10
+    num_3: int = 100
+    _private_num: int = PrivateAttr(default=100)
+
+    class Inner:
+        inner_num_1 = 0
+        inner_num_2 = 0
+
+    @before_event(Insert)
+    def capitalize_name(self):
+        self.name = self.name.capitalize()
+
+    @before_event([Insert, Replace, Save])
+    async def add_one(self):
+        self.num_1 += 1
+
+    @after_event(Insert)
+    def num_2_change(self):
+        self.num_2 -= 1
+
+    @after_event(Replace)
+    def num_3_change(self):
+        self.num_3 -= 1
+
+    @before_event(Delete)
+    def inner_num_to_one(self):
+        self.Inner.inner_num_1 = 1
+
+    @after_event(Delete)
+    def inner_num_to_two(self):
+        self.Inner.inner_num_2 = 2
+
+    @before_event(Update)
+    def inner_num_to_one_2(self):
+        self._private_num += 1
+
+    @after_event(Update)
+    def inner_num_to_two_2(self):
+        self.num_2 -= 1
+
+    @before_event(SoftDelete)
+    async def num_1_add(self):
+        self.num_1 += 1
+
+    @after_event(SoftDelete)
+    def num_2_subtract(self):
+        self.num_2 -= 1
+
+
+class InheritedDocumentWithSoftDeleteWithActions(
+    DocumentWithSoftDeleteWithActions
+): ...
 
 
 class InternalDoc(BaseModel):

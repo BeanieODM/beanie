@@ -11,6 +11,7 @@ Currently supported events:
 - SaveChanges
 - Delete
 - ValidateOnSave
+- SoftDelete (Only for `DocumentWithSoftDelete`)
 
 Currently supported directions:
 
@@ -26,6 +27,11 @@ Current operations creating events:
 - `insert()`, `replace()`, `save_changes()`, and `save()` for ValidateOnSave
 - `set()`, `update()` for Update
 - `delete()` for Delete
+
+When using `DocumentWithSoftDelete`, the above operations trigger the same events except for the following differences:
+
+- `delete()` triggers the SoftDelete event
+- `hard_delete()` triggers the Delete event
 
 To register an action, you can use `@before_event` and `@after_event` decorators respectively:
 
@@ -112,4 +118,32 @@ await sample.replace(skip_actions=[After])
 
 # redact_name and num_change will not be executed
 await sample.replace(skip_actions[Before, 'num_change'])
+```
+
+As mentioned above, `DocumentWithSoftDelete` behaves differently, where `delete()` will trigger the SoftDelete event,
+and `hard_delete()` will trigger the Delete event.
+
+```python
+from beanie import DocumentWithSoftDelete, Delete, SoftDelete, before_event
+
+
+class Sample(Document):
+    name: str
+
+    @before_event(Delete)
+    def capitalize_name(self):
+        self.name = self.name.capitalize()
+
+    @before_event(SoftDelete)
+    def redact_name(self):
+        self.name = "[REDACTED]"
+
+
+sample = Sample()
+
+# capitalize_name WILL NOT be executed, redact_name WILL be executed
+await sample.delete()
+
+# capitalize_name WILL be executed, redact_name WILL NOT be executed
+await sample.hard_delete()
 ```

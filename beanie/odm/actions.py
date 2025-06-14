@@ -30,6 +30,7 @@ class EventTypes(str, Enum):
     SAVE = "SAVE"
     SAVE_CHANGES = "SAVE_CHANGES"
     VALIDATE_ON_SAVE = "VALIDATE_ON_SAVE"
+    SOFT_DELETE = "SOFT_DELETE"
     DELETE = "DELETE"
     UPDATE = "UPDATE"
 
@@ -40,6 +41,7 @@ Save = EventTypes.SAVE
 SaveChanges = EventTypes.SAVE_CHANGES
 ValidateOnSave = EventTypes.VALIDATE_ON_SAVE
 Delete = EventTypes.DELETE
+SoftDelete = EventTypes.SOFT_DELETE
 Update = EventTypes.UPDATE
 
 
