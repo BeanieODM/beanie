@@ -284,15 +284,18 @@ class House(Document):
 class Door(Document):
     height: int = 2
     width: int = 1
-    house: BackLink[House] = Field(original_field="door")
+    house: BackLink[House] = Field(json_schema_extra={"original_field": "door"})
+
 
     
 class Person(Document):
     name: str
-    house: List[BackLink[House]] = Field(original_field="owners")
+    house: List[BackLink[House]] = Field(json_schema_extra={"original_field": "owners"})
+
 ```
 
 The `original_field` parameter is required for the back link field.
+In Pydantic v2, it must be passed using the json_schema_extra argument in Field(...) to avoid deprecation warnings and ensure compatibility.
 
 Back links support all the operations that normal links support, but are virtual. This means that when searching the database, you will need to include `fetch_links=True` (see [Finding documents](/tutorial/finding-documents).), or you will recieve an empty 'BackLink' virtual object. It is not possible to `fetch()` this virtual link after the initial search.
 
