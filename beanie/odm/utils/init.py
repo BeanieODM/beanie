@@ -403,7 +403,7 @@ class Initializer:
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
-            path = v.alias or k
+            path = v.serialization_alias or v.alias or k
             setattr(cls, k, ExpressionField(path))
 
             link_info = self.detect_link(v, k)

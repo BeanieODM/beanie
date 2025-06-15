@@ -36,6 +36,10 @@ def get_model_fields(model):
 
 
 def parse_model(model_type: Type[BaseModel], data: Any):
+    for k, field in get_model_fields(model_type).items():
+        if field.alias and field.alias != field.serialization_alias:
+            data[k] = data[field.serialization_alias]
+            del data[field.serialization_alias]
     if IS_PYDANTIC_V2:
         return model_type.model_validate(data)
     else:

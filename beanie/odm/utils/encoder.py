@@ -159,7 +159,7 @@ class Encoder:
         for key, value in obj.__iter__():
             field_info = get_model_field(key)
             if field_info is not None:
-                key = field_info.alias or key
+                key = field_info.serialization_alias or field_info.alias or key
             if key not in exclude and (value is not None or keep_nulls):
                 yield key, value
 
