@@ -1,6 +1,6 @@
 from abc import ABC
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -50,7 +50,7 @@ class GeoIntersects(BaseFindGeospatialOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/geoIntersects/>
     """
 
-    def __init__(self, field, geo_type: str, coordinates: List[List[float]]):
+    def __init__(self, field, geo_type: str, coordinates: list[list[float]]):
         self.field = field
         self.geo_type = geo_type
         self.coordinates = coordinates
@@ -116,9 +116,7 @@ class GeoWithin(BaseFindGeospatialOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/geoWithin/>
     """
 
-    def __init__(
-        self, field, geo_type: GeoWithinTypes, coordinates: List[List[float]]
-    ):
+    def __init__(self, field, geo_type: GeoWithinTypes, coordinates: list[list[float]]):
         self.field = field
         self.geo_type = geo_type
         self.coordinates = coordinates
@@ -176,9 +174,7 @@ class Box(BaseFindGeospatialOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/box/>
     """
 
-    def __init__(
-        self, field, lower_left: List[float], upper_right: List[float]
-    ):
+    def __init__(self, field, lower_left: list[float], upper_right: list[float]):
         self.field = field
         self.coordinates = [lower_left, upper_right]
 
@@ -259,13 +255,9 @@ class Near(BaseFindGeospatialOperator):
             }
         }
         if self.max_distance:
-            expression[self.field][self.operator]["$maxDistance"] = (
-                self.max_distance
-            )  # type: ignore
+            expression[self.field][self.operator]["$maxDistance"] = self.max_distance  # type: ignore
         if self.min_distance:
-            expression[self.field][self.operator]["$minDistance"] = (
-                self.min_distance
-            )  # type: ignore
+            expression[self.field][self.operator]["$minDistance"] = self.min_distance  # type: ignore
         return expression
 
 

@@ -48,9 +48,7 @@ class MigrationSettings:
             or self.get_from_toml("database_name")
         )
         self.path = Path(
-            kwargs.get("path")
-            or self.get_env_value("path")
-            or self.get_from_toml("path")
+            kwargs.get("path") or self.get_env_value("path") or self.get_from_toml("path")
         )
         self.allow_index_dropping = bool(
             kwargs.get("allow_index_dropping")
@@ -85,9 +83,9 @@ class MigrationSettings:
                 or os.environ.get("beanie_database_name")
             )
         else:
-            value = os.environ.get(
-                f"BEANIE_{field_name.upper()}"
-            ) or os.environ.get(f"beanie_{field_name.lower()}")
+            value = os.environ.get(f"BEANIE_{field_name.upper()}") or os.environ.get(
+                f"beanie_{field_name.lower()}"
+            )
         return value
 
     @staticmethod
@@ -96,11 +94,7 @@ class MigrationSettings:
         if path.is_file():
             with path.open("rb") as f:
                 toml_data = tomllib.load(f)
-            val = (
-                toml_data.get("tool", {})
-                .get("beanie", {})
-                .get("migrations", {})
-            )
+            val = toml_data.get("tool", {}).get("beanie", {}).get("migrations", {})
         else:
             val = {}
         return val.get(field_name)
@@ -114,9 +108,7 @@ def migrations():
 async def run_migrate(settings: MigrationSettings):
     DBHandler.set_db(settings.connection_uri, settings.database_name)
     root = await MigrationNode.build(settings.path)
-    mode = RunningMode(
-        direction=settings.direction, distance=settings.distance
-    )
+    mode = RunningMode(direction=settings.direction, distance=settings.distance)
     await root.run(
         mode=mode,
         allow_index_dropping=settings.allow_index_dropping,
@@ -158,9 +150,7 @@ async def run_migrate(settings: MigrationSettings):
     type=str,
     help="MongoDB connection URI",
 )
-@click.option(
-    "-db", "--database_name", required=False, type=str, help="DataBase name"
-)
+@click.option("-db", "--database_name", required=False, type=str, help="DataBase name")
 @click.option(
     "-p",
     "--path",

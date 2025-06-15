@@ -12,9 +12,7 @@ async def test_find_one(documents):
     new_doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 1)
     assert doc == new_doc
 
-    new_doc = await DocumentTestModel.find_one(
-        DocumentTestModel.test_int == 1, ignore_cache=True
-    )
+    new_doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 1, ignore_cache=True)
     assert doc != new_doc
 
     await asyncio.sleep(10)
@@ -25,17 +23,13 @@ async def test_find_one(documents):
 
 async def test_find_many(documents):
     await documents(5)
-    docs = await DocumentTestModel.find(
-        DocumentTestModel.test_int > 1
-    ).to_list()
+    docs = await DocumentTestModel.find(DocumentTestModel.test_int > 1).to_list()
 
     await DocumentTestModel.find(DocumentTestModel.test_int > 1).set(
         {DocumentTestModel.test_str: "NEW_VALUE"}
     )
 
-    new_docs = await DocumentTestModel.find(
-        DocumentTestModel.test_int > 1
-    ).to_list()
+    new_docs = await DocumentTestModel.find(DocumentTestModel.test_int > 1).to_list()
     assert docs == new_docs
 
     new_docs = await DocumentTestModel.find(
@@ -45,9 +39,7 @@ async def test_find_many(documents):
 
     await asyncio.sleep(10)
 
-    new_docs = await DocumentTestModel.find(
-        DocumentTestModel.test_int > 1
-    ).to_list()
+    new_docs = await DocumentTestModel.find(DocumentTestModel.test_int > 1).to_list()
     assert docs != new_docs
 
 
@@ -84,9 +76,7 @@ async def test_capacity(documents):
     await documents(10)
     docs = []
     for i in range(10):
-        docs.append(
-            await DocumentTestModel.find_one(DocumentTestModel.test_int == i)
-        )
+        docs.append(await DocumentTestModel.find_one(DocumentTestModel.test_int == i))
 
     await DocumentTestModel.find_one(DocumentTestModel.test_int == 1).set(
         {DocumentTestModel.test_str: "NEW_VALUE"}

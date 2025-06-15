@@ -1,5 +1,6 @@
 from abc import ABC
-from typing import Any, Dict, Mapping, Union
+from collections.abc import Mapping
+from typing import Any, Union
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -13,9 +14,7 @@ class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
 
     def __init__(
         self,
-        *expressions: Union[
-            BaseFindOperator, Dict[str, Any], Mapping[str, Any], bool
-        ],
+        *expressions: Union[BaseFindOperator, dict[str, Any], Mapping[str, Any], bool],
     ):
         self.expressions = list(expressions)
 
@@ -108,9 +107,7 @@ class Nor(BaseFindLogicalOperator):
 
     def __init__(
         self,
-        *expressions: Union[
-            BaseFindOperator, Dict[str, Any], Mapping[str, Any], bool
-        ],
+        *expressions: Union[BaseFindOperator, dict[str, Any], Mapping[str, Any], bool],
     ):
         self.expressions = list(expressions)
 
@@ -151,9 +148,7 @@ class Not(BaseFindLogicalOperator):
         if len(self.expression) == 1:
             expression_key = list(self.expression.keys())[0]
             if expression_key.startswith("$"):
-                raise AttributeError(
-                    "Not operator can not be used with operators"
-                )
+                raise AttributeError("Not operator can not be used with operators")
             value = self.expression[expression_key]
             if isinstance(value, dict):
                 internal_key = list(value.keys())[0]
@@ -161,6 +156,4 @@ class Not(BaseFindLogicalOperator):
                     return {expression_key: {"$not": value}}
 
             return {expression_key: {"$not": {"$eq": value}}}
-        raise AttributeError(
-            "Not operator can only be used with one expression"
-        )
+        raise AttributeError("Not operator can only be used with one expression")

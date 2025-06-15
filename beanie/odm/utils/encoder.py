@@ -7,16 +7,12 @@ import operator
 import pathlib
 import re
 import uuid
+from collections.abc import Container, Iterable, Mapping, MutableMapping
 from enum import Enum
 from typing import (
     Any,
     Callable,
-    Container,
-    Iterable,
-    Mapping,
-    MutableMapping,
     Optional,
-    Tuple,
 )
 
 import bson
@@ -83,9 +79,7 @@ class Encoder:
     """
 
     exclude: Container[str] = frozenset()
-    custom_encoders: Mapping[type, SingleArgCallable] = dc.field(
-        default_factory=dict
-    )
+    custom_encoders: Mapping[type, SingleArgCallable] = dc.field(default_factory=dict)
     to_db: bool = False
     keep_nulls: bool = True
 
@@ -94,9 +88,7 @@ class Encoder:
         settings = obj.get_settings()
         obj_dict = {}
         if settings.union_doc is not None:
-            obj_dict[settings.class_id] = (
-                settings.union_doc_alias or obj.__class__.__name__
-            )
+            obj_dict[settings.class_id] = settings.union_doc_alias or obj.__class__.__name__
         if obj._class_id:
             obj_dict[settings.class_id] = obj._class_id
 
@@ -151,9 +143,7 @@ class Encoder:
 
         raise ValueError(f"Cannot encode {obj!r}")
 
-    def _iter_model_items(
-        self, obj: pydantic.BaseModel
-    ) -> Iterable[Tuple[str, Any]]:
+    def _iter_model_items(self, obj: pydantic.BaseModel) -> Iterable[tuple[str, Any]]:
         exclude, keep_nulls = self.exclude, self.keep_nulls
         get_model_field = get_model_fields(obj).get
         for key, value in obj.__iter__():

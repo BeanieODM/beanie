@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Dict, Generator, Mapping, Optional, Type
+from collections.abc import Generator, Mapping
+from typing import TYPE_CHECKING, Any, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo import DeleteMany as DeleteManyPyMongo
@@ -20,7 +21,7 @@ class DeleteQuery(SessionMethods, CloneInterface):
 
     def __init__(
         self,
-        document_model: Type["DocType"],
+        document_model: type["DocType"],
         find_query: Mapping[str, Any],
         bulk_writer: Optional[BulkWriter] = None,
         **pymongo_kwargs: Any,
@@ -29,7 +30,7 @@ class DeleteQuery(SessionMethods, CloneInterface):
         self.find_query = find_query
         self.session: Optional[AsyncIOMotorClientSession] = None
         self.bulk_writer = bulk_writer
-        self.pymongo_kwargs: Dict[str, Any] = pymongo_kwargs
+        self.pymongo_kwargs: dict[str, Any] = pymongo_kwargs
 
 
 class DeleteMany(DeleteQuery):

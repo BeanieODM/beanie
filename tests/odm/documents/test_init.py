@@ -24,7 +24,7 @@ from tests.odm.models import (
 )
 
 
-async def test_init_collection_was_not_initialized():
+def test_init_collection_was_not_initialized():
     class NewDocument(Document):
         test_str: str
 
@@ -36,13 +36,8 @@ async def test_init_connection_string(settings):
     class NewDocumentCS(Document):
         test_str: str
 
-    await init_beanie(
-        connection_string=settings.mongodb_dsn, document_models=[NewDocumentCS]
-    )
-    assert (
-        NewDocumentCS.get_motor_collection().database.name
-        == settings.mongodb_dsn.split("/")[-1]
-    )
+    await init_beanie(connection_string=settings.mongodb_dsn, document_models=[NewDocumentCS])
+    assert NewDocumentCS.get_motor_collection().database.name == settings.mongodb_dsn.split("/")[-1]
 
 
 async def test_init_wrong_params(settings, db):
@@ -63,7 +58,7 @@ async def test_init_wrong_params(settings, db):
         await init_beanie(connection_string=settings.mongodb_dsn)
 
 
-async def test_collection_with_custom_name():
+def test_collection_with_custom_name():
     collection: AsyncIOMotorCollection = (
         DocumentTestModelWithCustomCollectionName.get_motor_collection()
     )
@@ -71,9 +66,7 @@ async def test_collection_with_custom_name():
 
 
 async def test_simple_index_creation():
-    collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithSimpleIndex.get_motor_collection()
-    )
+    collection: AsyncIOMotorCollection = DocumentTestModelWithSimpleIndex.get_motor_collection()
     index_info = await collection.index_information()
     assert index_info["test_int_1"] == {"key": [("test_int", 1)], "v": 2}
     assert index_info["test_str_text"]["key"] == [
@@ -83,9 +76,7 @@ async def test_simple_index_creation():
 
 
 async def test_flagged_index_creation():
-    collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithIndexFlags.get_motor_collection()
-    )
+    collection: AsyncIOMotorCollection = DocumentTestModelWithIndexFlags.get_motor_collection()
     index_info = await collection.index_information()
     assert index_info["test_int_1"] == {
         "key": [("test_int", 1)],
@@ -117,9 +108,7 @@ async def test_flagged_index_creation_with_alias():
 
 
 async def test_annotated_index_creation():
-    collection: AsyncIOMotorCollection = (
-        DocumentTestModelIndexFlagsAnnotated.get_motor_collection()
-    )
+    collection: AsyncIOMotorCollection = DocumentTestModelIndexFlagsAnnotated.get_motor_collection()
     index_info = await collection.index_information()
     assert index_info["str_index_text"]["key"] == [
         ("_fts", "text"),
@@ -144,9 +133,7 @@ async def test_annotated_index_creation():
 
 
 async def test_complex_index_creation():
-    collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithComplexIndex.get_motor_collection()
-    )
+    collection: AsyncIOMotorCollection = DocumentTestModelWithComplexIndex.get_motor_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
@@ -160,12 +147,8 @@ async def test_complex_index_creation():
 
 
 async def test_index_dropping_is_allowed(db):
-    await init_beanie(
-        database=db, document_models=[DocumentTestModelWithComplexIndex]
-    )
-    collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithComplexIndex.get_motor_collection()
-    )
+    await init_beanie(database=db, document_models=[DocumentTestModelWithComplexIndex])
+    collection: AsyncIOMotorCollection = DocumentTestModelWithComplexIndex.get_motor_collection()
 
     await init_beanie(
         database=db,
@@ -173,9 +156,7 @@ async def test_index_dropping_is_allowed(db):
         allow_index_dropping=True,
     )
 
-    collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithComplexIndex.get_motor_collection()
-    )
+    collection: AsyncIOMotorCollection = DocumentTestModelWithComplexIndex.get_motor_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
@@ -184,18 +165,14 @@ async def test_index_dropping_is_allowed(db):
 
 
 async def test_index_dropping_is_not_allowed(db):
-    await init_beanie(
-        database=db, document_models=[DocumentTestModelWithComplexIndex]
-    )
+    await init_beanie(database=db, document_models=[DocumentTestModelWithComplexIndex])
     await init_beanie(
         database=db,
         document_models=[DocumentTestModelWithDroppedIndex],
         allow_index_dropping=False,
     )
 
-    collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithComplexIndex.get_motor_collection()
-    )
+    collection: AsyncIOMotorCollection = DocumentTestModelWithComplexIndex.get_motor_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
@@ -209,17 +186,13 @@ async def test_index_dropping_is_not_allowed(db):
 
 
 async def test_index_dropping_is_not_allowed_as_default(db):
-    await init_beanie(
-        database=db, document_models=[DocumentTestModelWithComplexIndex]
-    )
+    await init_beanie(database=db, document_models=[DocumentTestModelWithComplexIndex])
     await init_beanie(
         database=db,
         document_models=[DocumentTestModelWithDroppedIndex],
     )
 
-    collection: AsyncIOMotorCollection = (
-        DocumentTestModelWithComplexIndex.get_motor_collection()
-    )
+    collection: AsyncIOMotorCollection = DocumentTestModelWithComplexIndex.get_motor_collection()
     index_info = await collection.index_information()
     assert index_info == {
         "_id_": {"key": [("_id", 1)], "v": 2},
@@ -261,7 +234,7 @@ async def test_document_string_import(db):
         )
 
 
-async def test_projection():
+def test_projection():
     projection = get_projection(DocumentTestModel)
     assert projection == {
         "_id": 1,
@@ -301,28 +274,23 @@ async def test_index_recreation(db):
         document_models=[Sample1],
     )
 
-    await init_beanie(
-        database=db, document_models=[Sample2], allow_index_dropping=True
-    )
+    await init_beanie(database=db, document_models=[Sample2], allow_index_dropping=True)
 
     await db.drop_collection("sample")
 
 
 async def test_merge_indexes():
-    assert (
-        await DocumentWithIndexMerging2.get_motor_collection().index_information()
-        == {
-            "_id_": {"key": [("_id", 1)], "v": 2},
-            "s0_1": {"key": [("s0", 1)], "v": 2},
-            "s1_1": {"key": [("s1", 1)], "v": 2},
-            "s2_-1": {"key": [("s2", -1)], "v": 2},
-            "s3_index": {"key": [("s3", -1)], "v": 2},
-            "s4_index": {"key": [("s4", 1)], "v": 2},
-        }
-    )
+    assert await DocumentWithIndexMerging2.get_motor_collection().index_information() == {
+        "_id_": {"key": [("_id", 1)], "v": 2},
+        "s0_1": {"key": [("s0", 1)], "v": 2},
+        "s1_1": {"key": [("s1", 1)], "v": 2},
+        "s2_-1": {"key": [("s2", -1)], "v": 2},
+        "s3_index": {"key": [("s3", -1)], "v": 2},
+        "s4_index": {"key": [("s4", 1)], "v": 2},
+    }
 
 
-async def test_custom_init():
+def test_custom_init():
     assert DocumentWithCustomInit.s == "TEST2"
 
 
@@ -353,13 +321,10 @@ async def test_init_document_with_union_type_expression_optional_back_link(db):
         ],
     )
 
-    assert (
-        DocumentWithUnionTypeExpressionOptionalBackLink.get_link_fields().keys()
-        == {
-            "back_link_list",
-            "back_link",
-        }
-    )
+    assert DocumentWithUnionTypeExpressionOptionalBackLink.get_link_fields().keys() == {
+        "back_link_list",
+        "back_link",
+    }
 
 
 async def test_init_document_can_inhert_and_extend_settings(db):

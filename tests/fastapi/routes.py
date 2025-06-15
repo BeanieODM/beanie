@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Body, status
+from fastapi import APIRouter, status
 from pydantic import BaseModel
 
 from beanie import PydanticObjectId, WriteRules
@@ -44,12 +44,8 @@ async def create_house(window: WindowAPI):
 
 @house_router.post("/houses_with_window_link/", response_model=HouseAPI)
 async def create_houses_with_window_link(window: WindowInput):
-    validator = (
-        HouseAPI.model_validate if IS_PYDANTIC_V2 else HouseAPI.parse_obj
-    )
-    house = validator(
-        dict(name="test_name", windows=[WindowAPI.link_from_id(window.id)])
-    )
+    validator = HouseAPI.model_validate if IS_PYDANTIC_V2 else HouseAPI.parse_obj
+    house = validator(dict(name="test_name", windows=[WindowAPI.link_from_id(window.id)]))
     await house.insert(link_rule=WriteRules.WRITE)
     return house
 
@@ -65,7 +61,7 @@ async def create_houses_2(house: HouseAPI):
     response_model=House,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_house_new(house: House = Body(...)):
+async def create_house_new(house: House):
     person = Person(name="Bob")
     house.owner = person
     await house.save(link_rule=WriteRules.WRITE)

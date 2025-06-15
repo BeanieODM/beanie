@@ -1,8 +1,8 @@
 import re
+from typing import Annotated
 
 import bson
 import pydantic
-from typing_extensions import Annotated
 
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
@@ -14,9 +14,7 @@ def _to_bson_regex(v):
 if IS_PYDANTIC_V2:
     Pattern = Annotated[
         re.Pattern,
-        pydantic.BeforeValidator(
-            lambda v: v.try_compile() if isinstance(v, bson.Regex) else v
-        ),
+        pydantic.BeforeValidator(lambda v: v.try_compile() if isinstance(v, bson.Regex) else v),
     ]
 else:
 

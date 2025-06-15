@@ -1,7 +1,7 @@
 import datetime
+from collections.abc import Mapping
 from decimal import Decimal
 from pathlib import Path
-from typing import AbstractSet, Mapping
 from uuid import uuid4
 
 import pytest
@@ -102,12 +102,8 @@ async def test_custom_filed_types():
     c2_fromdb_encoded = Encoder().encode(c2_fromdb)
     assert c1_fromdb_encoded == c1_encoded
     assert c2_fromdb_encoded == c2_encoded
-    assert Decimal(str(custom1.decimal)) == Decimal(
-        str(c1_encoded.get("decimal"))
-    )
-    assert Decimal(str(custom2.decimal)) == Decimal(
-        str(c2_encoded.get("decimal"))
-    )
+    assert Decimal(str(custom1.decimal)) == Decimal(str(c1_encoded.get("decimal")))
+    assert Decimal(str(custom2.decimal)) == Decimal(str(c2_encoded.get("decimal")))
 
 
 async def test_excluded(document):
@@ -155,14 +151,14 @@ async def test_param_exclude(document, exclude):
         doc_dict = document.model_dump(exclude=exclude)
     else:
         doc_dict = document.dict(exclude=exclude)
-    if isinstance(exclude, AbstractSet):
+    if isinstance(exclude, set):
         for k in exclude:
             assert k not in doc_dict
     elif isinstance(exclude, Mapping):
         for k, v in exclude.items():
             if isinstance(v, bool) and v:
                 assert k not in doc_dict
-            elif isinstance(v, AbstractSet):
+            elif isinstance(v, set):
                 for another_k in v:
                     assert another_k not in doc_dict[k]
 

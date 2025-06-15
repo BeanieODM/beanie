@@ -1,7 +1,6 @@
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List
 
 import requests  # type: ignore
 
@@ -31,7 +30,7 @@ class GitHubHandler:
         self.commits = self.get_commits_after_tag(current_version)
         self.prs = [self.get_pr_for_commit(commit) for commit in self.commits]
 
-    def get_commits_after_tag(self, tag: str) -> List[str]:
+    def get_commits_after_tag(self, tag: str) -> list[str]:
         result = subprocess.run(
             ["git", "log", f"{tag}..HEAD", "--pretty=format:%H"],
             stdout=subprocess.PIPE,
@@ -64,9 +63,7 @@ class GitHubHandler:
         return markdown
 
     def commit_changes(self):
-        self.run_git_command(
-            ["git", "config", "--global", "user.name", "github-actions[bot]"]
-        )
+        self.run_git_command(["git", "config", "--global", "user.name", "github-actions[bot]"])
         self.run_git_command(
             [
                 "git",
@@ -77,9 +74,7 @@ class GitHubHandler:
             ]
         )
         self.run_git_command(["git", "add", "."])
-        self.run_git_command(
-            ["git", "commit", "-m", f"Bump version to {self.new_version}"]
-        )
+        self.run_git_command(["git", "commit", "-m", f"Bump version to {self.new_version}"])
         self.run_git_command(["git", "tag", self.new_version])
         self.git_push()
 
@@ -87,5 +82,5 @@ class GitHubHandler:
         self.run_git_command(["git", "push", "origin", "main", "--tags"])
 
     @staticmethod
-    def run_git_command(command: List[str]):
+    def run_git_command(command: list[str]):
         subprocess.run(command, check=True)

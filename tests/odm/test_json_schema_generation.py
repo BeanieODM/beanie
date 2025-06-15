@@ -21,14 +21,8 @@ def test_schema_export_of_model_with_decimal_field():
 
         assert json_schema["properties"]["amt"]["anyOf"][0]["type"] == "number"
         assert json_schema["properties"]["amt"]["anyOf"][1]["type"] == "string"
-        assert (
-            json_schema["properties"]["other_amt"]["anyOf"][0]["type"]
-            == "number"
-        )
-        assert (
-            json_schema["properties"]["other_amt"]["anyOf"][1]["type"]
-            == "string"
-        )
+        assert json_schema["properties"]["other_amt"]["anyOf"][0]["type"] == "number"
+        assert json_schema["properties"]["other_amt"]["anyOf"][1]["type"] == "string"
 
     else:
         json_schema = doc.schema()
@@ -44,14 +38,8 @@ def test_schema_export_of_model_with_pydanticobjectid():
     if IS_PYDANTIC_V2:
         json_schema = doc.model_json_schema()
 
-        assert (
-            json_schema["properties"]["_id"]["anyOf"][0]["$ref"]
-            == "#/$defs/PydanticObjectId"
-        )
-        assert (
-            json_schema["properties"]["pyid"]["$ref"]
-            == "#/$defs/PydanticObjectId"
-        )
+        assert json_schema["properties"]["_id"]["anyOf"][0]["$ref"] == "#/$defs/PydanticObjectId"
+        assert json_schema["properties"]["pyid"]["$ref"] == "#/$defs/PydanticObjectId"
     else:
         json_schema = doc.schema()
 
@@ -63,15 +51,13 @@ def test_schema_export_of_model_with_link():
     if IS_PYDANTIC_V2:
         json_schema = DocumentWithLink.model_json_schema()
 
-        link_alternate_representation = json_schema["properties"]["link"][
-            "anyOf"
-        ]
+        link_alternate_representation = json_schema["properties"]["link"]["anyOf"]
     else:
         json_schema = DocumentWithLink.schema()
 
-        link_alternate_representation = json_schema["definitions"][
-            "DocumentWithLink"
-        ]["properties"]["link"]["anyOf"]
+        link_alternate_representation = json_schema["definitions"]["DocumentWithLink"][
+            "properties"
+        ]["link"]["anyOf"]
 
     assert link_alternate_representation[0]["type"] == "object"
     assert link_alternate_representation[1]["type"] == "object"
@@ -97,19 +83,17 @@ def test_schema_export_of_model_with_list_link():
     if IS_PYDANTIC_V2:
         json_schema = DocumentWithListLink.model_json_schema()
 
-        link_alternate_representation = json_schema["properties"]["link"][
-            "items"
-        ]["anyOf"]
+        link_alternate_representation = json_schema["properties"]["link"]["items"]["anyOf"]
         link_definition = json_schema["properties"]["link"]["type"]
     else:
         json_schema = DocumentWithListLink.schema()
 
-        link_alternate_representation = json_schema["definitions"][
-            "DocumentWithListLink"
-        ]["properties"]["link"]["items"]["anyOf"]
-        link_definition = json_schema["definitions"]["DocumentWithListLink"][
+        link_alternate_representation = json_schema["definitions"]["DocumentWithListLink"][
             "properties"
-        ]["link"]["type"]
+        ]["link"]["items"]["anyOf"]
+        link_definition = json_schema["definitions"]["DocumentWithListLink"]["properties"]["link"][
+            "type"
+        ]
 
     assert link_definition == "array"
     assert link_alternate_representation[0]["type"] == "object"
@@ -124,9 +108,9 @@ def test_schema_export_of_model_with_backlink():
     else:
         json_schema = DocumentWithBackLink.schema()
 
-        back_link_definition = json_schema["definitions"][
-            "DocumentWithBackLink"
-        ]["properties"]["back_link"]["anyOf"][1]["type"]
+        back_link_definition = json_schema["definitions"]["DocumentWithBackLink"]["properties"][
+            "back_link"
+        ]["anyOf"][1]["type"]
 
     assert back_link_definition == "object"
 
@@ -136,22 +120,20 @@ def test_schema_export_of_model_with_list_backlink():
         json_schema = DocumentWithListBackLink.model_json_schema()
 
         assert json_schema["properties"]["back_link"]["type"] == "array"
-        assert (
-            json_schema["properties"]["back_link"]["items"]["type"] == "object"
-        )
+        assert json_schema["properties"]["back_link"]["items"]["type"] == "object"
     else:
         json_schema = DocumentWithListBackLink.schema()
 
         assert (
-            json_schema["definitions"]["DocumentWithListBackLink"][
-                "properties"
-            ]["back_link"]["type"]
+            json_schema["definitions"]["DocumentWithListBackLink"]["properties"]["back_link"][
+                "type"
+            ]
             == "array"
         )
         assert (
-            json_schema["definitions"]["DocumentWithListBackLink"][
-                "properties"
-            ]["back_link"]["items"]["anyOf"][1]["type"]
+            json_schema["definitions"]["DocumentWithListBackLink"]["properties"]["back_link"][
+                "items"
+            ]["anyOf"][1]["type"]
             == "object"
         )
 

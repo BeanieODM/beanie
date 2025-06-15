@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from beanie.odm.fields import LinkInfo, LinkTypes
 
@@ -11,11 +11,11 @@ if TYPE_CHECKING:
 
 
 def construct_lookup_queries(
-    cls: Type["Document"],
+    cls: type["Document"],
     nesting_depth: Optional[int] = None,
-    nesting_depths_per_field: Optional[Dict[str, int]] = None,
-) -> List[Dict[str, Any]]:
-    queries: List = []
+    nesting_depths_per_field: Optional[dict[str, int]] = None,
+) -> list[dict[str, Any]]:
+    queries: list[dict[str, Any]] = []
     link_fields = cls.get_link_fields()
     if link_fields is not None:
         for link_info in link_fields.values():
@@ -37,13 +37,11 @@ def construct_lookup_queries(
 
 def construct_query(
     link_info: LinkInfo,
-    queries: List,
+    queries: list[dict[str, Any]],
     database_major_version: int,
     current_depth: Optional[int] = None,
 ):
-    if link_info.is_fetchable is False or (
-        current_depth is not None and current_depth <= 0
-    ):
+    if link_info.is_fetchable is False or (current_depth is not None and current_depth <= 0):
         return
     if link_info.link_type in [
         LinkTypes.DIRECT,
@@ -83,9 +81,7 @@ def construct_query(
                 },
                 {"$project": {f"_link_{link_info.field_name}": 0}},
             ]  # type: ignore
-            new_depth = (
-                current_depth - 1 if current_depth is not None else None
-            )
+            new_depth = current_depth - 1 if current_depth is not None else None
             if link_info.nested_links is not None:
                 lookup_steps[0]["$lookup"]["pipeline"] = []  # type: ignore
                 for nested_link in link_info.nested_links:
@@ -102,16 +98,10 @@ def construct_query(
                 {
                     "$lookup": {
                         "from": link_info.document_class.get_motor_collection().name,  # type: ignore
-                        "let": {
-                            "link_id": f"${link_info.lookup_field_name}.$id"
-                        },
+                        "let": {"link_id": f"${link_info.lookup_field_name}.$id"},
                         "as": f"_link_{link_info.field_name}",
                         "pipeline": [
-                            {
-                                "$match": {
-                                    "$expr": {"$eq": ["$_id", "$$link_id"]}
-                                }
-                            },
+                            {"$match": {"$expr": {"$eq": ["$_id", "$$link_id"]}}},
                         ],
                     }
                 },
@@ -139,9 +129,7 @@ def construct_query(
                 },
                 {"$project": {f"_link_{link_info.field_name}": 0}},
             ]
-            new_depth = (
-                current_depth - 1 if current_depth is not None else None
-            )
+            new_depth = current_depth - 1 if current_depth is not None else None
             for nested_link in link_info.nested_links:
                 construct_query(
                     link_info=link_info.nested_links[nested_link],
@@ -189,9 +177,7 @@ def construct_query(
                 },
                 {"$project": {f"_link_{link_info.field_name}": 0}},
             ]  # type: ignore
-            new_depth = (
-                current_depth - 1 if current_depth is not None else None
-            )
+            new_depth = current_depth - 1 if current_depth is not None else None
             if link_info.nested_links is not None:
                 lookup_steps[0]["$lookup"]["pipeline"] = []  # type: ignore
                 for nested_link in link_info.nested_links:
@@ -248,9 +234,7 @@ def construct_query(
                 },
                 {"$project": {f"_link_{link_info.field_name}": 0}},
             ]
-            new_depth = (
-                current_depth - 1 if current_depth is not None else None
-            )
+            new_depth = current_depth - 1 if current_depth is not None else None
             for nested_link in link_info.nested_links:
                 construct_query(
                     link_info=link_info.nested_links[nested_link],
@@ -275,9 +259,7 @@ def construct_query(
                     }
                 }
             )
-            new_depth = (
-                current_depth - 1 if current_depth is not None else None
-            )
+            new_depth = current_depth - 1 if current_depth is not None else None
             if link_info.nested_links is not None:
                 queries[-1]["$lookup"]["pipeline"] = []
                 for nested_link in link_info.nested_links:
@@ -298,9 +280,7 @@ def construct_query(
                     ],
                 }
             }
-            new_depth = (
-                current_depth - 1 if current_depth is not None else None
-            )
+            new_depth = current_depth - 1 if current_depth is not None else None
             for nested_link in link_info.nested_links:
                 construct_query(
                     link_info=link_info.nested_links[nested_link],
@@ -325,9 +305,7 @@ def construct_query(
                     }
                 }
             )
-            new_depth = (
-                current_depth - 1 if current_depth is not None else None
-            )
+            new_depth = current_depth - 1 if current_depth is not None else None
             if link_info.nested_links is not None:
                 queries[-1]["$lookup"]["pipeline"] = []
                 for nested_link in link_info.nested_links:
@@ -357,9 +335,7 @@ def construct_query(
                     ],
                 }
             }
-            new_depth = (
-                current_depth - 1 if current_depth is not None else None
-            )
+            new_depth = current_depth - 1 if current_depth is not None else None
             for nested_link in link_info.nested_links:
                 construct_query(
                     link_info=link_info.nested_links[nested_link],
@@ -373,8 +349,8 @@ def construct_query(
 
 
 def split_text_query(
-    query: Dict[str, Any],
-) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    query: dict[str, Any],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Divide query into text and non-text matches
 
     :param query: Dict[str, Any] - query dict
@@ -382,15 +358,15 @@ def split_text_query(
         respectively
     """
 
-    root_text_query_args: Dict[str, Any] = query.get("$text", None)
-    root_non_text_queries: Dict[str, Any] = {
+    root_text_query_args: Union[dict[str, Any], None] = query.get("$text")
+    root_non_text_queries: dict[str, Any] = {
         k: v for k, v in query.items() if k not in {"$text", "$and"}
     }
 
-    text_queries: List[Dict[str, Any]] = (
+    text_queries: list[dict[str, Any]] = (
         [{"$text": root_text_query_args}] if root_text_query_args else []
     )
-    non_text_queries: List[Dict[str, Any]] = (
+    non_text_queries: list[dict[str, Any]] = (
         [root_non_text_queries] if root_non_text_queries else []
     )
 

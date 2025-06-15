@@ -31,9 +31,7 @@ class SemVer:
             (self.major > other.major)
             or (self.major == other.major and self.minor > other.minor)
             or (
-                self.major == other.major
-                and self.minor == other.minor
-                and self.patch > other.patch
+                self.major == other.major and self.minor == other.minor and self.patch > other.patch
             )
         )
 
@@ -47,9 +45,7 @@ class VersionHandler:
         self.init_py = self.ROOT_PATH / "beanie" / "__init__.py"
         self.changelog = self.ROOT_PATH / "docs" / "changelog.md"
 
-        self.current_version = self.parse_version_from_pyproject(
-            self.pyproject
-        )
+        self.current_version = self.parse_version_from_pyproject(self.pyproject)
         self.pypi_version = self.get_version_from_pypi()
 
         if self.current_version < self.pypi_version:
@@ -68,9 +64,7 @@ class VersionHandler:
         return SemVer(toml_data["project"]["version"])
 
     def get_version_from_pypi(self) -> SemVer:
-        response = requests.get(
-            f"https://pypi.org/pypi/{self.PACKAGE_NAME}/json"
-        )
+        response = requests.get(f"https://pypi.org/pypi/{self.PACKAGE_NAME}/json")
         if response.status_code == 200:
             return SemVer(response.json()["info"]["version"])
         raise ValueError("Can't get version from pypi")
@@ -90,9 +84,7 @@ class VersionHandler:
     def update_file_versions(self, files_to_update):
         for file_path in files_to_update:
             content = file_path.read_text()
-            content = content.replace(
-                str(self.pypi_version), str(self.current_version)
-            )
+            content = content.replace(str(self.pypi_version), str(self.current_version))
             file_path.write_text(content)
 
     def update_changelog(self):

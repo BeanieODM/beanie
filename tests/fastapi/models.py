@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import Field
 
 from beanie import Document, Indexed, Link
@@ -21,7 +19,7 @@ class RoofAPI(Document):
 
 
 class HouseAPI(Document):
-    windows: List[Link[WindowAPI]]
+    windows: list[Link[WindowAPI]]
     name: Indexed(str)
     height: Indexed(int) = 2
 

@@ -1,8 +1,7 @@
-from typing import Optional, Union
+from typing import Annotated, Optional, Union
 
 import pytest
 from pydantic import BaseModel
-from typing_extensions import Annotated
 
 from beanie import Document, Link
 from beanie.odm.fields import Indexed

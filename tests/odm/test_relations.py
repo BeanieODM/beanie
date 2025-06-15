@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 from pydantic.fields import Field
 
@@ -84,9 +82,7 @@ def door_not_inserted(window_not_inserted, locks_not_inserted):
 
 @pytest.fixture
 def house_not_inserted(windows_not_inserted, door_not_inserted):
-    return House(
-        windows=windows_not_inserted, door=door_not_inserted, name="test"
-    )
+    return House(windows=windows_not_inserted, door=door_not_inserted, name="test")
 
 
 @pytest.fixture
@@ -105,9 +101,7 @@ async def houses():
         house = await House(
             door=Door(
                 t=i,
-                window=Window(x=20, y=21 + i, lock=Lock(k=20 + i))
-                if i % 2 == 0
-                else None,
+                window=Window(x=20, y=21 + i, lock=Lock(k=20 + i)) if i % 2 == 0 else None,
                 locks=[Lock(k=20 + i)],
             ),
             windows=[
@@ -214,11 +208,7 @@ class TestFind:
         assert items[0].roof is None
         assert isinstance(items[1].roof, Link)
 
-        items = (
-            await House.find(House.height > 2, fetch_links=True)
-            .sort(House.height)
-            .to_list()
-        )
+        items = await House.find(House.height > 2, fetch_links=True).sort(House.height).to_list()
         assert len(items) == 7
         for window in items[0].windows:
             assert isinstance(window, Window)
@@ -235,9 +225,7 @@ class TestFind:
         assert items[0].roof is None
         assert isinstance(items[1].roof, Roof)
 
-        houses = await House.find_many(
-            House.height == 9, fetch_links=True
-        ).to_list()
+        houses = await House.find_many(House.height == 9, fetch_links=True).to_list()
         assert len(houses[0].windows) == 1
         assert isinstance(houses[0].windows[0].lock, Link)
         assert isinstance(houses[0].door, Link)
@@ -245,21 +233,15 @@ class TestFind:
         await houses[0].fetch_link(House.door)
         assert isinstance(houses[0].door, Link)
 
-        houses = await House.find_many(
-            House.door.t > 5, fetch_links=True
-        ).to_list()
+        houses = await House.find_many(House.door.t > 5, fetch_links=True).to_list()
 
         assert len(houses) == 3
 
-        houses = await House.find_many(
-            House.windows.y == 15, fetch_links=True
-        ).to_list()
+        houses = await House.find_many(House.windows.y == 15, fetch_links=True).to_list()
 
         assert len(houses) == 2
 
-        houses = await House.find_many(
-            House.height > 5, limit=3, fetch_links=True
-        ).to_list()
+        houses = await House.find_many(House.height > 5, limit=3, fetch_links=True).to_list()
 
         assert len(houses) == 3
 
@@ -317,28 +299,18 @@ class TestFind:
             assert isinstance(window.lock, Lock)
 
     async def test_find_by_id_of_the_linked_docs(self, house):
-        house_lst_1 = await House.find(
-            House.door.id == house.door.id
-        ).to_list()
-        house_lst_2 = await House.find(
-            House.door.id == house.door.id, fetch_links=True
-        ).to_list()
+        house_lst_1 = await House.find(House.door.id == house.door.id).to_list()
+        house_lst_2 = await House.find(House.door.id == house.door.id, fetch_links=True).to_list()
         assert len(house_lst_1) == 1
         assert len(house_lst_2) == 1
 
         house_1 = await House.find_one(House.door.id == house.door.id)
-        house_2 = await House.find_one(
-            House.door.id == house.door.id, fetch_links=True
-        )
+        house_2 = await House.find_one(House.door.id == house.door.id, fetch_links=True)
         assert house_1 is not None
         assert house_2 is not None
 
     async def test_find_by_id_list_of_the_linked_docs(self, houses):
-        items = (
-            await House.find(House.height < 3, fetch_links=True)
-            .sort(House.height)
-            .to_list()
-        )
+        items = await House.find(House.height < 3, fetch_links=True).sort(House.height).to_list()
         assert len(items) == 3
 
         house_lst_1 = await House.find(
@@ -360,7 +332,7 @@ class TestFind:
 
     async def test_fetch_list_with_some_prefetched(self):
         docs = []
-        for i in range(10):
+        for _ in range(10):
             doc = DocumentToBeLinked()
             await doc.save()
             docs.append(doc)
@@ -368,9 +340,7 @@ class TestFind:
         doc_with_links = DocumentWithListOfLinks(links=docs)
         await doc_with_links.save()
 
-        doc_with_links = await DocumentWithListOfLinks.get(
-            doc_with_links.id, fetch_links=False
-        )
+        doc_with_links = await DocumentWithListOfLinks.get(doc_with_links.id, fetch_links=False)
         doc_with_links.links[-1] = await doc_with_links.links[-1].fetch()
 
         await doc_with_links.fetch_all_links()
@@ -385,14 +355,10 @@ class TestFind:
             assert doc_with_links.links[i].id == docs[i].id
 
     async def test_text_search(self):
-        doc = DocumentWithTextIndexAndLink(
-            s="hello world", link=LinkDocumentForTextSeacrh(i=1)
-        )
+        doc = DocumentWithTextIndexAndLink(s="hello world", link=LinkDocumentForTextSeacrh(i=1))
         await doc.insert(link_rule=WriteRules.WRITE)
 
-        doc2 = DocumentWithTextIndexAndLink(
-            s="hi world", link=LinkDocumentForTextSeacrh(i=2)
-        )
+        doc2 = DocumentWithTextIndexAndLink(s="hi world", link=LinkDocumentForTextSeacrh(i=2))
         await doc2.insert(link_rule=WriteRules.WRITE)
 
         docs = await DocumentWithTextIndexAndLink.find(
@@ -406,15 +372,11 @@ class TestFind:
         self_linked_doc.link = self_linked_doc
         await self_linked_doc.save()
 
-        self_linked_doc = await LongSelfLink.find_one(
-            nesting_depth=4, fetch_links=True
-        )
+        self_linked_doc = await LongSelfLink.find_one(nesting_depth=4, fetch_links=True)
         assert self_linked_doc.link.link.link.link.id == self_linked_doc.id
         assert isinstance(self_linked_doc.link.link.link.link.link, Link)
 
-        self_linked_doc = await LongSelfLink.find_one(
-            nesting_depth=0, fetch_links=True
-        )
+        self_linked_doc = await LongSelfLink.find_one(nesting_depth=0, fetch_links=True)
         assert isinstance(self_linked_doc.link, Link)
 
     async def test_nesting_find_parameters(self):
@@ -525,20 +487,14 @@ class TestOther:
         assert set(BDocument._link_fields.keys()) == {"link_root", "link_b"}
 
     async def test_with_projection(self):
-        await UsersAddresses(region_id=Region()).insert(
-            link_rule=WriteRules.WRITE
-        )
-        res = await UsersAddresses.find_one(fetch_links=True).project(
-            AddressView
-        )
+        await UsersAddresses(region_id=Region()).insert(link_rule=WriteRules.WRITE)
+        res = await UsersAddresses.find_one(fetch_links=True).project(AddressView)
         assert res.id is not None
         assert res.state == "TEST"
         assert res.city == "TEST"
 
     async def test_self_linked(self):
-        await SelfLinked(item=SelfLinked(s="2"), s="1").insert(
-            link_rule=WriteRules.WRITE
-        )
+        await SelfLinked(item=SelfLinked(s="2"), s="1").insert(link_rule=WriteRules.WRITE)
 
         res = await SelfLinked.find_one(fetch_links=True)
         assert isinstance(res, SelfLinked)
@@ -547,9 +503,7 @@ class TestOther:
         await SelfLinked.delete_all()
 
         await SelfLinked(
-            item=SelfLinked(
-                item=SelfLinked(item=SelfLinked(s="4"), s="3"), s="2"
-            ),
+            item=SelfLinked(item=SelfLinked(item=SelfLinked(s="4"), s="3"), s="2"),
             s="1",
         ).insert(link_rule=WriteRules.WRITE)
 
@@ -572,9 +526,7 @@ class TestOther:
             ),
             s="1",
         ).insert(link_rule=WriteRules.WRITE)
-        res = await LoopedLinksA.find_one(
-            LoopedLinksA.s == "1", fetch_links=True
-        )
+        res = await LoopedLinksA.find_one(LoopedLinksA.s == "1", fetch_links=True)
         assert isinstance(res, LoopedLinksA)
         assert isinstance(res.b, LoopedLinksB)
         assert isinstance(res.b.a, LoopedLinksA)
@@ -584,9 +536,7 @@ class TestOther:
             b=LoopedLinksB(s="a2"),
             s="a1",
         ).insert(link_rule=WriteRules.WRITE)
-        res = await LoopedLinksA.find_one(
-            LoopedLinksA.s == "a1", fetch_links=True
-        )
+        res = await LoopedLinksA.find_one(LoopedLinksA.s == "a1", fetch_links=True)
         assert isinstance(res, LoopedLinksA)
         assert isinstance(res.b, LoopedLinksB)
         assert res.b.a is None
@@ -595,19 +545,17 @@ class TestOther:
         region = Region()
         await region.insert()
 
-        for i in range(10):
+        for _ in range(10):
             await UsersAddresses(region_id=region).insert()
 
         region_2 = Region()
         await region_2.insert()
 
-        for i in range(10):
+        for _ in range(10):
             await UsersAddresses(region_id=region_2).insert()
 
         addresses_count = (
-            await UsersAddresses.find(
-                UsersAddresses.region_id.id == region.id, fetch_links=True
-            )
+            await UsersAddresses.find(UsersAddresses.region_id.id == region.id, fetch_links=True)
             .aggregate([{"$count": "count"}])
             .to_list()
         )
@@ -644,9 +592,7 @@ class TestOther:
         )
 
         # Test both aggregation and count methods
-        document_count_aggregation = await query.aggregate(
-            [{"$count": "count"}]
-        ).to_list()
+        document_count_aggregation = await query.aggregate([{"$count": "count"}]).to_list()
         document_count = await query.count()
 
         # ASSERT
@@ -700,17 +646,13 @@ async def list_link_and_list_backlink_doc_pair():
 class TestFindBackLinks:
     async def test_prefetch_direct(self, link_and_backlink_doc_pair):
         link_doc, back_link_doc = link_and_backlink_doc_pair
-        back_link_doc = await DocumentWithBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        back_link_doc = await DocumentWithBackLink.get(back_link_doc.id, fetch_links=True)
         assert back_link_doc.back_link.id == link_doc.id
         assert back_link_doc.back_link.link.id == back_link_doc.id
 
     async def test_prefetch_list(self, list_link_and_list_backlink_doc_pair):
         link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
-        back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         assert back_link_doc.back_link[0].id == link_doc.id
         assert back_link_doc.back_link[0].link[0].id == back_link_doc.id
 
@@ -720,125 +662,86 @@ class TestFindBackLinks:
         link_doc = DocumentWithLinkForNesting(link=back_link_doc, s="TEST")
         await link_doc.insert()
 
-        doc = await DocumentWithLinkForNesting.get(
-            link_doc.id, fetch_links=True
-        )
+        doc = await DocumentWithLinkForNesting.get(link_doc.id, fetch_links=True)
         assert isinstance(doc.link, Link)
         doc.link = await doc.link.fetch()
         assert doc.link.i == 1
 
-        back_link_doc = await DocumentWithBackLinkForNesting.get(
-            back_link_doc.id, fetch_links=True
-        )
-        assert (
-            back_link_doc.back_link.link.back_link.link.back_link.id
-            == link_doc.id
-        )
-        assert isinstance(
-            back_link_doc.back_link.link.back_link.link.back_link.link, Link
-        )
+        back_link_doc = await DocumentWithBackLinkForNesting.get(back_link_doc.id, fetch_links=True)
+        assert back_link_doc.back_link.link.back_link.link.back_link.id == link_doc.id
+        assert isinstance(back_link_doc.back_link.link.back_link.link.back_link.link, Link)
 
 
 class TestReplaceBackLinks:
     async def test_do_nothing(self, link_and_backlink_doc_pair):
-        link_doc, back_link_doc = link_and_backlink_doc_pair
+        _link_doc, back_link_doc = link_and_backlink_doc_pair
         back_link_doc.back_link.s = "new value"
         await back_link_doc.replace()
-        new_back_link_doc = await DocumentWithBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        new_back_link_doc = await DocumentWithBackLink.get(back_link_doc.id, fetch_links=True)
         assert new_back_link_doc.back_link.s == "TEST"
 
     async def test_do_nothing_list(self, list_link_and_list_backlink_doc_pair):
-        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
-        back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        _link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         for lnk in back_link_doc.back_link:
             lnk.s = "new value"
         await back_link_doc.replace()
-        new_back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        new_back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         for lnk in new_back_link_doc.back_link:
             assert lnk.s == "TEST"
 
     async def test_write(self, link_and_backlink_doc_pair):
-        link_doc, back_link_doc = link_and_backlink_doc_pair
-        back_link_doc = await DocumentWithBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        _link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc = await DocumentWithBackLink.get(back_link_doc.id, fetch_links=True)
         back_link_doc.back_link.s = "new value"
         await back_link_doc.replace(link_rule=WriteRules.WRITE)
-        new_back_link_doc = await DocumentWithBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        new_back_link_doc = await DocumentWithBackLink.get(back_link_doc.id, fetch_links=True)
         assert new_back_link_doc.back_link.s == "new value"
 
-    async def test_do_nothing_write_list(
-        self, list_link_and_list_backlink_doc_pair
-    ):
-        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
-        back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+    async def test_do_nothing_write_list(self, list_link_and_list_backlink_doc_pair):
+        _link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         for lnk in back_link_doc.back_link:
             lnk.s = "new value"
         await back_link_doc.replace(link_rule=WriteRules.WRITE)
-        new_back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        new_back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         for lnk in new_back_link_doc.back_link:
             assert lnk.s == "new value"
 
 
 class TestSaveBackLinks:
     async def test_do_nothing(self, link_and_backlink_doc_pair):
-        link_doc, back_link_doc = link_and_backlink_doc_pair
+        _link_doc, back_link_doc = link_and_backlink_doc_pair
         back_link_doc.back_link.s = "new value"
         await back_link_doc.save()
-        new_back_link_doc = await DocumentWithBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        new_back_link_doc = await DocumentWithBackLink.get(back_link_doc.id, fetch_links=True)
         assert new_back_link_doc.back_link.s == "TEST"
 
     async def test_do_nothing_list(self, list_link_and_list_backlink_doc_pair):
-        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
-        back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        _link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         for lnk in back_link_doc.back_link:
             lnk.s = "new value"
         await back_link_doc.save()
-        new_back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        new_back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         for lnk in new_back_link_doc.back_link:
             assert lnk.s == "TEST"
 
     async def test_write(self, link_and_backlink_doc_pair):
-        link_doc, back_link_doc = link_and_backlink_doc_pair
-        back_link_doc = await DocumentWithBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        _link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc = await DocumentWithBackLink.get(back_link_doc.id, fetch_links=True)
         back_link_doc.back_link.s = "new value"
         await back_link_doc.save(link_rule=WriteRules.WRITE)
-        new_back_link_doc = await DocumentWithBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        new_back_link_doc = await DocumentWithBackLink.get(back_link_doc.id, fetch_links=True)
         assert new_back_link_doc.back_link.s == "new value"
 
     async def test_write_list(self, list_link_and_list_backlink_doc_pair):
-        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
-        back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        _link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         for lnk in back_link_doc.back_link:
             lnk.s = "new value"
         await back_link_doc.save(link_rule=WriteRules.WRITE)
-        new_back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        new_back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         for lnk in new_back_link_doc.back_link:
             assert lnk.s == "new value"
 
@@ -846,7 +749,7 @@ class TestSaveBackLinks:
 class HouseForReversedOrderInit(Document):
     name: str
     door: Link["DoorForReversedOrderInit"]
-    owners: List[Link["PersonForReversedOrderInit"]]
+    owners: list[Link["PersonForReversedOrderInit"]]
 
 
 class DoorForReversedOrderInit(Document):
@@ -857,68 +760,46 @@ class DoorForReversedOrderInit(Document):
             json_schema_extra={"original_field": "door"}
         )
     else:
-        house: BackLink[HouseForReversedOrderInit] = Field(
-            original_field="door"
-        )
+        house: BackLink[HouseForReversedOrderInit] = Field(original_field="door")
 
 
 class PersonForReversedOrderInit(Document):
     name: str
     if IS_PYDANTIC_V2:
-        house: List[BackLink[HouseForReversedOrderInit]] = Field(
+        house: list[BackLink[HouseForReversedOrderInit]] = Field(
             json_schema_extra={"original_field": "owners"}
         )
     else:
-        house: List[BackLink[HouseForReversedOrderInit]] = Field(
-            original_field="owners"
-        )
+        house: list[BackLink[HouseForReversedOrderInit]] = Field(original_field="owners")
 
 
 class TestDeleteBackLinks:
     async def test_do_nothing(self, link_and_backlink_doc_pair):
         link_doc, back_link_doc = link_and_backlink_doc_pair
-        back_link_doc = await DocumentWithBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        back_link_doc = await DocumentWithBackLink.get(back_link_doc.id, fetch_links=True)
         await back_link_doc.delete()
-        new_link_doc = await DocumentWithLink.get(
-            link_doc.id, fetch_links=True
-        )
+        new_link_doc = await DocumentWithLink.get(link_doc.id, fetch_links=True)
         assert new_link_doc is not None
 
     async def test_do_nothing_list(self, list_link_and_list_backlink_doc_pair):
         link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
-        back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         await back_link_doc.delete()
-        new_link_doc = await DocumentWithListLink.get(
-            link_doc.id, fetch_links=True
-        )
+        new_link_doc = await DocumentWithListLink.get(link_doc.id, fetch_links=True)
         assert new_link_doc is not None
 
     async def test_delete_links(self, link_and_backlink_doc_pair):
         link_doc, back_link_doc = link_and_backlink_doc_pair
-        back_link_doc = await DocumentWithBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        back_link_doc = await DocumentWithBackLink.get(back_link_doc.id, fetch_links=True)
         await back_link_doc.delete(link_rule=DeleteRules.DELETE_LINKS)
-        new_link_doc = await DocumentWithLink.get(
-            link_doc.id, fetch_links=True
-        )
+        new_link_doc = await DocumentWithLink.get(link_doc.id, fetch_links=True)
         assert new_link_doc is None
 
-    async def test_delete_links_list(
-        self, list_link_and_list_backlink_doc_pair
-    ):
+    async def test_delete_links_list(self, list_link_and_list_backlink_doc_pair):
         link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
-        back_link_doc = await DocumentWithListBackLink.get(
-            back_link_doc.id, fetch_links=True
-        )
+        back_link_doc = await DocumentWithListBackLink.get(back_link_doc.id, fetch_links=True)
         await back_link_doc.delete(link_rule=DeleteRules.DELETE_LINKS)
-        new_link_doc = await DocumentWithListLink.get(
-            link_doc.id, fetch_links=True
-        )
+        new_link_doc = await DocumentWithListLink.get(link_doc.id, fetch_links=True)
         assert new_link_doc is None
 
     async def test_init_reversed_order(self, db):
@@ -949,9 +830,7 @@ class TestBuildAggregations:
 
     async def test_find_aggregate_with_fetch_links(self, houses):
         door = await Door.find_one()
-        aggregation = House.find(
-            House.door.id == door.id, fetch_links=True
-        ).aggregate(
+        aggregation = House.find(House.door.id == door.id, fetch_links=True).aggregate(
             [
                 {"$group": {"_id": "$height", "count": {"$sum": 1}}},
             ]

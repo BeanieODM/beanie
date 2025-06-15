@@ -1,7 +1,6 @@
-from __future__ import annotations
-
+from collections.abc import Mapping
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo import (
@@ -74,11 +73,11 @@ class BulkWriter:
         self,
         session: Optional[AsyncIOMotorClientSession] = None,
         ordered: bool = True,
-        object_class: Optional[Type[Union[Document, UnionDoc]]] = None,
+        object_class: Optional[type[Union["Document", "UnionDoc"]]] = None,
         bypass_document_validation: bool = False,
         comment: Optional[Any] = None,
     ) -> None:
-        self.operations: List[_WriteOp] = []
+        self.operations: list[_WriteOp] = []
         self.session = session
         self.ordered = ordered
         self.object_class = object_class
@@ -93,7 +92,7 @@ class BulkWriter:
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
+        exc_type: Optional[type[BaseException]],
         exc: Optional[BaseException],
         tb: Optional[TracebackType],
     ) -> None:
@@ -130,7 +129,7 @@ class BulkWriter:
 
     def add_operation(
         self,
-        object_class: Type[Union[Document, UnionDoc]],
+        object_class: type[Union["Document", "UnionDoc"]],
         operation: _WriteOp,
     ):
         """
@@ -151,7 +150,5 @@ class BulkWriter:
             self._collection_name = object_class.get_collection_name()
         else:
             if object_class.get_collection_name() != self._collection_name:
-                raise ValueError(
-                    "All the operations should be for a same collection name"
-                )
+                raise ValueError("All the operations should be for a same collection name")
         self.operations.append(operation)

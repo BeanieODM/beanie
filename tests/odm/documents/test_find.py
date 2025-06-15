@@ -81,21 +81,14 @@ async def test_find_all_sort(documents):
     )
 
     assert result[1].test_int >= result[2].test_int
-    assert (
-        result[3].test_int
-        >= result[4].test_int
-        >= result[5].test_int
-        >= result[6].test_int
-    )
+    assert result[3].test_int >= result[4].test_int >= result[5].test_int >= result[6].test_int
 
 
 async def test_find_many(documents):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    result = await DocumentTestModel.find_many(
-        DocumentTestModel.test_str == "uno"
-    ).to_list()
+    result = await DocumentTestModel.find_many(DocumentTestModel.test_str == "uno").to_list()
     assert len(result) == 4
 
 
@@ -103,9 +96,7 @@ async def test_find_many_limit(documents):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    result = await DocumentTestModel.find_many(
-        {"test_str": "uno"}, limit=2
-    ).to_list()
+    result = await DocumentTestModel.find_many({"test_str": "uno"}, limit=2).to_list()
     assert len(result) == 2
 
 
@@ -113,9 +104,7 @@ async def test_find_many_skip(documents):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    result = await DocumentTestModel.find_many(
-        {"test_str": "uno"}, skip=1
-    ).to_list()
+    result = await DocumentTestModel.find_many({"test_str": "uno"}, skip=1).to_list()
     assert len(result) == 3
 
 
@@ -123,25 +112,13 @@ async def test_find_many_sort(documents):
     await documents(4, "uno", True)
     await documents(2, "dos", True)
     await documents(1, "cuatro", True)
-    result = await DocumentTestModel.find_many(
-        {"test_str": "uno"}, sort="test_int"
-    ).to_list()
-    assert (
-        result[0].test_int
-        <= result[1].test_int
-        <= result[2].test_int
-        <= result[3].test_int
-    )
+    result = await DocumentTestModel.find_many({"test_str": "uno"}, sort="test_int").to_list()
+    assert result[0].test_int <= result[1].test_int <= result[2].test_int <= result[3].test_int
 
     result = await DocumentTestModel.find_many(
         {"test_str": "uno"}, sort=[("test_int", pymongo.DESCENDING)]
     ).to_list()
-    assert (
-        result[0].test_int
-        >= result[1].test_int
-        >= result[2].test_int
-        >= result[3].test_int
-    )
+    assert result[0].test_int >= result[1].test_int >= result[2].test_int >= result[3].test_int
 
 
 async def test_find_many_not_found(documents):
@@ -163,9 +140,7 @@ async def test_find_one_with_session(documents, session):
 
     expected_doc_id = PydanticObjectId(inserted_one[0])
 
-    new_document = await DocumentTestModel.find_one(
-        {"test_str": "kipasa"}, session=session
-    )
+    new_document = await DocumentTestModel.find_one({"test_str": "kipasa"}, session=session)
     assert new_document.id == expected_doc_id
 
 
@@ -181,7 +156,5 @@ async def test_find_many_with_session(documents, session):
     await documents(4, "uno")
     await documents(2, "dos")
     await documents(1, "cuatro")
-    result = await DocumentTestModel.find_many(
-        {"test_str": "uno"}, session=session
-    ).to_list()
+    result = await DocumentTestModel.find_many({"test_str": "uno"}, session=session).to_list()
     assert len(result) == 4

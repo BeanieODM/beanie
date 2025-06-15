@@ -1,6 +1,7 @@
 import asyncio
+from collections.abc import Callable
 from inspect import isclass, signature
-from typing import Any, List, Optional, Type, Union
+from typing import Any, Optional, Union
 
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.migrations.utils import update_dict
@@ -10,7 +11,7 @@ from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, parse_model
 
 class DummyOutput:
     def __init__(self):
-        super(DummyOutput, self).__setattr__("_internal_structure_dict", {})
+        super().__setattr__("_internal_structure_dict", {})
 
     def __setattr__(self, key, value):
         self._internal_structure_dict[key] = value
@@ -26,9 +27,7 @@ class DummyOutput:
         if to_parse is None:
             to_parse = self
         input_dict = (
-            to_parse._internal_structure_dict
-            if isinstance(to_parse, DummyOutput)
-            else to_parse
+            to_parse._internal_structure_dict if isinstance(to_parse, DummyOutput) else to_parse
         )
         result_dict = {}
         for key, value in input_dict.items():
@@ -40,29 +39,21 @@ class DummyOutput:
 
 
 def iterative_migration(
-    document_models: Optional[List[Type[Document]]] = None,
+    document_models: Optional[list[type[Document]]] = None,
     batch_size: int = 10000,
 ):
     class IterativeMigration(BaseMigrationController):
-        def __init__(self, function):
+        def __init__(self, function: Callable) -> None:
             self.function = function
             self.function_signature = signature(function)
-            input_signature = self.function_signature.parameters.get(
-                "input_document"
-            )
+            input_signature = self.function_signature.parameters.get("input_document")
             if input_signature is None:
                 raise RuntimeError("input_signature must not be None")
-            self.input_document_model: Type[Document] = (
-                input_signature.annotation
-            )
-            output_signature = self.function_signature.parameters.get(
-                "output_document"
-            )
+            self.input_document_model: type[Document] = input_signature.annotation
+            output_signature = self.function_signature.parameters.get("output_document")
             if output_signature is None:
                 raise RuntimeError("output_signature must not be None")
-            self.output_document_model: Type[Document] = (
-                output_signature.annotation
-            )
+            self.output_document_model: type[Document] = output_signature.annotation
 
             if (
                 not isclass(self.input_document_model)
@@ -71,8 +62,7 @@ def iterative_migration(
                 or not issubclass(self.output_document_model, Document)
             ):
                 raise TypeError(
-                    "input_document and output_document "
-                    "must have annotation of Document subclass"
+                    "input_document and output_document must have annotation of Document subclass"
                 )
 
             self.batch_size = batch_size
@@ -81,7 +71,7 @@ def iterative_migration(
             pass
 
         @property
-        def models(self) -> List[Type[Document]]:
+        def models(self) -> list[type[Document]]:
             preset_models = document_models
             if preset_models is None:
                 preset_models = []
@@ -93,9 +83,7 @@ def iterative_migration(
         async def run(self, session):
             output_documents = []
             all_migration_ops = []
-            async for input_document in self.input_document_model.find_all(
-                session=session
-            ):
+            async for input_document in self.input_document_model.find_all(session=session):
                 output = DummyOutput()
                 function_kwargs = {
                     "input_document": input_document,
@@ -105,14 +93,10 @@ def iterative_migration(
                     function_kwargs["self"] = None
                 await self.function(**function_kwargs)
                 output_dict = (
-                    input_document.dict()
-                    if not IS_PYDANTIC_V2
-                    else input_document.model_dump()
+                    input_document.dict() if not IS_PYDANTIC_V2 else input_document.model_dump()
                 )
                 update_dict(output_dict, output.dict())
-                output_document = parse_model(
-                    self.output_document_model, output_dict
-                )
+                output_document = parse_model(self.output_document_model, output_dict)
                 output_documents.append(output_document)
 
                 if len(output_documents) == self.batch_size:

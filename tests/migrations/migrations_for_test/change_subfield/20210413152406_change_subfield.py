@@ -31,15 +31,11 @@ class Note(Document):
 
 class Forward:
     @iterative_migration()
-    async def change_color(
-        self, input_document: OldNote, output_document: Note
-    ):
+    async def change_color(self, input_document: OldNote, output_document: Note):
         output_document.tag.title = input_document.tag.name
 
 
 class Backward:
     @iterative_migration()
-    async def change_title(
-        self, input_document: Note, output_document: OldNote
-    ):
+    async def change_title(self, input_document: Note, output_document: OldNote):
         output_document.tag.name = input_document.tag.title

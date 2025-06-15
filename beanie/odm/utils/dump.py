@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Set
+from typing import TYPE_CHECKING, Optional
 
 from beanie.odm.utils.encoder import Encoder
 
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 def get_dict(
     document: "Document",
     to_db: bool = False,
-    exclude: Optional[Set[str]] = None,
+    exclude: Optional[set[str]] = None,
     keep_nulls: bool = True,
 ):
     if exclude is None:
@@ -24,7 +24,7 @@ def get_dict(
 
 def get_nulls(
     document: "Document",
-    exclude: Optional[Set[str]] = None,
+    exclude: Optional[set[str]] = None,
 ):
     dictionary = get_dict(document, exclude=exclude, keep_nulls=True)
     return filter_none(dictionary)
@@ -32,7 +32,7 @@ def get_nulls(
 
 def get_top_level_nones(
     document: "Document",
-    exclude: Optional[Set[str]] = None,
+    exclude: Optional[set[str]] = None,
 ):
     dictionary = get_dict(document, exclude=exclude, keep_nulls=True)
     return {k: v for k, v in dictionary.items() if v is None}

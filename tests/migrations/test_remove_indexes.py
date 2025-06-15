@@ -49,9 +49,7 @@ async def test_remove_index_allowed(settings, notes, db):
     )
     await run_migrate(migration_settings)
 
-    await init_beanie(
-        database=db, document_models=[Note], allow_index_dropping=False
-    )
+    await init_beanie(database=db, document_models=[Note], allow_index_dropping=False)
     collection: AsyncIOMotorCollection = Note.get_motor_collection()
     index_info = await collection.index_information()
     assert index_info == {
@@ -67,9 +65,7 @@ async def test_remove_index_default(settings, notes, db):
     )
     await run_migrate(migration_settings)
 
-    await init_beanie(
-        database=db, document_models=[Note], allow_index_dropping=False
-    )
+    await init_beanie(database=db, document_models=[Note], allow_index_dropping=False)
     collection: AsyncIOMotorCollection = Note.get_motor_collection()
     index_info = await collection.index_information()
     assert index_info == {
@@ -87,9 +83,7 @@ async def test_remove_index_not_allowed(settings, notes, db):
     )
     await run_migrate(migration_settings)
 
-    await init_beanie(
-        database=db, document_models=[Note], allow_index_dropping=False
-    )
+    await init_beanie(database=db, document_models=[Note], allow_index_dropping=False)
     collection: AsyncIOMotorCollection = Note.get_motor_collection()
     index_info = await collection.index_information()
     assert index_info == {

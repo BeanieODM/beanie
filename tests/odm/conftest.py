@@ -1,7 +1,7 @@
 import warnings
 from datetime import datetime, timedelta, timezone
 from random import randint
-from typing import List
+from typing import Optional
 
 import pytest
 
@@ -356,8 +356,8 @@ def document_not_inserted():
 @pytest.fixture
 def documents_not_inserted():
     def generate_documents(
-        number: int, test_str: str = None, random: bool = False
-    ) -> List[DocumentTestModel]:
+        number: int, test_str: Optional[str] = None, random: bool = False
+    ) -> list[DocumentTestModel]:
         return [
             DocumentTestModel(
                 test_int=randint(0, 1000000) if random else i,
@@ -385,7 +385,7 @@ def document_soft_delete_not_inserted():
 @pytest.fixture
 def documents_soft_delete_not_inserted():
     docs = []
-    for i in range(3):
+    for _ in range(3):
         docs.append(
             DocumentTestModelWithSoftDelete(
                 test_int=randint(0, 1000000),
@@ -402,9 +402,7 @@ async def document(document_not_inserted) -> DocumentTestModel:
 
 @pytest.fixture
 def documents(documents_not_inserted):
-    async def generate_documents(
-        number: int, test_str: str = None, random: bool = False
-    ):
+    async def generate_documents(number: int, test_str: Optional[str] = None, random: bool = False):
         result = await DocumentTestModel.insert_many(
             documents_not_inserted(number, test_str, random)
         )

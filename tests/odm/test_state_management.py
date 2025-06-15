@@ -94,13 +94,8 @@ async def house(house_not_inserted):
 
 class TestStateManagement:
     async def test_use_state_management_property(self):
-        assert (
-            DocumentWithTurnedOnStateManagement.use_state_management() is True
-        )
-        assert (
-            DocumentWithTurnedOffStateManagement.use_state_management()
-            is False
-        )
+        assert DocumentWithTurnedOnStateManagement.use_state_management() is True
+        assert DocumentWithTurnedOffStateManagement.use_state_management() is False
 
     async def test_state_with_decimal_field(
         self,
@@ -205,9 +200,7 @@ class TestStateManagement:
                 doc.is_changed
 
         async def test_state_management_on_not_changed(self):
-            doc = DocumentWithTurnedOnStateManagement(
-                num_1=1, num_2=2, internal=InternalDoc()
-            )
+            doc = DocumentWithTurnedOnStateManagement(num_1=1, num_2=2, internal=InternalDoc())
 
             with pytest.raises(StateNotSaved):
                 doc.is_changed
@@ -227,17 +220,13 @@ class TestStateManagement:
                 doc.has_changed
 
         async def test_state_management_on_not_changed(self):
-            doc = DocumentWithTurnedOnStateManagement(
-                num_1=1, num_2=2, internal=InternalDoc()
-            )
+            doc = DocumentWithTurnedOnStateManagement(num_1=1, num_2=2, internal=InternalDoc())
 
             with pytest.raises(StateNotSaved):
                 doc.has_changed
 
         async def test_save_previous_on_not_changed(self):
-            doc = DocumentWithTurnedOnSavePrevious(
-                num_1=1, num_2=2, internal=InternalDoc()
-            )
+            doc = DocumentWithTurnedOnSavePrevious(num_1=1, num_2=2, internal=InternalDoc())
 
             with pytest.raises(StateNotSaved):
                 doc.has_changed
@@ -327,21 +316,15 @@ class TestStateManagement:
             saved_doc_default.num_1 = 10000
 
             saved_doc_default.internal.change_private()
-            assert (
-                saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
-            )
+            assert saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
 
             await saved_doc_default.save_changes()
 
             assert saved_doc_default.get_saved_state()["num_1"] == 10000
             assert saved_doc_default.get_previous_saved_state() is None
-            assert (
-                saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
-            )
+            assert saved_doc_default.internal.get_private() == "PRIVATE_CHANGED"
 
-            new_doc = await DocumentWithTurnedOnStateManagement.get(
-                saved_doc_default.id
-            )
+            new_doc = await DocumentWithTurnedOnStateManagement.get(saved_doc_default.id)
             assert new_doc.num_1 == 10000
 
         async def test_save_changes_previous(self, saved_doc_previous):
@@ -351,20 +334,14 @@ class TestStateManagement:
             saved_doc_previous.num_1 = 10000
 
             saved_doc_previous.internal.change_private()
-            assert (
-                saved_doc_previous.internal.get_private() == "PRIVATE_CHANGED"
-            )
+            assert saved_doc_previous.internal.get_private() == "PRIVATE_CHANGED"
 
             await saved_doc_previous.save_changes()
             assert saved_doc_previous.get_saved_state()["num_1"] == 10000
             assert saved_doc_previous.get_previous_saved_state()["num_1"] == 1
-            assert (
-                saved_doc_previous.internal.get_private() == "PRIVATE_CHANGED"
-            )
+            assert saved_doc_previous.internal.get_private() == "PRIVATE_CHANGED"
 
-            new_doc = await DocumentWithTurnedOnSavePrevious.get(
-                saved_doc_previous.id
-            )
+            new_doc = await DocumentWithTurnedOnSavePrevious.get(saved_doc_previous.id)
             assert new_doc.num_1 == 10000
 
         async def test_fetch_save_changes(self, house):
@@ -376,9 +353,7 @@ class TestStateManagement:
             await window_0.save_changes()
 
         async def test_find_one(self, saved_doc_default, state):
-            new_doc = await DocumentWithTurnedOnStateManagement.get(
-                saved_doc_default.id
-            )
+            new_doc = await DocumentWithTurnedOnStateManagement.get(saved_doc_default.id)
             assert new_doc.get_saved_state() == state
             assert new_doc.get_previous_saved_state() is None
 
@@ -407,9 +382,7 @@ class TestStateManagement:
                 assert doc.get_previous_saved_state() is None
 
         async def test_insert(self, state_without_id):
-            doc = parse_model(
-                DocumentWithTurnedOnStateManagement, state_without_id
-            )
+            doc = parse_model(DocumentWithTurnedOnStateManagement, state_without_id)
             assert doc.get_saved_state() is None
             await doc.insert()
             new_state = doc.get_saved_state()
@@ -438,25 +411,8 @@ class TestStateManagement:
             assert saved_doc_previous.get_saved_state()["num_1"] == 100
             assert saved_doc_previous.get_previous_saved_state()["num_1"] == 1
 
-            assert (
-                saved_doc_previous.get_saved_state().get("revision_id") is None
-            )
-            assert (
-                saved_doc_previous.get_saved_state().get(
-                    "previous_revision_id"
-                )
-                is None
-            )
+            assert saved_doc_previous.get_saved_state().get("revision_id") is None
+            assert saved_doc_previous.get_saved_state().get("previous_revision_id") is None
 
-            assert (
-                saved_doc_previous.get_previous_saved_state().get(
-                    "revision_id"
-                )
-                is None
-            )
-            assert (
-                saved_doc_previous.get_previous_saved_state().get(
-                    "previous_revision_id"
-                )
-                is None
-            )
+            assert saved_doc_previous.get_previous_saved_state().get("revision_id") is None
+            assert saved_doc_previous.get_previous_saved_state().get("previous_revision_id") is None

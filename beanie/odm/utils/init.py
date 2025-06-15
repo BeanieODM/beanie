@@ -1,7 +1,8 @@
 import asyncio
 import sys
+from collections.abc import Sequence
 
-from typing_extensions import Sequence, get_args, get_origin
+from typing_extensions import get_args, get_origin
 
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
@@ -9,7 +10,7 @@ from beanie.odm.utils.pydantic import (
     get_model_fields,
     parse_model,
 )
-from beanie.odm.utils.typing import get_index_attributes
+from beanie.odm.utils.typing import get_index_attributes, is_generic_alias
 
 if sys.version_info >= (3, 10):
     from types import UnionType as TypesUnionType
@@ -19,9 +20,7 @@ else:
 import importlib
 import inspect
 from typing import (  # type: ignore
-    List,
     Optional,
-    Type,
     Union,
     _GenericAlias,
 )
@@ -59,12 +58,10 @@ class Output(BaseModel):
 class Initializer:
     def __init__(
         self,
-        database: AsyncIOMotorDatabase = None,
+        database: Optional[AsyncIOMotorDatabase] = None,
         connection_string: Optional[str] = None,
         document_models: Optional[
-            Sequence[
-                Union[Type["DocType"], Type["UnionDocType"], Type["View"], str]
-            ]
+            Sequence[Union[type["DocType"], type["UnionDocType"], type["View"], str]]
         ] = None,
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
@@ -74,40 +71,38 @@ class Initializer:
         """
         Beanie initializer
 
-        :param database: AsyncIOMotorDatabase - motor database instance
-        :param connection_string: str - MongoDB connection string
-        :param document_models: List[Union[Type[DocType], Type[UnionDocType], str]] - model classes
-        or strings with dot separated paths
+        :param database: Optional[AsyncIOMotorDatabase] - motor database instance.
+            Default None.
+        :param connection_string: Optional[str] - MongoDB connection string. Default None.
+        :param document_models: Optional[Sequence[Union[type[Document], type[UnionDoc], type["View"], str]]]
+            - model classes or strings with dot separated paths. Default None
         :param allow_index_dropping: bool - if index dropping is allowed.
-        Default False
+            Default False
         :param recreate_views: bool - if views should be recreated. Default False
         :param multiprocessing_mode: bool - if multiprocessing mode is on
-        it will patch the motor client to use process's event loop.
+            it will patch the motor client to use process's event loop. Default False
         :param skip_indexes: bool - if you want to skip working with indexes. Default False
         :return: None
         """
 
-        self.inited_classes: List[Type] = []
+        self.inited_classes: list[type] = []
         self.allow_index_dropping = allow_index_dropping
         self.skip_indexes = skip_indexes
         self.recreate_views = recreate_views
 
-        self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
+        self.models_with_updated_forward_refs: list[type[BaseModel]] = []
 
         if (connection_string is None and database is None) or (
             connection_string is not None and database is not None
         ):
-            raise ValueError(
-                "connection_string parameter or database parameter must be set"
-            )
+            raise ValueError("connection_string parameter or database parameter must be set")
 
         if document_models is None:
             raise ValueError("document_models parameter must be set")
         if connection_string is not None:
-            database = AsyncIOMotorClient(
-                connection_string
-            ).get_default_database()
+            database = AsyncIOMotorClient(connection_string).get_default_database()
 
+        assert database is not None
         self.database: AsyncIOMotorDatabase = database
 
         if multiprocessing_mode:
@@ -119,18 +114,13 @@ class Initializer:
             ModelType.View: 2,
         }
 
-        self.document_models: List[
-            Union[Type[DocType], Type[UnionDocType], Type[View]]
-        ] = [
-            self.get_model(model) if isinstance(model, str) else model
-            for model in document_models
+        self.document_models: list[Union[type[DocType], type[UnionDocType], type[View]]] = [
+            self.get_model(model) if isinstance(model, str) else model for model in document_models
         ]
 
         self.fill_docs_registry()
 
-        self.document_models.sort(
-            key=lambda val: sort_order[val.get_model_type()]
-        )
+        self.document_models.sort(key=lambda val: sort_order[val.get_model_type()])
 
     def __await__(self):
         for model in self.document_models:
@@ -142,11 +132,14 @@ class Initializer:
             module = inspect.getmodule(model)
             members = inspect.getmembers(module)
             for name, obj in members:
-                if inspect.isclass(obj) and issubclass(obj, BaseModel):
+                if not inspect.isclass(obj) or is_generic_alias(obj):
+                    continue
+
+                if issubclass(obj, BaseModel):
                     DocsRegistry.register(name, obj)
 
     @staticmethod
-    def get_model(dot_path: str) -> Type["DocType"]:
+    def get_model(dot_path: str) -> type["DocType"]:
         """
         Get the model by the path in format bar.foo.Model
 
@@ -159,18 +152,12 @@ class Initializer:
             return getattr(importlib.import_module(module_name), class_name)
 
         except ValueError:
-            raise ValueError(
-                f"'{dot_path}' doesn't have '.' path, eg. path.to.your.model.class"
-            )
+            raise ValueError(f"'{dot_path}' doesn't have '.' path, eg. path.to.your.model.class")
 
         except AttributeError:
-            raise AttributeError(
-                f"module '{module_name}' has no class called '{class_name}'"
-            )
+            raise AttributeError(f"module '{module_name}' has no class called '{class_name}'")
 
-    def init_settings(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
-    ):
+    def init_settings(self, cls: Union[type[Document], type[View], type[UnionDoc]]):
         """
         Init Settings
 
@@ -189,9 +176,7 @@ class Initializer:
                 if not attr.startswith("__")
             }
         if issubclass(cls, Document):
-            cls._document_settings = parse_model(
-                DocumentSettings, settings_vars
-            )
+            cls._document_settings = parse_model(DocumentSettings, settings_vars)
         if issubclass(cls, View):
             cls._settings = parse_model(ViewSettings, settings_vars)
         if issubclass(cls, UnionDoc):
@@ -199,7 +184,7 @@ class Initializer:
 
     if not IS_PYDANTIC_V2:
 
-        def update_forward_refs(self, cls: Type[BaseModel]):
+        def update_forward_refs(self, cls: type[BaseModel]):
             """
             Update forward refs
 
@@ -212,9 +197,7 @@ class Initializer:
 
     # General. Relations
 
-    def detect_link(
-        self, field: FieldInfo, field_name: str
-    ) -> Optional[LinkInfo]:
+    def detect_link(self, field: FieldInfo, field_name: str) -> Optional[LinkInfo]:
         """
         It detects link and returns LinkInfo if any found.
 
@@ -231,10 +214,7 @@ class Initializer:
 
         for cls in classes:
             # Check if annotation is one of the custom classes
-            if (
-                isinstance(field.annotation, _GenericAlias)
-                and field.annotation.__origin__ is cls
-            ):
+            if isinstance(field.annotation, _GenericAlias) and field.annotation.__origin__ is cls:
                 if cls is Link:
                     return LinkInfo(
                         field_name=field_name,
@@ -245,16 +225,14 @@ class Initializer:
                 if cls is BackLink:
                     return LinkInfo(
                         field_name=field_name,
-                        lookup_field_name=get_extra_field_info(
-                            field, "original_field"
-                        ),  # type: ignore
+                        lookup_field_name=get_extra_field_info(field, "original_field"),  # type: ignore
                         document_class=DocsRegistry.evaluate_fr(args[0]),  # type: ignore
                         link_type=LinkTypes.BACK_DIRECT,
                     )
 
             # Check if annotation is List[custom class]
             elif (
-                (origin is List or origin is list)
+                (origin is list or origin is list)
                 and len(args) == 1
                 and isinstance(args[0], _GenericAlias)
                 and args[0].__origin__ is cls
@@ -263,9 +241,7 @@ class Initializer:
                     return LinkInfo(
                         field_name=field_name,
                         lookup_field_name=field_name,
-                        document_class=DocsRegistry.evaluate_fr(
-                            get_args(args[0])[0]
-                        ),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
                         link_type=LinkTypes.LIST,
                     )
                 if cls is BackLink:
@@ -274,9 +250,7 @@ class Initializer:
                         lookup_field_name=get_extra_field_info(  # type: ignore
                             field, "original_field"
                         ),
-                        document_class=DocsRegistry.evaluate_fr(
-                            get_args(args[0])[0]
-                        ),  # type: ignore
+                        document_class=DocsRegistry.evaluate_fr(get_args(args[0])[0]),  # type: ignore
                         link_type=LinkTypes.BACK_LIST,
                     )
 
@@ -293,33 +267,24 @@ class Initializer:
                 optional_origin = get_origin(optional)
                 optional_args = get_args(optional)
 
-                if (
-                    isinstance(optional, _GenericAlias)
-                    and optional.__origin__ is cls
-                ):
+                if isinstance(optional, _GenericAlias) and optional.__origin__ is cls:
                     if cls is Link:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field_name,
-                            document_class=DocsRegistry.evaluate_fr(
-                                optional_args[0]
-                            ),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_DIRECT,
                         )
                     if cls is BackLink:
                         return LinkInfo(
                             field_name=field_name,
-                            lookup_field_name=get_extra_field_info(
-                                field, "original_field"
-                            ),
-                            document_class=DocsRegistry.evaluate_fr(
-                                optional_args[0]
-                            ),  # type: ignore
+                            lookup_field_name=get_extra_field_info(field, "original_field"),
+                            document_class=DocsRegistry.evaluate_fr(optional_args[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_DIRECT,
                         )
 
                 elif (
-                    (optional_origin is List or optional_origin is list)
+                    (optional_origin is list or optional_origin is list)
                     and len(optional_args) == 1
                     and isinstance(optional_args[0], _GenericAlias)
                     and optional_args[0].__origin__ is cls
@@ -328,20 +293,14 @@ class Initializer:
                         return LinkInfo(
                             field_name=field_name,
                             lookup_field_name=field_name,
-                            document_class=DocsRegistry.evaluate_fr(
-                                get_args(optional_args[0])[0]
-                            ),  # type: ignore
+                            document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_LIST,
                         )
                     if cls is BackLink:
                         return LinkInfo(
                             field_name=field_name,
-                            lookup_field_name=get_extra_field_info(
-                                field, "original_field"
-                            ),
-                            document_class=DocsRegistry.evaluate_fr(
-                                get_args(optional_args[0])[0]
-                            ),  # type: ignore
+                            lookup_field_name=get_extra_field_info(field, "original_field"),
+                            document_class=DocsRegistry.evaluate_fr(get_args(optional_args[0])[0]),  # type: ignore
                             link_type=LinkTypes.OPTIONAL_BACK_LIST,
                         )
         return None
@@ -357,15 +316,13 @@ class Initializer:
             if link_info.nested_links is None:
                 link_info.nested_links = {}
             link_info.nested_links[k] = nested_link_info
-            new_depth = (
-                current_depth - 1 if current_depth is not None else None
-            )
+            new_depth = current_depth - 1 if current_depth is not None else None
             self.check_nested_links(nested_link_info, current_depth=new_depth)
 
     # Document
 
     @staticmethod
-    def set_default_class_vars(cls: Type[Document]):
+    def set_default_class_vars(cls: type[Document]):
         """
         Set default class variables.
 
@@ -407,17 +364,13 @@ class Initializer:
             setattr(cls, k, ExpressionField(path))
 
             link_info = self.detect_link(v, k)
-            depth_level = cls.get_settings().max_nesting_depths_per_field.get(
-                k, None
-            )
+            depth_level = cls.get_settings().max_nesting_depths_per_field.get(k, None)
             if depth_level is None:
                 depth_level = cls.get_settings().max_nesting_depth
             if link_info is not None:
                 if depth_level > 0 or depth_level is None:
                     cls._link_fields[k] = link_info
-                    self.check_nested_links(
-                        link_info, current_depth=depth_level
-                    )
+                    self.check_nested_links(link_info, current_depth=depth_level)
                 elif depth_level <= 0:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
@@ -455,9 +408,7 @@ class Initializer:
 
         if document_settings.union_doc is not None:
             name = cls.get_settings().name or cls.__name__
-            document_settings.name = document_settings.union_doc.register_doc(
-                name, cls
-            )
+            document_settings.name = document_settings.union_doc.register_doc(name, cls)
             document_settings.union_doc_alias = name
 
         # set a name
@@ -466,13 +417,8 @@ class Initializer:
             document_settings.name = cls.__name__
 
         # check mongodb version fits
-        if (
-            document_settings.timeseries is not None
-            and cls._database_major_version < 5
-        ):
-            raise MongoDBVersionError(
-                "Timeseries are supported by MongoDB version 5 and higher"
-            )
+        if document_settings.timeseries is not None and cls._database_major_version < 5:
+            raise MongoDBVersionError("Timeseries are supported by MongoDB version 5 and higher")
 
         # create motor collection
         if (
@@ -483,9 +429,7 @@ class Initializer:
             )
         ):
             collection = await self.database.create_collection(
-                **document_settings.timeseries.build_query(
-                    document_settings.name
-                )
+                **document_settings.timeseries.build_query(document_settings.name)
             )
         else:
             collection = self.database[document_settings.name]
@@ -501,15 +445,12 @@ class Initializer:
 
         index_information = await collection.index_information()
 
-        old_indexes = IndexModelField.from_motor_index_information(
-            index_information
-        )
+        old_indexes = IndexModelField.from_motor_index_information(index_information)
         new_indexes = []
 
         # Indexed field wrapped with Indexed()
         indexed_fields = (
-            (k, fvalue, get_index_attributes(fvalue))
-            for k, fvalue in get_model_fields(cls).items()
+            (k, fvalue, get_index_attributes(fvalue)) for k, fvalue in get_model_fields(cls).items()
         )
         found_indexes = [
             IndexModelField(
@@ -528,21 +469,16 @@ class Initializer:
         ]
 
         if document_settings.merge_indexes:
-            result: List[IndexModelField] = []
+            result: list[IndexModelField] = []
             for subclass in reversed(cls.mro()):
-                if issubclass(subclass, Document) and not subclass == Document:
-                    if (
-                        subclass not in self.inited_classes
-                        and not subclass == cls
-                    ):
+                if issubclass(subclass, Document) and subclass != Document:
+                    if subclass not in self.inited_classes and subclass != cls:
                         await self.init_class(subclass)
                     if subclass.get_settings().indexes:
                         result = IndexModelField.merge_indexes(
                             result, subclass.get_settings().indexes
                         )
-            found_indexes = IndexModelField.merge_indexes(
-                found_indexes, result
-            )
+            found_indexes = IndexModelField.merge_indexes(found_indexes, result)
 
         else:
             if document_settings.indexes:
@@ -555,9 +491,7 @@ class Initializer:
         # delete indexes
         # Only drop indexes if the user specifically allows for it
         if allow_index_dropping:
-            for index in IndexModelField.list_difference(
-                old_indexes, new_indexes
-            ):
+            for index in IndexModelField.list_difference(old_indexes, new_indexes):
                 await collection.drop_index(index.name)
 
         # create indices
@@ -566,7 +500,7 @@ class Initializer:
                 IndexModelField.list_to_index_model(new_indexes)
             )
 
-    async def init_document(self, cls: Type[Document]) -> Optional[Output]:
+    async def init_document(self, cls: type[Document]) -> Optional[Output]:
         """
         Init Document-based class
 
@@ -605,7 +539,7 @@ class Initializer:
                 cls._class_id = output.class_name
                 cls.set_collection_name(output.collection_name)
                 parent.add_child(cls._class_id, cls)
-                cls._parent = parent
+                cls._parent = parent  # type: ignore[assignment]
                 cls._inheritance_inited = True
 
             await self.init_document_collection(cls)
@@ -642,17 +576,13 @@ class Initializer:
             path = v.alias or k
             setattr(cls, k, ExpressionField(path))
             link_info = self.detect_link(v, k)
-            depth_level = cls.get_settings().max_nesting_depths_per_field.get(
-                k, None
-            )
+            depth_level = cls.get_settings().max_nesting_depths_per_field.get(k, None)
             if depth_level is None:
                 depth_level = cls.get_settings().max_nesting_depth
             if link_info is not None:
                 if depth_level > 0:
                     cls._link_fields[k] = link_info
-                    self.check_nested_links(
-                        link_info, current_depth=depth_level
-                    )
+                    self.check_nested_links(link_info, current_depth=depth_level)
                 elif depth_level <= 0:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
@@ -675,7 +605,7 @@ class Initializer:
         view_settings.motor_db = self.database
         view_settings.motor_collection = self.database[view_settings.name]
 
-    async def init_view(self, cls: Type[View]):
+    async def init_view(self, cls: type[View]):
         """
         Init View-based class
 
@@ -704,7 +634,7 @@ class Initializer:
 
     # Union Doc
 
-    async def init_union_doc(self, cls: Type[UnionDoc]):
+    async def init_union_doc(self, cls: type[UnionDoc]):
         """
         Init Union Doc based class
 
@@ -723,7 +653,7 @@ class Initializer:
 
     @staticmethod
     def check_deprecations(
-        cls: Union[Type[Document], Type[View], Type[UnionDoc]],
+        cls: Union[type[Document], type[View], type[UnionDoc]],
     ):
         if hasattr(cls, "Collection"):
             raise Deprecation(
@@ -734,9 +664,7 @@ class Initializer:
 
     # Final
 
-    async def init_class(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
-    ):
+    async def init_class(self, cls: Union[type[Document], type[View], type[UnionDoc]]):
         """
         Init Document, View or UnionDoc based class.
 
@@ -759,10 +687,10 @@ class Initializer:
 
 
 async def init_beanie(
-    database: AsyncIOMotorDatabase = None,
+    database: Optional[AsyncIOMotorDatabase] = None,
     connection_string: Optional[str] = None,
     document_models: Optional[
-        Sequence[Union[Type[Document], Type[UnionDoc], Type["View"], str]]
+        Sequence[Union[type[Document], type[UnionDoc], type["View"], str]]
     ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
@@ -772,12 +700,14 @@ async def init_beanie(
     """
     Beanie initialization
 
-    :param database: AsyncIOMotorDatabase - motor database instance
-    :param connection_string: str - MongoDB connection string
-    :param document_models: List[Union[Type[DocType], Type[UnionDocType], str]] - model classes
-    or strings with dot separated paths
+    :param database: Optional[AsyncIOMotorDatabase] - motor database instance.
+        Default None
+    :param connection_string: Optional[str] - MongoDB connection string.
+        Default None
+    :param document_models: Optional[Sequence[Union[type[Document], type[UnionDoc], type["View"], str]]]
+        - model classes or strings with dot separated paths. Default None
     :param allow_index_dropping: bool - if index dropping is allowed.
-    Default False
+        Default False
     :param recreate_views: bool - if views should be recreated. Default False
     :param multiprocessing_mode: bool - if multiprocessing mode is on
         it will patch the motor client to use process's event loop. Default False

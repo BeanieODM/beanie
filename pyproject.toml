@@ -117,15 +117,67 @@ ignore_missing_imports = true
 include = ["tests/typing", "beanie"]
 
 [tool.ruff]
-line-length = 79
-fix = true
-target-version = "py312"
-include = ["**/*.py", ".github/**/*.py"]
+line-length = 100
+fix = false
+target-version = "py39"
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".vscode",
+    "__pycache__",
+    ".ruff_cache",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    "docs"
+]
+
+[tool.ruff.lint.pycodestyle]
+# max-doc-length = 72 # PEP-8
 
 [tool.ruff.lint]
-ignore = ["E501"]
-extend-select = ["I001"]
-per-file-ignores = { "tests/*" = ["E711"] }
-
+preview = true
+select =  [
+    # pycodestyle
+    "E",
+    "W",
+     # isort
+    "I",
+    # pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # Ruff specific
+    "RUF"
+]
+ignore = [
+    "E501",
+    "RUF005",
+    "RUF012",
+    "RUF022",
+    "SIM112",
+    # Ignored for now, pending fix
+    "B006",
+    "B904",
+    "RUF015",
+    "RUF036",
+    "SIM102",
+    "SIM103",
+    "SIM108",
+    "SIM118"
+]
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    # Allow lambda expressions in tests
+    "E711",
+    # Suppress useless attribute access in tests
+    "B018"
+]

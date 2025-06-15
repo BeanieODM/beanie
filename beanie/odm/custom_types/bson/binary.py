@@ -1,8 +1,7 @@
-from typing import Any
+from typing import Annotated, Any
 
 import bson
 import pydantic
-from typing_extensions import Annotated
 
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
@@ -12,9 +11,7 @@ def _to_bson_binary(value: Any) -> bson.Binary:
 
 
 if IS_PYDANTIC_V2:
-    BsonBinary = Annotated[
-        bson.Binary, pydantic.PlainValidator(_to_bson_binary)
-    ]
+    BsonBinary = Annotated[bson.Binary, pydantic.PlainValidator(_to_bson_binary)]
 else:
 
     class BsonBinary(bson.Binary):  # type: ignore[no-redef]

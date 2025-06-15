@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, Optional, Type, TypeVar, Union, overload
+from typing import Any, Optional, TypeVar, Union, overload
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pydantic import BaseModel
@@ -20,20 +20,20 @@ class AggregateInterface:
     @overload
     @classmethod
     def aggregate(
-        cls: Type[DocType],
+        cls: type[DocType],
         aggregation_pipeline: list,
         projection_model: None = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
-    ) -> AggregationQuery[Dict[str, Any]]: ...
+    ) -> AggregationQuery[dict[str, Any]]: ...
 
     @overload
     @classmethod
     def aggregate(
-        cls: Type[DocType],
+        cls: type[DocType],
         aggregation_pipeline: list,
-        projection_model: Type[DocumentProjectionType],
+        projection_model: type[DocumentProjectionType],
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
@@ -41,14 +41,14 @@ class AggregateInterface:
 
     @classmethod
     def aggregate(
-        cls: Type[DocType],
+        cls: type[DocType],
         aggregation_pipeline: list,
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
+        projection_model: Optional[type[DocumentProjectionType]] = None,
         session: Optional[AsyncIOMotorClientSession] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
     ) -> Union[
-        AggregationQuery[Dict[str, Any]],
+        AggregationQuery[dict[str, Any]],
         AggregationQuery[DocumentProjectionType],
     ]:
         """

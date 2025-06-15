@@ -76,9 +76,7 @@ async def test_encode_regex():
 
 
 def test_encode_with_custom_encoder():
-    assert isinstance(
-        Encoder(custom_encoders={datetime: str}).encode(datetime.now()), str
-    )
+    assert isinstance(Encoder(custom_encoders={datetime: str}).encode(datetime.now()), str)
 
 
 async def test_bytes():
@@ -92,7 +90,7 @@ async def test_bytes():
     assert isinstance(new_doc.bytes_field, bytes)
 
 
-async def test_bytes_already_binary():
+def test_bytes_already_binary():
     b = Binary(b"123", 3)
     encoded_b = Encoder().encode(b)
     assert isinstance(encoded_b, Binary)
@@ -153,9 +151,7 @@ async def test_should_be_able_to_save_retrieve_doc_with_url():
     assert isinstance(doc.url_field, AnyUrl)
     await doc.save()
 
-    new_doc = await DocumentWithHttpUrlField.find_one(
-        DocumentWithHttpUrlField.id == doc.id
-    )
+    new_doc = await DocumentWithHttpUrlField.find_one(DocumentWithHttpUrlField.id == doc.id)
 
     assert isinstance(new_doc.url_field, AnyUrl)
     assert new_doc.url_field == doc.url_field
