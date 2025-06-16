@@ -2,6 +2,52 @@
 
 Beanie project
 
+## [1.30.0] - 2025-06-10
+### Docs: update backlink usage of original_field for pydantic v2
+- Author - [scarlet2131](https://github.com/scarlet2131)
+- PR <https://github.com/BeanieODM/beanie/pull/1183>
+### Fix: first_or_none no longer mutates findmany object (#1116)
+- Author - [egorzh01](https://github.com/egorzh01)
+- PR <https://github.com/BeanieODM/beanie/pull/1178>
+### Migration finder skips modules starting with underscore
+- Author - [unexceptable](https://github.com/unexceptable)
+- PR <https://github.com/BeanieODM/beanie/pull/1177>
+### Docs: update incorrect event-based actions docs
+- Author - [kaperont](https://github.com/kaperont)
+- PR <https://github.com/BeanieODM/beanie/pull/1163>
+### Fix: deprecate bucket_rounding_second in favor of bucket_rounding_seconds in timeseriesconfig
+- Author - [m00rex](https://github.com/m00rex)
+- PR <https://github.com/BeanieODM/beanie/pull/1162>
+### Switch to precommit ci
+- Author - [07pepa](https://github.com/07pepa)
+- PR <https://github.com/BeanieODM/beanie/pull/1160>
+### Drop py3.8 support
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/1159>
+### Update toml dependency to use tomli instead of toml
+- Author - [Taaku18](https://github.com/Taaku18)
+- PR <https://github.com/BeanieODM/beanie/pull/1144>
+### Fix failing tests in ci
+- Author - [staticxterm](https://github.com/staticxterm)
+- PR <https://github.com/BeanieODM/beanie/pull/1141>
+### Fix find type hint for filter args
+- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
+- PR <https://github.com/BeanieODM/beanie/pull/1139>
+### Fixed attributeerror in merge_model when updating document
+- Author - [mattewid](https://github.com/mattewid)
+- PR <https://github.com/BeanieODM/beanie/pull/1126>
+### Fix bulkwriter.__init__ bug when it has object_class param input
+- Author - [hagd0520](https://github.com/hagd0520)
+- PR <https://github.com/BeanieODM/beanie/pull/1107>
+### Change schema generation for pydanticobjectid
+- Author - [dantetemplar](https://github.com/dantetemplar)
+- PR <https://github.com/BeanieODM/beanie/pull/1099>
+### Add deduplication of entries to changelog script
+- Author - [staticxterm](https://github.com/staticxterm)
+- PR <https://github.com/BeanieODM/beanie/pull/1081>
+
+[1.30.0]: https://pypi.org/project/beanie/1.30.0
+
 ## [1.29.0] - 2025-01-06
 ### Fix serialization of link/backlink and openapi schema generation
 - Author - [staticxterm](https://github.com/staticxterm)

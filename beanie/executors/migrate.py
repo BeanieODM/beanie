@@ -2,12 +2,17 @@ import asyncio
 import logging
 import os
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import click
-import toml
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 from beanie.migrations import template
 from beanie.migrations.database import DBHandler
@@ -89,9 +94,10 @@ class MigrationSettings:
     def get_from_toml(field_name) -> Any:
         path = Path("pyproject.toml")
         if path.is_file():
+            with path.open("rb") as f:
+                toml_data = tomllib.load(f)
             val = (
-                toml.load(path)
-                .get("tool", {})
+                toml_data.get("tool", {})
                 .get("beanie", {})
                 .get("migrations", {})
             )
@@ -116,6 +122,11 @@ async def run_migrate(settings: MigrationSettings):
         allow_index_dropping=settings.allow_index_dropping,
         use_transaction=settings.use_transaction,
     )
+
+    # Cleanup
+    client = DBHandler.get_cli()
+    if client:
+        client.close()
 
 
 @migrations.command()

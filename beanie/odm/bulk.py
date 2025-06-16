@@ -19,10 +19,10 @@ if TYPE_CHECKING:
     from beanie.odm.union_doc import UnionDoc
 
 _WriteOp = Union[
-    InsertOne[Mapping[str, Any]],
+    InsertOne[Mapping[Any, Any]],
     DeleteOne,
     DeleteMany,
-    ReplaceOne[Mapping[str, Any]],
+    ReplaceOne[Mapping[Any, Any]],
     UpdateOne,
     UpdateMany,
 ]

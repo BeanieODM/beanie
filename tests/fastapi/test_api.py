@@ -11,17 +11,11 @@ async def test_create_window(api_client):
 
 async def test_get_window(api_client):
     payload = {"x": 10, "y": 20}
-    data1 = (
-        (await api_client.post("/v1/windows/", json=payload))
-        .raise_for_status()
-        .json()
-    )
+    resp = await api_client.post("/v1/windows/", json=payload)
+    data1 = resp.json()
     window_id = data1["_id"]
-    data2 = (
-        (await api_client.get(f"/v1/windows/{window_id}"))
-        .raise_for_status()
-        .json()
-    )
+    resp2 = await api_client.get(f"/v1/windows/{window_id}")
+    data2 = resp2.json()
     assert data2 == data1
 
 

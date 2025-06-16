@@ -32,6 +32,7 @@ from tests.odm.models import (
     DocumentTestModelWithIndexFlags,
     DocumentTestModelWithIndexFlagsAliases,
     DocumentTestModelWithLink,
+    DocumentTestModelWithModelConfigExtraAllow,
     DocumentTestModelWithSimpleIndex,
     DocumentTestModelWithSoftDelete,
     DocumentToBeLinked,
@@ -123,6 +124,7 @@ TESTING_MODELS = [
     DocumentTestModelWithSoftDelete,
     DocumentTestModelWithLink,
     DocumentTestModelWithCustomCollectionName,
+    DocumentTestModelWithModelConfigExtraAllow,
     DocumentTestModelWithSimpleIndex,
     DocumentTestModelWithIndexFlags,
     DocumentTestModelWithIndexFlagsAliases,
@@ -309,24 +311,34 @@ async def session(cli):
     await s.end_session()
 
 
+@pytest.fixture
+def recwarn_always(recwarn):
+    warnings.simplefilter("always")
+    # ResourceWarnings about unclosed sockets can occur nondeterministically
+    # (during GC) which throws off the tests
+    warnings.simplefilter("ignore", ResourceWarning)
+    return recwarn
+
+
 @pytest.fixture()
-async def deprecated_init_beanie(db):
-    for model in TESTING_MODELS:  # crude clear from init
+async def deprecated_init_beanie(db, recwarn_always):
+    await init_beanie(
+        database=db,
+        document_models=[DocumentWithDeprecatedHiddenField],
+    )
+
+    assert len(recwarn_always) == 1
+    assert issubclass(recwarn_always[0].category, DeprecationWarning)
+    assert (
+        "DocumentWithDeprecatedHiddenField: 'hidden=True' is deprecated, please use 'exclude=True'"
+        in str(recwarn_always[0].message)
+    )
+
+    yield
+
+    for model in TESTING_MODELS:
         await model.get_motor_collection().drop()
         await model.get_motor_collection().drop_indexes()
-    with warnings.catch_warnings(record=True) as w:
-        warnings.simplefilter("always")
-
-        await init_beanie(
-            database=db,
-            document_models=[DocumentWithDeprecatedHiddenField],
-        )
-        assert len(w) == 1
-        assert issubclass(w[-1].category, DeprecationWarning)
-        assert (
-            "DocumentWithDeprecatedHiddenField: 'hidden=True' is deprecated, please use 'exclude=True'"
-            in str(w[-1].message)
-        )
 
 
 @pytest.fixture(autouse=True)
@@ -335,12 +347,12 @@ async def init(db):
         database=db,
         document_models=TESTING_MODELS,
     )
-    try:
-        yield None
-    finally:
-        for model in TESTING_MODELS:
-            await model.get_motor_collection().drop()
-            await model.get_motor_collection().drop_indexes()
+
+    yield
+
+    for model in TESTING_MODELS:
+        await model.get_motor_collection().drop()
+        await model.get_motor_collection().drop_indexes()
 
 
 @pytest.fixture
