@@ -20,7 +20,7 @@ async def test_serialization_types_preserved_after_insertion():
     assert document is not None
     assert document.test_int is not None
     assert document.test_str is not None
-    dumped = document.model_dump()
+    dumped = document.model_dump(by_alias=True)
     assert "test_int_serialize" in dumped
     assert "test_str_serialize" in dumped
     assert "test_int" not in dumped

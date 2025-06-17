@@ -32,5 +32,7 @@ def get_projection(
     document_projection: Dict[str, int] = {}
 
     for name, field in get_model_fields(model).items():
-        document_projection[field.alias or name] = 1
+        document_projection[
+            getattr(field, "serialization_alias", None) or field.alias or name
+        ] = 1
     return document_projection
