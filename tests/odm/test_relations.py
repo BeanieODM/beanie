@@ -438,28 +438,37 @@ class TestFind:
         door = await Door(t=10, window=window, locks=[lock]).insert()
 
         # Inserted the houses to delete
-        await House(windows=[window], door=door, height=10, name="test").insert()
-        await House(windows=[window], door=door, height=12, name="test2").insert()
+        await House(
+            windows=[window], door=door, height=10, name="test"
+        ).insert()
+        await House(
+            windows=[window], door=door, height=12, name="test2"
+        ).insert()
 
         # Perform deletion
         deleted = await House.find(House.height > 5, fetch_links=True).delete()
 
-        assert deleted.deleted_count == 2          # we inserted 2
+        assert deleted.deleted_count == 2  # we inserted 2
         remaining = await House.find_all().to_list()
         assert len(remaining) == 0
-
 
     async def test_chained_find_with_fetch_links_and_update(self):
         lock = await Lock(k=123).insert()
         window = await Window(x=1, y=2, lock=lock).insert()
         door = await Door(t=10, window=window, locks=[lock]).insert()
 
-        await House(windows=[window], door=door, height=10, name="test").insert()
-        await House(windows=[window], door=door, height=15, name="test2").insert()
+        await House(
+            windows=[window], door=door, height=10, name="test"
+        ).insert()
+        await House(
+            windows=[window], door=door, height=15, name="test2"
+        ).insert()
 
         # Update using chained find with fetch_links
-        result = await House.find(House.height > 5, fetch_links=True).find(House.height < 20).update(
-            {"$set": {"name": "updated"}}
+        result = (
+            await House.find(House.height > 5, fetch_links=True)
+            .find(House.height < 20)
+            .update({"$set": {"name": "updated"}})
         )
 
         # Assert update count
@@ -468,7 +477,6 @@ class TestFind:
         # Confirm updated documents
         updated_docs = await House.find(House.name == "updated").to_list()
         assert len(updated_docs) == 2
-
 
 
 class TestReplace:

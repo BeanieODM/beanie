@@ -8,11 +8,11 @@ from beanie.odm.enums import SortDirection
 from tests.odm.models import (
     Color,
     DocumentWithBsonEncodersFiledsTypes,
+    Door,
     House,
+    Lock,
     Sample,
     Window,
-    Door,
-    Lock
 )
 
 
@@ -436,10 +436,12 @@ async def test_fetch_links_with_chained_delete():
     await House(windows=[window], door=door, height=10, name="test").insert()
     await House(windows=[window], door=door, height=12, name="test2").insert()
 
-   # Deletion with chained query and fetch_links
-    deleted_count = await House.find(
-        House.height > 5, fetch_links=True
-    ).find(House.height < 20).delete()
+    # Deletion with chained query and fetch_links
+    deleted_count = (
+        await House.find(House.height > 5, fetch_links=True)
+        .find(House.height < 20)
+        .delete()
+    )
 
     assert deleted_count.deleted_count == 2
 
