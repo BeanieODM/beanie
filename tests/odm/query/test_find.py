@@ -10,6 +10,9 @@ from tests.odm.models import (
     DocumentWithBsonEncodersFiledsTypes,
     House,
     Sample,
+    Window,
+    Door,
+    Lock
 )
 
 
@@ -422,3 +425,24 @@ async def test_find_many_with_enum_in_query(preset_documents):
     }
     result = await Sample.find_many(filter_query).to_list()
     assert len(result) == 2
+
+
+# @pytest.mark.asyncio
+async def test_fetch_links_with_chained_delete():
+    lock = await Lock(k=123).insert()
+    window = await Window(x=1, y=2, lock=lock).insert()
+    door = await Door(t=10, window=window, locks=[lock]).insert()
+
+    await House(windows=[window], door=door, height=10, name="test").insert()
+    await House(windows=[window], door=door, height=12, name="test2").insert()
+
+   # Deletion with chained query and fetch_links
+    deleted_count = await House.find(
+        House.height > 5, fetch_links=True
+    ).find(House.height < 20).delete()
+
+    assert deleted_count.deleted_count == 2
+
+    # Confirm deletion
+    remaining = await House.find_all().to_list()
+    assert len(remaining) == 0

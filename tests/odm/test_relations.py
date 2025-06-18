@@ -431,6 +431,24 @@ class TestFind:
         assert doc.back_link.link.id == doc.id
         assert isinstance(doc.back_link.link.back_link, BackLink)
 
+    async def test_delete_with_fetch_links_should_fail(self):
+        # Setup linked documents
+        lock = await Lock(k=123).insert()
+        window = await Window(x=1, y=2, lock=lock).insert()
+        door = await Door(t=10, window=window, locks=[lock]).insert()
+
+        # Insert the houses you intend to delete
+        await House(windows=[window], door=door, height=10, name="test").insert()
+        await House(windows=[window], door=door, height=12, name="test2").insert()
+
+        # Perform deletion
+        deleted = await House.find(House.height > 5, fetch_links=True).delete()
+
+        assert deleted.deleted_count == 2          # we inserted 2
+        remaining = await House.find_all().to_list()
+        assert len(remaining) == 0
+
+
 
 class TestReplace:
     async def test_do_nothing(self, house):
