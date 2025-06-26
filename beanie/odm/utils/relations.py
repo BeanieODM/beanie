@@ -1,6 +1,6 @@
 from collections.abc import Mapping
+from collections.abc import Mapping as MappingType
 from typing import TYPE_CHECKING, Any, Dict
-from typing import Mapping as MappingType
 
 from beanie.odm.fields import (
     ExpressionField,
@@ -24,7 +24,7 @@ def convert_ids(
             isinstance(k, ExpressionField)
             and doc.get_link_fields() is not None
             and len(k_splitted) == 2
-            and k_splitted[0] in doc.get_link_fields().keys()  # type: ignore
+            and k_splitted[0] in doc.get_link_fields()  # type: ignore
             and k_splitted[1] == "id"
         ):
             if fetch_links:

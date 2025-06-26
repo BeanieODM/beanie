@@ -1,13 +1,11 @@
+from collections.abc import Coroutine, Generator, Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Coroutine,
     Dict,
-    Generator,
     Generic,
     List,
-    Mapping,
     Optional,
     Tuple,
     Type,
@@ -612,7 +610,7 @@ class FindMany(
 
     def build_aggregation_pipeline(self, *extra_stages):
         if self.fetch_links:
-            aggregation_pipeline: List[Dict[str, Any]] = (
+            aggregation_pipeline: List[Dict[str, Any]] = (  # type: ignore
                 construct_lookup_queries(
                     self.document_model,
                     nesting_depth=self.nesting_depth,
