@@ -187,7 +187,7 @@ async def test_save_keep_nulls_false():
     assert from_db.m.s is None
 
     raw_data = (
-        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
+        await DocumentWithKeepNullsFalse.get_pymongo_collection().find_one(
             {"_id": doc.id}
         )
     )
@@ -210,7 +210,7 @@ async def test_save_changes_keep_nulls_false():
     assert from_db.m.s is None
 
     raw_data = (
-        await DocumentWithKeepNullsFalse.get_motor_collection().find_one(
+        await DocumentWithKeepNullsFalse.get_pymongo_collection().find_one(
             {"_id": doc.id}
         )
     )

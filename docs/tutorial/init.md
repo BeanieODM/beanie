@@ -1,17 +1,17 @@
-Beanie uses Motor as an async database engine. 
-To initialize previously created documents, you should provide a Motor database instance 
+Beanie uses Async PyMongo as an async database engine. 
+To initialize previously created documents, you should provide an Async PyMongo database instance 
 and a list of your document models to the `init_beanie(...)` function, as it is shown in the example:
 
 ```python
 from beanie import init_beanie, Document
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient
 
 class Sample(Document):
     name: str
 
 async def init():
-    # Create Motor client
-    client = AsyncIOMotorClient(
+    # Create Async PyMongo client
+    client = AsyncMongoClient(
         "mongodb://user:pass@host:27017"
     )
 
