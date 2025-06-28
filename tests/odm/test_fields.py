@@ -19,6 +19,7 @@ from tests.odm.models import (
     DocumentWithBsonEncodersFiledsTypes,
     DocumentWithCustomFiledsTypes,
     DocumentWithDeprecatedHiddenField,
+    DocumentWithExcludedField,
     Sample,
 )
 
@@ -111,11 +112,16 @@ async def test_custom_filed_types():
 
 
 async def test_excluded(document):
-    document = await DocumentTestModel.find_one()
+    doc = DocumentWithExcludedField(included_field=1, excluded_field=2)
+    await doc.insert()
+    stored_doc = await DocumentWithExcludedField.get(doc.id)
+    assert stored_doc is not None
     if IS_PYDANTIC_V2:
-        assert "test_list" not in document.model_dump()
+        assert "included_field" in stored_doc.model_dump()
+        assert "excluded_field" not in stored_doc.model_dump()
     else:
-        assert "test_list" not in document.dict()
+        assert "included_field" in stored_doc.dict()
+        assert "excluded_field" not in stored_doc.dict()
 
 
 async def test_hidden(deprecated_init_beanie):
