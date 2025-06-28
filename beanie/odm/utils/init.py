@@ -397,7 +397,7 @@ class Initializer:
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
-            path = v.alias or k
+            path = getattr(v, "serialization_alias", None) or v.alias or k
             setattr(cls, k, ExpressionField(path))
 
             link_info = self.detect_link(v, k)
@@ -510,7 +510,9 @@ class Initializer:
                 IndexModel(
                     [
                         (
-                            fvalue.alias or k,
+                            getattr(fvalue, "serialization_alias", None)
+                            or fvalue.alias
+                            or k,
                             indexed_attrs[0],
                         )
                     ],
@@ -633,7 +635,7 @@ class Initializer:
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
-            path = v.alias or k
+            path = getattr(v, "serialization_alias", None) or v.alias or k
             setattr(cls, k, ExpressionField(path))
             link_info = self.detect_link(v, k)
             depth_level = cls.get_settings().max_nesting_depths_per_field.get(
