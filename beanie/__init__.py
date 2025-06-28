@@ -8,6 +8,7 @@ from beanie.odm.actions import (
     Replace,
     Save,
     SaveChanges,
+    SoftDelete,
     Update,
     ValidateOnSave,
     after_event,
@@ -64,6 +65,7 @@ __all__ = [
     "Before",
     "After",
     "Update",
+    "SoftDelete",
     # Bulk Write
     "BulkWriter",
     # Migrations

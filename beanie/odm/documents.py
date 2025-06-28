@@ -1278,6 +1278,7 @@ class DocumentWithSoftDelete(Document):
             **pymongo_kwargs,
         )
 
+    @wrap_with_actions(EventTypes.SOFT_DELETE)
     async def delete(
         self,
         session: Optional[AsyncClientSession] = None,
@@ -1287,7 +1288,9 @@ class DocumentWithSoftDelete(Document):
         **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
         self.deleted_at = datetime.now(tz=timezone.utc)
-        await self.save()
+        await self.save(
+            skip_actions=[ActionDirections.BEFORE, ActionDirections.AFTER]
+        )
         return None
 
     @classmethod
