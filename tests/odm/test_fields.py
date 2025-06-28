@@ -17,8 +17,10 @@ from tests.odm.models import (
     DocumentTestModel,
     DocumentTestModelIndexFlagsAnnotated,
     DocumentWithBsonEncodersFiledsTypes,
+    DocumentWithComputedField,
     DocumentWithCustomFiledsTypes,
     DocumentWithDeprecatedHiddenField,
+    DocumentWithExcludedField,
     Sample,
 )
 
@@ -111,11 +113,54 @@ async def test_custom_filed_types():
 
 
 async def test_excluded(document):
-    document = await DocumentTestModel.find_one()
+    doc = DocumentWithExcludedField(included_field=1, excluded_field=2)
+    await doc.insert()
+    stored_doc = await DocumentWithExcludedField.get(doc.id)
+    assert stored_doc is not None
     if IS_PYDANTIC_V2:
-        assert "test_list" not in document.model_dump()
+        assert "included_field" in stored_doc.model_dump()
+        assert "excluded_field" not in stored_doc.model_dump()
     else:
-        assert "test_list" not in document.dict()
+        assert "included_field" in stored_doc.dict()
+        assert "excluded_field" not in stored_doc.dict()
+
+
+@pytest.mark.skipif(not IS_PYDANTIC_V2, reason="Test only for Pydantic v2")
+async def test_computed_field():
+    doc = DocumentWithComputedField(num=1)
+    assert doc.doubled == 2
+
+    await doc.insert()
+    stored_doc = await DocumentWithComputedField.get(doc.id)
+    assert stored_doc and stored_doc.doubled == 2
+
+    stored_doc.num = 2
+    assert stored_doc.doubled == 4
+
+    await stored_doc.replace()
+    replaced_doc = await DocumentWithComputedField.get(doc.id)
+    assert replaced_doc and replaced_doc.doubled == 4
+
+
+@pytest.mark.skipif(not IS_PYDANTIC_V2, reason="Test only for Pydantic v2")
+async def test_computed_field_setter():
+    doc = DocumentWithComputedField(num=1)
+    await doc.insert()
+    cached_uui = doc.cacheable_uuid
+    db_raw_data = (
+        await DocumentWithComputedField.get_motor_collection().find_one(
+            {"_id": doc.id}
+        )
+    )
+    assert db_raw_data == {
+        "_id": doc.id,
+        "num": 1,
+        "doubled": 2,
+        "cacheable_uuid": cached_uui,
+    }
+
+    fetched_doc = await DocumentWithComputedField.get(doc.id)
+    assert fetched_doc and fetched_doc.cacheable_uuid != cached_uui
 
 
 async def test_hidden(deprecated_init_beanie):
