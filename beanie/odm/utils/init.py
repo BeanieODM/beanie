@@ -135,6 +135,15 @@ class Initializer:
     def __await__(self):
         for model in self.document_models:
             yield from self.init_class(model).__await__()
+        # Rebuild all models to resolve forward references after all classes are registered
+        self.rebuild_models()
+
+    def rebuild_models(self):
+        """
+        Rebuild all document models to resolve forward references.
+        This delegates to DocsRegistry which handles the complex logic.
+        """
+        DocsRegistry.rebuild_models()
 
     # General
     def fill_docs_registry(self):
