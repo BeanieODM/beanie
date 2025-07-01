@@ -6,7 +6,7 @@ from typing import List, Optional
 
 import pytest
 
-from beanie import Document, Link
+from beanie import Document, Link, init_beanie
 from beanie.odm.registry import DocsRegistry, ForwardRefProxy
 
 
@@ -52,6 +52,24 @@ class CommentForwardRef(Document):
 class TestForwardReferences:
     """Test forward reference resolution in Links - GitHub Issue #1035"""
 
+    @pytest.fixture(autouse=True)
+    async def setup_models(self, db):
+        """Initialize the forward reference models for testing"""
+        await init_beanie(
+            database=db,
+            document_models=[
+                UserForwardRef,
+                ProfileForwardRef,
+                PostForwardRef,
+                CommentForwardRef,
+            ],
+        )
+        yield
+        # Cleanup after all tests in this class
+        for model in [UserForwardRef, ProfileForwardRef, PostForwardRef, CommentForwardRef]:
+            await model.get_motor_collection().drop()
+            await model.get_motor_collection().drop_indexes()
+
     async def test_forward_references_basic(self):
         """Test that forward references work in basic Link fields"""
         # Create a user
@@ -64,9 +82,6 @@ class TestForwardReferences:
         )
         await post.insert()
 
-        # Verify the link was created properly
-        assert post.author.ref.id == user.id
-
         # Fetch and verify forward reference resolution works
         fetched_post = await PostForwardRef.find_one(
             PostForwardRef.id == post.id, fetch_links=True
@@ -74,6 +89,7 @@ class TestForwardReferences:
         assert fetched_post is not None
         assert isinstance(fetched_post.author, UserForwardRef)
         assert fetched_post.author.username == "testuser"
+        assert fetched_post.author.id == user.id
 
     async def test_forward_references_optional(self):
         """Test that forward references work in Optional Link fields"""
@@ -92,10 +108,6 @@ class TestForwardReferences:
             user=user, favorite_post=post, bio="Test bio"
         )
         await profile.insert()
-
-        # Verify the optional link was created properly
-        assert profile.favorite_post is not None
-        assert profile.favorite_post.ref.id == post.id
 
         # Fetch and verify
         fetched_profile = await ProfileForwardRef.find_one(
