@@ -66,7 +66,12 @@ class TestForwardReferences:
         )
         yield
         # Cleanup after all tests in this class
-        for model in [UserForwardRef, ProfileForwardRef, PostForwardRef, CommentForwardRef]:
+        for model in [
+            UserForwardRef,
+            ProfileForwardRef,
+            PostForwardRef,
+            CommentForwardRef,
+        ]:
             await model.get_motor_collection().drop()
             await model.get_motor_collection().drop_indexes()
 
