@@ -16,8 +16,10 @@ from tests.odm.models import (
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
     DocumentWithComplexDictKey,
+    DocumentWithComputedField,
     DocumentWithDecimalField,
     DocumentWithEnumKeysDict,
+    DocumentWithExcludedField,
     DocumentWithHttpUrlField,
     DocumentWithKeepNullsFalse,
     DocumentWithStringField,
@@ -136,6 +138,22 @@ def test_keep_nulls_false():
     encoder = Encoder(keep_nulls=False, to_db=True)
     encoded_doc = encoder.encode(doc)
     assert encoded_doc == {"m": {"i": 10}}
+
+
+async def test_excluded():
+    doc = DocumentWithExcludedField(included_field=1, excluded_field=2)
+    encoded_doc = Encoder().encode(doc)
+    assert "included_field" in encoded_doc
+    assert "excluded_field" not in encoded_doc
+
+
+@pytest.mark.skipif(not IS_PYDANTIC_V2, reason="Test only for Pydantic v2")
+def test_computed_field():
+    doc = DocumentWithComputedField(num=1)
+    encoded_doc = Encoder().encode(doc)
+    print(doc)
+    print(encoded_doc)
+    assert encoded_doc["doubled"] == 2
 
 
 @pytest.mark.skipif(not IS_PYDANTIC_V2, reason="Test only for Pydantic v2")
