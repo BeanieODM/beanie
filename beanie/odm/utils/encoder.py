@@ -83,7 +83,6 @@ class Encoder:
     """
 
     exclude: Container[str] = frozenset()
-    include: Container[str] = frozenset()
     custom_encoders: Mapping[type, SingleArgCallable] = dc.field(
         default_factory=dict
     )
@@ -169,13 +168,7 @@ class Encoder:
     def _should_exclude_field(
         self, key: str, field_info: Optional[pydantic.fields.FieldInfo]
     ):
-        exclude, include = (
-            self.exclude,
-            self.include,
-        )
-
-        if key in include:
-            return False
+        exclude = self.exclude
 
         is_pydantic_excluded_field = (
             field_info is not None
