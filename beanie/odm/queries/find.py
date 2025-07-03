@@ -359,7 +359,7 @@ class FindMany(
             projection_model=projection_model,
             session=session,
             ignore_cache=ignore_cache,
-            fetch_links=fetch_links,
+            fetch_links=fetch_links or self.fetch_links,
             lazy_parse=lazy_parse,
             nesting_depth=nesting_depth,
             nesting_depths_per_field=nesting_depths_per_field,
@@ -815,7 +815,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self.project(projection_model)
         self.set_session(session=session)
         self.ignore_cache = ignore_cache
-        self.fetch_links = fetch_links
+        self.fetch_links = fetch_links or self.fetch_links
         self.pymongo_kwargs.update(pymongo_kwargs)
         self.nesting_depth = nesting_depth
         self.nesting_depths_per_field = nesting_depths_per_field
