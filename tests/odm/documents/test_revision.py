@@ -11,6 +11,27 @@ from tests.odm.models import (
 )
 
 
+async def test_insert():
+    doc_on_beanie = DocumentWithRevisionTurnedOn(num_1=1, num_2=2)
+    await doc_on_beanie.insert()
+    doc_on_db = await DocumentWithRevisionTurnedOn.get(doc_on_beanie.id)
+    if not doc_on_db:
+        raise Exception
+    assert doc_on_beanie.revision_id == doc_on_db.revision_id
+
+
+#   -----------------------------------------------------------------------
+#   This test fails as below
+
+# >       assert doc_on_beanie.revision_id == doc_on_db.revision_id
+# E       AssertionError: assert UUID('7bbbbebd-04d0-417f-b4cc-4c96dd9812a2') == None
+# E        +  where UUID('7bbbbebd-04d0-417f-b4cc-4c96dd9812a2') = DocumentWithRevisionTurnedOn(id=ObjectId('6865e5875dddb4f1219557d3'), revision_id=UUID('7bbbbebd-04d0-417f-b4cc-4c96dd9812a2'), num_1=1, num_2=2).revision_id
+# E        +  and   None = DocumentWithRevisionTurnedOn(id=ObjectId('6865e5875dddb4f1219557d3'), revision_id=None, num_1=1, num_2=2).revision_id
+
+#   From this result, we can see that the revision_id is not set when we insert the document
+#   -----------------------------------------------------------------------
+
+
 async def test_replace():
     doc = DocumentWithRevisionTurnedOn(num_1=1, num_2=2)
     await doc.insert()
