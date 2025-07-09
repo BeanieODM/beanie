@@ -174,6 +174,11 @@ class DocumentTestModel(Document):
         use_state_management = True
 
 
+class DocumentTestModelWithSerializationAlias(Document):
+    test_int: int = Field(serialization_alias="test_int_serialize")
+    test_str: str = Field(serialization_alias="test_str_serialize")
+
+
 class DocumentTestModelWithLink(Document):
     test_link: Link[DocumentTestModel]
 
