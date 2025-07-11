@@ -93,3 +93,81 @@ async def test_min_without_docs(session):
     )
 
     assert n is None
+
+
+async def test_all_sum(preset_documents, session):
+    n = await Sample.sum(Sample.increment)
+
+    assert n == 12
+
+    n = await Sample.sum(Sample.increment, session=session)
+
+    assert n == 12
+
+
+async def test_all_sum_without_docs(session):
+    n = await Sample.sum(Sample.increment)
+
+    assert n is None
+
+    n = await Sample.sum(Sample.increment, session=session)
+
+    assert n is None
+
+
+async def test_all_avg(preset_documents, session):
+    n = await Sample.avg(Sample.increment)
+
+    assert n == 4
+    n = await Sample.avg(Sample.increment, session=session)
+
+    assert n == 4
+
+
+async def test_all_avg_without_docs(session):
+    n = await Sample.avg(Sample.increment)
+
+    assert n is None
+    n = await Sample.avg(Sample.increment, session=session)
+
+    assert n is None
+
+
+async def test_all_max(preset_documents, session):
+    n = await Sample.max(Sample.increment)
+
+    assert n == 5
+
+    n = await Sample.max(Sample.increment, session=session)
+
+    assert n == 5
+
+
+async def test_all_max_without_docs(session):
+    n = await Sample.max(Sample.increment)
+
+    assert n is None
+
+    n = await Sample.max(Sample.increment, session=session)
+
+    assert n is None
+
+
+async def test_all_min(preset_documents, session):
+    n = await Sample.min(Sample.increment)
+
+    assert n == 3
+
+    n = await Sample.min(Sample.increment, session=session)
+
+    assert n == 3
+
+
+async def test_all_min_without_docs(session):
+    n = await Sample.min(Sample.increment)
+
+    assert n is None
+
+    n = await Sample.min(Sample.increment, session=session)
+
+    assert n is None
