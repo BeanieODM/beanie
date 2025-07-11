@@ -20,8 +20,9 @@ class AggregateMethods:
         ignore_cache: bool = False,
     ): ...
 
+    @classmethod
     async def sum(
-        self,
+        cls,
         field: Union[str, ExpressionField],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
@@ -54,7 +55,7 @@ class AggregateMethods:
         # As we did not supply a projection we can safely cast the type (hinting to mypy that we know the type)
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
-            await self.aggregate(
+            await cls.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
@@ -64,8 +65,9 @@ class AggregateMethods:
             return None
         return result[0]["sum"]
 
+    @classmethod
     async def avg(
-        self,
+        cls,
         field,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
@@ -96,7 +98,7 @@ class AggregateMethods:
 
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
-            await self.aggregate(
+            await cls.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
@@ -106,8 +108,9 @@ class AggregateMethods:
             return None
         return result[0]["avg"]
 
+    @classmethod
     async def max(
-        self,
+        cls,
         field: Union[str, ExpressionField],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
@@ -137,7 +140,7 @@ class AggregateMethods:
 
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
-            await self.aggregate(
+            await cls.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,
@@ -147,8 +150,9 @@ class AggregateMethods:
             return None
         return result[0]["max"]
 
+    @classmethod
     async def min(
-        self,
+        cls,
         field: Union[str, ExpressionField],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
@@ -178,7 +182,7 @@ class AggregateMethods:
 
         result: List[Dict[str, Any]] = cast(
             List[Dict[str, Any]],
-            await self.aggregate(
+            await cls.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
                 ignore_cache=ignore_cache,

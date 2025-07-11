@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional, Type, TypeVar, Union, overload
 from pydantic import BaseModel
 from pymongo.asynchronous.client_session import AsyncClientSession
 
+from beanie.odm.interfaces.aggregation_methods import AggregateMethods
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindMany
 
@@ -11,7 +12,7 @@ DocType = TypeVar("DocType", bound="AggregateInterface")
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 
-class AggregateInterface:
+class AggregateInterface(AggregateMethods):
     @classmethod
     @abstractmethod
     def find_all(cls) -> FindMany:
