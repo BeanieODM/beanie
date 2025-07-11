@@ -66,3 +66,22 @@ async def test_create_house_new(api_client):
     assert resp_json["name"] == payload["name"]
     assert resp_json["owner"]["name"] == payload["owner"]["name"][-3:]
     assert resp_json["owner"]["house"]["collection"] == "House"
+
+
+async def test_get_person(api_client):
+    payload = {
+        "name": "FreshHouse",
+        "owner": {"name": "will_be_overridden_to_Bob"},
+    }
+    resp = await api_client.post("/v1/house", json=payload)
+    resp_json = resp.json()
+
+    person_id = resp_json["owner"].get("id")
+    if person_id is None:
+        person_id = resp_json["owner"].get("_id")
+    assert person_id is not None
+
+    resp2 = await api_client.get(f"/v1/person/{person_id}")
+
+    resp2_json = resp2.json()
+    assert resp2_json["name"] == payload["owner"]["name"][-3:]
