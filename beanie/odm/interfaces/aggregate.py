@@ -77,6 +77,25 @@ class AggregateInterface:
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
+        """
+        Sum of values of the given field over the entire collection.
+
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            price: int
+
+        sum_count = await Document.find_all().sum(Sample.price)
+
+        ```
+
+        :param field: Union[str, ExpressionField]
+        :param session: Optional[AsyncClientSession] - pymongo session
+        :param ignore_cache: bool
+        :return: float - sum. None if there are no items.
+        """
         return await cls.find_all().sum(field, session, ignore_cache)
 
     @classmethod
@@ -86,6 +105,24 @@ class AggregateInterface:
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
+        """
+        Average of values of the given field over the entire collection.
+
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            price: int
+
+        avg_count = await Document.find_all().avg(Sample.price)
+        ```
+
+        :param field: Union[str, ExpressionField]
+        :param session: Optional[AsyncClientSession] - pymongo session
+        :param ignore_cache: bool
+        :return: Optional[float] - avg. None if there are no items.
+        """
         return await cls.find_all().avg(field, session, ignore_cache)
 
     @classmethod
@@ -95,6 +132,23 @@ class AggregateInterface:
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
+        """
+        Max of the values of the given field over the entire collection.
+
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            price: int
+
+        max_count = await Document.find_all().max(Sample.price)
+        ```
+
+        :param field: Union[str, ExpressionField]
+        :param session: Optional[AsyncClientSession] - pymongo session
+        :return: float - max. None if there are no items.
+        """
         return await cls.find_all().max(field, session, ignore_cache)
 
     @classmethod
@@ -104,4 +158,21 @@ class AggregateInterface:
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
+        """
+        Min of the values of the given field over the entire collection.
+
+        Example:
+
+        ```python
+
+        class Sample(Document):
+            price: int
+
+        min_count = await Document.find_all().min(Sample.price)
+        ```
+
+        :param field: Union[str, ExpressionField]
+        :param session: Optional[AsyncClientSession] - pymongo session
+        :return: float - min. None if there are no items.
+        """
         return await cls.find_all().min(field, session, ignore_cache)
