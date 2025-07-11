@@ -66,7 +66,7 @@ class AggregateMethods:
 
     async def avg(
         self,
-        field,
+        field: Union[str, ExpressionField],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:

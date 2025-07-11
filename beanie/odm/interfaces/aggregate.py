@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional, Type, TypeVar, Union, overload
 from pydantic import BaseModel
 from pymongo.asynchronous.client_session import AsyncClientSession
 
+from beanie.odm.fields import ExpressionField
 from beanie.odm.queries.aggregation import AggregationQuery
 from beanie.odm.queries.find import FindMany
 
@@ -68,3 +69,39 @@ class AggregateInterface:
             ignore_cache=ignore_cache,
             **pymongo_kwargs,
         )
+
+    @classmethod
+    async def sum(
+        cls,
+        field: Union[str, ExpressionField],
+        session: Optional[AsyncClientSession] = None,
+        ignore_cache: bool = False,
+    ) -> Optional[float]:
+        return await cls.find_all().sum(field, session, ignore_cache)
+
+    @classmethod
+    async def avg(
+        cls,
+        field,
+        session: Optional[AsyncClientSession] = None,
+        ignore_cache: bool = False,
+    ) -> Optional[float]:
+        return await cls.find_all().avg(field, session, ignore_cache)
+
+    @classmethod
+    async def max(
+        cls,
+        field: Union[str, ExpressionField],
+        session: Optional[AsyncClientSession] = None,
+        ignore_cache: bool = False,
+    ) -> Optional[float]:
+        return await cls.find_all().max(field, session, ignore_cache)
+
+    @classmethod
+    async def min(
+        cls,
+        field: Union[str, ExpressionField],
+        session: Optional[AsyncClientSession] = None,
+        ignore_cache: bool = False,
+    ) -> Optional[float]:
+        return await cls.find_all().min(field, session, ignore_cache)
