@@ -159,11 +159,11 @@ class Encoder:
 
         obj_iter_keys = obj.__iter__.keys()
         if IS_PYDANTIC_V2:
-            if obj.__class__.model_config.get('extra') != 'allow':
+            if obj.__class__.model_config.get("extra") != "allow":
                 model_class = obj.__class__
                 obj_iter_keys = list(model_class.model_fields.keys()) + list(
                     model_class.model_computed_fields.keys()
-                )                           
+                )
 
         for key, value in obj.__iter__():
             if key in obj_iter_keys:
