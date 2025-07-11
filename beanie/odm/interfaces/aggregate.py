@@ -87,7 +87,7 @@ class AggregateInterface:
         class Sample(Document):
             price: int
 
-        sum_count = await Document.find_all().sum(Sample.price)
+        sum_count = await Document.sum(Sample.price)
 
         ```
 
@@ -115,7 +115,7 @@ class AggregateInterface:
         class Sample(Document):
             price: int
 
-        avg_count = await Document.find_all().avg(Sample.price)
+        avg_count = await Document.avg(Sample.price)
         ```
 
         :param field: Union[ExpressionField, float, int, str]
@@ -142,7 +142,7 @@ class AggregateInterface:
         class Sample(Document):
             price: int
 
-        max_count = await Document.find_all().max(Sample.price)
+        max_count = await Document.max(Sample.price)
         ```
 
         :param field: Union[ExpressionField, str, Any]
@@ -168,7 +168,7 @@ class AggregateInterface:
         class Sample(Document):
             price: int
 
-        min_count = await Document.find_all().min(Sample.price)
+        min_count = await Document.min(Sample.price)
         ```
 
         :param field: Union[ExpressionField, str, Any]
