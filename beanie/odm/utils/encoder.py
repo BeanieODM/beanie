@@ -159,7 +159,9 @@ class Encoder:
 
         if IS_PYDANTIC_V2:
             model_class = obj.__class__
-            obj_iter_keys = list(model_class.model_fields.keys()) + list(model_class.model_computed_fields.keys())
+            obj_iter_keys = list(model_class.model_fields.keys()) + list(
+                model_class.model_computed_fields.keys()
+            )
 
         for key, value in obj.__iter__():
             if key in obj_iter_keys:
