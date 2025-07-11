@@ -73,7 +73,7 @@ class AggregateInterface:
     @classmethod
     async def sum(
         cls,
-        field: Union[str, ExpressionField],
+        field: Union[ExpressionField, float, int, str],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
@@ -91,7 +91,7 @@ class AggregateInterface:
 
         ```
 
-        :param field: Union[str, ExpressionField]
+        :param field: Union[ExpressionField, float, int, str]
         :param session: Optional[AsyncClientSession] - pymongo session
         :param ignore_cache: bool
         :return: float - sum. None if there are no items.
@@ -101,7 +101,7 @@ class AggregateInterface:
     @classmethod
     async def avg(
         cls,
-        field,
+        field: Union[ExpressionField, float, int, str],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
@@ -118,7 +118,7 @@ class AggregateInterface:
         avg_count = await Document.find_all().avg(Sample.price)
         ```
 
-        :param field: Union[str, ExpressionField]
+        :param field: Union[ExpressionField, float, int, str]
         :param session: Optional[AsyncClientSession] - pymongo session
         :param ignore_cache: bool
         :return: Optional[float] - avg. None if there are no items.
@@ -128,7 +128,7 @@ class AggregateInterface:
     @classmethod
     async def max(
         cls,
-        field: Union[str, ExpressionField],
+        field: Union[ExpressionField, str, Any],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
@@ -145,7 +145,7 @@ class AggregateInterface:
         max_count = await Document.find_all().max(Sample.price)
         ```
 
-        :param field: Union[str, ExpressionField]
+        :param field: Union[ExpressionField, str, Any]
         :param session: Optional[AsyncClientSession] - pymongo session
         :return: float - max. None if there are no items.
         """
@@ -154,7 +154,7 @@ class AggregateInterface:
     @classmethod
     async def min(
         cls,
-        field: Union[str, ExpressionField],
+        field: Union[ExpressionField, str, Any],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
     ) -> Optional[float]:
@@ -171,7 +171,7 @@ class AggregateInterface:
         min_count = await Document.find_all().min(Sample.price)
         ```
 
-        :param field: Union[str, ExpressionField]
+        :param field: Union[ExpressionField, str, Any]
         :param session: Optional[AsyncClientSession] - pymongo session
         :return: float - min. None if there are no items.
         """
