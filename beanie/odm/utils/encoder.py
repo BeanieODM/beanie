@@ -156,7 +156,7 @@ class Encoder:
         get_model_field = get_model_fields(obj).get
 
         if IS_PYDANTIC_V2:
-            model_class = obj.__class__``
+            model_class = obj.__class__
             if model_class.model_config.get("extra") != "allow":
                 obj_iter_keys = set(model_class.model_fields.keys()) | set(
                 model_class.model_computed_fields.keys()
