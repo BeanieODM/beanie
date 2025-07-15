@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Union, cast
 
 from pymongo.asynchronous.client_session import AsyncClientSession
@@ -111,7 +112,7 @@ class AggregateMethods:
         field: Union[str, ExpressionField],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
-    ) -> Optional[float]:
+    ) -> Optional[Union[int, float, datetime]]:
         """
         Max of the values of the given field
 
@@ -128,7 +129,7 @@ class AggregateMethods:
 
         :param field: Union[str, ExpressionField]
         :param session: Optional[AsyncClientSession] - pymongo session
-        :return: float - max. None if there are no items.
+        :return: int, float or datetime - max. None if there are no items.
         """
         pipeline = [
             {"$group": {"_id": None, "max": {"$max": f"${field}"}}},
@@ -152,7 +153,7 @@ class AggregateMethods:
         field: Union[str, ExpressionField],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
-    ) -> Optional[float]:
+    ) -> Optional[Union[int, float, datetime]]:
         """
         Min of the values of the given field
 
@@ -169,7 +170,7 @@ class AggregateMethods:
 
         :param field: Union[str, ExpressionField]
         :param session: Optional[AsyncClientSession] - pymongo session
-        :return: float - min. None if there are no items.
+        :return: int, float or datetime - min. None if there are no items.
         """
         pipeline = [
             {"$group": {"_id": None, "min": {"$min": f"${field}"}}},
