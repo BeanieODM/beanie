@@ -112,7 +112,7 @@ class AggregateMethods:
         field: Union[str, ExpressionField],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
-    ) -> Optional[Union[int, float, datetime]]:
+    ) -> Optional[Any]:
         """
         Max of the values of the given field
 
