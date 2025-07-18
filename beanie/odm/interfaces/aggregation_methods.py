@@ -153,7 +153,7 @@ class AggregateMethods:
         field: Union[str, ExpressionField],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
-    ) -> Optional[Union[int, float, datetime]]:
+    ) -> Optional[Any]:
         """
         Min of the values of the given field
 
