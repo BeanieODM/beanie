@@ -129,7 +129,7 @@ class AggregateMethods:
 
         :param field: Union[str, ExpressionField]
         :param session: Optional[AsyncClientSession] - pymongo session
-        :return: int, float or datetime - max. None if there are no items.
+        :return: Any - max value. None if there are no items.
         """
         pipeline = [
             {"$group": {"_id": None, "max": {"$max": f"${field}"}}},
