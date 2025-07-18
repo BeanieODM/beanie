@@ -170,7 +170,7 @@ class AggregateMethods:
 
         :param field: Union[str, ExpressionField]
         :param session: Optional[AsyncClientSession] - pymongo session
-        :return: int, float or datetime - min. None if there are no items.
+        :return: Any - min value. None if there are no items.
         """
         pipeline = [
             {"$group": {"_id": None, "min": {"$min": f"${field}"}}},
