@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from datetime import datetime
 from typing import Any, Dict, List, Optional, Union, cast
 
 from pymongo.asynchronous.client_session import AsyncClientSession
