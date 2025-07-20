@@ -2,6 +2,19 @@
 
 Beanie project
 
+## [2.0.0] - 2025-07-09
+### Transform asyncdocmethod[doctype, p, r] into any to fix "incorrect call arguments" warning in pycharm
+- Author - [hRtWzFe](https://github.com/hRtWzFe)
+- PR <https://github.com/BeanieODM/beanie/pull/1166>
+### Fix typos in migrations docs
+- Author - [Rishat-F](https://github.com/Rishat-F)
+- PR <https://github.com/BeanieODM/beanie/pull/1136>
+### Motor -> async pymongo
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/1113>
+
+[2.0.0]: https://pypi.org/project/beanie/2.0.0
+
 ## [1.30.0] - 2025-06-10
 ### Docs: update backlink usage of original_field for pydantic v2
 - Author - [scarlet2131](https://github.com/scarlet2131)
