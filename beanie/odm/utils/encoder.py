@@ -156,12 +156,26 @@ class Encoder:
     ) -> Iterable[Tuple[str, Any]]:
         exclude, keep_nulls = self.exclude, self.keep_nulls
         get_model_field = get_model_fields(obj).get
+
+        if IS_PYDANTIC_V2:
+            model_class = obj.__class__
+            if model_class.model_config.get("extra") != "allow":
+                obj_iter_keys = set(model_class.model_fields.keys()) | set(
+                    model_class.model_computed_fields.keys()
+                )
+            else:
+                obj_iter_keys = {k for k, _ in obj.__iter__()}
+        else:
+            obj_iter_keys = {k for k, _ in obj.__iter__()}
+
         for key, value in obj.__iter__():
-            field_info = get_model_field(key)
-            if field_info is not None:
-                key = field_info.alias or key
-            if key not in exclude and (value is not None or keep_nulls):
-                yield key, value
+            if key in obj_iter_keys:
+                field_info = get_model_field(key)
+                out_key = field_info.alias or key if field_info else key
+                if out_key not in exclude and (
+                    value is not None or keep_nulls
+                ):
+                    yield out_key, value
 
 
 def _get_encoder(
