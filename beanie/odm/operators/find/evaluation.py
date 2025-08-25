@@ -1,6 +1,6 @@
 import re
 from abc import ABC
-from typing import Optional, Union
+from typing import AnyStr, Optional, Union
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -100,7 +100,7 @@ class RegEx(BaseFindEvaluationOperator):
     def __init__(
         self,
         field,
-        pattern: Union[str, re.Pattern[Union[bytes, str]]],
+        options: Optional[Union[str, re.Pattern[AnyStr]]] = None,
         options: Optional[str] = None,
     ):
         self.field = field
