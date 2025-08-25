@@ -101,7 +101,6 @@ class RegEx(BaseFindEvaluationOperator):
         self,
         field,
         options: Optional[Union[str, re.Pattern[AnyStr]]] = None,
-        options: Optional[str] = None,
     ):
         self.field = field
         self.pattern = pattern
