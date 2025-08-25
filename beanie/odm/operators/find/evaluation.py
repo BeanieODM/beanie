@@ -100,7 +100,7 @@ class RegEx(BaseFindEvaluationOperator):
     def __init__(
         self,
         field,
-        pattern: Union[str, re.Pattern]],
+        pattern: Union[str, re.Pattern[AnyStr]],
         options: Optional[str] = None,
     ):
         self.field = field
