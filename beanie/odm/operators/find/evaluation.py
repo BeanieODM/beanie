@@ -100,10 +100,8 @@ class RegEx(BaseFindEvaluationOperator):
     def __init__(
         self,
         field,
-        pattern: str,
-        options: Optional[
-            Union[str, re.Pattern[bytes], re.Pattern[str]]
-        ] = None,
+        pattern: Union[str, re.Pattern[bytes], re.Pattern[str]],
+        options: Optional[str] = None,
     ):
         self.field = field
         self.pattern = pattern
@@ -180,9 +178,7 @@ class Text(BaseFindEvaluationOperator):
         if self.language:
             expression["$text"]["$language"] = self.language
         if self.diacritic_sensitive is not None:
-            expression["$text"]["$diacriticSensitive"] = (
-                self.diacritic_sensitive
-            )
+            expression["$text"]["$diacriticSensitive"] = self.diacritic_sensitive
         return expression
 
 
