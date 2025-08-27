@@ -16,9 +16,12 @@ def get_dict(
         exclude = set()
     if document.id is None:
         exclude.add("_id")
-    if not document.get_settings().use_revision:
-        exclude.add("revision_id")
-    encoder = Encoder(exclude=exclude, to_db=to_db, keep_nulls=keep_nulls)
+    include = set()
+    if document.get_settings().use_revision:
+        include.add("revision_id")
+    encoder = Encoder(
+        exclude=exclude, include=include, to_db=to_db, keep_nulls=keep_nulls
+    )
     return encoder.encode(document)
 
 
