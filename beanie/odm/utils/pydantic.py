@@ -30,7 +30,9 @@ def get_field_type(field):
 
 def get_model_fields(model):
     if IS_PYDANTIC_V2:
-        return model.model_fields
+        if isinstance(model, type):
+            return model.model_fields
+        return model.__class__.model_fields
     else:
         return model.__fields__
 
