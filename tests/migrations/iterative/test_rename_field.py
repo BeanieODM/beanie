@@ -37,7 +37,7 @@ async def notes(db):
         note = OldNote(name=str(i), tag=Tag(name="test", color="red"))
         await note.insert()
     yield
-    # await OldNote.delete_all()
+    await db.drop_collection("notes")
 
 
 async def test_migration_rename_field(settings, notes, db):

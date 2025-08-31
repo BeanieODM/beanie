@@ -327,7 +327,6 @@ async def deprecated_init_beanie(db, recwarn_always):
 
     for model in TESTING_MODELS:
         await model.get_pymongo_collection().drop()
-        await model.get_pymongo_collection().drop_indexes()
 
 
 @pytest.fixture(autouse=True)
@@ -341,7 +340,6 @@ async def init(db):
 
     for model in TESTING_MODELS:
         await model.get_pymongo_collection().drop()
-        await model.get_pymongo_collection().drop_indexes()
 
 
 @pytest.fixture
