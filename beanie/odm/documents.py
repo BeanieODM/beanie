@@ -1267,10 +1267,11 @@ class DocumentWithSoftDelete(Document):
 
     Fields:
 
-    - `deleted_at` - marks the document as deleted by setting this field 
+    - `deleted_at` - marks the document as deleted by setting this field
     to the current UTC timestamp
 
     """
+
     deleted_at: Optional[datetime] = None
 
     def is_deleted(self) -> bool:
@@ -1326,7 +1327,7 @@ class DocumentWithSoftDelete(Document):
         """
         Overrides the base :meth:`delete`.
         Marks the document as deleted by setting the ``deleted_at`` timestamp.
-        
+
 
         The document remains in the database but is excluded from all
         standard queries such as :meth:`find`, :meth:`find_one`, and
