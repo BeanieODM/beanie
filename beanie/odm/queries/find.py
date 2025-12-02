@@ -639,7 +639,8 @@ class FindMany(
                 )
 
             if non_text_queries:
-                aggregation_pipeline.append(
+                aggregation_pipeline.insert(
+                    0,
                     {
                         "$match": (
                             {"$and": non_text_queries}
