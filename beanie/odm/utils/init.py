@@ -18,6 +18,7 @@ else:
 
 import importlib
 import inspect
+from importlib.metadata import version
 from typing import (  # type: ignore
     List,
     Optional,
@@ -29,6 +30,7 @@ from typing import (  # type: ignore
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 from pymongo import AsyncMongoClient, IndexModel
+from pymongo.driver_info import DriverInfo
 
 from beanie.exceptions import Deprecation, MongoDBVersionError
 from beanie.odm.actions import ActionRegistry
@@ -48,6 +50,8 @@ from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
 from beanie.odm.union_doc import UnionDoc, UnionDocType
 from beanie.odm.views import View
+
+_DRIVER_METADATA = DriverInfo(name="beanie", version=version("beanie"))
 
 
 class Output(BaseModel):
@@ -102,8 +106,12 @@ class Initializer:
             raise ValueError("document_models parameter must be set")
         if connection_string is not None:
             database = AsyncMongoClient(
-                connection_string
+                connection_string, driver=_DRIVER_METADATA
             ).get_default_database()
+
+        # append_metadata was added in PyMongo 4.14 and is a valid database name prior to that version
+        elif callable(database.client.append_metadata):
+            database.client.append_metadata(_DRIVER_METADATA)
 
         self.database: AsyncDatabase = database
 
