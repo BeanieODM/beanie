@@ -647,7 +647,7 @@ class FindMany(
                             if len(non_text_queries) > 1
                             else non_text_queries[0]
                         )
-                    }
+                    },
                 )
 
         if extra_stages:
