@@ -724,12 +724,6 @@ class Owner(Document):
     vehicles: List[Link[Vehicle]] = []
 
 
-class VehicleSettings:
-    is_root = True
-    name = "vehicles-custom-class-id"
-    class_id = "type"
-
-
 # classes for inheritance test with custom class_ids
 class VehicleWithCustomClassId(Document):
     """Root parent for testing flat inheritance"""
@@ -750,11 +744,14 @@ class VehicleWithCustomClassId(Document):
         # this event will be triggered for all children too (self will have corresponding type)
         ...
 
-    class Settings(VehicleSettings): ...
+    class Settings:
+        is_root = True
+        name = "vehicles-custom-class-id"
+        class_id = "type"
 
 
 class BicycleWithCustomClassId(VehicleWithCustomClassId):
-    class Settings(VehicleSettings):
+    class Settings:
         class_id_value = "bicycle"
 
     type: str = "bicycle"
@@ -763,7 +760,7 @@ class BicycleWithCustomClassId(VehicleWithCustomClassId):
 
 
 class CarWithCustomClassId(VehicleWithCustomClassId, Fuelled):
-    class Settings(VehicleSettings):
+    class Settings:
         class_id_value = "car"
 
     type: str = "car"
@@ -771,7 +768,7 @@ class CarWithCustomClassId(VehicleWithCustomClassId, Fuelled):
 
 
 class BikeWithCustomClassId(VehicleWithCustomClassId, Fuelled):
-    class Settings(VehicleSettings):
+    class Settings:
         class_id_value = "bike"
 
     type: str = "bike"
@@ -779,7 +776,7 @@ class BikeWithCustomClassId(VehicleWithCustomClassId, Fuelled):
 
 class BusWithCustomClassId(CarWithCustomClassId, Fuelled):
     # Do not set, must be inferred from class name and parent class.
-    # class Settings(VehicleSettings):
+    # class Settings:
     #     class_id_value = "bus"
 
     type: str = "car.BusWithCustomClassId"
