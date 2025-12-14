@@ -1,11 +1,33 @@
 import asyncio
-from inspect import isclass, signature
+import inspect
+import sys
+from inspect import isclass
 from typing import Any, List, Optional, Type, Union
 
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.migrations.utils import update_dict
 from beanie.odm.documents import Document
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, parse_model
+
+if sys.version_info >= (3, 14):
+    from annotationlib import Format, ForwardRef
+
+    def signature(
+        obj,
+        *,
+        follow_wrapped=True,
+        globals=None,
+        locals=None,
+        eval_str=False,
+        annotation_format=Format.VALUE,
+    ):
+        return inspect.signature(obj, annotation_format=Format.FORWARDREF)
+else:
+
+    def signature(
+        obj, *, follow_wrapped=True, globals=None, locals=None, eval_str=False
+    ):
+        return inspect.signature(obj)
 
 
 class DummyOutput:
@@ -44,7 +66,7 @@ def iterative_migration(
     batch_size: int = 10000,
 ):
     class IterativeMigration(BaseMigrationController):
-        def __init__(self, function):
+        def __init__(self, function) -> None:
             self.function = function
             self.function_signature = signature(function)
             input_signature = self.function_signature.parameters.get(
@@ -52,6 +74,11 @@ def iterative_migration(
             )
             if input_signature is None:
                 raise RuntimeError("input_signature must not be None")
+            if sys.version_info >= (3, 14):
+                if isinstance(input_signature.annotation, ForwardRef):
+                    raise RuntimeError(
+                        "Forward referenced annotation for input_document is not resolved."
+                    )
             self.input_document_model: Type[Document] = (
                 input_signature.annotation
             )
