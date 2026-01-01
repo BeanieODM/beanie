@@ -65,6 +65,8 @@ renderer:
           source: docs/tutorial/defining-a-document.md
         - title: Initialization
           source: docs/tutorial/init.md
+        - title: ODM Client
+          source: docs/tutorial/odm-client.md
         - title: Inserting into the database
           source: docs/tutorial/insert.md
         - title: Finding documents
@@ -125,6 +127,9 @@ renderer:
         - title: Fields
           contents:
             - beanie.odm.fields.*
+        - title: Client
+          contents:
+            - beanie.odm.client.*
     - title: Development
       source: docs/development.md
     - title: Code of conduct
