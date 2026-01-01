@@ -30,6 +30,9 @@ class ODMClient:
         self,
         db_config: Dict[str, List[Type[Document]]],
         migrations_path: Optional[str] = None,
+        allow_index_dropping: bool = False,
+        recreate_views: bool = False,
+        skip_indexes: bool = False,
     ):
         """
         Initializes all specified databases and their models from a configuration.
@@ -39,9 +42,19 @@ class ODMClient:
                                                         database names and values are lists
                                                         of Beanie Document classes.
             migrations_path (Optional[str]): Path to the migrations directory.
+            allow_index_dropping (bool): Whether to allow index dropping.
+            recreate_views (bool): Whether to recreate views.
+            skip_indexes (bool): Whether to skip index creation.
         """
         tasks = [
-            self.register_database(db_name, models, migrations_path)
+            self.register_database(
+                db_name,
+                models,
+                migrations_path,
+                allow_index_dropping,
+                recreate_views,
+                skip_indexes,
+            )
             for db_name, models in db_config.items()
         ]
         await asyncio.gather(*tasks)
@@ -51,8 +64,17 @@ class ODMClient:
         db_name: str,
         models: List[Type[Document]],
         migrations_path: Optional[str] = None,
+        allow_index_dropping: bool = False,
+        recreate_views: bool = False,
+        skip_indexes: bool = False,
     ):
-        """Initializes Beanie for a specific database with its document models."""
+        """
+        Initializes Beanie for a specific database with its document models.
+
+        NOTE: Beanie binds document models to a database globally. If the same model
+        is registered in multiple databases, the last registration will prevail
+        for that model class.
+        """
         if db_name in self.databases:
             logger.info(f"Database {db_name} is already registered.")
             return
@@ -76,6 +98,9 @@ class ODMClient:
         await init_beanie(
             database=db,
             document_models=models,
+            allow_index_dropping=allow_index_dropping,
+            recreate_views=recreate_views,
+            skip_indexes=skip_indexes,
         )
 
         self.databases[db_name] = db
