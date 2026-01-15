@@ -1,5 +1,5 @@
 import pytest
-from pymongo import AsyncMongoClient
+from mongomock_motor import AsyncMongoMockClient as AsyncMongoClient
 
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
@@ -25,7 +25,7 @@ async def cli(settings):
 
     yield client
 
-    await client.close()
+    client.close()
 
 
 @pytest.fixture

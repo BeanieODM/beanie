@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from pymongo import AsyncMongoClient
+from mongomock_motor import AsyncMongoMockClient as AsyncMongoClient
 
 from beanie import init_beanie
 from tests.conftest import Settings

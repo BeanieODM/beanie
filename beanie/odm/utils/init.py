@@ -469,12 +469,16 @@ class Initializer:
             )
 
         # create pymongo collection
-        if (
-            document_settings.timeseries is not None
-            and document_settings.name
-            not in await self.database.list_collection_names(
+        try:
+            collection_names = await self.database.list_collection_names(
                 authorizedCollections=True, nameOnly=True
             )
+        except TypeError:
+            collection_names = await self.database.list_collection_names()
+
+        if (
+            document_settings.timeseries is not None
+            and document_settings.name not in collection_names
         ):
             collection = await self.database.create_collection(
                 **document_settings.timeseries.build_query(
@@ -678,23 +682,27 @@ class Initializer:
         """
         self.init_settings(cls)
         self.init_view_collection(cls)
-        self.init_view_fields(cls)
-        self.init_cache(cls)
+        try:
+            collection_names = await self.database.list_collection_names(
+                authorizedCollections=True, nameOnly=True
+            )
+        except TypeError:
+            collection_names = await self.database.list_collection_names()
 
-        collection_names = await self.database.list_collection_names(
-            authorizedCollections=True, nameOnly=True
-        )
         if self.recreate_views or cls._settings.name not in collection_names:
             if cls._settings.name in collection_names:
                 await cls.get_pymongo_collection().drop()
 
-            await self.database.command(
-                {
-                    "create": cls.get_settings().name,
-                    "viewOn": cls.get_settings().source,
-                    "pipeline": cls.get_settings().pipeline,
-                }
-            )
+            try:
+                await self.database.command(
+                    {
+                        "create": cls.get_settings().name,
+                        "viewOn": cls.get_settings().source,
+                        "pipeline": cls.get_settings().pipeline,
+                    }
+                )
+            except NotImplementedError:
+                pass
 
     # Union Doc
 
