@@ -756,10 +756,12 @@ class Document(
                 # Real Mongo provides e.details with index info
                 if e.details and "_id_" in str(e.details):
                     raise RevisionIdWasChanged
-                
+
                 # Mongomock (or others) might not provide details, checks string fallback
                 # e.details is None for mongomock
-                if e.details is None and ("_id_" in str(e) or "E11000 Duplicate Key Error" in str(e)):
+                if e.details is None and (
+                    "_id_" in str(e) or "E11000 Duplicate Key Error" in str(e)
+                ):
                     # If we can't be sure it's _id_, but it's a duplicate key on upsert+revision,
                     # we assume it's the revision mismatch to avoid failing valid revision tests.
                     # This might technically mask other unique key errors in mongomock, but is a necessary tradeoff.
