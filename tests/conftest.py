@@ -1,7 +1,6 @@
 import pytest
-from mongomock_motor import AsyncMongoMockClient as AsyncMongoClient
-
-# from motor.motor_asyncio import AsyncIOMotorClient as AsyncMongoClient
+# from mongomock_motor import AsyncMongoMockClient as AsyncMongoClient
+from motor.motor_asyncio import AsyncIOMotorClient as AsyncMongoClient
 from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
 if IS_PYDANTIC_V2:
