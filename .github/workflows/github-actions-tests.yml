@@ -27,6 +27,11 @@ jobs:
         run: pip install .[test,ci]
       - name: install pydantic
         run: pip install pydantic==${{ matrix.pydantic-version }}
+      - name: downgrade dependencies for pydantic v1
+        if: startsWith(matrix.pydantic-version, '1.')
+        run: |
+          pip uninstall -y pydantic-settings pydantic-extra-types
+          pip install "fastapi<0.100.0"
       - name: run tests
         env:
           PYTHON_JIT: 1
