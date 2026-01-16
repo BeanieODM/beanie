@@ -32,11 +32,11 @@ from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
 from pymongo import InsertOne
 from pymongo.asynchronous.client_session import AsyncClientSession
+from pymongo.errors import DuplicateKeyError, OperationFailure
 from pymongo.results import (
     DeleteResult,
     InsertManyResult,
 )
-from pymongo.errors import DuplicateKeyError, OperationFailure
 from typing_extensions import Concatenate, ParamSpec, Self, TypeAlias
 
 from beanie.exceptions import (
