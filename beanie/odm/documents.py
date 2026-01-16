@@ -36,6 +36,7 @@ from pymongo.results import (
     DeleteResult,
     InsertManyResult,
 )
+from pymongo.errors import DuplicateKeyError, OperationFailure
 from typing_extensions import Concatenate, ParamSpec, Self, TypeAlias
 
 from beanie.exceptions import (
@@ -538,6 +539,8 @@ class Document(
                 session=session,
                 bulk_writer=bulk_writer,
             )
+        except DuplicateKeyError:
+            raise
         except DocumentNotFound:
             if use_revision_id and not ignore_revision:
                 raise RevisionIdWasChanged
@@ -728,13 +731,16 @@ class Document(
         if use_revision_id:
             new_revision_id = uuid4()
             arguments.append(SetRevisionId(new_revision_id))
-        result = await self.find_one(find_query).update(
-            *arguments,
-            session=session,
-            response_type=UpdateResponse.NEW_DOCUMENT,
-            bulk_writer=bulk_writer,
-            **pymongo_kwargs,
-        )
+        try:
+            result = await self.find_one(find_query).update(
+                *arguments,
+                session=session,
+                response_type=UpdateResponse.NEW_DOCUMENT,
+                bulk_writer=bulk_writer,
+                **pymongo_kwargs,
+            )
+        except (DuplicateKeyError, OperationFailure):
+            raise
         if bulk_writer is None:
             if use_revision_id and not ignore_revision and result is None:
                 raise RevisionIdWasChanged
