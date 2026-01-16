@@ -740,8 +740,19 @@ class Document(
                 bulk_writer=bulk_writer,
                 **pymongo_kwargs,
             )
-        except (DuplicateKeyError, OperationFailure):
+        except (DuplicateKeyError, OperationFailure) as e:
             # Re-raise DuplicateKeyError or OperationFailure (e.g. 11000) to avoid masking it
+            # But if it is an upsert with revision, it might be a RevisionIdWasChanged
+            if (
+                use_revision_id
+                and not ignore_revision
+                and pymongo_kwargs.get("upsert")
+                and (
+                    isinstance(e, DuplicateKeyError)
+                    or (isinstance(e, OperationFailure) and e.code == 11000)
+                )
+            ):
+                raise RevisionIdWasChanged
             raise
         if bulk_writer is None:
             if use_revision_id and not ignore_revision and result is None:
