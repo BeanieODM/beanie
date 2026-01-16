@@ -44,6 +44,7 @@ test = [
     "pytest>=8.3.3",
     "pytest-asyncio>=0.24.0",
     "pytest-cov>=5.0.0",
+    "mongomock-motor>=0.0.30",
     "dnspython>=2.1.0",
     "pyright>=0",
     "asgi-lifespan>=1.0.1",
