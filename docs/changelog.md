@@ -1,3 +1,6 @@
+### Fix: propagate DuplicateKeyError on update and replace methods
+- Author - [biplavbarua](https://github.com/biplavbarua)
+- PR <https://github.com/BeanieODM/beanie/pull/1267>
 # Changelog
 
 Beanie project

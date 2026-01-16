@@ -540,6 +540,7 @@ class Document(
                 bulk_writer=bulk_writer,
             )
         except DuplicateKeyError:
+            # Re-raise DuplicateKeyError to avoid masking it with DocumentNotFound/RevisionIdWasChanged
             raise
         except DocumentNotFound:
             if use_revision_id and not ignore_revision:
@@ -740,6 +741,7 @@ class Document(
                 **pymongo_kwargs,
             )
         except (DuplicateKeyError, OperationFailure):
+            # Re-raise DuplicateKeyError or OperationFailure (e.g. 11000) to avoid masking it
             raise
         if bulk_writer is None:
             if use_revision_id and not ignore_revision and result is None:
