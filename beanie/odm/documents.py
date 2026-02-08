@@ -745,8 +745,10 @@ class Document(
                 bulk_writer=bulk_writer,
                 **pymongo_kwargs,
             )
-        except DuplicateKeyError:
-            raise RevisionIdWasChanged
+        except DuplicateKeyError as e:
+            if "revision_id" in str(e):
+                raise RevisionIdWasChanged
+            raise
         if bulk_writer is None:
             if use_revision_id and not ignore_revision and result is None:
                 raise RevisionIdWasChanged
