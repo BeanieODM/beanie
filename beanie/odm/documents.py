@@ -22,7 +22,6 @@ from uuid import UUID, uuid4
 
 from bson import DBRef, ObjectId
 from lazy_model import LazyModel
-import pydantic
 from pydantic import (
     Field,
     PrivateAttr,
