@@ -1,3 +1,4 @@
+import asyncio
 import sys
 
 from pymongo.asynchronous.database import AsyncDatabase
@@ -126,7 +127,21 @@ class Initializer:
             key=lambda val: sort_order[val.get_model_type()]
         )
 
+        self._database_major_version = -1
+        self._existing_collections = []
+
     def __await__(self):
+        # get db version
+        build_info = asyncio.run(self.database.command({"buildInfo": 1}))
+        mongo_version = build_info["version"]
+        self._database_major_version = int(mongo_version.split(".")[0])
+
+        self._existing_collections = asyncio.run(
+            self.database.list_collection_names(
+                authorizedCollections=True, nameOnly=True
+            )
+        )
+
         for model in self.document_models:
             yield from self.init_class(model).__await__()
 
@@ -471,10 +486,7 @@ class Initializer:
         # create pymongo collection
         if (
             document_settings.timeseries is not None
-            and document_settings.name
-            not in await self.database.list_collection_names(
-                authorizedCollections=True, nameOnly=True
-            )
+            and document_settings.name not in self._existing_collections
         ):
             collection = await self.database.create_collection(
                 **document_settings.timeseries.build_query(
@@ -571,9 +583,7 @@ class Initializer:
             return None
 
         # get db version
-        build_info = await self.database.command({"buildInfo": 1})
-        mongo_version = build_info["version"]
-        cls._database_major_version = int(mongo_version.split(".")[0])
+        cls._database_major_version = self._database_major_version
         if cls not in self.inited_classes:
             self.set_default_class_vars(cls)
             self.init_settings(cls)
@@ -681,11 +691,11 @@ class Initializer:
         self.init_view_fields(cls)
         self.init_cache(cls)
 
-        collection_names = await self.database.list_collection_names(
-            authorizedCollections=True, nameOnly=True
-        )
-        if self.recreate_views or cls._settings.name not in collection_names:
-            if cls._settings.name in collection_names:
+        if (
+            self.recreate_views
+            or cls._settings.name not in self._existing_collections
+        ):
+            if cls._settings.name in self._existing_collections:
                 await cls.get_pymongo_collection().drop()
 
             await self.database.command(
