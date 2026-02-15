@@ -598,7 +598,7 @@ class Document(
                             )
 
         if self.get_settings().keep_nulls is False:
-            arguments = [
+            arguments: list[Union[SetOperator, Unset]] = [
                 SetOperator(
                     get_dict(
                         self,
@@ -654,7 +654,7 @@ class Document(
             return None
         changes = self.get_changes()
         if self.get_settings().keep_nulls is False:
-            arguments = [SetOperator(changes)]
+            arguments: list[Union[SetOperator, Unset]] = [SetOperator(changes)]
             nones = get_top_level_nones(self)
             if nones:
                 arguments.append(Unset(nones))
