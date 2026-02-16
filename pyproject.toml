@@ -4,10 +4,10 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "beanie"
-version = "2.0.0"
+version = "2.0.1"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.9,<3.14"
 license = { file="LICENSE" }
 authors = [
     {name = "Roman Right", email = "roman-right@protonmail.com"}
@@ -21,6 +21,14 @@ classifiers = [
     "Topic :: Database",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "pydantic>=1.10.18,<3.0",
@@ -40,7 +48,7 @@ test = [
     "pyright>=0",
     "asgi-lifespan>=1.0.1",
     "httpx>=0.23.0",
-    "fastapi>=0.100",
+    "fastapi<0.126.0",
     "pydantic-settings>=2",
     "pydantic-extra-types>=2",
     "pydantic[email]",
@@ -69,7 +77,7 @@ zstd = ["pymongo[zstd]>=4.11.0,!=4.15.0,<5.0.0"]
 
 [project.urls]
 homepage = "https://beanie-odm.dev"
-repository = "https://github.com/roman-right/beanie"
+repository = "https://github.com/BeanieODM/beanie"
 
 [project.scripts]
 beanie = "beanie.executors.migrate:migrations"
