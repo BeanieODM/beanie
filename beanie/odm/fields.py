@@ -232,6 +232,11 @@ class ExpressionField(str):
         """
         Given a field annotation, try to extract the BaseModel subclass.
         Handles Optional[X], Union[X, ...], List[X], etc.
+
+        Link[X] and BackLink[X] are intentionally excluded: they are
+        stored as DBRef references in MongoDB, not as embedded documents,
+        so their sub-fields should not be resolved through the linked
+        model's aliases.
         """
         from pydantic import BaseModel
 
@@ -245,6 +250,17 @@ class ExpressionField(str):
         # Unwrap generic types (Optional, Union, List, etc.)
         origin = getattr(annotation, "__origin__", None)
         args = getattr(annotation, "__args__", None)
+
+        # Do not resolve through Link or BackLink
+        if origin is not None and (
+            origin is Link
+            or origin is BackLink
+            or (
+                isinstance(origin, type)
+                and issubclass(origin, (Link, BackLink))
+            )
+        ):
+            return None
 
         if args:
             for arg in args:
@@ -285,9 +301,7 @@ class ExpressionField(str):
                 field_info = fields[item]
                 alias = field_info.alias if field_info.alias else item
                 annotation = getattr(field_info, "annotation", None)
-                child_model = ExpressionField._resolve_nested_model(
-                    annotation
-                )
+                child_model = ExpressionField._resolve_nested_model(annotation)
                 return ExpressionField(
                     f"{self}.{alias}", model_class=child_model
                 )
