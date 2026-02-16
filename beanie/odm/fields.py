@@ -681,13 +681,64 @@ class IndexModelField:
         return None
 
     @staticmethod
+    def _make_hashable(value: Any) -> Any:
+        if isinstance(value, dict):
+            return frozenset(
+                (k, IndexModelField._make_hashable(v))
+                for k, v in sorted(value.items())
+            )
+        if isinstance(value, (list, tuple)):
+            return tuple(IndexModelField._make_hashable(v) for v in value)
+
+        return value
+
+    @staticmethod
     def merge_indexes(
-        left: List[IndexModelField], right: List[IndexModelField]
-    ):
-        left_dict = {index.fields: index for index in left}
-        right_dict = {index.fields: index for index in right}
-        left_dict.update(right_dict)
-        return list(left_dict.values())
+        existing_indexes: List[IndexModelField],
+        new_indexes: List[IndexModelField],
+    ) -> List[IndexModelField]:
+        """
+        Merge two lists of indexes, ensuring no duplicates.
+
+        If two indexes have the same fields and options, the latest index overwrites the previous one.
+        If two indexes have the same fields but differing options (beyond just direction), then both indexes are kept.
+        If two indexes differ only in direction:
+            - for a single-field index the latest index overwrites the previous one (direction-agnostic)
+            - for a compound index both are kept (direction matters per-field)
+
+        :param existing_indexes: List[IndexModelField] - Existing indexes
+        :param new_indexes: List[IndexModelField] - New indexes to merge
+        :return: List[IndexModelField] - Merged list of indexes
+        """
+        merged_indexes: Dict[Any, IndexModelField] = {}
+        all_indexes = existing_indexes + new_indexes
+
+        for index in all_indexes:
+            # Key for fields, ignoring direction
+            key_doc = index.index.document["key"]
+            # Ordered list of (field, direction) pairs
+            items = tuple(key_doc.items())
+            num_fields = len(items)
+
+            # Key for options, ignoring name so name differences don't split keys.
+            # Sort to ensure consistent ordering and make hashable.
+            options_without_name = tuple(
+                sorted((k, v) for k, v in index.options if k != "name")
+            )
+            options_key = IndexModelField._make_hashable(options_without_name)
+
+            if num_fields == 1:
+                # Single field: ignore direction, use only field name
+                field_name, _dir = items[0]
+                canonical_fields = (field_name,)
+            else:
+                # Compound: keep exact (field, direction) ordering
+                canonical_fields = items
+
+            canonical_key = (canonical_fields, options_key)
+            merged_indexes[canonical_key] = index
+
+        return list(merged_indexes.values())
 
     @classmethod
     def _validate(cls, v: Any) -> "IndexModelField":

@@ -38,7 +38,6 @@ from pydantic import (
     SecretStr,
 )
 from pydantic_core import core_schema
-from pymongo import IndexModel
 from typing_extensions import Annotated
 
 from beanie import (
@@ -236,7 +235,7 @@ class DocumentTestModelWithComplexIndex(Document):
                 ("test_int", pymongo.ASCENDING),
                 ("test_str", pymongo.DESCENDING),
             ],
-            IndexModel(
+            pymongo.IndexModel(
                 [("test_str", pymongo.DESCENDING)],
                 name="test_string_index_DESCENDING",
             ),
@@ -252,6 +251,142 @@ class DocumentTestModelWithDroppedIndex(Document):
         name = "docs_with_index"
         indexes = [
             "test_int",
+        ]
+
+
+class DocumentWithMultipleIndexesOnSameFieldWithSameOptions(Document):
+    status: str
+
+    class Settings:
+        merge_indexes = True
+        indexes = [
+            [
+                ("status", pymongo.ASCENDING),
+            ],
+            [
+                ("status", pymongo.ASCENDING),
+            ],
+            [
+                ("status", pymongo.ASCENDING),
+            ],
+        ]
+
+
+class DocumentWithMultipleIndexesOnSameField(Document):
+    created_at: Annotated[
+        datetime.datetime,
+        Field(default_factory=lambda: datetime.datetime.now(datetime.UTC)),
+    ]
+    status: Annotated[str, Indexed()]
+
+    class Settings:
+        merge_indexes = True
+        indexes = [
+            [
+                ("status", pymongo.DESCENDING),
+            ],
+            pymongo.IndexModel(
+                "created_at",
+                name="processing_expire_30",
+                expireAfterSeconds=30,
+                partialFilterExpression={"status": "processing"},
+            ),
+            pymongo.IndexModel(
+                "created_at",
+                name="unpaid_expire_900",
+                expireAfterSeconds=900,
+                partialFilterExpression={"status": "unpaid"},
+            ),
+        ]
+
+
+class DocumentWithMultipleSameIndexesWithDifferentName(Document):
+    created_at: Annotated[
+        datetime.datetime,
+        Field(default_factory=lambda: datetime.datetime.now(datetime.UTC)),
+    ]
+    status: str
+
+    class Settings:
+        merge_indexes = True
+        indexes = [
+            pymongo.IndexModel(
+                "created_at",
+                name="processing_expire_30",
+                expireAfterSeconds=30,
+                partialFilterExpression={"status": "processing"},
+            ),
+            pymongo.IndexModel(
+                "created_at",
+                name="processing_expire_31",
+                expireAfterSeconds=30,
+                partialFilterExpression={"status": "processing"},
+            ),
+        ]
+
+
+class DocumentWithMultipleSameIndexesOptionOrderConflict(Document):
+    a: Indexed(int, unique=True, sparse=True)
+
+    class Settings:
+        merge_indexes = True
+        # Explicitly add two indexes with identical keys but options in different order
+        indexes = [
+            pymongo.IndexModel([("a", 1)], unique=True, sparse=True),
+            pymongo.IndexModel([("a", 1)], sparse=True, unique=True),
+        ]
+
+
+class DocumentWithCompoundIndexes(Document):
+    field_a: int
+    field_b: int
+    created_at: Annotated[
+        datetime.datetime,
+        Field(default_factory=lambda: datetime.datetime.now(datetime.UTC)),
+    ]
+
+    class Settings:
+        merge_indexes = True
+        indexes = [
+            [("field_a", pymongo.ASCENDING), ("field_b", pymongo.ASCENDING)],
+            [("field_a", pymongo.DESCENDING), ("field_b", pymongo.DESCENDING)],
+            pymongo.IndexModel(
+                [
+                    ("field_a", pymongo.ASCENDING),
+                    ("field_b", pymongo.ASCENDING),
+                ],
+                unique=True,
+                name="compound_unique",
+            ),
+            pymongo.IndexModel(
+                [("created_at", pymongo.ASCENDING)],
+                expireAfterSeconds=60,
+                name="ttl_index",
+            ),
+        ]
+
+
+class DocumentWithCompoundIndexesDirectionConflict(Document):
+    a: int
+    b: int
+
+    class Settings:
+        merge_indexes = True
+        indexes = [
+            [("a", 1), ("b", -1)],
+            [("a", -1), ("b", -1)],
+        ]
+
+
+class DocumentWithCompoundIndexesFieldOrderConflict(Document):
+    a: int
+    b: int
+
+    class Settings:
+        merge_indexes = True
+        indexes = [
+            [("a", 1), ("b", 1)],
+            [("b", 1), ("a", 1)],
         ]
 
 
@@ -1023,11 +1158,11 @@ class DocumentWithIndexMerging1(Document):
             [
                 ("s2", pymongo.ASCENDING),
             ],
-            IndexModel(
+            pymongo.IndexModel(
                 [("s3", pymongo.ASCENDING)],
                 name="s3_index",
             ),
-            IndexModel(
+            pymongo.IndexModel(
                 [("s4", pymongo.ASCENDING)],
                 name="s4_index",
             ),
@@ -1043,7 +1178,7 @@ class DocumentWithIndexMerging2(DocumentWithIndexMerging1):
             [
                 ("s2", pymongo.DESCENDING),
             ],
-            IndexModel(
+            pymongo.IndexModel(
                 [("s3", pymongo.DESCENDING)],
                 name="s3_index",
             ),

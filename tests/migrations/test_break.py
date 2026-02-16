@@ -37,9 +37,7 @@ async def notes(db):
         note = OldNote(name=str(i), tag=Tag(name="test", color="red"))
         await note.insert()
     yield
-    await OldNote.delete_all()
     await OldNote.get_pymongo_collection().drop()
-    await OldNote.get_pymongo_collection().drop_indexes()
 
 
 @pytest.mark.skip("TODO: Fix this test")
