@@ -131,7 +131,7 @@ class AggregateInterface:
         field: Union[ExpressionField, str, Any],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
-    ) -> Optional[float]:
+    ) -> Optional[Any]:
         """
         Max of the values of the given field over the entire collection.
 
@@ -147,7 +147,7 @@ class AggregateInterface:
 
         :param field: Union[ExpressionField, str, Any]
         :param session: Optional[AsyncClientSession] - pymongo session
-        :return: float - max. None if there are no items.
+        :return: Any - max value. None if there are no items.
         """
         return await cls.find_all().max(field, session, ignore_cache)
 
@@ -157,7 +157,7 @@ class AggregateInterface:
         field: Union[ExpressionField, str, Any],
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
-    ) -> Optional[float]:
+    ) -> Optional[Any]:
         """
         Min of the values of the given field over the entire collection.
 
@@ -173,6 +173,6 @@ class AggregateInterface:
 
         :param field: Union[ExpressionField, str, Any]
         :param session: Optional[AsyncClientSession] - pymongo session
-        :return: float - min. None if there are no items.
+        :return: Any - min value. None if there are no items.
         """
         return await cls.find_all().min(field, session, ignore_cache)
