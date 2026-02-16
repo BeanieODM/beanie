@@ -222,6 +222,43 @@ BeanieObjectId = PydanticObjectId
 
 
 class ExpressionField(str):
+    def __new__(cls, path, model_class=None):
+        instance = super().__new__(cls, path)
+        instance._model_class = model_class
+        return instance
+
+    @staticmethod
+    def _resolve_nested_model(annotation):
+        """
+        Given a field annotation, try to extract the BaseModel subclass.
+        Handles Optional[X], Union[X, ...], List[X], etc.
+        """
+        from pydantic import BaseModel
+
+        if annotation is None:
+            return None
+
+        # Direct BaseModel subclass
+        if isinstance(annotation, type) and issubclass(annotation, BaseModel):
+            return annotation
+
+        # Unwrap generic types (Optional, Union, List, etc.)
+        origin = getattr(annotation, "__origin__", None)
+        args = getattr(annotation, "__args__", None)
+
+        if args:
+            for arg in args:
+                if arg is type(None):
+                    continue
+                if isinstance(arg, type) and issubclass(arg, BaseModel):
+                    return arg
+                # Recurse for nested generics
+                nested = ExpressionField._resolve_nested_model(arg)
+                if nested is not None:
+                    return nested
+
+        return None
+
     def __getitem__(self, item):
         """
         Get sub field
@@ -233,11 +270,34 @@ class ExpressionField(str):
 
     def __getattr__(self, item):
         """
-        Get sub field
+        Get sub field, resolving aliases from nested Pydantic models.
 
         :param item: name of the subfield
         :return: ExpressionField
         """
+        if item.startswith("_"):
+            raise AttributeError(item)
+
+        nested_model = self._model_class
+        if nested_model is not None:
+            try:
+                from beanie.odm.utils.pydantic import get_model_fields
+
+                fields = get_model_fields(nested_model)
+                if item in fields:
+                    field_info = fields[item]
+                    alias = field_info.alias if field_info.alias else item
+                    # Resolve nested model type for further chaining
+                    annotation = getattr(field_info, "annotation", None)
+                    child_model = ExpressionField._resolve_nested_model(
+                        annotation
+                    )
+                    return ExpressionField(
+                        f"{self}.{alias}", model_class=child_model
+                    )
+            except Exception:
+                pass
+
         return ExpressionField(f"{self}.{item}")
 
     def __hash__(self):

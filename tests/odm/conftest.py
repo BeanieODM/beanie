@@ -87,6 +87,9 @@ from tests.odm.models import (
     LongSelfLink,
     LoopedLinksA,
     LoopedLinksB,
+    DocumentWithAliasedLink,
+    DocumentWithDeepNestedAlias,
+    DocumentWithNestedAlias,
     NativeRegexDoc,
     Nested,
     Option1,
@@ -211,6 +214,9 @@ TESTING_MODELS = [
     BsonRegexDoc,
     NativeRegexDoc,
     DocumentWithExcludedField,
+    DocumentWithNestedAlias,
+    DocumentWithDeepNestedAlias,
+    DocumentWithAliasedLink,
 ]
 
 

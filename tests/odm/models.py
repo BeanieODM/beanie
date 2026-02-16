@@ -1184,3 +1184,34 @@ class BsonRegexDoc(Document):
 
 class NativeRegexDoc(Document):
     regex: Optional[re.Pattern]
+
+
+# Models for testing alias resolution in nested fields (#937, #945)
+class NestedWithAlias(BaseModel):
+    unit_class: str = Field(alias="unitClass")
+    item_count: int = Field(alias="itemCount")
+
+
+class NestedDeep(BaseModel):
+    inner: NestedWithAlias = Field(alias="innerAlias")
+
+
+class DocumentWithNestedAlias(Document):
+    nested_field: NestedWithAlias
+
+    class Settings:
+        name = "docs_with_nested_alias"
+
+
+class DocumentWithDeepNestedAlias(Document):
+    deep: NestedDeep
+
+    class Settings:
+        name = "docs_with_deep_nested_alias"
+
+
+class DocumentWithAliasedLink(Document):
+    linked: Link["DocumentToBeLinked"] = Field(alias="linkedAlias")
+
+    class Settings:
+        name = "docs_with_aliased_link"

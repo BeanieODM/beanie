@@ -398,7 +398,9 @@ class Initializer:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
             path = v.alias or k
-            setattr(cls, k, ExpressionField(path))
+            annotation = getattr(v, "annotation", None)
+            nested_model = ExpressionField._resolve_nested_model(annotation)
+            setattr(cls, k, ExpressionField(path, model_class=nested_model))
 
             link_info = self.detect_link(v, k)
             depth_level = cls.get_settings().max_nesting_depths_per_field.get(
@@ -634,7 +636,9 @@ class Initializer:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
             path = v.alias or k
-            setattr(cls, k, ExpressionField(path))
+            annotation = getattr(v, "annotation", None)
+            nested_model = ExpressionField._resolve_nested_model(annotation)
+            setattr(cls, k, ExpressionField(path, model_class=nested_model))
             link_info = self.detect_link(v, k)
             depth_level = cls.get_settings().max_nesting_depths_per_field.get(
                 k, None
