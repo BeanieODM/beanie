@@ -676,6 +676,10 @@ class Initializer:
         :param cls:
         :return:
         """
+        build_info = await self.database.command({"buildInfo": 1})
+        mongo_version = build_info["version"]
+        cls._database_major_version = int(mongo_version.split(".")[0])
+
         self.init_settings(cls)
         self.init_view_collection(cls)
         self.init_view_fields(cls)
