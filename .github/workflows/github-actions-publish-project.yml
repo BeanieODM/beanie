@@ -3,12 +3,36 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Dry run (build only, skip upload)"
+        description: "Dry run (build + test only, skip upload)"
         type: boolean
         default: false
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.12.1
+        with:
+          mongodb-version: "8.0"
+          mongodb-replica-set: test-rs
+
+      - name: Install dependencies
+        run: pip install .[test]
+
+      - name: Run tests
+        run: pytest -v
+
   publish:
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       id-token: write
