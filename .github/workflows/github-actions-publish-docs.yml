@@ -34,8 +34,8 @@ jobs:
         run: pydoc-markdown
 
       - name: Build site
-        run: mkdocs build --config-file docs/build/mkdocs.yml --site-dir _site
-        working-directory: .
+        run: mkdocs build --site-dir _site
+        working-directory: docs/build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
