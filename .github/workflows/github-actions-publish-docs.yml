@@ -1,8 +1,7 @@
 name: Publish docs
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+
 jobs:
   publish_docs:
     runs-on: ubuntu-latest
@@ -10,12 +9,15 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: install dependencies
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install dependencies
         run: pip install .[doc]
-      - name: publish docs
+
+      - name: Publish docs
         run: bash scripts/publish_docs.sh
