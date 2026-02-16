@@ -1,4 +1,7 @@
-from tests.odm.models import DocumentWithRootModelAsAField
+from tests.odm.models import (
+    DocumentWithCustomIterRootModel,
+    DocumentWithRootModelAsAField,
+)
 
 
 class TestRootModels:
@@ -12,3 +15,15 @@ class TestRootModels:
         collection = DocumentWithRootModelAsAField.get_pymongo_collection()
         raw_doc = await collection.find_one({"_id": doc.id})
         assert raw_doc["pets"] == ["dog", "cat", "fish"]
+
+    async def test_save_with_custom_iter_rootmodel(self):
+        """RootModel with custom __iter__ must not break save().
+
+        Regression test for https://github.com/BeanieODM/beanie/issues/830.
+        """
+        doc = await DocumentWithCustomIterRootModel(items=[1, 2, 3]).insert()
+        doc.items.root.append(4)
+        await doc.save()
+
+        reloaded = await DocumentWithCustomIterRootModel.get(doc.id)
+        assert reloaded.items.root == [1, 2, 3, 4]

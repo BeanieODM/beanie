@@ -45,6 +45,7 @@ from tests.odm.models import (
     DocumentWithCustomIdInt,
     DocumentWithCustomIdUUID,
     DocumentWithCustomInit,
+    DocumentWithCustomIterRootModel,
     DocumentWithDecimalField,
     DocumentWithDeprecatedHiddenField,
     DocumentWithEnumKeysDict,
@@ -216,6 +217,8 @@ TESTING_MODELS = [
     NativeRegexDoc,
     DocumentWithExcludedField,
 ]
+
+TESTING_MODELS.append(DocumentWithCustomIterRootModel)
 
 
 @pytest.fixture
