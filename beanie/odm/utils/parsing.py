@@ -8,10 +8,36 @@ from beanie.exceptions import (
     UnionHasNoRegisteredDocs,
 )
 from beanie.odm.interfaces.detector import ModelType
-from beanie.odm.utils.pydantic import get_config_value, parse_model
+from beanie.odm.utils.pydantic import (
+    IS_PYDANTIC_V2,
+    get_config_value,
+    get_model_fields,
+    parse_model,
+)
 
 if TYPE_CHECKING:
     from beanie.odm.documents import Document
+
+
+def _is_field_frozen(model: BaseModel, field_name: str) -> bool:
+    """Check if a specific field on a model is frozen."""
+    if IS_PYDANTIC_V2:
+        fields = get_model_fields(model)
+        field_info = fields.get(field_name)
+        if field_info is not None and field_info.frozen:
+            return True
+    return False
+
+
+def _safe_setattr(model: BaseModel, field_name: str, value: Any) -> None:
+    """Set a field value, bypassing Pydantic validation for frozen fields."""
+    if _is_field_frozen(model, field_name):
+        # Bypass Pydantic's __setattr__ which raises ValidationError
+        # for frozen fields. This is safe because we are merging from
+        # a DB-fetched document, not from untrusted user input.
+        object.__setattr__(model, field_name, value)
+    else:
+        model.__setattr__(field_name, value)
 
 
 def merge_models(left: BaseModel, right: BaseModel) -> None:
@@ -29,7 +55,7 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
             left_value, BaseModel
         ):
             if get_config_value(left_value, "frozen"):
-                left.__setattr__(k, right_value)
+                _safe_setattr(left, k, right_value)
             else:
                 merge_models(left_value, right_value)
             continue
@@ -41,9 +67,9 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
                     break
             if links_found:
                 continue
-            left.__setattr__(k, right_value)
+            _safe_setattr(left, k, right_value)
         elif not isinstance(right_value, Link):
-            left.__setattr__(k, right_value)
+            _safe_setattr(left, k, right_value)
 
 
 def apply_changes(
