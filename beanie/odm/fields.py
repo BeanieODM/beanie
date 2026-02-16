@@ -280,23 +280,17 @@ class ExpressionField(str):
 
         nested_model = self._model_class
         if nested_model is not None:
-            try:
-                from beanie.odm.utils.pydantic import get_model_fields
-
-                fields = get_model_fields(nested_model)
-                if item in fields:
-                    field_info = fields[item]
-                    alias = field_info.alias if field_info.alias else item
-                    # Resolve nested model type for further chaining
-                    annotation = getattr(field_info, "annotation", None)
-                    child_model = ExpressionField._resolve_nested_model(
-                        annotation
-                    )
-                    return ExpressionField(
-                        f"{self}.{alias}", model_class=child_model
-                    )
-            except Exception:
-                pass
+            fields = get_model_fields(nested_model)
+            if item in fields:
+                field_info = fields[item]
+                alias = field_info.alias if field_info.alias else item
+                annotation = getattr(field_info, "annotation", None)
+                child_model = ExpressionField._resolve_nested_model(
+                    annotation
+                )
+                return ExpressionField(
+                    f"{self}.{alias}", model_class=child_model
+                )
 
         return ExpressionField(f"{self}.{item}")
 
