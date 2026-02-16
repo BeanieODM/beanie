@@ -50,6 +50,7 @@ from tests.odm.models import (
     DocumentWithEnumKeysDict,
     DocumentWithExcludedField,
     DocumentWithExtras,
+    DocumentWithFrozenField,
     DocumentWithHttpUrlField,
     DocumentWithIndexedObjectId,
     DocumentWithIndexMerging1,
@@ -215,6 +216,7 @@ TESTING_MODELS = [
     BsonRegexDoc,
     NativeRegexDoc,
     DocumentWithExcludedField,
+    DocumentWithFrozenField,
 ]
 
 
