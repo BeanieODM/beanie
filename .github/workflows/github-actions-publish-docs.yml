@@ -2,8 +2,16 @@ name: Publish docs
 on:
   workflow_dispatch:
 
+permissions:
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
-  publish_docs:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,5 +25,25 @@ jobs:
       - name: Install dependencies
         run: pip install .[doc]
 
-      - name: Publish docs
-        run: bash scripts/publish_docs.sh
+      - name: Generate docs
+        run: pydoc-markdown
+
+      - name: Build site
+        run: mkdocs build --config-file docs/build/mkdocs.yml --site-dir _site
+        working-directory: .
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/build/_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

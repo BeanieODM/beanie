@@ -37,7 +37,7 @@ renderer:
       - pymdownx.highlight
       - pymdownx.superfences
 
-    repo_url: https://github.com/roman-right/beanie
+    repo_url: https://github.com/BeanieODM/beanie
 
   markdown:
     use_fixed_header_levels: true
