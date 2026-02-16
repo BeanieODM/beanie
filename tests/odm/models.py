@@ -907,6 +907,15 @@ class DocumentWithKeepNullsFalse(Document):
         use_state_management = True
 
 
+class DocumentWithRevisionAndKeepNullsFalse(Document):
+    name: str
+    description: Optional[str] = None
+
+    class Settings:
+        use_revision = True
+        keep_nulls = False
+
+
 class DocumentWithExcludedField(Document):
     included_field: int
     excluded_field: Optional[int] = Field(default=None, exclude=True)
