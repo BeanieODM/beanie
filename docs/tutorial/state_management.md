@@ -1,6 +1,6 @@
 # State Management
 
-Beanie can keep the document state synced with the database in order to find local changes and save only them.
+Beanie maintains a snapshot of the document's original state when loaded from the database, enabling it to identify local changes and update only the modified fields.
 
 This feature must be explicitly turned on in the `Settings` inner class:
 
@@ -13,7 +13,7 @@ class Sample(Document):
         use_state_management = True
 ```
 
-Beanie keeps the current changes (not yet saved in the database) by default (with `use_state_management = True`), AND the previous changes (saved to the database) with `state_management_save_previous = True`.
+When state management is enabled (`use_state_management = True`), Beanie tracks the current changes (not yet saved in the database). Additionally, if `state_management_save_previous = True` is set, Beanie also tracks the previous changes (already saved to the database).
 
 ```python
 class Sample(Document):
@@ -25,7 +25,7 @@ class Sample(Document):
         state_management_save_previous = True
 ```
 
-Every new save override the previous changes and clears the current changes.
+Every new save overrides the previous changes and clears the current changes.
 
 ## Saving changes
 
