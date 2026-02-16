@@ -4,6 +4,9 @@ from beanie import After, Before
 from tests.odm.models import (
     DocumentWithActions,
     DocumentWithActions2,
+    DocumentWithActionWinsStrategy,
+    DocumentWithUpdateFieldAction,
+    DocumentWithValidateOnSaveAction,
     InheritedDocumentWithActions,
 )
 
@@ -139,3 +142,128 @@ class TestActions:
         sample = doc_class(name=test_name)
         await sample.save()
         assert sample.num_1 == 1
+
+
+class TestBeforeEventUpdatePersistence:
+    """Tests for #1103: before_event(Update) changes must be persisted to DB."""
+
+    async def test_update_persists_before_event_changes(self):
+        doc = DocumentWithUpdateFieldAction(name="alice")
+        await doc.insert()
+
+        await doc.update({"$set": {"name": "bob"}})
+        assert doc.name == "bob"
+        assert doc.tag == "updated"
+
+        refetched = await DocumentWithUpdateFieldAction.find_one(
+            {"_id": doc.id}
+        )
+        assert refetched.tag == "updated"
+        assert refetched.name == "bob"
+
+    async def test_set_persists_before_event_changes(self):
+        doc = DocumentWithUpdateFieldAction(name="alice")
+        await doc.insert()
+
+        await doc.set({"name": "charlie"})
+        assert doc.tag == "updated"
+
+        refetched = await DocumentWithUpdateFieldAction.find_one(
+            {"_id": doc.id}
+        )
+        assert refetched.tag == "updated"
+        assert refetched.name == "charlie"
+
+    async def test_update_skip_actions_before(self):
+        doc = DocumentWithUpdateFieldAction(name="alice")
+        await doc.insert()
+
+        await doc.update({"$set": {"name": "bob"}}, skip_actions=[Before])
+
+        refetched = await DocumentWithUpdateFieldAction.find_one(
+            {"_id": doc.id}
+        )
+        assert refetched.tag is None
+        assert refetched.name == "bob"
+
+
+class TestValidateOnSaveWithBeforeEvent:
+    """Tests for #894: before_event must run after validate_on_save."""
+
+    async def test_insert_before_event_survives_validation(self):
+        doc = DocumentWithValidateOnSaveAction(name="  Hello World  ")
+        await doc.insert()
+
+        assert doc.normalized_name == "hello world"
+
+        refetched = await DocumentWithValidateOnSaveAction.find_one(
+            {"_id": doc.id}
+        )
+        assert refetched.normalized_name == "hello world"
+
+    async def test_save_before_event_survives_validation(self):
+        doc = DocumentWithValidateOnSaveAction(name="initial")
+        await doc.insert()
+
+        doc.name = "  Updated Name  "
+        await doc.save()
+
+        assert doc.normalized_name == "updated name"
+
+        refetched = await DocumentWithValidateOnSaveAction.find_one(
+            {"_id": doc.id}
+        )
+        assert refetched.normalized_name == "updated name"
+
+    async def test_replace_before_event_survives_validation(self):
+        doc = DocumentWithValidateOnSaveAction(name="initial")
+        await doc.insert()
+
+        doc.name = "  Replaced Name  "
+        await doc.replace()
+
+        assert doc.normalized_name == "replaced name"
+
+        refetched = await DocumentWithValidateOnSaveAction.find_one(
+            {"_id": doc.id}
+        )
+        assert refetched.normalized_name == "replaced name"
+
+
+class TestActionConflictResolutionIntegration:
+    """Integration tests for action_conflict_resolution setting with real DB."""
+
+    async def test_action_wins_overrides_explicit_set(self):
+        doc = DocumentWithActionWinsStrategy(name="alice")
+        await doc.insert()
+
+        await doc.update({"$set": {"name": "bob", "tag": "explicit"}})
+
+        refetched = await DocumentWithActionWinsStrategy.find_one(
+            {"_id": doc.id}
+        )
+        assert refetched.name == "bob"
+        assert refetched.tag == "action_value"
+
+    async def test_action_wins_via_set_method(self):
+        doc = DocumentWithActionWinsStrategy(name="alice")
+        await doc.insert()
+
+        await doc.set({"tag": "explicit"})
+
+        refetched = await DocumentWithActionWinsStrategy.find_one(
+            {"_id": doc.id}
+        )
+        assert refetched.tag == "action_value"
+
+    async def test_update_wins_non_conflicting_fields_persisted(self):
+        doc = DocumentWithUpdateFieldAction(name="alice")
+        await doc.insert()
+
+        await doc.update({"$set": {"name": "bob"}})
+
+        refetched = await DocumentWithUpdateFieldAction.find_one(
+            {"_id": doc.id}
+        )
+        assert refetched.name == "bob"
+        assert refetched.tag == "updated"
