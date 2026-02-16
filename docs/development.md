@@ -45,6 +45,36 @@ To run the test suite, make sure that you have MongoDB running and run `pytest`.
 
 You can submit your changes through a pull request on GitHub. Please take into account the following sections.
 
+### Branch naming
+
+Use the format `type/short-description` in **kebab-case**:
+
+```
+fix/fetch-links-chain
+feat/bulk-writer-upsert
+docs/backlink-pydantic-v2
+chore/update-ci-actions
+```
+
+Allowed types: `fix`, `feat`, `docs`, `chore`, `refactor`, `test`, `perf`.
+
+### PR titles
+
+Use [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```
+fix: preserve fetch_links across chained find()
+feat: add bulk upsert support
+docs: update BackLink usage for Pydantic v2
+chore: bump CI action versions
+```
+
+The PR title becomes the squash commit message, so keep it clear and concise.
+
+### PR descriptions
+
+A PR template is provided automatically. Fill in a short description of **what** and **why**, reference related issues (`Closes #123`), and check the items in the checklist.
+
 ### Use pre-commit
 
 To ensure code consistency, Beanie uses Black and Ruff through pre-commit. To set it up, run:
