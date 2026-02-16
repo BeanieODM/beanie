@@ -221,37 +221,51 @@ if not IS_PYDANTIC_V2:
 BeanieObjectId = PydanticObjectId
 
 
+@dataclass(frozen=True)
+class FieldResolution:
+    """Immutable metadata attached to ExpressionField for query-time
+    path resolution.
+
+    Tracks the nested model class (for alias resolution during field
+    access) and whether the path crosses a Link/BackLink boundary
+    (for DBRef translation at query time).
+    """
+
+    model_class: Optional[type] = None
+    is_link: bool = False
+
+
 class ExpressionField(str):
-    def __new__(cls, path, model_class=None):
+    def __new__(cls, path, field_resolution=None):
         instance = super().__new__(cls, path)
-        instance._model_class = model_class
+        instance._field_resolution = (
+            field_resolution
+            if field_resolution is not None
+            else FieldResolution()
+        )
         return instance
 
     @staticmethod
-    def _resolve_nested_model(annotation):
-        """
-        Given a field annotation, try to extract the BaseModel subclass.
-        Handles Optional[X], Union[X, ...], List[X], etc.
+    def _resolve_field(annotation) -> FieldResolution:
+        """Resolve a field annotation to a :class:`FieldResolution`.
 
-        Link[X] and BackLink[X] are intentionally excluded: they are
-        stored as DBRef references in MongoDB, not as embedded documents,
-        so their sub-fields should not be resolved through the linked
-        model's aliases.
+        Unwraps ``Optional[X]``, ``Union[X, ...]``, ``List[X]`` and
+        similar generic wrappers to find the nested ``BaseModel``
+        subclass.  ``Link[X]`` and ``BackLink[X]`` are resolved to
+        the linked model **and** flagged with ``is_link=True`` so that
+        the query layer can perform DBRef path translation at runtime.
         """
-        from pydantic import BaseModel
-
         if annotation is None:
-            return None
+            return FieldResolution()
 
-        # Direct BaseModel subclass
+        # Direct BaseModel subclass (embedded document)
         if isinstance(annotation, type) and issubclass(annotation, BaseModel):
-            return annotation
+            return FieldResolution(model_class=annotation)
 
-        # Unwrap generic types (Optional, Union, List, etc.)
         origin = getattr(annotation, "__origin__", None)
         args = getattr(annotation, "__args__", None)
 
-        # Do not resolve through Link or BackLink
+        # Link[X] / BackLink[X] — resolve to X but mark as link
         if origin is not None and (
             origin is Link
             or origin is BackLink
@@ -260,20 +274,31 @@ class ExpressionField(str):
                 and issubclass(origin, (Link, BackLink))
             )
         ):
-            return None
+            if args:
+                for arg in args:
+                    if arg is type(None):
+                        continue
+                    if isinstance(arg, type) and issubclass(arg, BaseModel):
+                        return FieldResolution(model_class=arg, is_link=True)
+                    nested = ExpressionField._resolve_field(arg)
+                    if nested.model_class is not None:
+                        return FieldResolution(
+                            model_class=nested.model_class, is_link=True
+                        )
+            return FieldResolution(is_link=True)
 
+        # Other generics: Optional, Union, List, etc.
         if args:
             for arg in args:
                 if arg is type(None):
                     continue
                 if isinstance(arg, type) and issubclass(arg, BaseModel):
-                    return arg
-                # Recurse for nested generics
-                nested = ExpressionField._resolve_nested_model(arg)
-                if nested is not None:
+                    return FieldResolution(model_class=arg)
+                nested = ExpressionField._resolve_field(arg)
+                if nested.model_class is not None:
                     return nested
 
-        return None
+        return FieldResolution()
 
     def __getitem__(self, item):
         """
@@ -282,31 +307,46 @@ class ExpressionField(str):
         :param item: name of the subfield
         :return: ExpressionField
         """
-        return ExpressionField(f"{self}.{item}")
+        return ExpressionField(
+            f"{self}.{item}",
+            field_resolution=FieldResolution(
+                is_link=self._field_resolution.is_link
+            ),
+        )
 
     def __getattr__(self, item):
-        """
-        Get sub field, resolving aliases from nested Pydantic models.
+        """Get sub field, resolving aliases from nested Pydantic models.
 
-        :param item: name of the subfield
-        :return: ExpressionField
+        Alias resolution is performed through the model class carried
+        in ``_field_resolution``.  The ``is_link`` flag is propagated
+        from parent to child so that downstream query code can
+        translate DBRef paths at runtime.
         """
         if item.startswith("_"):
             raise AttributeError(item)
 
-        nested_model = self._model_class
-        if nested_model is not None:
-            fields = get_model_fields(nested_model)
+        resolution = self._field_resolution
+        if resolution.model_class is not None:
+            fields = get_model_fields(resolution.model_class)
             if item in fields:
                 field_info = fields[item]
                 alias = field_info.alias if field_info.alias else item
                 annotation = getattr(field_info, "annotation", None)
-                child_model = ExpressionField._resolve_nested_model(annotation)
+                child = ExpressionField._resolve_field(annotation)
+                # Propagate is_link from parent when child is not
+                # itself a new link boundary.
+                if resolution.is_link and not child.is_link:
+                    child = FieldResolution(
+                        model_class=child.model_class, is_link=True
+                    )
                 return ExpressionField(
-                    f"{self}.{alias}", model_class=child_model
+                    f"{self}.{alias}", field_resolution=child
                 )
 
-        return ExpressionField(f"{self}.{item}")
+        return ExpressionField(
+            f"{self}.{item}",
+            field_resolution=FieldResolution(is_link=resolution.is_link),
+        )
 
     def __hash__(self):
         return hash(str(self))
