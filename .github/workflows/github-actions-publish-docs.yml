@@ -1,6 +1,11 @@
 name: Publish docs
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (build only, skip deploy)"
+        type: boolean
+        default: false
 
 permissions:
   pages: write
@@ -38,6 +43,7 @@ jobs:
           path: docs/build/_site
 
   deploy:
+    if: ${{ !inputs.dry_run }}
     needs: build
     runs-on: ubuntu-latest
     environment:
