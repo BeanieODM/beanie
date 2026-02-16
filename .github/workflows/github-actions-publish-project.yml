@@ -1,17 +1,47 @@
 name: Publish project
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (build only, skip upload)"
+        type: boolean
+        default: false
+
 jobs:
-  publish_project:
+  publish:
     runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+      contents: write
     steps:
-      - uses: actions/checkout@v3
-      - name: install flit
-        run: pip3 install flit
-      - name: publish project
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install flit
+        run: pip install flit
+
+      - name: Build package
+        run: flit build
+
+      - name: Publish to PyPI
+        if: ${{ !inputs.dry_run }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Create git tag
+        if: ${{ !inputs.dry_run }}
+        run: |
+          VERSION=$(python -c "import beanie; print(beanie.__version__)")
+          git tag "v${VERSION}"
+          git push origin "v${VERSION}"
+
+      - name: Create GitHub Release
+        if: ${{ !inputs.dry_run }}
         env:
-          FLIT_USERNAME: __token__
-          FLIT_PASSWORD: ${{ secrets.FLIT_PASSWORD }}
-        run: flit publish
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(python -c "import beanie; print(beanie.__version__)")
+          gh release create "v${VERSION}" --generate-notes --title "v${VERSION}"
