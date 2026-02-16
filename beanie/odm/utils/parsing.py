@@ -23,7 +23,9 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
     """
     from beanie.odm.fields import Link
 
-    for k, right_value in right.__iter__():
+    # Use BaseModel.__iter__ to bypass custom __iter__ overrides
+    # (e.g. RootModel subclasses that yield non-tuple values).
+    for k, right_value in BaseModel.__iter__(right):
         left_value = getattr(left, k, None)
         if isinstance(right_value, BaseModel) and isinstance(
             left_value, BaseModel
