@@ -2,6 +2,47 @@
 
 Beanie project
 
+## [2.0.1] - 2025-11-17
+### Fix: exclude pymongo 4.15.0 due to a known issue
+- Author - [staticxterm](https://github.com/staticxterm)
+- PR <https://github.com/BeanieODM/beanie/pull/1225>
+### Bump lazy-model
+- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
+- PR <https://github.com/BeanieODM/beanie/pull/1218>
+### Fix: incomplete type hint for regex pattern
+- Author - [xcrong](https://github.com/xcrong)
+- PR <https://github.com/BeanieODM/beanie/pull/1209>
+### Fix return types of min and max methods
+- Author - [kewldan](https://github.com/kewldan)
+- PR <https://github.com/BeanieODM/beanie/pull/1204>
+### Handle aggregation method on the whole collection
+- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
+- PR <https://github.com/BeanieODM/beanie/pull/1203>
+### Fix: preserve fetch_links across chained find() and find_one()
+- Author - [scarlet2131](https://github.com/scarlet2131)
+- PR <https://github.com/BeanieODM/beanie/pull/1184>
+### Fix: pydantic "exclude" option is not working #756
+- Author - [CatBraaain](https://github.com/CatBraaain)
+- PR <https://github.com/BeanieODM/beanie/pull/1154>
+### Fix pydanticdeprecatedsince211: accessing the 'model_fields' attribute on the instance is deprecated
+- Author - [gsakkis](https://github.com/gsakkis)
+- PR <https://github.com/BeanieODM/beanie/pull/1150>
+
+[2.0.1]: https://pypi.org/project/beanie/2.0.1
+
+## [2.0.0] - 2025-07-09
+### Transform asyncdocmethod[doctype, p, r] into any to fix "incorrect call arguments" warning in pycharm
+- Author - [hRtWzFe](https://github.com/hRtWzFe)
+- PR <https://github.com/BeanieODM/beanie/pull/1166>
+### Fix typos in migrations docs
+- Author - [Rishat-F](https://github.com/Rishat-F)
+- PR <https://github.com/BeanieODM/beanie/pull/1136>
+### Motor -> async pymongo
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/1113>
+
+[2.0.0]: https://pypi.org/project/beanie/2.0.0
+
 ## [1.30.0] - 2025-06-10
 ### Docs: update backlink usage of original_field for pydantic v2
 - Author - [scarlet2131](https://github.com/scarlet2131)
