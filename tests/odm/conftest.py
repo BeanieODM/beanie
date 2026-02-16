@@ -98,6 +98,9 @@ from tests.odm.models import (
     LongSelfLink,
     LoopedLinksA,
     LoopedLinksB,
+    DocumentWithAliasedLink,
+    DocumentWithDeepNestedAlias,
+    DocumentWithNestedAlias,
     NativeRegexDoc,
     Nested,
     Option1,
@@ -236,6 +239,9 @@ TESTING_MODELS = [
     NativeRegexDoc,
     DocumentWithExcludedField,
     DocumentWithFrozenField,
+    DocumentWithNestedAlias,
+    DocumentWithDeepNestedAlias,
+    DocumentWithAliasedLink,
 ]
 
 TESTING_MODELS.append(DocumentWithCustomIterRootModel)
