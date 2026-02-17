@@ -31,7 +31,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "pydantic>=1.10.18,<3.0",
+    "pydantic>=2.10.0,<3.0",
     "click>=7",
     "lazy-model>=0.4.0,<1.0.0",
     "pymongo>=4.11.0,!=4.15.0,<5.0.0",
@@ -106,9 +106,7 @@ testpaths = [
     "tests",
 ]
 filterwarnings = [
-    "error",
-    "ignore::DeprecationWarning",
-    "ignore::UserWarning",
+    "error"
 ]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"

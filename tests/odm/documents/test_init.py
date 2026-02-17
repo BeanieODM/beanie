@@ -46,6 +46,8 @@ async def test_init_connection_string(settings):
         == settings.mongodb_dsn.split("/")[-1]
     )
 
+    await NewDocumentCS.get_pymongo_collection().database.client.close()
+
 
 async def test_init_wrong_params(settings, db):
     class NewDocumentCS(Document):
