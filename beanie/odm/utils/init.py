@@ -127,23 +127,20 @@ class Initializer:
             key=lambda val: sort_order[val.get_model_type()]
         )
 
-        self._database_major_version = -1
-        self._existing_collections = []
+        self._database_major_version: int = -1
+        self._existing_collections: list[str] = []
 
     def __await__(self):
-        # get db version
-        build_info = asyncio.run(self.database.command({"buildInfo": 1}))
-        mongo_version = build_info["version"]
-        self._database_major_version = int(mongo_version.split(".")[0])
-
-        self._existing_collections = asyncio.run(
-            self.database.list_collection_names(
-                authorizedCollections=True, nameOnly=True
-            )
-        )
-
+        yield from self._load_cached_info().__await__()
         for model in self.document_models:
             yield from self.init_class(model).__await__()
+
+    async def _load_cached_info(self):
+        build_info = await self.database.command({"buildInfo": 1})
+        self._database_major_version = int(build_info["version"].split(".")[0])
+        self._existing_collections = await self.database.list_collection_names(
+            authorizedCollections=True, nameOnly=True
+        )
 
     # General
     def fill_docs_registry(self):
