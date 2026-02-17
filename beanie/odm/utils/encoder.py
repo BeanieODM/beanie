@@ -157,7 +157,7 @@ class Encoder:
     ) -> Iterable[Tuple[str, Any]]:
         keep_nulls = self.keep_nulls
         get_model_field = get_model_fields(obj).get
-        for key, value in obj:
+        for key, value in obj.__iter__():
             field_info = get_model_field(key)
             if field_info is not None:
                 key = field_info.alias or key
