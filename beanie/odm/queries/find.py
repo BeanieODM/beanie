@@ -153,6 +153,7 @@ class FindQuery(
                 kwargs["limit"] = self.limit_number
             if self.skip_number:
                 kwargs["skip"] = self.skip_number
+        kwargs.update(self.pymongo_kwargs)
         return (
             await self.document_model.get_pymongo_collection().count_documents(
                 self.get_filter_query(), session=self.session, **kwargs

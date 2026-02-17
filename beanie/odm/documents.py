@@ -23,12 +23,10 @@ from uuid import UUID, uuid4
 from bson import DBRef, ObjectId
 from lazy_model import LazyModel
 from pydantic import (
-    ConfigDict,
     Field,
     PrivateAttr,
     ValidationError,
 )
-from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
 from pymongo import InsertOne
 from pymongo.asynchronous.client_session import AsyncClientSession
@@ -109,7 +107,9 @@ from beanie.odm.utils.state import (
 from beanie.odm.utils.typing import extract_id_class
 
 if IS_PYDANTIC_V2:
-    from pydantic import model_validator
+    from pydantic import ConfigDict, model_validator
+else:
+    from pydantic.class_validators import root_validator
 
 if TYPE_CHECKING:
     from beanie.odm.views import View
