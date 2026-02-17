@@ -1,4 +1,3 @@
-import asyncio
 import sys
 
 from pymongo.asynchronous.database import AsyncDatabase
