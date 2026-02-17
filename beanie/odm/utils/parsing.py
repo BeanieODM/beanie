@@ -23,7 +23,7 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
     """
     from beanie.odm.fields import Link
 
-    for k, right_value in right.__iter__():
+    for k, right_value in right:
         left_value = getattr(left, k, None)
         if isinstance(right_value, BaseModel) and isinstance(
             left_value, BaseModel
@@ -34,12 +34,7 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
                 merge_models(left_value, right_value)
             continue
         if isinstance(right_value, list):
-            links_found = False
-            for i in right_value:
-                if isinstance(i, Link):
-                    links_found = True
-                    break
-            if links_found:
+            if any(isinstance(i, Link) for i in right_value):
                 continue
             left.__setattr__(k, right_value)
         elif not isinstance(right_value, Link):
