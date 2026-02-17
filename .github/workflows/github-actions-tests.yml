@@ -7,9 +7,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
-        mongodb-version: [ "4.4", "5.0", "6.0", "7.0", "8.0" ]
-        pydantic-version: [ "1.10.18", "2.9.2" , "2.10.4", "2.11"]
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
+        # 5.0: kept for AWS DocumentDB / Azure DocumentDB compatibility
+        # 7.0, 8.0: current supported MongoDB releases
+        mongodb-version: [ "5.0", "7.0", "8.0" ]
+        pydantic-version: [ "2.11", "2.12" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +26,7 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: test-rs
       - name: install dependencies
-        run: pip install .[test,ci]
+        run: pip install .[test]
       - name: install pydantic
         run: pip install pydantic==${{ matrix.pydantic-version }}
       - name: run tests
