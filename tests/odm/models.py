@@ -1,4 +1,5 @@
 import datetime
+from collections.abc import Callable
 from enum import Enum
 from ipaddress import (
     IPv4Address,
@@ -11,11 +12,8 @@ from ipaddress import (
 from pathlib import Path
 from typing import (
     Any,
-    Callable,
     ClassVar,
     Optional,
-    Set,
-    Tuple,
     Union,
 )
 from uuid import UUID, uuid4
@@ -115,7 +113,7 @@ class Nested(BaseModel):
 
 class GeoObject(BaseModel):
     type: str = "Point"
-    coordinates: Tuple[float, float]
+    coordinates: tuple[float, float]
 
 
 class Sample(Document):
@@ -269,8 +267,8 @@ class DocumentWithCustomFiledsTypes(Document):
     ipv6interface: IPv6Interface
     ipv6network: IPv6Network
     timedelta: datetime.timedelta
-    set_type: Set[str]
-    tuple_type: Tuple[int, str]
+    set_type: set[str]
+    tuple_type: tuple[int, str]
     path: Path
 
     class Settings:

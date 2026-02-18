@@ -9,7 +9,6 @@ from typing import (
     Any,
     Generic,
     Optional,
-    Tuple,
     TypeVar,
     Union,
 )
@@ -47,7 +46,7 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class IndexedAnnotation:
-    _indexed: Tuple[int, dict[str, Any]]
+    _indexed: tuple[int, dict[str, Any]]
 
 
 def Indexed(typ=None, index_type=ASCENDING, **kwargs: Any):

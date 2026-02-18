@@ -1,8 +1,7 @@
 import datetime
-from collections.abc import Mapping
+from collections.abc import Mapping, Set
 from decimal import Decimal
 from pathlib import Path
-from typing import AbstractSet
 from uuid import uuid4
 
 import pytest
@@ -148,14 +147,14 @@ def test_revision_id_not_in_schema():
 async def test_param_exclude(document, exclude):
     document = await DocumentTestModel.find_one()
     doc_dict = document.model_dump(exclude=exclude)
-    if isinstance(exclude, AbstractSet):
+    if isinstance(exclude, Set):
         for k in exclude:
             assert k not in doc_dict
     elif isinstance(exclude, Mapping):
         for k, v in exclude.items():
             if isinstance(v, bool) and v:
                 assert k not in doc_dict
-            elif isinstance(v, AbstractSet):
+            elif isinstance(v, Set):
                 for another_k in v:
                     assert another_k not in doc_dict[k]
 

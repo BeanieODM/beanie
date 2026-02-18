@@ -1,5 +1,5 @@
 import inspect
-from typing import Any, Optional, Tuple, get_args, get_origin
+from typing import Any, Optional, get_args, get_origin
 
 from beanie.odm.fields import IndexedAnnotation
 
@@ -19,7 +19,7 @@ def extract_id_class(annotation) -> type[Any]:
     raise ValueError("Unknown annotation: {}".format(annotation))
 
 
-def get_index_attributes(field) -> Optional[Tuple[int, dict[str, Any]]]:
+def get_index_attributes(field) -> Optional[tuple[int, dict[str, Any]]]:
     """Gets the index attributes from the field, if it is indexed.
 
     :param field: The field to get the index attributes from.

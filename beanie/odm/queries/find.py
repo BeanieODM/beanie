@@ -1,13 +1,10 @@
-from collections.abc import Mapping
+from collections.abc import Callable, Coroutine, Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
-    Coroutine,
     Generator,
     Generic,
     Optional,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -180,7 +177,7 @@ class FindMany(
 
     def __init__(self, document_model: type["DocType"]):
         super(FindMany, self).__init__(document_model=document_model)
-        self.sort_expressions: list[Tuple[str, SortDirection]] = []
+        self.sort_expressions: list[tuple[str, SortDirection]] = []
         self.skip_number: int = 0
         self.limit_number: int = 0
 
@@ -191,7 +188,7 @@ class FindMany(
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -208,7 +205,7 @@ class FindMany(
         projection_model: Optional[type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -224,7 +221,7 @@ class FindMany(
         projection_model: Optional[type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -241,7 +238,7 @@ class FindMany(
         :param args: *Mapping[Any, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, list[Tuple[str, SortDirection]]] - A key
+        :param sort: Union[None, str, list[tuple[str, SortDirection]]] - A key
         or a list of (key, direction) pairs specifying the sort order
         for this query.
         :param projection_model: Optional[type[BaseModel]] - projection model
@@ -302,7 +299,7 @@ class FindMany(
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -319,7 +316,7 @@ class FindMany(
         projection_model: Optional[type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -335,7 +332,7 @@ class FindMany(
         projection_model: Optional[type[FindQueryProjectionType]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -368,14 +365,14 @@ class FindMany(
         self,
         *args: Optional[
             Union[
-                str, Tuple[str, SortDirection], list[Tuple[str, SortDirection]]
+                str, tuple[str, SortDirection], list[tuple[str, SortDirection]]
             ]
         ],
     ) -> "FindMany[FindQueryResultType]":
         """
         Add sort parameters
-        :param args: Union[str, Tuple[str, SortDirection],
-        list[Tuple[str, SortDirection]]] - A key or a tuple (key, direction)
+        :param args: Union[str, tuple[str, SortDirection],
+        list[tuple[str, SortDirection]]] - A key or a tuple (key, direction)
         or a list of (key, direction) pairs specifying
         the sort order for this query.
         :return: self

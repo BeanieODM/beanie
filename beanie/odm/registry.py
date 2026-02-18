@@ -1,4 +1,4 @@
-from typing import ForwardRef, Type, Union
+from typing import ForwardRef, Union
 
 from pydantic import BaseModel
 
@@ -15,7 +15,7 @@ class DocsRegistry:
         return cls._registry[name]
 
     @classmethod
-    def evaluate_fr(cls, forward_ref: Union[ForwardRef, Type]):
+    def evaluate_fr(cls, forward_ref: Union[ForwardRef, type]):
         """
         Evaluate forward ref
 

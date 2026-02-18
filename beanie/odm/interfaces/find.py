@@ -5,8 +5,6 @@ from typing import (
     Any,
     ClassVar,
     Optional,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     overload,
@@ -39,7 +37,7 @@ class FindInterface:
 
     _inheritance_inited: bool = False
     _class_id: ClassVar[Optional[str]]
-    _children: ClassVar[dict[str, Type]]
+    _children: ClassVar[dict[str, type]]
 
     @classmethod
     @abstractmethod
@@ -126,7 +124,7 @@ class FindInterface:
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -145,7 +143,7 @@ class FindInterface:
         projection_model: Optional[type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -163,7 +161,7 @@ class FindInterface:
         projection_model: Optional[type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -180,7 +178,7 @@ class FindInterface:
         :param args: *Mapping[Any, Any] - search criteria
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, list[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
+        :param sort: Union[None, str, list[tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[type[BaseModel]] - projection model
         :param session: Optional[AsyncClientSession] - pymongo session.
         :param ignore_cache: bool
@@ -212,7 +210,7 @@ class FindInterface:
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -231,7 +229,7 @@ class FindInterface:
         projection_model: type["DocumentProjectionType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -249,7 +247,7 @@ class FindInterface:
         projection_model: Optional[type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -284,7 +282,7 @@ class FindInterface:
         cls: type[FindType],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         projection_model: None = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
@@ -301,7 +299,7 @@ class FindInterface:
         cls: type[FindType],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         projection_model: Optional[type["DocumentProjectionType"]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
@@ -317,7 +315,7 @@ class FindInterface:
         cls: type[FindType],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         projection_model: Optional[type["DocumentProjectionType"]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
@@ -332,7 +330,7 @@ class FindInterface:
 
         :param skip: Optional[int] - The number of documents to omit.
         :param limit: Optional[int] - The maximum number of results to return.
-        :param sort: Union[None, str, list[Tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
+        :param sort: Union[None, str, list[tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param projection_model: Optional[type[BaseModel]] - projection model
         :param session: Optional[AsyncClientSession] - pymongo session.
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
@@ -360,7 +358,7 @@ class FindInterface:
         projection_model: None = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
@@ -377,7 +375,7 @@ class FindInterface:
         projection_model: type["DocumentProjectionType"],
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
@@ -393,7 +391,7 @@ class FindInterface:
         projection_model: Optional[type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         with_children: bool = False,
@@ -430,7 +428,7 @@ class FindInterface:
         return await cls.find_all().count()  # type: ignore
 
     @classmethod
-    def _add_class_id_filter(cls, args: Tuple, with_children: bool = False):
+    def _add_class_id_filter(cls, args: tuple, with_children: bool = False):
         # skip if _class_id is already added
         if any(
             (

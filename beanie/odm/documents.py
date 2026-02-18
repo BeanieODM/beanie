@@ -1,17 +1,13 @@
 import asyncio
 import warnings
-from collections.abc import Mapping
+from collections.abc import Callable, Coroutine, Iterable, Mapping
 from datetime import datetime, timezone
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     ClassVar,
-    Coroutine,
-    Iterable,
     Optional,
-    Tuple,
     TypeVar,
     Union,
 )
@@ -1267,7 +1263,7 @@ class DocumentWithSoftDelete(Document):
         projection_model: Optional[type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -1299,7 +1295,7 @@ class DocumentWithSoftDelete(Document):
         projection_model: Optional[type["DocumentProjectionType"]] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
-        sort: Union[None, str, list[Tuple[str, SortDirection]]] = None,
+        sort: Union[None, str, list[tuple[str, SortDirection]]] = None,
         session: Optional[AsyncClientSession] = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,

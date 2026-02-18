@@ -1,13 +1,12 @@
 import asyncio
 import inspect
+from collections.abc import Callable
 from enum import Enum
 from functools import wraps
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Optional,
-    Tuple,
     TypeVar,
     Union,
 )
@@ -144,7 +143,7 @@ F = TypeVar("F", bound=Any)
 
 
 def register_action(
-    event_types: Tuple[Union[list[EventTypes], EventTypes], ...],
+    event_types: tuple[Union[list[EventTypes], EventTypes], ...],
     action_direction: ActionDirections,
 ) -> Callable[[F], F]:
     """

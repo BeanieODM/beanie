@@ -16,6 +16,8 @@ from pymongo.asynchronous.client_session import AsyncClientSession
 from pymongo.results import BulkWriteResult
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from beanie import Document
     from beanie.odm.union_doc import UnionDoc
 
@@ -89,7 +91,7 @@ class BulkWriter:
             object_class.get_collection_name() if object_class else None
         )
 
-    async def __aenter__(self) -> "BulkWriter":
+    async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(
@@ -133,7 +135,7 @@ class BulkWriter:
         self,
         object_class: type[Union[Document, UnionDoc]],
         operation: _WriteOp,
-    ):
+    ) -> None:
         """
         Add an operation to the queue.
 

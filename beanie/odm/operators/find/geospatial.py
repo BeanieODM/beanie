@@ -17,7 +17,7 @@ class GeoIntersects(BaseFindGeospatialOperator):
     ```python
     class GeoObject(BaseModel):
         type: str = "Point"
-        coordinates: Tuple[float, float]
+        coordinates: tuple[float, float]
 
     class Place(Document):
         geo: GeoObject
@@ -83,7 +83,7 @@ class GeoWithin(BaseFindGeospatialOperator):
     ```python
     class GeoObject(BaseModel):
         type: str = "Point"
-        coordinates: Tuple[float, float]
+        coordinates: tuple[float, float]
 
     class Place(Document):
         geo: GeoObject
@@ -146,7 +146,7 @@ class Box(BaseFindGeospatialOperator):
     ```python
     class GeoObject(BaseModel):
         type: str = "Point"
-        coordinates: Tuple[float, float]
+        coordinates: tuple[float, float]
 
     class Place(Document):
         geo: GeoObject
@@ -196,7 +196,7 @@ class Near(BaseFindGeospatialOperator):
     ```python
     class GeoObject(BaseModel):
         type: str = "Point"
-        coordinates: Tuple[float, float]
+        coordinates: tuple[float, float]
 
     class Place(Document):
         geo: GeoObject
@@ -278,7 +278,7 @@ class NearSphere(Near):
     ```python
     class GeoObject(BaseModel):
         type: str = "Point"
-        coordinates: Tuple[float, float]
+        coordinates: tuple[float, float]
 
     class Place(Document):
         geo: GeoObject

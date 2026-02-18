@@ -1,7 +1,6 @@
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Set
 
 import requests  # type: ignore
 
@@ -54,7 +53,7 @@ class ChangelogGenerator:
 
     def get_prs_for_commits(self, commit_shas: list[str]) -> list[PullRequest]:
         prs: list[PullRequest] = []
-        unique_prs: Set[int] = set()
+        unique_prs: set[int] = set()
         for commit_sha in commit_shas:
             pr = self.get_pr_for_commit(commit_sha)
             pr_id = pr.number

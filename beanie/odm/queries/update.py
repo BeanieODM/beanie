@@ -1,10 +1,9 @@
 from abc import abstractmethod
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Generator,
     Optional,
     Union,
