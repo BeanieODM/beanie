@@ -752,8 +752,8 @@ class Document(
             # A DuplicateKeyError mentioning revision_id is also a
             # revision conflict. Any other DuplicateKeyError (e.g. on a
             # user-defined unique index) should propagate as-is.
-            err_str = str(e)
             if use_revision_id and not ignore_revision:
+                err_str = str(e)
                 if "_id_" in err_str or "revision_id" in err_str:
                     raise RevisionIdWasChanged
             raise
