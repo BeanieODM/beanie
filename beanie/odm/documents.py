@@ -1243,7 +1243,6 @@ class Document(
             An instance of BulkWriter configured with the provided settings.
 
         Example Usage:
-        --------------
         This method is typically used within an asynchronous context manager.
 
         .. code-block:: python
@@ -1257,9 +1256,32 @@ class Document(
 
 
 class DocumentWithSoftDelete(Document):
+    """
+    Implements **soft deletion** for Beanie documents.
+
+    Instead of permanently removing a document from the database,
+    this subclass marks the document as deleted by setting the
+    optional ``deleted_at`` field to the current UTC timestamp. Normal query
+    operations automatically exclude such documents, while special
+    query methods can retrieve them when needed.
+
+    Fields:
+
+    - `deleted_at` - marks the document as deleted by setting this field
+    to the current UTC timestamp
+
+    """
+
     deleted_at: Optional[datetime] = None
 
     def is_deleted(self) -> bool:
+        """
+        Returns whether the document has been soft-deleted.
+
+        :returns: bool
+            ``True`` if the document's ``deleted_at`` field is set;
+            otherwise ``False``.
+        """
         return self.deleted_at is not None
 
     async def hard_delete(
@@ -1270,6 +1292,22 @@ class DocumentWithSoftDelete(Document):
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
+        """
+        Permanently deletes the document from the database, unlike :meth:`delete`.
+
+        :param session: Optional[AsyncClientSession]
+            The MongoDB async session used for the operation.
+        :param bulk_writer: Optional[BulkWriter]
+            A bulk writer used for batching multiple write operations.
+        :param link_rule: DeleteRules
+            Determines how linked documents are handled. Defaults to ``DeleteRules.DO_NOTHING``.
+        :param skip_actions: Optional[List[Union[ActionDirections, str]]]
+            A list of lifecycle actions to skip during deletion.
+        :param **pymongo_kwargs: Any
+            Additional keyword arguments forwarded to PyMongo.
+        :returns: Optional[DeleteResult]
+            The result of the PyMongo delete operation, if available.
+        """
         return await super().delete(
             session=session,
             bulk_writer=bulk_writer,
@@ -1286,6 +1324,27 @@ class DocumentWithSoftDelete(Document):
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
+        """
+        Overrides the base :meth:`delete`.
+        Marks the document as deleted by setting the ``deleted_at`` timestamp.
+
+
+        The document remains in the database but is excluded from all
+        standard queries such as :meth:`find`, :meth:`find_one`, and
+        :meth:`find_many`.
+
+        :param session: Optional[AsyncClientSession]
+            The MongoDB async session used for the operation.
+        :param bulk_writer: Optional[BulkWriter]
+            A bulk writer used for batching multiple write operations.
+        :param link_rule: DeleteRules
+            Determines how linked documents are handled. Defaults to ``DeleteRules.DO_NOTHING``.
+        :param skip_actions: Optional[List[Union[ActionDirections, str]]]
+            A list of lifecycle actions to skip during deletion.
+        :param **pymongo_kwargs: Any
+            Additional keyword arguments forwarded to PyMongo.
+        :returns: None
+        """
         self.deleted_at = datetime.now(tz=timezone.utc)
         await self.save()
         return None
@@ -1307,6 +1366,12 @@ class DocumentWithSoftDelete(Document):
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
+        """
+        Returns a query object including both active and soft-deleted documents.
+
+        :returns: ``FindMany``
+            A query object that includes both deleted and non-deleted documents.
+        """
         return cls._find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
@@ -1339,6 +1404,16 @@ class DocumentWithSoftDelete(Document):
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
+        """
+        Returns a query object that excludes soft-deleted documents.
+
+        This overrides the base :meth:`find_many` method by automatically
+        applying a filter ``{"deleted_at": None}``.
+
+        :returns: ``FindMany``
+            A query object for fetching only non-deleted documents.
+
+        """
         args = cls._add_class_id_filter(args, with_children) + (
             {"deleted_at": None},
         )
@@ -1370,6 +1445,16 @@ class DocumentWithSoftDelete(Document):
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindOne[FindType], FindOne["DocumentProjectionType"]]:
+        """
+        Returns a single document that has not been soft-deleted.
+
+        This overrides the base :meth:`find_one` method by automatically
+        applying a filter ``{"deleted_at": None}``.
+
+        :returns: ``FindOne``
+            A query object for a single non-deleted document.
+
+        """
         args = cls._add_class_id_filter(args, with_children) + (
             {"deleted_at": None},
         )
