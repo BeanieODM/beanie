@@ -1,14 +1,9 @@
 from datetime import timedelta
 from typing import Any, Dict, Optional, Type
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from pymongo.asynchronous.collection import AsyncCollection
 from pymongo.asynchronous.database import AsyncDatabase
-
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
-
-if IS_PYDANTIC_V2:
-    from pydantic import ConfigDict
 
 
 class ItemSettings(BaseModel):
@@ -29,11 +24,6 @@ class ItemSettings(BaseModel):
 
     is_root: bool = False
 
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            arbitrary_types_allowed=True,
-        )
-    else:
-
-        class Config:
-            arbitrary_types_allowed = True
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+    )

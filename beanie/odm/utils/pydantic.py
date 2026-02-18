@@ -1,67 +1,41 @@
 from typing import Any, Type
 
 import pydantic
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 
 IS_PYDANTIC_V2 = int(pydantic.VERSION.split(".")[0]) >= 2
 IS_PYDANTIC_V2_10 = (
     IS_PYDANTIC_V2 and int(pydantic.VERSION.split(".")[1]) >= 10
 )
 
-if IS_PYDANTIC_V2:
-    from pydantic import TypeAdapter
-else:
-    from pydantic import parse_obj_as
-
 
 def parse_object_as(object_type: Type, data: Any):
-    if IS_PYDANTIC_V2:
-        return TypeAdapter(object_type).validate_python(data)
-    else:
-        return parse_obj_as(object_type, data)
+    return TypeAdapter(object_type).validate_python(data)
 
 
 def get_field_type(field):
-    if IS_PYDANTIC_V2:
-        return field.annotation
-    else:
-        return field.outer_type_
+    return field.annotation
 
 
 def get_model_fields(model):
-    if IS_PYDANTIC_V2:
-        if not isinstance(model, type):
-            model = model.__class__
-        return model.model_fields
-    else:
-        return model.__fields__
+    if not isinstance(model, type):
+        model = model.__class__
+    return model.model_fields
 
 
 def parse_model(model_type: Type[BaseModel], data: Any):
-    if IS_PYDANTIC_V2:
-        return model_type.model_validate(data)
-    else:
-        return model_type.parse_obj(data)
+    return model_type.model_validate(data)
 
 
 def get_extra_field_info(field, parameter: str):
-    if IS_PYDANTIC_V2:
-        if isinstance(field.json_schema_extra, dict):
-            return field.json_schema_extra.get(parameter)
-        return None
-    else:
-        return field.field_info.extra.get(parameter)
+    if isinstance(field.json_schema_extra, dict):
+        return field.json_schema_extra.get(parameter)
+    return None
 
 
 def get_config_value(model, parameter: str):
-    if IS_PYDANTIC_V2:
-        return model.model_config.get(parameter)
-    else:
-        return getattr(model.Config, parameter, None)
+    return model.model_config.get(parameter)
 
 
 def get_model_dump(model, *args: Any, **kwargs: Any):
-    if IS_PYDANTIC_V2:
-        return model.model_dump(*args, **kwargs)
-    else:
-        return model.dict(*args, **kwargs)
+    return model.model_dump(*args, **kwargs)

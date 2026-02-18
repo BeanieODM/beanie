@@ -47,9 +47,7 @@ test = [
     "pyright>=0",
     "asgi-lifespan>=1.0.1",
     "httpx>=0.23.0",
-    "fastapi<0.126.0",
-    "pydantic-settings>=2",
-    "pydantic-extra-types>=2",
+    "fastapi>=0.100",
     "pydantic[email]",
 ]
 doc = [
@@ -125,7 +123,7 @@ include = ["tests/typing", "beanie"]
 [tool.ruff]
 line-length = 79
 fix = true
-target-version = "py39"
+target-version = "py310"
 include = ["**/*.py", ".github/**/*.py"]
 
 [tool.ruff.lint]

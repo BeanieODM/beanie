@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, Tuple, Type
 
 from beanie.odm.fields import IndexedAnnotation
 
-from .pydantic import IS_PYDANTIC_V2, get_field_type
+from .pydantic import get_field_type
 
 if sys.version_info >= (3, 8):
     from typing import get_args, get_origin
@@ -40,19 +40,9 @@ def get_index_attributes(field) -> Optional[Tuple[int, Dict[str, Any]]]:
 
     # For fields that are use `Indexed` within `Annotated`, the field will have
     # metadata that might contain an `IndexedAnnotation` instance.
-    if IS_PYDANTIC_V2:
-        # In Pydantic 2, the field has a `metadata` attribute with
-        # the annotations.
-        metadata = getattr(field, "metadata", None)
-    elif hasattr(field, "annotation") and hasattr(
-        field.annotation, "__metadata__"
-    ):
-        # In Pydantic 1, the field has an `annotation` attribute with the
-        # type assigned to the field. If the type is annotated, it will
-        # have a `__metadata__` attribute with the annotations.
-        metadata = field.annotation.__metadata__
-    else:
-        return None
+    # In Pydantic 2, the field has a `metadata` attribute with
+    # the annotations.
+    metadata = getattr(field, "metadata", None)
 
     if metadata is None:
         return None
