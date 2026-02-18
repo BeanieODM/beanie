@@ -4,7 +4,7 @@ from bson import ObjectId
 from beanie import PydanticObjectId, WriteRules
 from beanie.exceptions import StateManagementIsTurnedOff, StateNotSaved
 from beanie.odm.utils.parsing import parse_obj
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, parse_model
+from beanie.odm.utils.pydantic import parse_model
 from tests.odm.models import (
     DocumentWithTurnedOffStateManagement,
     DocumentWithTurnedOnReplaceObjects,
@@ -21,29 +21,20 @@ from tests.odm.models import (
 
 @pytest.fixture
 def state():
-    if IS_PYDANTIC_V2:
-        internal = InternalDoc().model_dump()
-    else:
-        internal = InternalDoc().dict()
     return {
         "num_1": 1,
         "num_2": 2,
         "_id": ObjectId(),
-        "internal": internal,
+        "internal": InternalDoc().model_dump(),
     }
 
 
 @pytest.fixture
 def state_without_id():
-    if IS_PYDANTIC_V2:
-        internal = InternalDoc().model_dump()
-    else:
-        internal = InternalDoc().dict()
-
     return {
         "num_1": 1,
         "num_2": 2,
-        "internal": internal,
+        "internal": InternalDoc().model_dump(),
     }
 
 
@@ -109,15 +100,11 @@ class TestStateManagement:
         await StateAndDecimalFieldModel.all().to_list()
 
     async def test_parse_object_with_saving_state(self):
-        if IS_PYDANTIC_V2:
-            internal = InternalDoc().model_dump()
-        else:
-            internal = InternalDoc().dict()
         obj = {
             "num_1": 1,
             "num_2": 2,
             "_id": ObjectId(),
-            "internal": internal,
+            "internal": InternalDoc().model_dump(),
         }
         doc = parse_obj(DocumentWithTurnedOnStateManagement, obj)
         assert doc.get_saved_state() == obj

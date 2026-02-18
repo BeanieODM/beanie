@@ -1,15 +1,9 @@
 import inspect
-import sys
-from typing import Any, Dict, Optional, Tuple, Type
+from typing import Any, Dict, Optional, Tuple, Type, get_args, get_origin
 
 from beanie.odm.fields import IndexedAnnotation
 
 from .pydantic import get_field_type
-
-if sys.version_info >= (3, 8):
-    from typing import get_args, get_origin
-else:
-    from typing_extensions import get_args, get_origin
 
 
 def extract_id_class(annotation) -> Type[Any]:

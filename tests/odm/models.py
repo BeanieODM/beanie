@@ -1,5 +1,4 @@
 import datetime
-import sys
 from enum import Enum
 from ipaddress import (
     IPv4Address,
@@ -34,8 +33,10 @@ from pydantic import (
     Field,
     HttpUrl,
     PrivateAttr,
+    RootModel,
     SecretBytes,
     SecretStr,
+    validate_call,
 )
 from pydantic_core import core_schema
 from pymongo import IndexModel
@@ -58,20 +59,10 @@ from beanie.odm.custom_types.bson.binary import BsonBinary
 from beanie.odm.fields import BackLink, Link, PydanticObjectId
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
-if IS_PYDANTIC_V2:
-    from pydantic import RootModel, validate_call
 
-if sys.version_info >= (3, 10):
-
-    def type_union(A, B):
-        return A | B
-
-else:
-
-    def type_union(A, B):
-        return Union[A, B]
+def type_union(A, B):
+    return A | B
 
 
 class Color:
@@ -92,26 +83,18 @@ class Color:
             return Color(value["value"])
         return Color(value)
 
-    if IS_PYDANTIC_V2:
-
-        @classmethod
-        def __get_pydantic_core_schema__(
-            cls,
-            _source_type: Type[Any],
-            _handler: Callable[[Any], core_schema.CoreSchema],
-        ) -> core_schema.CoreSchema:
-            return core_schema.json_or_python_schema(
-                json_schema=core_schema.str_schema(),
-                python_schema=core_schema.no_info_plain_validator_function(
-                    cls._validate
-                ),
-            )
-
-    else:
-
-        @classmethod
-        def __get_validators__(cls):
-            yield cls._validate
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls,
+        _source_type: Type[Any],
+        _handler: Callable[[Any], core_schema.CoreSchema],
+    ) -> core_schema.CoreSchema:
+        return core_schema.json_or_python_schema(
+            json_schema=core_schema.str_schema(),
+            python_schema=core_schema.no_info_plain_validator_function(
+                cls._validate
+            ),
+        )
 
 
 class Extra(str, Enum):
@@ -217,11 +200,6 @@ class DocumentTestModelIndexFlagsAnnotated(Document):
     str_index_annotated: Indexed(str, index_type=pymongo.ASCENDING)
     uuid_index_annotated: Annotated[UUID4, Indexed(unique=True)]
 
-    if not IS_PYDANTIC_V2:
-        # The UUID4 type raises a ValueError with the current
-        # implementation of Indexed when using Pydantic v2.
-        uuid_index: Indexed(UUID4, unique=True)
-
 
 class DocumentTestModelWithComplexIndex(Document):
     test_int: int
@@ -267,12 +245,9 @@ class DocumentTestModelFailInspection(Document):
 
 
 class DocumentWithDeprecatedHiddenField(Document):
-    if IS_PYDANTIC_V2:
-        test_hidden: Optional[List[str]] = Field(
-            default=None, json_schema_extra={"hidden": True}
-        )
-    else:
-        test_hidden: Optional[List[str]] = Field(default=None, hidden=True)
+    test_hidden: Optional[List[str]] = Field(
+        default=None, json_schema_extra={"hidden": True}
+    )
 
 
 class DocumentWithCustomIdUUID(Document):
@@ -304,14 +279,9 @@ class DocumentWithCustomFiledsTypes(Document):
     class Settings:
         bson_encoders = {Color: vars}
 
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            arbitrary_types_allowed=True,
-        )
-    else:
-
-        class Config:
-            arbitrary_types_allowed = True
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+    )
 
 
 class DocumentWithBsonEncodersFiledsTypes(Document):
@@ -324,14 +294,9 @@ class DocumentWithBsonEncodersFiledsTypes(Document):
             datetime.datetime: lambda o: o.isoformat(timespec="microseconds"),
         }
 
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            arbitrary_types_allowed=True,
-        )
-    else:
-
-        class Config:
-            arbitrary_types_allowed = True
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+    )
 
 
 class DocumentWithActions(Document):
@@ -505,23 +470,13 @@ class DocumentWithRevisionTurnedOn(Document):
 
 
 class DocumentWithPydanticConfig(Document):
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(validate_assignment=True)
-    else:
-
-        class Config:
-            validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     num_1: int
 
 
 class DocumentWithExtras(Document):
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(extra="allow")
-    else:
-
-        class Config:
-            extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
     num_1: int
 
@@ -572,14 +527,9 @@ class House(Document):
     height: Indexed(int) = 2
     name: Indexed(str)
 
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            extra="allow",
-        )
-    else:
-
-        class Config:
-            extra = Extra.allow
+    model_config = ConfigDict(
+        extra="allow",
+    )
 
 
 class DocumentForEncodingTest(Document):
@@ -630,14 +580,9 @@ class DocumentMultiModelTwo(Document):
 
 
 class DocumentTestModelWithModelConfigExtraAllow(Document):
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            extra="allow",
-        )
-    else:
-
-        class Config:
-            extra = Extra.allow
+    model_config = ConfigDict(
+        extra="allow",
+    )
 
 
 class YardWithRevision(Document):
@@ -757,14 +702,9 @@ class SampleLazyParsing(Document):
         [],
     )
 
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            validate_assignment=True,
-        )
-    else:
-
-        class Config:
-            validate_assignment = True
+    model_config = ConfigDict(
+        validate_assignment=True,
+    )
 
     class Settings:
         lazy_parsing = True
@@ -869,14 +809,9 @@ class DocumentWithDecimalField(Document):
         decimal_places=1, multiple_of=0.5, default=0
     )
 
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            validate_assignment=True,
-        )
-    else:
-
-        class Config:
-            validate_assignment = True
+    model_config = ConfigDict(
+        validate_assignment=True,
+    )
 
     class Settings:
         name = "amounts"
@@ -933,24 +868,16 @@ class DocumentWithOptionalLink(Document):
 
 
 class DocumentWithBackLink(Document):
-    if IS_PYDANTIC_V2:
-        back_link: BackLink[DocumentWithLink] = Field(
-            json_schema_extra={"original_field": "link"},
-        )
-    else:
-        back_link: BackLink[DocumentWithLink] = Field(original_field="link")
+    back_link: BackLink[DocumentWithLink] = Field(
+        json_schema_extra={"original_field": "link"},
+    )
     i: int = 1
 
 
 class DocumentWithOptionalBackLink(Document):
-    if IS_PYDANTIC_V2:
-        back_link: Optional[BackLink[DocumentWithLink]] = Field(
-            json_schema_extra={"original_field": "link"},
-        )
-    else:
-        back_link: Optional[BackLink[DocumentWithLink]] = Field(
-            original_field="link"
-        )
+    back_link: Optional[BackLink[DocumentWithLink]] = Field(
+        json_schema_extra={"original_field": "link"},
+    )
     i: int = 1
 
 
@@ -960,44 +887,26 @@ class DocumentWithListLink(Document):
 
 
 class DocumentWithListBackLink(Document):
-    if IS_PYDANTIC_V2:
-        back_link: List[BackLink[DocumentWithListLink]] = Field(
-            json_schema_extra={"original_field": "link"},
-        )
-    else:
-        back_link: List[BackLink[DocumentWithListLink]] = Field(
-            original_field="link"
-        )
+    back_link: List[BackLink[DocumentWithListLink]] = Field(
+        json_schema_extra={"original_field": "link"},
+    )
     i: int = 1
 
 
 class DocumentWithOptionalListBackLink(Document):
-    if IS_PYDANTIC_V2:
-        back_link: Optional[List[BackLink[DocumentWithListLink]]] = Field(
-            json_schema_extra={"original_field": "link"},
-        )
-    else:
-        back_link: Optional[List[BackLink[DocumentWithListLink]]] = Field(
-            original_field="link"
-        )
+    back_link: Optional[List[BackLink[DocumentWithListLink]]] = Field(
+        json_schema_extra={"original_field": "link"},
+    )
     i: int = 1
 
 
 class DocumentWithUnionTypeExpressionOptionalBackLink(Document):
-    if IS_PYDANTIC_V2:
-        back_link_list: type_union(
-            List[BackLink[DocumentWithListLink]], None
-        ) = Field(json_schema_extra={"original_field": "link"})
-        back_link: type_union(BackLink[DocumentWithLink], None) = Field(
-            json_schema_extra={"original_field": "link"}
-        )
-    else:
-        back_link_list: type_union(
-            List[BackLink[DocumentWithListLink]], None
-        ) = Field(original_field="link")
-        back_link: type_union(BackLink[DocumentWithLink], None) = Field(
-            original_field="link"
-        )
+    back_link_list: type_union(List[BackLink[DocumentWithListLink]], None) = (
+        Field(json_schema_extra={"original_field": "link"})
+    )
+    back_link: type_union(BackLink[DocumentWithLink], None) = Field(
+        json_schema_extra={"original_field": "link"}
+    )
     i: int = 1
 
 
@@ -1083,24 +992,16 @@ class DocumentWithBsonBinaryField(Document):
     binary_field: BsonBinary
 
 
-if IS_PYDANTIC_V2:
-    Pets = RootModel[List[str]]
-else:
-    Pets = List[str]
-
-
 class DocumentWithRootModelAsAField(Document):
-    pets: Pets
+    pets: RootModel[List[str]]
 
 
 class DocWithCallWrapper(Document):
     name: str
 
-    if IS_PYDANTIC_V2:
-
-        @validate_call
-        def foo(self, bar: str) -> None:
-            print(f"foo {bar}")
+    @validate_call
+    def foo(self, bar: str) -> None:
+        print(f"foo {bar}")
 
 
 class DocumentWithHttpUrlField(Document):
@@ -1139,14 +1040,9 @@ class DocumentWithLinkForNesting(Document):
 
 
 class DocumentWithBackLinkForNesting(Document):
-    if IS_PYDANTIC_V2:
-        back_link: BackLink[DocumentWithLinkForNesting] = Field(
-            json_schema_extra={"original_field": "link"},
-        )
-    else:
-        back_link: BackLink[DocumentWithLinkForNesting] = Field(
-            original_field="link"
-        )
+    back_link: BackLink[DocumentWithLinkForNesting] = Field(
+        json_schema_extra={"original_field": "link"},
+    )
     i: int
 
     class Settings:
@@ -1172,14 +1068,9 @@ class DocumentWithEnumKeysDict(Document):
 class BsonRegexDoc(Document):
     regex: Optional[Regex] = None
 
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            arbitrary_types_allowed=True,
-        )
-    else:
-
-        class Config:
-            arbitrary_types_allowed = True
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+    )
 
 
 class NativeRegexDoc(Document):

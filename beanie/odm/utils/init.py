@@ -1,23 +1,7 @@
-import sys
-
-from pymongo.asynchronous.database import AsyncDatabase
-from typing_extensions import Sequence, get_args, get_origin
-
-from beanie.odm.utils.pydantic import (
-    get_extra_field_info,
-    get_model_fields,
-    parse_model,
-)
-from beanie.odm.utils.typing import get_index_attributes
-
-if sys.version_info >= (3, 10):
-    from types import UnionType as TypesUnionType
-else:
-    TypesUnionType = ()
-
 import importlib
 import inspect
 from importlib.metadata import version
+from types import UnionType
 from typing import (  # type: ignore
     List,
     Optional,
@@ -29,7 +13,9 @@ from typing import (  # type: ignore
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 from pymongo import AsyncMongoClient, IndexModel
+from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.driver_info import DriverInfo
+from typing_extensions import Sequence, get_args, get_origin
 
 from beanie.exceptions import Deprecation, MongoDBVersionError
 from beanie.odm.actions import ActionRegistry
@@ -48,6 +34,12 @@ from beanie.odm.settings.document import DocumentSettings, IndexModelField
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
 from beanie.odm.union_doc import UnionDoc, UnionDocType
+from beanie.odm.utils.pydantic import (
+    get_extra_field_info,
+    get_model_fields,
+    parse_model,
+)
+from beanie.odm.utils.typing import get_index_attributes
 from beanie.odm.views import View
 
 _DRIVER_METADATA = DriverInfo(name="beanie", version=version("beanie"))
@@ -270,7 +262,7 @@ class Initializer:
 
             # Check if annotation is Optional[custom class] or Optional[List[custom class]]
             elif (
-                (origin is Union or origin is TypesUnionType)
+                (origin is Union or origin is UnionType)
                 and len(args) == 2
                 and type(None) in args
             ):
