@@ -379,11 +379,23 @@ class Initializer:
                 expiration_time=cls.get_settings().cache_expiration_time,
             )
 
+    def update_forward_refs(self, cls: Type[BaseModel]) -> None:
+        """
+        Update forward refs
+        :param cls: Type[BaseModel] - class to update forward refs
+        :return: None
+        """
+        if cls not in self.models_with_updated_forward_refs:
+            # Rebuilding the model triggers alias generation etc.
+            cls.model_rebuild()
+            self.models_with_updated_forward_refs.append(cls)
+
     def init_document_fields(self, cls) -> None:
         """
         Init class fields
         :return: None
         """
+        self.update_forward_refs(cls)
 
         if cls._link_fields is None:
             cls._link_fields = {}
@@ -615,7 +627,7 @@ class Initializer:
 
     # Views
 
-    def init_view_fields(self, cls) -> None:
+    def init_view_fields(self, cls: Type[View]) -> None:
         """
         Init class fields
         :return: None
@@ -642,7 +654,7 @@ class Initializer:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
 
-    def init_view_collection(self, cls):
+    def init_view_collection(self, cls: Type[View]):
         """
         Init collection for View
 

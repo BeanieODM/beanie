@@ -1,12 +1,6 @@
 from typing import Any, Type
 
-import pydantic
 from pydantic import BaseModel, TypeAdapter
-
-IS_PYDANTIC_V2 = int(pydantic.VERSION.split(".")[0]) >= 2
-IS_PYDANTIC_V2_10 = (
-    IS_PYDANTIC_V2 and int(pydantic.VERSION.split(".")[1]) >= 10
-)
 
 
 def parse_object_as(object_type: Type, data: Any):

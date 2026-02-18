@@ -154,24 +154,24 @@ class PydanticObjectId(ObjectId):
         ```json
         {
             "components": {
-            "schemas": {
-                "Item": {
-                "properties": {
-                    "id": {
-                    "$ref": "#/components/schemas/PydanticObjectId"
+                "schemas": {
+                    "Item": {
+                        "properties": {
+                            "id": {
+                                "$ref": "#/components/schemas/PydanticObjectId"
+                            }
+                        },
+                        "type": "object",
+                        "title": "Item"
+                    },
+                    "PydanticObjectId": {
+                        "type": "string",
+                        "maxLength": 24,
+                        "minLength": 24,
+                        "pattern": "^[0-9a-f]{24}$",
+                        "example": "5eb7cf5a86d9755df3a6c593"
                     }
-                },
-                "type": "object",
-                "title": "Item"
-                },
-                "PydanticObjectId": {
-                "type": "string",
-                "maxLength": 24,
-                "minLength": 24,
-                "pattern": "^[0-9a-f]{24}$",
-                "example": "5eb7cf5a86d9755df3a6c593"
                 }
-            }
             }
         }
         ```
