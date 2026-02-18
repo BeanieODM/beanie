@@ -1,15 +1,12 @@
 from abc import abstractmethod
+from collections.abc import Mapping
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
     Generator,
-    List,
-    Mapping,
     Optional,
-    Type,
     Union,
 )
 
@@ -47,23 +44,23 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
 
     def __init__(
         self,
-        document_model: Type["DocType"],
+        document_model: type["DocType"],
         find_query: Mapping[str, Any],
     ):
         self.document_model = document_model
         self.find_query = find_query
-        self.update_expressions: List[Mapping[str, Any]] = []
+        self.update_expressions: list[Mapping[str, Any]] = []
         self.session = None
         self.is_upsert = False
         self.upsert_insert_doc: Optional["DocType"] = None
-        self.encoders: Dict[Any, Callable[[Any], Any]] = {}
+        self.encoders: dict[Any, Callable[[Any], Any]] = {}
         self.bulk_writer: Optional[BulkWriter] = None
         self.encoders = self.document_model.get_settings().bson_encoders
-        self.pymongo_kwargs: Dict[str, Any] = {}
+        self.pymongo_kwargs: dict[str, Any] = {}
 
     @property
-    def update_query(self) -> Dict[str, Any]:
-        query: Union[Dict[str, Any], List[Dict[str, Any]], None] = None
+    def update_query(self) -> dict[str, Any]:
+        query: Union[dict[str, Any], list[dict[str, Any]], None] = None
         for expression in self.update_expressions:
             if isinstance(expression, BaseUpdateOperator):
                 if query is None:

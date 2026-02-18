@@ -8,15 +8,15 @@ The following field types are supported:
 
 - `Link[...]`
 - `Optional[Link[...]]`
-- `List[Link[...]]`
-- `Optional[List[Link[...]]]`
+- `list[Link[...]]`
+- `Optional[list[Link[...]]]`
 
 Also, backward links are supported:
 
 - `BackLink[...]`
 - `Optional[BackLink[...]]`
-- `List[BackLink[...]]`
-- `Optional[List[BackLink[...]]]`
+- `list[BackLink[...]]`
+- `Optional[list[BackLink[...]]]`
 
 Direct link to the document:
 
@@ -55,8 +55,6 @@ class House(Document):
 List of the links:
 
 ```python
-from typing import List
-
 from beanie import Document, Link
 
 
@@ -68,13 +66,13 @@ class Window(Document):
 class House(Document):
     name: str
     door: Link[Door]
-    windows: List[Link[Window]]
+    windows: list[Link[Window]]
 ```
 
 Optional list of the links:
 
 ```python
-from typing import List, Optional
+from typing import Optional
  
 from beanie import Document, Link
  
@@ -89,8 +87,8 @@ class Yard(Document):
 class House(Document):
     name: str
     door: Link[Door]
-    windows: List[Link[Window]]
-    yards: Optional[List[Link[Yard]]]
+    windows: list[Link[Window]]
+    yards: Optional[list[Link[Yard]]]
 ```
 
 Other link patterns are not supported at this moment. If you need something more specific for your use-case, 
@@ -269,8 +267,6 @@ await house.delete(link_rule=DeleteRules.DO_NOTHING)
 To init the back link you should have a document with the direct or list of links to the current document.
 
 ```python
-from typing import List
-
 from beanie import Document, BackLink, Link
 from pydantic import Field
 
@@ -278,7 +274,7 @@ from pydantic import Field
 class House(Document):
     name: str
     door: Link["Door"]
-    owners: List[Link["Person"]]
+    owners: list[Link["Person"]]
 
     
 class Door(Document):
@@ -290,7 +286,7 @@ class Door(Document):
     
 class Person(Document):
     name: str
-    house: List[BackLink[House]] = Field(json_schema_extra={"original_field": "owners"})
+    house: list[BackLink[House]] = Field(json_schema_extra={"original_field": "owners"})
 
 ```
 

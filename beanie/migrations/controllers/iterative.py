@@ -1,6 +1,6 @@
 import asyncio
 from inspect import isclass, signature
-from typing import Any, List, Optional, Type, Union
+from typing import Any, Optional, Union
 
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.migrations.utils import update_dict
@@ -40,7 +40,7 @@ class DummyOutput:
 
 
 def iterative_migration(
-    document_models: Optional[List[Type[Document]]] = None,
+    document_models: Optional[list[type[Document]]] = None,
     batch_size: int = 10000,
 ):
     class IterativeMigration(BaseMigrationController):
@@ -52,7 +52,7 @@ def iterative_migration(
             )
             if input_signature is None:
                 raise RuntimeError("input_signature must not be None")
-            self.input_document_model: Type[Document] = (
+            self.input_document_model: type[Document] = (
                 input_signature.annotation
             )
             output_signature = self.function_signature.parameters.get(
@@ -60,7 +60,7 @@ def iterative_migration(
             )
             if output_signature is None:
                 raise RuntimeError("output_signature must not be None")
-            self.output_document_model: Type[Document] = (
+            self.output_document_model: type[Document] = (
                 output_signature.annotation
             )
 
@@ -81,7 +81,7 @@ def iterative_migration(
             pass
 
         @property
-        def models(self) -> List[Type[Document]]:
+        def models(self) -> list[type[Document]]:
             preset_models = document_models
             if preset_models is None:
                 preset_models = []

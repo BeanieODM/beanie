@@ -1,11 +1,9 @@
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
     Generic,
-    List,
-    Mapping,
     Optional,
-    Type,
     TypeVar,
 )
 
@@ -36,14 +34,14 @@ class AggregationQuery(
 
     def __init__(
         self,
-        document_model: Type["DocType"],
-        aggregation_pipeline: List[Mapping[str, Any]],
+        document_model: type["DocType"],
+        aggregation_pipeline: list[Mapping[str, Any]],
         find_query: Mapping[str, Any],
-        projection_model: Optional[Type[BaseModel]] = None,
+        projection_model: Optional[type[BaseModel]] = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
     ):
-        self.aggregation_pipeline: List[Mapping[str, Any]] = (
+        self.aggregation_pipeline: list[Mapping[str, Any]] = (
             aggregation_pipeline
         )
         self.document_model = document_model
@@ -84,11 +82,11 @@ class AggregationQuery(
 
     def get_aggregation_pipeline(
         self,
-    ) -> List[Mapping[str, Any]]:
-        match_pipeline: List[Mapping[str, Any]] = (
+    ) -> list[Mapping[str, Any]]:
+        match_pipeline: list[Mapping[str, Any]] = (
             [{"$match": self.find_query}] if self.find_query else []
         )
-        projection_pipeline: List[Mapping[str, Any]] = []
+        projection_pipeline: list[Mapping[str, Any]] = []
         if self.projection_model:
             projection = get_projection(self.projection_model)
             if projection is not None:
@@ -101,5 +99,5 @@ class AggregationQuery(
             aggregation_pipeline, session=self.session, **self.pymongo_kwargs
         )
 
-    def get_projection_model(self) -> Optional[Type[BaseModel]]:
+    def get_projection_model(self) -> Optional[type[BaseModel]]:
         return self.projection_model

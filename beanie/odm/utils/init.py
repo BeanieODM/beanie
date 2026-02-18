@@ -3,9 +3,7 @@ import inspect
 from importlib.metadata import version
 from types import UnionType
 from typing import (  # type: ignore
-    List,
     Optional,
-    Type,
     Union,
     _GenericAlias,
 )
@@ -57,7 +55,7 @@ class Initializer:
         connection_string: Optional[str] = None,
         document_models: Optional[
             Sequence[
-                Union[Type["DocType"], Type["UnionDocType"], Type["View"], str]
+                Union[type["DocType"], type["UnionDocType"], type["View"], str]
             ]
         ] = None,
         allow_index_dropping: bool = False,
@@ -69,7 +67,7 @@ class Initializer:
 
         :param database: AsyncDatabase - pymongo database instance
         :param connection_string: str - MongoDB connection string
-        :param document_models: List[Union[Type[DocType], Type[UnionDocType], str]] - model classes
+        :param document_models: list[Union[type[DocType], type[UnionDocType], str]] - model classes
         or strings with dot separated paths
         :param allow_index_dropping: bool - if index dropping is allowed.
         Default False
@@ -79,12 +77,12 @@ class Initializer:
         :return: None
         """
 
-        self.inited_classes: List[Type] = []
+        self.inited_classes: list[type[Document]] = []
         self.allow_index_dropping = allow_index_dropping
         self.skip_indexes = skip_indexes
         self.recreate_views = recreate_views
 
-        self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
+        self.models_with_updated_forward_refs: list[type[BaseModel]] = []
 
         if (connection_string is None and database is None) or (
             connection_string is not None and database is not None
@@ -112,8 +110,8 @@ class Initializer:
             ModelType.View: 2,
         }
 
-        self.document_models: List[
-            Union[Type[DocType], Type[UnionDocType], Type[View]]
+        self.document_models: list[
+            Union[type[DocType], type[UnionDocType], type[View]]
         ] = [
             self.get_model(model) if isinstance(model, str) else model
             for model in document_models
@@ -139,12 +137,12 @@ class Initializer:
                     DocsRegistry.register(name, obj)
 
     @staticmethod
-    def get_model(dot_path: str) -> Type["DocType"]:
+    def get_model(dot_path: str) -> type["DocType"]:
         """
         Get the model by the path in format bar.foo.Model
 
         :param dot_path: str - dot seprated path to the model
-        :return: Type[DocType] - class of the model
+        :return: type[DocType] - class of the model
         """
         module_name, class_name = None, None
         try:
@@ -162,12 +160,12 @@ class Initializer:
             )
 
     def init_settings(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        self, cls: Union[type[Document], type[View], type[UnionDoc]]
     ):
         """
         Init Settings
 
-        :param cls: Union[Type[Document], Type[View], Type[UnionDoc]] - Class
+        :param cls: Union[type[Document], type[View], type[UnionDoc]] - Class
         to init settings
         :return: None
         """
@@ -232,9 +230,9 @@ class Initializer:
                         link_type=LinkTypes.BACK_DIRECT,
                     )
 
-            # Check if annotation is List[custom class]
+            # Check if annotation is list[custom class]
             elif (
-                (origin is List or origin is list)
+                (origin is list)
                 and len(args) == 1
                 and isinstance(args[0], _GenericAlias)
                 and args[0].__origin__ is cls
@@ -260,7 +258,7 @@ class Initializer:
                         link_type=LinkTypes.BACK_LIST,
                     )
 
-            # Check if annotation is Optional[custom class] or Optional[List[custom class]]
+            # Check if annotation is Optional[custom class] or Optional[list[custom class]]
             elif (
                 (origin is Union or origin is UnionType)
                 and len(args) == 2
@@ -299,7 +297,7 @@ class Initializer:
                         )
 
                 elif (
-                    (optional_origin is List or optional_origin is list)
+                    (optional_origin is list)
                     and len(optional_args) == 1
                     and isinstance(optional_args[0], _GenericAlias)
                     and optional_args[0].__origin__ is cls
@@ -345,11 +343,11 @@ class Initializer:
     # Document
 
     @staticmethod
-    def set_default_class_vars(cls: Type[Document]):
+    def set_default_class_vars(cls: type[Document]):
         """
         Set default class variables.
 
-        :param cls: Union[Type[Document], Type[View], Type[UnionDoc]] - Class
+        :param cls: Union[type[Document], type[View], type[UnionDoc]] - Class
         to init settings
         :return:
         """
@@ -371,7 +369,7 @@ class Initializer:
                 expiration_time=cls.get_settings().cache_expiration_time,
             )
 
-    def init_document_fields(self, cls) -> None:
+    def init_document_fields(self, cls: type[Document]) -> None:
         """
         Init class fields
         :return: None
@@ -505,7 +503,7 @@ class Initializer:
         ]
 
         if document_settings.merge_indexes:
-            result: List[IndexModelField] = []
+            result: list[IndexModelField] = []
             for subclass in reversed(cls.mro()):
                 if issubclass(subclass, Document) and not subclass == Document:
                     if (
@@ -543,7 +541,7 @@ class Initializer:
                 IndexModelField.list_to_index_model(new_indexes)
             )
 
-    async def init_document(self, cls: Type[Document]) -> Optional[Output]:
+    async def init_document(self, cls: type[Document]) -> Optional[Output]:
         """
         Init Document-based class
 
@@ -607,7 +605,7 @@ class Initializer:
 
     # Views
 
-    def init_view_fields(self, cls) -> None:
+    def init_view_fields(self, cls: type[View]) -> None:
         """
         Init class fields
         :return: None
@@ -634,7 +632,7 @@ class Initializer:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
 
-    def init_view_collection(self, cls):
+    def init_view_collection(self, cls: type[View]):
         """
         Init collection for View
 
@@ -652,7 +650,7 @@ class Initializer:
         view_settings.pymongo_db = self.database
         view_settings.pymongo_collection = self.database[view_settings.name]
 
-    async def init_view(self, cls: Type[View]):
+    async def init_view(self, cls: type[View]):
         """
         Init View-based class
 
@@ -681,7 +679,7 @@ class Initializer:
 
     # Union Doc
 
-    async def init_union_doc(self, cls: Type[UnionDoc]):
+    async def init_union_doc(self, cls: type[UnionDoc]):
         """
         Init Union Doc based class
 
@@ -700,7 +698,7 @@ class Initializer:
 
     @staticmethod
     def check_deprecations(
-        cls: Union[Type[Document], Type[View], Type[UnionDoc]],
+        cls: Union[type[Document], type[View], type[UnionDoc]],
     ):
         if hasattr(cls, "Collection"):
             raise Deprecation(
@@ -712,7 +710,7 @@ class Initializer:
     # Final
 
     async def init_class(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        self, cls: Union[type[Document], type[View], type[UnionDoc]]
     ):
         """
         Init Document, View or UnionDoc based class.
@@ -739,7 +737,7 @@ async def init_beanie(
     database: Optional[AsyncDatabase] = None,
     connection_string: Optional[str] = None,
     document_models: Optional[
-        Sequence[Union[Type[Document], Type[UnionDoc], Type["View"], str]]
+        Sequence[Union[type[Document], type[UnionDoc], type["View"], str]]
     ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
@@ -750,7 +748,7 @@ async def init_beanie(
 
     :param database: Optional[AsyncDatabase] - pymongo database instance. Defaults to None.
     :param connection_string: Optional[str] - MongoDB connection string.  Defaults to None.
-    :param document_models: List[Union[Type[DocType], Type[UnionDocType], str]] - model classes
+    :param document_models: list[Union[type[DocType], type[UnionDocType], str]] - model classes
         or strings with dot separated paths. Defaults to None.
     :param allow_index_dropping: bool - if index dropping is allowed.
         Defaults to False.

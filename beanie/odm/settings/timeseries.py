@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Annotated, Any, Dict, Optional
+from typing import Annotated, Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -33,9 +33,9 @@ class TimeSeriesConfig(BaseModel):
     bucket_rounding_seconds: Optional[int] = None
     expire_after_seconds: Optional[int] = None
 
-    def build_query(self, collection_name: str) -> Dict[str, Any]:
-        res: Dict[str, Any] = {"name": collection_name}
-        timeseries: Dict[str, Any] = {"timeField": self.time_field}
+    def build_query(self, collection_name: str) -> dict[str, Any]:
+        res: dict[str, Any] = {"name": collection_name}
+        timeseries: dict[str, Any] = {"timeField": self.time_field}
         if self.meta_field is not None:
             timeseries["metaField"] = self.meta_field
         if self.granularity is not None:

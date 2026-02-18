@@ -528,7 +528,7 @@ Beanie project
 - PR <https://github.com/roman-right/beanie/pull/669>
 - Issues:
                     
-  - [[BUG] Issue with `List[Link[Type]]` when `fetch_all_links` is called](https://github.com/roman-right/beanie/issues/576) 
+  - [[BUG] Issue with `list[Link[Type]]` when `fetch_all_links` is called](https://github.com/roman-right/beanie/issues/576) 
   - [Loosen type requirement for `insert_many()`?](https://github.com/roman-right/beanie/issues/591) 
   - [[BUG] Updating documents with a frozen BaseModel as field raises TypeError](https://github.com/roman-right/beanie/issues/599) 
   - [[BUG] Not operator cant be on top level](https://github.com/roman-right/beanie/issues/600)
@@ -789,7 +789,7 @@ Beanie project
 
 - [[BUG] find_one projection link](https://github.com/roman-right/beanie/issues/383)
 - [[BUG]: Link fields interference/contamination](https://github.com/roman-right/beanie/issues/433)
-- [[BUG]: ElemMatch on Document property of Type List[Link] fails with IndexError in relations.py convert_ids()](https://github.com/roman-right/beanie/issues/439)
+- [[BUG]: ElemMatch on Document property of Type list[Link] fails with IndexError in relations.py convert_ids()](https://github.com/roman-right/beanie/issues/439)
 
 ### Implementation
 

@@ -1,12 +1,12 @@
 import inspect
-from typing import Any, Dict, Optional, Tuple, Type, get_args, get_origin
+from typing import Any, Optional, Tuple, get_args, get_origin
 
 from beanie.odm.fields import IndexedAnnotation
 
 from .pydantic import get_field_type
 
 
-def extract_id_class(annotation) -> Type[Any]:
+def extract_id_class(annotation) -> type[Any]:
     if get_origin(annotation) is not None:
         try:
             annotation = next(
@@ -19,7 +19,7 @@ def extract_id_class(annotation) -> Type[Any]:
     raise ValueError("Unknown annotation: {}".format(annotation))
 
 
-def get_index_attributes(field) -> Optional[Tuple[int, Dict[str, Any]]]:
+def get_index_attributes(field) -> Optional[Tuple[int, dict[str, Any]]]:
     """Gets the index attributes from the field, if it is indexed.
 
     :param field: The field to get the index attributes from.

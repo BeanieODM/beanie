@@ -1,7 +1,8 @@
 import datetime
+from collections.abc import Mapping
 from decimal import Decimal
 from pathlib import Path
-from typing import AbstractSet, Mapping
+from typing import AbstractSet
 from uuid import uuid4
 
 import pytest

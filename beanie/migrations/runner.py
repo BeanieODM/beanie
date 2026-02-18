@@ -2,7 +2,7 @@ import logging
 import types
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
-from typing import List, Optional, Type
+from typing import Optional
 
 from pymongo.asynchronous.client_session import AsyncClientSession
 from pymongo.asynchronous.database import AsyncDatabase
@@ -24,8 +24,8 @@ class MigrationNode:
     def __init__(
         self,
         name: str,
-        forward_class: Optional[Type[Document]] = None,
-        backward_class: Optional[Type[Document]] = None,
+        forward_class: Optional[type[Document]] = None,
+        backward_class: Optional[type[Document]] = None,
         next_migration: Optional["MigrationNode"] = None,
         prev_migration: Optional["MigrationNode"] = None,
     ):
@@ -145,7 +145,7 @@ class MigrationNode:
             await self.clean_current_migration()
 
     async def run_migration_class(
-        self, cls: Type, allow_index_dropping: bool, use_transaction: bool
+        self, cls: type, allow_index_dropping: bool, use_transaction: bool
     ):
         """
         Run Backward or Forward migration class
@@ -177,7 +177,7 @@ class MigrationNode:
 
     async def run_migrations(
         self,
-        migrations: List[BaseMigrationController],
+        migrations: list[BaseMigrationController],
         db: AsyncDatabase,
         allow_index_dropping: bool,
         session: AsyncClientSession,

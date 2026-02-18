@@ -13,12 +13,9 @@ from typing import (
     Any,
     Callable,
     ClassVar,
-    Dict,
-    List,
     Optional,
     Set,
     Tuple,
-    Type,
     Union,
 )
 from uuid import UUID, uuid4
@@ -86,7 +83,7 @@ class Color:
     @classmethod
     def __get_pydantic_core_schema__(
         cls,
-        _source_type: Type[Any],
+        _source_type: type[Any],
         _handler: Callable[[Any], core_schema.CoreSchema],
     ) -> core_schema.CoreSchema:
         return core_schema.json_or_python_schema(
@@ -148,7 +145,7 @@ class DocumentTestModel(Document):
     test_int: int
     test_doc: SubDocument
     test_str: str
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
 
     class Settings:
         use_cache = True
@@ -169,7 +166,7 @@ class DocumentTestModelWithLink(Document):
 
 class DocumentTestModelWithCustomCollectionName(Document):
     test_int: int
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
     test_str: str
 
     class Settings:
@@ -179,7 +176,7 @@ class DocumentTestModelWithCustomCollectionName(Document):
 
 class DocumentTestModelWithSimpleIndex(Document):
     test_int: Indexed(int)
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
     test_str: Indexed(str, index_type=pymongo.TEXT)
 
 
@@ -203,7 +200,7 @@ class DocumentTestModelIndexFlagsAnnotated(Document):
 
 class DocumentTestModelWithComplexIndex(Document):
     test_int: int
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
     test_str: str
 
     class Settings:
@@ -223,7 +220,7 @@ class DocumentTestModelWithComplexIndex(Document):
 
 class DocumentTestModelWithDroppedIndex(Document):
     test_int: int
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
     test_str: str
 
     class Settings:
@@ -245,7 +242,7 @@ class DocumentTestModelFailInspection(Document):
 
 
 class DocumentWithDeprecatedHiddenField(Document):
-    test_hidden: Optional[List[str]] = Field(
+    test_hidden: Optional[list[str]] = Field(
         default=None, json_schema_extra={"hidden": True}
     )
 
@@ -394,7 +391,7 @@ class InternalDoc(BaseModel):
     _private_field: str = PrivateAttr(default="TEST_PRIVATE")
     num: int = 100
     string: str = "test"
-    lst: List[int] = [1, 2, 3, 4, 5]
+    lst: list[int] = [1, 2, 3, 4, 5]
 
     def change_private(self):
         self._private_field = "PRIVATE_CHANGED"
@@ -512,7 +509,7 @@ class WindowWithValidationOnSave(Document):
 class Door(Document):
     t: int = 10
     window: Optional[Link[Window]] = None
-    locks: Optional[List[Link[Lock]]] = None
+    locks: Optional[list[Link[Lock]]] = None
 
 
 class Roof(Document):
@@ -520,10 +517,10 @@ class Roof(Document):
 
 
 class House(Document):
-    windows: List[Link[Window]]
+    windows: list[Link[Window]]
     door: Link[Door]
     roof: Optional[Link[Roof]] = None
-    yards: Optional[List[Link[Yard]]] = None
+    yards: Optional[list[Link[Yard]]] = None
     height: Indexed(int) = 2
     name: Indexed(str)
 
@@ -613,7 +610,7 @@ class WindowWithRevision(Document):
 
 
 class HouseWithRevision(Document):
-    windows: List[Link[WindowWithRevision]]
+    windows: list[Link[WindowWithRevision]]
 
     class Settings:
         use_revision = True
@@ -666,7 +663,7 @@ class Bus(Car, Fuelled):
 
 class Owner(Document):
     name: str
-    vehicles: List[Link[Vehicle]] = []
+    vehicles: list[Link[Vehicle]] = []
 
 
 class MixinNonRoot(BaseModel):
@@ -691,14 +688,14 @@ class Child(BaseModel):
 
 
 class SampleWithMutableObjects(Document):
-    d: Dict[str, Child]
-    lst: List[Child]
+    d: dict[str, Child]
+    lst: list[Child]
 
 
 class SampleLazyParsing(Document):
     i: int
     s: str
-    lst: List[int] = Field(
+    lst: list[int] = Field(
         [],
     )
 
@@ -854,7 +851,7 @@ class ReleaseElemMatch(BaseModel):
 
 
 class PackageElemMatch(Document):
-    releases: List[ReleaseElemMatch] = []
+    releases: list[ReleaseElemMatch] = []
 
 
 class DocumentWithLink(Document):
@@ -882,26 +879,26 @@ class DocumentWithOptionalBackLink(Document):
 
 
 class DocumentWithListLink(Document):
-    link: List[Link["DocumentWithListBackLink"]]
+    link: list[Link["DocumentWithListBackLink"]]
     s: str = "TEST"
 
 
 class DocumentWithListBackLink(Document):
-    back_link: List[BackLink[DocumentWithListLink]] = Field(
+    back_link: list[BackLink[DocumentWithListLink]] = Field(
         json_schema_extra={"original_field": "link"},
     )
     i: int = 1
 
 
 class DocumentWithOptionalListBackLink(Document):
-    back_link: Optional[List[BackLink[DocumentWithListLink]]] = Field(
+    back_link: Optional[list[BackLink[DocumentWithListLink]]] = Field(
         json_schema_extra={"original_field": "link"},
     )
     i: int = 1
 
 
 class DocumentWithUnionTypeExpressionOptionalBackLink(Document):
-    back_link_list: type_union(List[BackLink[DocumentWithListLink]], None) = (
+    back_link_list: type_union(list[BackLink[DocumentWithListLink]], None) = (
         Field(json_schema_extra={"original_field": "link"})
     )
     back_link: type_union(BackLink[DocumentWithLink], None) = Field(
@@ -915,7 +912,7 @@ class DocumentToBeLinked(Document):
 
 
 class DocumentWithListOfLinks(Document):
-    links: List[Link[DocumentToBeLinked]]
+    links: list[Link[DocumentToBeLinked]]
     s: str = "TEST"
 
 
@@ -985,7 +982,7 @@ class DocumentWithTextIndexAndLink(Document):
 
 
 class DocumentWithList(Document):
-    list_values: List[str]
+    list_values: list[str]
 
 
 class DocumentWithBsonBinaryField(Document):
@@ -993,7 +990,7 @@ class DocumentWithBsonBinaryField(Document):
 
 
 class DocumentWithRootModelAsAField(Document):
-    pets: RootModel[List[str]]
+    pets: RootModel[list[str]]
 
 
 class DocWithCallWrapper(Document):
@@ -1009,7 +1006,7 @@ class DocumentWithHttpUrlField(Document):
 
 
 class DocumentWithComplexDictKey(Document):
-    dict_field: Dict[UUID, datetime.datetime]
+    dict_field: dict[UUID, datetime.datetime]
 
 
 class DocumentWithIndexedObjectId(Document):
@@ -1025,7 +1022,7 @@ class DocumentToTestSync(Document):
         integer=1, option_1=Option1(s="test"), union=Option1(s="test")
     )
     o: Optional[Option2] = None
-    d: Dict[str, Any] = {}
+    d: dict[str, Any] = {}
 
     class Settings:
         use_state_management = True
@@ -1062,7 +1059,7 @@ class DictEnum(str, Enum):
 
 
 class DocumentWithEnumKeysDict(Document):
-    color: Dict[DictEnum, str]
+    color: dict[DictEnum, str]
 
 
 class BsonRegexDoc(Document):

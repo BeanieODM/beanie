@@ -1,17 +1,17 @@
-from typing import Dict, ForwardRef, Type, Union
+from typing import ForwardRef, Type, Union
 
 from pydantic import BaseModel
 
 
 class DocsRegistry:
-    _registry: Dict[str, Type[BaseModel]] = {}
+    _registry: dict[str, type[BaseModel]] = {}
 
     @classmethod
-    def register(cls, name: str, doc_type: Type[BaseModel]):
+    def register(cls, name: str, doc_type: type[BaseModel]):
         cls._registry[name] = doc_type
 
     @classmethod
-    def get(cls, name: str) -> Type[BaseModel]:
+    def get(cls, name: str) -> type[BaseModel]:
         return cls._registry[name]
 
     @classmethod
@@ -20,7 +20,7 @@ class DocsRegistry:
         Evaluate forward ref
 
         :param forward_ref: ForwardRef - forward ref to evaluate
-        :return: Type[BaseModel] - class of the forward ref
+        :return: type[BaseModel] - class of the forward ref
         """
         if (
             isinstance(forward_ref, ForwardRef)

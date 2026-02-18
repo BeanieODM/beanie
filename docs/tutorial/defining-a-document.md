@@ -145,7 +145,7 @@ It is a list where items can be:
 ```python
 class DocumentTestModelWithIndex(Document):
     test_int: int
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
     test_str: str
 
     class Settings:

@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import BaseModel
 
 from beanie.odm.enums import InspectionStatuses
@@ -21,4 +19,4 @@ class InspectionResult(BaseModel):
     """
 
     status: InspectionStatuses = InspectionStatuses.OK
-    errors: List[InspectionError] = []
+    errors: list[InspectionError] = []

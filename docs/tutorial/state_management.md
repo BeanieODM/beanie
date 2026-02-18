@@ -82,12 +82,9 @@ which is fine for most cases as it is non-destructive and does not re-assign the
 if only one of its attributes changed:
 
 ```python
-from typing import Dict
-
-
 class Item(Document):
     name: str
-    attributes: Dict[str, float]
+    attributes: dict[str, float]
 
     class Settings:
         use_state_management = True
@@ -106,12 +103,9 @@ However, there are some cases where you would want to replace the whole object w
 You can enable the `state_management_replace_objects` attribute in your model's `Settings` inner class:
 
 ```python
-from typing import Dict
-
-
 class Item(Document):
     name: str
-    attributes: Dict[str, float]
+    attributes: dict[str, float]
 
     class Settings:
         use_state_management = True

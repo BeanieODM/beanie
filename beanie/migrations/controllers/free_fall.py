@@ -1,11 +1,11 @@
 from inspect import signature
-from typing import Any, List, Type
+from typing import Any
 
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.odm.documents import Document
 
 
-def free_fall_migration(document_models: List[Type[Document]]):
+def free_fall_migration(document_models: list[type[Document]]):
     class FreeFallMigrationController(BaseMigrationController):
         def __init__(self, function):
             self.function = function
@@ -16,7 +16,7 @@ def free_fall_migration(document_models: List[Type[Document]]):
             pass
 
         @property
-        def models(self) -> List[Type[Document]]:
+        def models(self) -> list[type[Document]]:
             return self.document_models
 
         async def run(self, session):

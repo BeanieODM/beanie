@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Type, TypeVar
+from typing import Optional, TypeVar
 
 from pydantic import BaseModel
 
@@ -9,8 +9,8 @@ ProjectionModelType = TypeVar("ProjectionModelType", bound=BaseModel)
 
 
 def get_projection(
-    model: Type[ProjectionModelType],
-) -> Optional[Dict[str, int]]:
+    model: type[ProjectionModelType],
+) -> Optional[dict[str, int]]:
     if hasattr(model, "get_model_type") and (
         model.get_model_type() == ModelType.UnionDoc  # type: ignore
         or (  # type: ignore
@@ -29,7 +29,7 @@ def get_projection(
     if get_config_value(model, "extra") == "allow":
         return None
 
-    document_projection: Dict[str, int] = {}
+    document_projection: dict[str, int] = {}
 
     for name, field in get_model_fields(model).items():
         document_projection[field.alias or name] = 1

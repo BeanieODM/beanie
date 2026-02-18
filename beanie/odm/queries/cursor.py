@@ -1,11 +1,8 @@
 from abc import abstractmethod
 from typing import (
     Any,
-    Dict,
     Generic,
-    List,
     Optional,
-    Type,
     TypeVar,
     cast,
 )
@@ -27,7 +24,7 @@ class BaseCursorQuery(Generic[CursorResultType]):
     lazy_parse = False
 
     @abstractmethod
-    def get_projection_model(self) -> Optional[Type[BaseModel]]: ...
+    def get_projection_model(self) -> Optional[type[BaseModel]]: ...
 
     @abstractmethod
     async def get_cursor(self): ...
@@ -47,22 +44,22 @@ class BaseCursorQuery(Generic[CursorResultType]):
         return parse_obj(projection, next_item, lazy_parse=self.lazy_parse)  # type: ignore
 
     @abstractmethod
-    def _get_cache(self) -> List[Dict[str, Any]]: ...
+    def _get_cache(self) -> list[dict[str, Any]]: ...
 
     @abstractmethod
     def _set_cache(self, data): ...
 
     async def to_list(
         self, length: Optional[int] = None
-    ) -> List[CursorResultType]:  # noqa
+    ) -> list[CursorResultType]:  # noqa
         """
         Get list of documents
 
         :param length: Optional[int] - length of the list
-        :return: Union[List[BaseModel], List[Dict[str, Any]]]
+        :return: Union[list[BaseModel], list[dict[str, Any]]]
         """
         cursor = await self.get_cursor()
-        pymongo_list: List[Dict[str, Any]] = self._get_cache()
+        pymongo_list: list[dict[str, Any]] = self._get_cache()
 
         if pymongo_list is None:
             pymongo_list = await cursor.to_list(length)
@@ -70,10 +67,10 @@ class BaseCursorQuery(Generic[CursorResultType]):
         projection = self.get_projection_model()
         if projection is not None:
             return cast(
-                List[CursorResultType],
+                list[CursorResultType],
                 [
                     parse_obj(projection, i, lazy_parse=self.lazy_parse)
                     for i in pymongo_list
                 ],
             )
-        return cast(List[CursorResultType], pymongo_list)
+        return cast(list[CursorResultType], pymongo_list)

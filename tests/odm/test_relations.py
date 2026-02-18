@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 from pydantic.fields import Field
 
@@ -888,7 +886,7 @@ class TestSaveBackLinks:
 class HouseForReversedOrderInit(Document):
     name: str
     door: Link["DoorForReversedOrderInit"]
-    owners: List[Link["PersonForReversedOrderInit"]]
+    owners: list[Link["PersonForReversedOrderInit"]]
 
 
 class DoorForReversedOrderInit(Document):
@@ -901,7 +899,7 @@ class DoorForReversedOrderInit(Document):
 
 class PersonForReversedOrderInit(Document):
     name: str
-    house: List[BackLink[HouseForReversedOrderInit]] = Field(
+    house: list[BackLink[HouseForReversedOrderInit]] = Field(
         json_schema_extra={"original_field": "owners"}
     )
 

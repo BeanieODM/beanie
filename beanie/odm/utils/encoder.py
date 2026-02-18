@@ -7,14 +7,13 @@ import operator
 import pathlib
 import re
 import uuid
+from collections.abc import Mapping, MutableMapping
 from enum import Enum
 from typing import (
     Any,
     Callable,
     Container,
     Iterable,
-    Mapping,
-    MutableMapping,
     Optional,
     Tuple,
 )

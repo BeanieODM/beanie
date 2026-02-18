@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from pymongo import (
     DeleteMany,
@@ -52,9 +53,9 @@ class BulkWriter:
         comment Optional[Any]:
             A user-provided comment attached to the bulk operation command, useful for
             auditing and debugging purposes.
-        operations List[Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]]:
+        operations list[Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]]:
             A list of MongoDB operations queued for bulk execution.
-        object_class Type[Union[Document, UnionDoc]]:
+        object_class type[Union[Document, UnionDoc]]:
             The document model class associated with the operations.
 
     Parameters:
@@ -67,18 +68,18 @@ class BulkWriter:
             where strict validation may not be necessary. Defaults to False.
         comment Optional[Any]: A custom comment attached to the bulk operation.
             Defaults to None.
-        object_class Type[Union[Document, UnionDoc]]: The document model class associated with the operations.
+        object_class type[Union[Document, UnionDoc]]: The document model class associated with the operations.
     """
 
     def __init__(
         self,
         session: Optional[AsyncClientSession] = None,
         ordered: bool = True,
-        object_class: Optional[Type[Union[Document, UnionDoc]]] = None,
+        object_class: Optional[type[Union[Document, UnionDoc]]] = None,
         bypass_document_validation: Optional[bool] = False,
         comment: Optional[Any] = None,
     ) -> None:
-        self.operations: List[_WriteOp] = []
+        self.operations: list[_WriteOp] = []
         self.session = session
         self.ordered = ordered
         self.object_class = object_class
@@ -93,7 +94,7 @@ class BulkWriter:
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
+        exc_type: Optional[type[BaseException]],
         exc: Optional[BaseException],
         tb: Optional[TracebackType],
     ) -> None:
@@ -130,7 +131,7 @@ class BulkWriter:
 
     def add_operation(
         self,
-        object_class: Type[Union[Document, UnionDoc]],
+        object_class: type[Union[Document, UnionDoc]],
         operation: _WriteOp,
     ):
         """
@@ -139,7 +140,7 @@ class BulkWriter:
         This method adds a MongoDB operation to the BulkWriter's operation queue.
         All operations in the queue must belong to the same collection.
 
-        :param object_class: Type[Union[Document, UnionDoc]]
+        :param object_class: type[Union[Document, UnionDoc]]
             The document model class associated with the operation.
         :param operation: Union[DeleteMany, DeleteOne, InsertOne, ReplaceOne, UpdateMany, UpdateOne]
             The MongoDB operation to add to the queue.

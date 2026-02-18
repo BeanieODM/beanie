@@ -20,7 +20,7 @@ class AddToSet(BaseUpdateArrayOperator):
 
     ```python
     class Sample(Document):
-        results: List[int]
+        results: list[int]
 
     AddToSet({Sample.results: 2})
     ```
@@ -46,7 +46,7 @@ class Pop(BaseUpdateArrayOperator):
 
     ```python
     class Sample(Document):
-        results: List[int]
+        results: list[int]
 
     Pop({Sample.results: 2})
     ```
@@ -72,7 +72,7 @@ class Pull(BaseUpdateArrayOperator):
 
     ```python
     class Sample(Document):
-        results: List[int]
+        results: list[int]
 
     Pull(In(Sample.result: [1,2,3,4,5])
     ```
@@ -98,7 +98,7 @@ class Push(BaseUpdateArrayOperator):
 
     ```python
     class Sample(Document):
-        results: List[int]
+        results: list[int]
 
     Push({Sample.results: 1})
     ```
@@ -124,7 +124,7 @@ class PullAll(BaseUpdateArrayOperator):
 
     ```python
     class Sample(Document):
-        results: List[int]
+        results: list[int]
 
     PullAll({ Sample.results: [ 0, 5 ] })
     ```

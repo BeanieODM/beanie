@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List, Type
 
 from beanie.odm.documents import Document
 
@@ -14,5 +13,5 @@ class BaseMigrationController(ABC):
 
     @property
     @abstractmethod
-    def models(self) -> List[Type[Document]]:
+    def models(self) -> list[type[Document]]:
         pass

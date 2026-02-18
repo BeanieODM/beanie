@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Dict, Optional, Type, TypeVar
+from typing import Any, ClassVar, Optional, TypeVar
 
 from pymongo.asynchronous.client_session import AsyncClientSession
 
@@ -19,7 +19,7 @@ class UnionDoc(
     OtherGettersInterface,
     DetectionInterface,
 ):
-    _document_models: ClassVar[Optional[Dict[str, Type]]] = None
+    _document_models: ClassVar[Optional[dict[str, type]]] = None
     _is_inited: ClassVar[bool] = False
     _settings: ClassVar[UnionDocSettings]
 
@@ -28,7 +28,7 @@ class UnionDoc(
         return cls._settings
 
     @classmethod
-    def register_doc(cls, name: str, doc_model: Type):
+    def register_doc(cls, name: str, doc_model: type):
         if cls._document_models is None:
             cls._document_models = {}
 
