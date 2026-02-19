@@ -19,6 +19,8 @@ def get_dict(
     include = set()
     if document.get_settings().use_revision:
         include.add("revision_id")
+    # Explicit excludes take precedence over includes
+    include -= exclude
     encoder = Encoder(
         exclude=exclude, include=include, to_db=to_db, keep_nulls=keep_nulls
     )
@@ -37,6 +39,13 @@ def get_top_level_nones(
     document: "Document",
     exclude: Optional[Set[str]] = None,
 ):
+    if exclude is None:
+        exclude = set()
+    # revision_id is managed separately by SetRevisionId in the update
+    # pipeline - including it here would conflict with the $set that
+    # SetRevisionId produces, causing a MongoDB OperationFailure.
+    if document.get_settings().use_revision:
+        exclude = exclude | {"revision_id"}
     dictionary = get_dict(document, exclude=exclude, keep_nulls=True)
     return {k: v for k, v in dictionary.items() if v is None}
 
