@@ -889,6 +889,45 @@ class TestSaveBackLinks:
         for lnk in new_back_link_doc.back_link:
             assert lnk.s == "new value"
 
+    async def test_save_preserves_fetched_back_link(
+        self, link_and_backlink_doc_pair
+    ):
+        """Fetched BackLink must not revert to a reference after save().
+
+        Regression test for https://github.com/BeanieODM/beanie/issues/1006.
+        """
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert isinstance(back_link_doc.back_link, DocumentWithLink)
+
+        back_link_doc.i = 42
+        await back_link_doc.save()
+
+        assert isinstance(back_link_doc.back_link, DocumentWithLink)
+        assert back_link_doc.back_link.id == link_doc.id
+
+    async def test_save_preserves_fetched_list_back_link(
+        self, list_link_and_list_backlink_doc_pair
+    ):
+        """Fetched list BackLinks must not revert to references after save().
+
+        Regression test for https://github.com/BeanieODM/beanie/issues/1006.
+        """
+        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        for lnk in back_link_doc.back_link:
+            assert isinstance(lnk, DocumentWithListLink)
+
+        back_link_doc.i = 42
+        await back_link_doc.save()
+
+        for lnk in back_link_doc.back_link:
+            assert isinstance(lnk, DocumentWithListLink)
+
 
 class HouseForReversedOrderInit(Document):
     name: str
