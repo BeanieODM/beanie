@@ -434,36 +434,29 @@ class FindInterface:
 
     @classmethod
     def _add_class_id_filter(cls, args: Tuple, with_children: bool = False):
+        settings = cls.get_settings()
+        class_id = settings.class_id
+
         # skip if _class_id is already added
-        if any(
-            (
-                True
-                for a in args
-                if isinstance(a, Iterable) and cls.get_settings().class_id in a
-            )
-        ):
+        if any(isinstance(a, Iterable) and class_id in a for a in args):
             return args
 
         if (
-            cls.get_model_type() == ModelType.Document
+            cls.get_model_type() is ModelType.Document
             and cls._inheritance_inited
         ):
             if not with_children:
-                args += ({cls.get_settings().class_id: cls._class_id},)
+                args += ({class_id: cls._class_id},)
             else:
                 args += (
                     {
-                        cls.get_settings().class_id: {
+                        class_id: {
                             "$in": [cls._class_id]
-                            + [cname for cname in cls._children.keys()]
+                            + [cname for cname in cls._children]
                         }
                     },
                 )
 
-        if cls.get_settings().union_doc:
-            args += (
-                {
-                    cls.get_settings().class_id: cls.get_settings().union_doc_alias
-                },
-            )
+        if settings.union_doc:
+            args += ({class_id: settings.union_doc_alias},)
         return args

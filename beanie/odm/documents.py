@@ -292,7 +292,7 @@ class Document(
         :return: None
         """
         if (
-            merge_strategy == MergeStrategy.local
+            merge_strategy is MergeStrategy.local
             and self.get_settings().use_state_management is False
         ):
             raise ValueError(
@@ -304,7 +304,7 @@ class Document(
         if document is None:
             raise DocumentNotFound
 
-        if merge_strategy == MergeStrategy.local:
+        if merge_strategy is MergeStrategy.local:
             original_changes = self.get_changes()
             new_state = document.get_saved_state()
             if new_state is None:
@@ -314,7 +314,7 @@ class Document(
             )
             merge_models(self, document)
             apply_changes(changes_to_apply, self)
-        elif merge_strategy == MergeStrategy.remote:
+        elif merge_strategy is MergeStrategy.remote:
             merge_models(self, document)
         else:
             raise ValueError("Invalid merge strategy")
@@ -337,7 +337,7 @@ class Document(
         """
         if self.get_settings().use_revision:
             self.revision_id = uuid4()
-        if link_rule == WriteRules.WRITE:
+        if link_rule is WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
@@ -415,7 +415,7 @@ class Document(
         if bulk_writer is None:
             return await document.insert(link_rule=link_rule, session=session)
         else:
-            if link_rule == WriteRules.WRITE:
+            if link_rule is WriteRules.WRITE:
                 raise NotSupported(
                     "Cascade insert with bulk writing not supported"
                 )
@@ -447,7 +447,7 @@ class Document(
         :param link_rule: InsertRules - how to manage link fields
         :return: InsertManyResult
         """
-        if link_rule == WriteRules.WRITE:
+        if link_rule is WriteRules.WRITE:
             raise NotSupported(
                 "Cascade insert not supported for insert many method"
             )
@@ -486,10 +486,10 @@ class Document(
         if self.id is None:
             raise ValueError("Document must have an id")
 
-        if bulk_writer is not None and link_rule != WriteRules.DO_NOTHING:
+        if bulk_writer is not None and link_rule is not WriteRules.DO_NOTHING:
             raise NotSupported
 
-        if link_rule == WriteRules.WRITE:
+        if link_rule is WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
@@ -565,7 +565,7 @@ class Document(
         :param ignore_revision: bool - do force save.
         :return: self
         """
-        if link_rule == WriteRules.WRITE:
+        if link_rule is WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
@@ -897,7 +897,7 @@ class Document(
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
 
-        if link_rule == DeleteRules.DELETE_LINKS:
+        if link_rule is DeleteRules.DELETE_LINKS:
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
@@ -1013,25 +1013,20 @@ class Document(
     @property
     @saved_state_needed
     def is_changed(self) -> bool:
-        if self._saved_state == get_dict(
+        return self._saved_state != get_dict(
             self,
             to_db=True,
             keep_nulls=self.get_settings().keep_nulls,
             exclude={"revision_id"},
-        ):
-            return False
-        return True
+        )
 
     @property
     @saved_state_needed
     @previous_saved_state_needed
     def has_changed(self) -> bool:
-        if (
-            self._previous_saved_state is None
-            or self._previous_saved_state == self._saved_state
-        ):
+        if self._previous_saved_state is None:
             return False
-        return True
+        return self._previous_saved_state != self._saved_state
 
     def _collect_updates(
         self, old_dict: Dict[str, Any], new_dict: Dict[str, Any]
@@ -1137,7 +1132,7 @@ class Document(
             try:
                 parse_model(cls, json_document)
             except ValidationError as e:
-                if inspection_result.status == InspectionStatuses.OK:
+                if inspection_result.status is InspectionStatuses.OK:
                     inspection_result.status = InspectionStatuses.FAIL
                 inspection_result.errors.append(
                     InspectionError(
