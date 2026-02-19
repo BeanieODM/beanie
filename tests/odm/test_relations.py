@@ -785,6 +785,45 @@ class TestFindBackLinks:
             back_link_doc.back_link.link.back_link.link.back_link.link, Link
         )
 
+    async def test_fetch_link_back_direct(self, link_and_backlink_doc_pair):
+        """fetch_link must populate a single BackLink field.
+
+        Regression test for https://github.com/BeanieODM/beanie/issues/885.
+        """
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        assert isinstance(back_link_doc.back_link, BackLink)
+
+        await back_link_doc.fetch_link("back_link")
+        assert isinstance(back_link_doc.back_link, DocumentWithLink)
+        assert back_link_doc.back_link.id == link_doc.id
+
+    async def test_fetch_link_back_list(
+        self, list_link_and_list_backlink_doc_pair
+    ):
+        """fetch_link must populate a list BackLink field.
+
+        Regression test for https://github.com/BeanieODM/beanie/issues/885.
+        """
+        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        await back_link_doc.fetch_link("back_link")
+        assert len(back_link_doc.back_link) == 1
+        assert isinstance(back_link_doc.back_link[0], DocumentWithListLink)
+        assert back_link_doc.back_link[0].id == link_doc.id
+
+    async def test_fetch_all_links_populates_back_link(
+        self, link_and_backlink_doc_pair
+    ):
+        """fetch_all_links must populate BackLink fields.
+
+        Regression test for https://github.com/BeanieODM/beanie/issues/885.
+        """
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        assert isinstance(back_link_doc.back_link, BackLink)
+
+        await back_link_doc.fetch_all_links()
+        assert isinstance(back_link_doc.back_link, DocumentWithLink)
+        assert back_link_doc.back_link.id == link_doc.id
+
 
 class TestReplaceBackLinks:
     async def test_do_nothing(self, link_and_backlink_doc_pair):

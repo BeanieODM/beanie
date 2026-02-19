@@ -1184,7 +1184,40 @@ class Document(
         return DBRef(self.get_pymongo_collection().name, self.id)
 
     async def fetch_link(self, field: Union[str, Any]):
+        """Fetch a linked document by field name.
+
+        Handles forward Links, BackLinks, and lists of either.
+        """
         ref_obj = getattr(self, field, None)
+        link_fields = self.get_link_fields()
+        link_info = link_fields.get(field) if link_fields else None
+
+        # BackLink: query the other collection for documents pointing here
+        if link_info is not None and link_info.link_type in (
+            LinkTypes.BACK_DIRECT,
+            LinkTypes.OPTIONAL_BACK_DIRECT,
+        ):
+            if self.id is None:
+                return
+            query = {f"{link_info.lookup_field_name}.$id": self.id}
+            result = await link_info.document_class.find_one(query)
+            if result is not None:
+                setattr(self, field, result)
+            return
+
+        if link_info is not None and link_info.link_type in (
+            LinkTypes.BACK_LIST,
+            LinkTypes.OPTIONAL_BACK_LIST,
+        ):
+            if self.id is None:
+                return
+            results = await link_info.document_class.find(
+                {f"{link_info.lookup_field_name}.$id": self.id},
+            ).to_list()
+            setattr(self, field, results)
+            return
+
+        # Forward Link
         if isinstance(ref_obj, Link):
             value = await ref_obj.fetch(fetch_links=True)
             setattr(self, field, value)
