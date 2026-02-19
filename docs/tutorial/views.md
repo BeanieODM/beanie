@@ -101,3 +101,45 @@ print(results)
 
 >> 3
 ```
+
+## Views with linked documents
+
+Views can include `Link` fields just like regular documents. Use `fetch_links=True` in
+find operations to resolve linked documents via `$lookup` aggregation:
+
+```python
+from beanie import Document, Link, View
+
+
+class Author(Document):
+    name: str
+
+
+class BookView(View):
+    title: str
+    author: Link[Author]
+
+    class Settings:
+        source = Book
+        pipeline = [
+            {"$project": {"title": 1, "author": 1}},
+        ]
+
+
+# Find with automatic link resolution
+books = await BookView.find(
+    BookView.title == "Beanie Guide",
+    fetch_links=True,
+).to_list()
+
+# author is now a full Author document, not a DBRef
+print(books[0].author.name)
+```
+
+You can also fetch links on demand for an individual view instance:
+
+```python
+book = await BookView.find_one(BookView.title == "Beanie Guide")
+await book.fetch_all_links()
+print(book.author.name)
+```
