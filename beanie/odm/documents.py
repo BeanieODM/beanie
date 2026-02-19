@@ -598,15 +598,20 @@ class Document(
                             )
 
         if self.get_settings().keep_nulls is False:
-            return await self.update(
+            arguments: list[Union[SetOperator, Unset]] = [
                 SetOperator(
                     get_dict(
                         self,
                         to_db=True,
                         keep_nulls=self.get_settings().keep_nulls,
                     )
-                ),
-                Unset(get_top_level_nones(self)),
+                )
+            ]
+            nones = get_top_level_nones(self)
+            if nones:
+                arguments.append(Unset(nones))
+            return await self.update(
+                *arguments,
                 session=session,
                 ignore_revision=ignore_revision,
                 upsert=True,
@@ -649,9 +654,12 @@ class Document(
             return None
         changes = self.get_changes()
         if self.get_settings().keep_nulls is False:
+            arguments: list[Union[SetOperator, Unset]] = [SetOperator(changes)]
+            nones = get_top_level_nones(self)
+            if nones:
+                arguments.append(Unset(nones))
             return await self.update(
-                SetOperator(changes),
-                Unset(get_top_level_nones(self)),
+                *arguments,
                 ignore_revision=ignore_revision,
                 session=session,
                 bulk_writer=bulk_writer,
