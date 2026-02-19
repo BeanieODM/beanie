@@ -36,6 +36,7 @@ from tests.odm.models import (
     DocumentUnion,
     DocumentWithActions,
     DocumentWithActions2,
+    DocumentWithAliasedLink,
     DocumentWithBackLink,
     DocumentWithBackLinkForNesting,
     DocumentWithBsonBinaryField,
@@ -46,6 +47,7 @@ from tests.odm.models import (
     DocumentWithCustomIdUUID,
     DocumentWithCustomInit,
     DocumentWithDecimalField,
+    DocumentWithDeepNestedAlias,
     DocumentWithDeprecatedHiddenField,
     DocumentWithEnumKeysDict,
     DocumentWithExcludedField,
@@ -61,6 +63,7 @@ from tests.odm.models import (
     DocumentWithListBackLink,
     DocumentWithListLink,
     DocumentWithListOfLinks,
+    DocumentWithNestedAlias,
     DocumentWithOptionalBackLink,
     DocumentWithOptionalListBackLink,
     DocumentWithPydanticConfig,
@@ -211,6 +214,9 @@ TESTING_MODELS = [
     BsonRegexDoc,
     NativeRegexDoc,
     DocumentWithExcludedField,
+    DocumentWithNestedAlias,
+    DocumentWithDeepNestedAlias,
+    DocumentWithAliasedLink,
 ]
 
 

@@ -48,7 +48,7 @@ from beanie.odm.utils.encoder import Encoder
 from beanie.odm.utils.find import construct_lookup_queries, split_text_query
 from beanie.odm.utils.parsing import parse_obj
 from beanie.odm.utils.projection import get_projection
-from beanie.odm.utils.relations import convert_ids
+from beanie.odm.utils.relations import resolve_query_paths
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
@@ -89,7 +89,7 @@ class FindQuery(
     def prepare_find_expressions(self):
         if self.document_model.get_link_fields() is not None:
             for i, query in enumerate(self.find_expressions):
-                self.find_expressions[i] = convert_ids(
+                self.find_expressions[i] = resolve_query_paths(
                     query,
                     doc=self.document_model,  # type: ignore
                     fetch_links=self.fetch_links,
