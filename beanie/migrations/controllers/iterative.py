@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Type, Union
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.migrations.utils import update_dict
 from beanie.odm.documents import Document
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2, parse_model
+from beanie.odm.utils.pydantic import parse_model
 
 
 class DummyOutput:
@@ -104,11 +104,7 @@ def iterative_migration(
                 if "self" in self.function_signature.parameters:
                     function_kwargs["self"] = None
                 await self.function(**function_kwargs)
-                output_dict = (
-                    input_document.dict()
-                    if not IS_PYDANTIC_V2
-                    else input_document.model_dump()
-                )
+                output_dict = input_document.model_dump()
                 update_dict(output_dict, output.dict())
                 output_document = parse_model(
                     self.output_document_model, output_dict
