@@ -757,9 +757,11 @@ class Document(
             # (keyPattern) instead of matching on the error message string,
             # which can vary across MongoDB versions.
             if use_revision_id and not ignore_revision:
-                key_pattern = getattr(e, "details", {}).get(
-                    "keyPattern", {}
-                ) if getattr(e, "details", None) else {}
+                key_pattern = (
+                    getattr(e, "details", {}).get("keyPattern", {})
+                    if getattr(e, "details", None)
+                    else {}
+                )
                 if "_id" in key_pattern or "revision_id" in key_pattern:
                     raise RevisionIdWasChanged
             raise
