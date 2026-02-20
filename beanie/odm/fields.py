@@ -611,7 +611,9 @@ class BackLink(Generic[T]):
             )
 
     def to_dict(self) -> dict[str, str]:
-        document_class = DocsRegistry.evaluate_fr(self.document_class)  # type: ignore
+        document_class = DocsRegistry.evaluate_fr(
+            getattr(self, "document_class", self.__class__)
+        )
         return {"collection": document_class.get_collection_name()}
 
 
