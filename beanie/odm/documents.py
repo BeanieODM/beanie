@@ -30,7 +30,7 @@ from pydantic import (
 )
 from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
-from pymongo import InsertOne
+from pymongo import IndexModel, InsertOne
 from pymongo.asynchronous.client_session import AsyncClientSession
 from pymongo.errors import DuplicateKeyError
 from pymongo.results import (
@@ -59,6 +59,7 @@ from beanie.odm.fields import (
     BackLink,
     DeleteRules,
     ExpressionField,
+    IndexModelField,
     Link,
     LinkInfo,
     LinkTypes,
@@ -106,7 +107,7 @@ from beanie.odm.utils.state import (
     save_state_after,
     saved_state_needed,
 )
-from beanie.odm.utils.typing import extract_id_class
+from beanie.odm.utils.typing import extract_id_class, get_index_attributes
 
 if IS_PYDANTIC_V2:
     from pydantic import model_validator
@@ -203,6 +204,9 @@ class Document(
 
     # Database
     _database_major_version: ClassVar[int] = 4
+
+    # Lazy init metadata caching
+    _metadata_initialized: ClassVar[bool] = False
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Document, self).__init__(*args, **kwargs)
@@ -1109,6 +1113,77 @@ class Document(
         if cls._document_settings is None:
             raise CollectionWasNotInitialized
         return cls._document_settings
+
+    @classmethod
+    async def ensure_indexes(cls, allow_dropping: bool = False) -> None:
+        """Create indexes for this document class on demand.
+
+        Useful after ``init_beanie(lazy=True)`` when indexes were skipped
+        during initialization but are needed for a specific model.
+
+        :param allow_dropping: bool - if True, indexes that exist in the
+            database but are not declared on the model will be dropped.
+            Defaults to False.
+        """
+        collection = cls.get_pymongo_collection()
+        document_settings = cls.get_settings()
+
+        index_information = await collection.index_information()
+
+        old_indexes = IndexModelField.from_pymongo_index_information(
+            index_information
+        )
+        new_indexes: List[IndexModelField] = []
+
+        indexed_fields = (
+            (k, fvalue, get_index_attributes(fvalue))
+            for k, fvalue in get_model_fields(cls).items()
+        )
+        found_indexes = [
+            IndexModelField(
+                IndexModel(
+                    [
+                        (
+                            fvalue.alias or k,
+                            indexed_attrs[0],
+                        )
+                    ],
+                    **indexed_attrs[1],
+                )
+            )
+            for k, fvalue, indexed_attrs in indexed_fields
+            if indexed_attrs is not None
+        ]
+
+        if document_settings.merge_indexes:
+            result: List[IndexModelField] = []
+            for subclass in reversed(cls.mro()):
+                if issubclass(subclass, Document) and subclass is not Document:
+                    if subclass.get_settings().indexes:
+                        result = IndexModelField.merge_indexes(
+                            result, subclass.get_settings().indexes
+                        )
+            found_indexes = IndexModelField.merge_indexes(
+                found_indexes, result
+            )
+        else:
+            if document_settings.indexes:
+                found_indexes = IndexModelField.merge_indexes(
+                    found_indexes, document_settings.indexes
+                )
+
+        new_indexes += found_indexes
+
+        if allow_dropping:
+            for index in IndexModelField.list_difference(
+                old_indexes, new_indexes
+            ):
+                await collection.drop_index(index.name)
+
+        if found_indexes:
+            await collection.create_indexes(
+                IndexModelField.list_to_index_model(new_indexes)
+            )
 
     @classmethod
     async def inspect_collection(

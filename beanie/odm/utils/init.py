@@ -72,6 +72,7 @@ class Initializer:
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
         skip_indexes: bool = False,
+        lazy: bool = False,
     ):
         """
         Beanie initializer
@@ -85,13 +86,23 @@ class Initializer:
         :param recreate_views: bool - if views should be recreated. Default False
         it will patch the pymongo client to use process's event loop.
         :param skip_indexes: bool - if you want to skip working with indexes. Default False
+        :param lazy: bool - if True, skips index creation and view recreation,
+        and caches pure-Python metadata across repeated init calls. Default False
         :return: None
         """
 
         self.inited_classes: List[Type] = []
         self.allow_index_dropping = allow_index_dropping
-        self.skip_indexes = skip_indexes
-        self.recreate_views = recreate_views
+        self.lazy = lazy
+
+        if lazy:
+            self.skip_indexes = True
+            self.recreate_views = False
+        else:
+            self.skip_indexes = skip_indexes
+            self.recreate_views = recreate_views
+
+        self._mongo_version: Optional[int] = None
 
         self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
 
@@ -140,6 +151,11 @@ class Initializer:
 
     # General
     def fill_docs_registry(self):
+        """Populate the global docs registry from model modules.
+
+        Registers any classes not yet present in the registry. This is
+        cheap (pure-Python introspection) and safe to call repeatedly.
+        """
         for model in self.document_models:
             module = inspect.getmodule(model)
             members = inspect.getmembers(module)
@@ -568,6 +584,18 @@ class Initializer:
                 IndexModelField.list_to_index_model(new_indexes)
             )
 
+    async def get_mongo_version(self) -> int:
+        """Return the MongoDB server major version.
+
+        The result is cached per Initializer instance so that at most
+        one ``buildInfo`` command is issued regardless of how many
+        document models are initialized.
+        """
+        if self._mongo_version is None:
+            build_info = await self.database.command({"buildInfo": 1})
+            self._mongo_version = int(build_info["version"].split(".")[0])
+        return self._mongo_version
+
     async def init_document(self, cls: Type[Document]) -> Optional[Output]:
         """
         Init Document-based class
@@ -578,47 +606,69 @@ class Initializer:
         if cls is Document:
             return None
 
-        # get db version
-        build_info = await self.database.command({"buildInfo": 1})
-        mongo_version = build_info["version"]
-        cls._database_major_version = int(mongo_version.split(".")[0])
-        if cls not in self.inited_classes:
-            self.set_default_class_vars(cls)
-            self.init_settings(cls)
+        # get db version (cached per Initializer instance)
+        cls._database_major_version = await self.get_mongo_version()
 
+        if cls not in self.inited_classes:
+            metadata_done = getattr(cls, "_metadata_initialized", False)
+
+            if not metadata_done:
+                self.set_default_class_vars(cls)
+                self.init_settings(cls)
+
+            # Always traverse the parent hierarchy so that ancestor
+            # classes are registered in ``self.inited_classes`` and
+            # bound to the current database.
             bases = [b for b in cls.__bases__ if issubclass(b, Document)]
             if len(bases) > 1:
                 return None
             parent = bases[0]
             output = await self.init_document(parent)
-            if cls.get_settings().is_root and (
-                parent is Document or not parent.get_settings().is_root
-            ):
-                if cls.get_collection_name() is None:
-                    cls.set_collection_name(cls.__name__)
-                output = Output(
-                    class_name=cls.__name__,
-                    collection_name=cls.get_collection_name(),
-                )
-                cls._class_id = cls.__name__
-                cls._inheritance_inited = True
-            elif output is not None:
-                output.class_name = f"{output.class_name}.{cls.__name__}"
-                cls._class_id = output.class_name
-                cls.set_collection_name(output.collection_name)
-                parent.add_child(cls._class_id, cls)
-                cls._parent = parent
-                cls._inheritance_inited = True
+
+            if not metadata_done:
+                # First-time inheritance setup — builds _class_id,
+                # _children, _parent, and _inheritance_inited.
+                if cls.get_settings().is_root and (
+                    parent is Document or not parent.get_settings().is_root
+                ):
+                    if cls.get_collection_name() is None:
+                        cls.set_collection_name(cls.__name__)
+                    output = Output(
+                        class_name=cls.__name__,
+                        collection_name=cls.get_collection_name(),
+                    )
+                    cls._class_id = cls.__name__
+                    cls._inheritance_inited = True
+                elif output is not None:
+                    output.class_name = f"{output.class_name}.{cls.__name__}"
+                    cls._class_id = output.class_name
+                    cls.set_collection_name(output.collection_name)
+                    parent.add_child(cls._class_id, cls)
+                    cls._parent = parent
+                    cls._inheritance_inited = True
 
             await self.init_document_collection(cls)
             if not self.skip_indexes:
                 await self.init_indexes(cls, self.allow_index_dropping)
-            self.init_document_fields(cls)
+
+            if not metadata_done:
+                self.init_document_fields(cls)
+                self.init_actions(cls)
+                cls._metadata_initialized = True
+
+            # Always reset the cache (clears stale query results)
             self.init_cache(cls)
-            self.init_actions(cls)
 
             self.inited_classes.append(cls)
 
+            # When metadata was already cached, reconstruct the
+            # Output from persisted class vars so that recursive
+            # callers (child classes) receive the correct value.
+            if metadata_done and cls._inheritance_inited:
+                return Output(
+                    class_name=cls._class_id,
+                    collection_name=cls.get_collection_name(),
+                )
             return output
 
         else:
@@ -684,9 +734,18 @@ class Initializer:
         :param cls:
         :return:
         """
-        self.init_settings(cls)
-        self.init_view_collection(cls)
-        self.init_view_fields(cls)
+        metadata_done = getattr(cls, "_metadata_initialized", False)
+
+        if not metadata_done:
+            self.init_settings(cls)
+            self.init_view_collection(cls)
+            self.init_view_fields(cls)
+            cls._metadata_initialized = True
+        else:
+            # Re-bind database refs even when metadata is cached
+            self.init_view_collection(cls)
+
+        # Always reset the cache (clears stale query results)
         self.init_cache(cls)
 
         collection_names = await self.database.list_collection_names(
@@ -769,6 +828,7 @@ async def init_beanie(
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
     skip_indexes: bool = False,
+    lazy: bool = False,
 ):
     """
     Beanie initialization
@@ -782,6 +842,9 @@ async def init_beanie(
     :param recreate_views: bool - if views should be recreated. Defaults to False.
     :param skip_indexes: bool - if you want to skip working with the indexes.
         Defaults to False.
+    :param lazy: bool - if True, skips index creation and view recreation,
+        and caches pure-Python metadata across repeated init calls.
+        Defaults to False.
     :return: None
     """
 
@@ -792,4 +855,5 @@ async def init_beanie(
         allow_index_dropping=allow_index_dropping,
         recreate_views=recreate_views,
         skip_indexes=skip_indexes,
+        lazy=lazy,
     )

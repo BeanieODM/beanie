@@ -33,6 +33,9 @@ class View(
     # Settings
     _settings: ClassVar[ViewSettings]
 
+    # Lazy init metadata caching
+    _metadata_initialized: ClassVar[bool] = False
+
     @classmethod
     def get_settings(cls) -> ViewSettings:
         """
@@ -44,6 +47,31 @@ class View(
         if cls._settings is None:
             raise ViewWasNotInitialized
         return cls._settings
+
+    @classmethod
+    async def ensure_view(cls) -> None:
+        """Create or replace the MongoDB view for this class on demand.
+
+        Useful after ``init_beanie(lazy=True)`` when view recreation was
+        skipped during initialization.
+        """
+        settings = cls.get_settings()
+        db = settings.pymongo_db
+        if db is None:
+            raise ViewWasNotInitialized
+        collection_names = await db.list_collection_names(
+            authorizedCollections=True, nameOnly=True
+        )
+        if settings.name in collection_names:
+            await cls.get_pymongo_collection().drop()
+
+        await db.command(
+            {
+                "create": settings.name,
+                "viewOn": settings.source,
+                "pipeline": settings.pipeline,
+            }
+        )
 
     async def fetch_link(self, field: Union[str, Any]):
         ref_obj = getattr(self, field, None)
