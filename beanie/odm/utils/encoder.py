@@ -27,6 +27,7 @@ from beanie.odm.fields import Link, LinkTypes
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
     IS_PYDANTIC_V2_10,
+    get_model_all_items,
     get_model_fields,
 )
 
@@ -157,7 +158,7 @@ class Encoder:
     ) -> Iterable[Tuple[str, Any]]:
         keep_nulls = self.keep_nulls
         get_model_field = get_model_fields(obj).get
-        for key, value in obj.__iter__():
+        for key, value in get_model_all_items(obj).items():
             field_info = get_model_field(key)
             if field_info is not None:
                 key = field_info.alias or key
@@ -167,7 +168,9 @@ class Encoder:
                 yield key, value
 
     def _should_exclude_field(
-        self, key: str, field_info: Optional[pydantic.fields.FieldInfo]
+        self,
+        key: str,
+        field_info: Any,
     ):
         exclude, include = (
             self.exclude,
@@ -180,7 +183,7 @@ class Encoder:
         is_pydantic_excluded_field = (
             field_info is not None
             and (
-                field_info.exclude
+                getattr(field_info, "exclude", None)
                 if IS_PYDANTIC_V2
                 else getattr(field_info.field_info, "exclude")
             )

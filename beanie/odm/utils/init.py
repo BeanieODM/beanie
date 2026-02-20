@@ -6,6 +6,7 @@ from typing_extensions import Sequence, get_args, get_origin
 from beanie.odm.utils.pydantic import (
     IS_PYDANTIC_V2,
     get_extra_field_info,
+    get_field_type,
     get_model_fields,
     parse_model,
 )
@@ -39,6 +40,7 @@ from beanie.odm.documents import DocType, Document
 from beanie.odm.fields import (
     BackLink,
     ExpressionField,
+    ExpressionFieldProperty,
     Link,
     LinkInfo,
     LinkTypes,
@@ -223,9 +225,9 @@ class Initializer:
         :param field: ModelField
         :return: Optional[LinkInfo]
         """
-
-        origin = get_origin(field.annotation)
-        args = get_args(field.annotation)
+        annotation = get_field_type(field)
+        origin = get_origin(annotation)
+        args = get_args(annotation)
         classes = [
             Link,
             BackLink,
@@ -234,8 +236,8 @@ class Initializer:
         for cls in classes:
             # Check if annotation is one of the custom classes
             if (
-                isinstance(field.annotation, _GenericAlias)
-                and field.annotation.__origin__ is cls
+                isinstance(annotation, _GenericAlias)
+                and annotation.__origin__ is cls
             ):
                 if cls is Link:
                     return LinkInfo(
@@ -406,7 +408,14 @@ class Initializer:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
             path = v.alias or k
-            setattr(cls, k, ExpressionField(path))
+            attr = getattr(cls, k, None)
+            expression_field = ExpressionField(path)
+            if isinstance(attr, property):
+                setattr(
+                    cls, k, ExpressionFieldProperty(attr, expression_field)
+                )
+            else:
+                setattr(cls, k, expression_field)
 
             link_info = self.detect_link(v, k)
             depth_level = cls.get_settings().max_nesting_depths_per_field.get(
