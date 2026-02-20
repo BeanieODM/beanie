@@ -582,6 +582,9 @@ class Initializer:
         build_info = await self.database.command({"buildInfo": 1})
         mongo_version = build_info["version"]
         cls._database_major_version = int(mongo_version.split(".")[0])
+
+        own_settings = cls.__dict__.get("Settings")
+        class_id_value = getattr(own_settings, "class_id_value", None)
         if cls not in self.inited_classes:
             self.set_default_class_vars(cls)
             self.init_settings(cls)
@@ -600,10 +603,16 @@ class Initializer:
                     class_name=cls.__name__,
                     collection_name=cls.get_collection_name(),
                 )
-                cls._class_id = cls.__name__
+                cls._class_id = (
+                    cls.__name__ if class_id_value is None else class_id_value
+                )
                 cls._inheritance_inited = True
             elif output is not None:
-                output.class_name = f"{output.class_name}.{cls.__name__}"
+                output.class_name = (
+                    f"{output.class_name}.{cls.__name__}"
+                    if class_id_value is None
+                    else class_id_value
+                )
                 cls._class_id = output.class_name
                 cls.set_collection_name(output.collection_name)
                 parent.add_child(cls._class_id, cls)
