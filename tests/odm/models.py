@@ -1085,12 +1085,28 @@ class DocumentWithBsonBinaryField(Document):
 
 if IS_PYDANTIC_V2:
     Pets = RootModel[List[str]]
+
+    class IterableRootList(RootModel[List[int]]):
+        """RootModel with custom __iter__ that yields non-tuple values."""
+
+        def __iter__(self):
+            return iter(self.root)
+
 else:
     Pets = List[str]
+    IterableRootList = None
 
 
 class DocumentWithRootModelAsAField(Document):
     pets: Pets
+
+
+if IS_PYDANTIC_V2:
+
+    class DocumentWithCustomIterRootModel(Document):
+        """Document with a RootModel field that overrides __iter__."""
+
+        items: IterableRootList = IterableRootList([])
 
 
 class DocWithCallWrapper(Document):

@@ -6,6 +6,7 @@ from typing import List
 import pytest
 
 from beanie.odm.utils.init import init_beanie
+from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
     ADocument,
     BDocument,
@@ -212,6 +213,11 @@ TESTING_MODELS = [
     NativeRegexDoc,
     DocumentWithExcludedField,
 ]
+
+if IS_PYDANTIC_V2:
+    from tests.odm.models import DocumentWithCustomIterRootModel
+
+    TESTING_MODELS.append(DocumentWithCustomIterRootModel)
 
 
 @pytest.fixture
