@@ -745,8 +745,26 @@ class Document(
                 bulk_writer=bulk_writer,
                 **pymongo_kwargs,
             )
-        except DuplicateKeyError:
-            raise RevisionIdWasChanged
+        except DuplicateKeyError as e:
+            # A DuplicateKeyError on _id during an upsert with revision
+            # filtering means the revision didn't match (the filter missed
+            # the existing doc, so mongo tried to insert a duplicate _id).
+            # A DuplicateKeyError on the revision_id key is also a
+            # revision conflict. Any other DuplicateKeyError (e.g. on a
+            # user-defined unique index) should propagate as-is.
+            #
+            # Use the structured `details` dict from PyMongo's WriteError
+            # (keyPattern) instead of matching on the error message string,
+            # which can vary across MongoDB versions.
+            if use_revision_id and not ignore_revision:
+                key_pattern = (
+                    getattr(e, "details", {}).get("keyPattern", {})
+                    if getattr(e, "details", None)
+                    else {}
+                )
+                if "_id" in key_pattern or "revision_id" in key_pattern:
+                    raise RevisionIdWasChanged
+            raise
         if bulk_writer is None:
             if use_revision_id and not ignore_revision and result is None:
                 raise RevisionIdWasChanged
