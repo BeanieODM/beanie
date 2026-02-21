@@ -143,7 +143,7 @@ def merge_update_expressions(
     if not action_changes:
         return list(update_args)
 
-    if strategy is ActionConflictResolution.ACTION_OVERRIDE:
+    if strategy == ActionConflictResolution.ACTION_OVERRIDE:
         passthrough = _collect_passthrough(update_args)
         return [{"$set": dict(action_changes)}] + passthrough
 
@@ -151,7 +151,7 @@ def merge_update_expressions(
     targeted = _extract_targeted_fields(consolidated)
     conflicting = set(action_changes.keys()) & targeted
 
-    if conflicting and strategy is ActionConflictResolution.RAISE:
+    if conflicting and strategy == ActionConflictResolution.RAISE:
         raise MergeConflictError(conflicting)
 
     set_fields = consolidated.get("$set", {})
@@ -164,7 +164,7 @@ def merge_update_expressions(
             if key not in targeted:
                 set_fields[key] = value
 
-    elif strategy is ActionConflictResolution.ACTION_WINS:
+    elif strategy == ActionConflictResolution.ACTION_WINS:
         # Remove conflicting fields from non-$set operators
         for operator_key in list(consolidated.keys()):
             if operator_key == "$set":
