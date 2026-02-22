@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "beanie"
-version = "2.0.1"
+version = "26.2.0"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
@@ -61,12 +61,6 @@ doc = [
     "jinja2>=3.0.3"
 ]
 queue = ["beanie-batteries-queue>=0.2"]
-ci = [
-    "tomli>=2.2.1,<3.0.0; python_version < '3.11'",
-    "tomli-w>=1.0.0,<2.0.0",
-    "requests",
-    "types-requests",
-]
 aws = ["pymongo[aws]>=4.11.0,!=4.15.0,<5.0.0"]
 encryption = ["pymongo[encryption]>=4.11.0,!=4.15.0,<5.0.0"]
 gssapi = ["pymongo[gssapi]>=4.11.0,!=4.15.0,<5.0.0"]

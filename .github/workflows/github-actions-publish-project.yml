@@ -1,17 +1,99 @@
 name: Publish project
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (build + test only, skip upload)"
+        type: boolean
+        default: false
+
 jobs:
-  publish_project:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: install flit
-        run: pip3 install flit
-      - name: publish project
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.12.1
+        with:
+          mongodb-version: "8.0"
+          mongodb-replica-set: test-rs
+
+      - name: Install dependencies
+        run: pip install .[test]
+
+      - name: Run tests
+        run: pytest -v
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install flit
+        run: pip install flit
+
+      - name: Build package
+        run: flit build
+
+      - name: Publish to PyPI
+        if: ${{ !inputs.dry_run }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Get previous tag
+        if: ${{ !inputs.dry_run }}
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD 2>/dev/null || echo "")
+          echo "PREV_TAG=${PREV_TAG}" >> $GITHUB_ENV
+
+      - name: Create git tag
+        if: ${{ !inputs.dry_run }}
+        run: |
+          VERSION=$(python -c "import beanie; print(beanie.__version__)")
+          git tag "v${VERSION}"
+          git push origin "v${VERSION}"
+
+      - name: Create GitHub Release
+        if: ${{ !inputs.dry_run }}
         env:
-          FLIT_USERNAME: __token__
-          FLIT_PASSWORD: ${{ secrets.FLIT_PASSWORD }}
-        run: flit publish
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(python -c "import beanie; print(beanie.__version__)")
+          gh release create "v${VERSION}" --generate-notes --title "v${VERSION}"
+
+      - name: Update changelog
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          VERSION=$(python -c "import beanie; print(beanie.__version__)")
+          pip install openai requests
+          python scripts/generate_changelog.py \
+            --prev-tag "$PREV_TAG" \
+            --new-version "$VERSION" \
+            --repo BeanieODM/beanie
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/changelog.md
+          git commit -m "docs: changelog for v${VERSION}"
+          git push origin main

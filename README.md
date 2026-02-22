@@ -1,4 +1,4 @@
-[![Beanie](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/white_bg.svg)](https://github.com/roman-right/beanie)
+[![Beanie](https://raw.githubusercontent.com/BeanieODM/beanie/main/assets/logo/white_bg.svg)](https://github.com/BeanieODM/beanie)
 
 [![shields badge](https://shields.io/badge/-docs-blue)](https://beanie-odm.dev)
 [![pypi](https://img.shields.io/pypi/v/beanie.svg)](https://pypi.python.org/pypi/beanie)
@@ -6,22 +6,9 @@
 
 
 
-## 📢 Important Update 📢
-
-We are excited to announce that Beanie is transitioning from solo development to a team-based approach! This move will help us enhance the project with new features and more collaborative development.
-
-At this moment we are establishing a board of members that will decide all the future steps of the project. We are looking for contributors and maintainers to join the board.
-
-### Join Us
-If you are interested in contributing or want to stay updated, please join our Discord channel. We're looking forward to your ideas and contributions!
-
-[Join our Discord](https://discord.gg/AwwTrbCASP)
-
-Let’s make Beanie better, together!
-
 ## Overview
 
-[Beanie](https://github.com/roman-right/beanie) - is an asynchronous Python object-document mapper (ODM) for MongoDB. Data models are based on [Pydantic](https://pydantic-docs.helpmanual.io/).
+[Beanie](https://github.com/BeanieODM/beanie) is an asynchronous Python object-document mapper (ODM) for MongoDB. Data models are based on Pydantic.
 
 When using Beanie each database collection has a corresponding `Document` that
 is used to interact with that collection. In addition to retrieving data,
@@ -33,7 +20,7 @@ the parts of your app that actually matter.
 
 Data and schema migrations are supported by Beanie out of the box.
 
-There is a synchronous version of Beanie ODM - [Bunnet](https://github.com/roman-right/bunnet)
+There is a synchronous version of Beanie ODM - [Bunnet](https://github.com/BeanieODM/bunnet)
 
 ## Installation
 
@@ -126,14 +113,9 @@ Iliya Hosseini](https://github.com/IHosseini083)
 
 ### Resources
 
-- **[GitHub](https://github.com/roman-right/beanie)** - GitHub page of the
+- **[GitHub](https://github.com/BeanieODM/beanie)** - GitHub page of the
   project
 - **[Changelog](https://beanie-odm.dev/changelog)** - list of all
   the valuable changes
 - **[Discord](https://discord.gg/AwwTrbCASP)** - ask your questions, share
   ideas or just say `Hello!!`
-
-----
-Supported by [JetBrains](https://jb.gg/OpenSource)
-
-[![JetBrains](https://raw.githubusercontent.com/roman-right/beanie/main/assets/logo/jetbrains.svg)](https://jb.gg/OpenSource)

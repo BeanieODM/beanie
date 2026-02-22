@@ -1,0 +1,91 @@
+name: Bug Report
+description: Report a bug in Beanie
+title: "[BUG] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill out the form below.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: To Reproduce
+      description: Minimal code snippet that reproduces the problem.
+      render: python
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: beanie-version
+    attributes:
+      label: Beanie version
+      options:
+        - "26.2.x"
+        - "2.0.x"
+        - "1.x"
+        - "Other"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: python-version
+    attributes:
+      label: Python version
+      options:
+        - "3.13"
+        - "3.12"
+        - "3.11"
+        - "3.10"
+        - "3.9"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mongodb-version
+    attributes:
+      label: MongoDB version
+      options:
+        - "8.0"
+        - "7.0"
+        - "6.0"
+        - "5.0"
+        - "4.4"
+        - "Other"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: pydantic-version
+    attributes:
+      label: Pydantic version
+      options:
+        - "2.x"
+        - "1.x"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Any other context about the problem (logs, screenshots, etc.).
+    validations:
+      required: false

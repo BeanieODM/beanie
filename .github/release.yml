@@ -1,0 +1,16 @@
+changelog:
+  categories:
+    - title: "Breaking Changes"
+      labels: [breaking]
+    - title: "New Features"
+      labels: [enhancement, feature request]
+    - title: "Bug Fixes"
+      labels: [bug]
+    - title: "Performance"
+      labels: [performance]
+    - title: "Documentation"
+      labels: [documentation, doc]
+    - title: "Internal"
+      labels: [internal]
+    - title: "Other Changes"
+      labels: ["*"]
