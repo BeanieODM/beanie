@@ -93,7 +93,7 @@ class Initializer:
         self.recreate_views = recreate_views
 
         self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
-        
+
         if (connection_string is None and database is None) or (
             connection_string is not None and database is not None
         ):
