@@ -387,7 +387,7 @@ class Initializer:
             # Rebuilding the model triggers alias generation etc.
             cls.model_rebuild()
             self.models_with_updated_forward_refs.append(cls)
-    
+
     def init_document_fields(self, cls) -> None:
         """
         Init class fields
@@ -395,7 +395,7 @@ class Initializer:
         """
 
         self.update_forward_refs(cls)
-        
+
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
