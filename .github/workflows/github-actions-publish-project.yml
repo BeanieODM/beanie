@@ -44,10 +44,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
 
       - name: Install flit
         run: pip install flit
@@ -58,6 +61,12 @@ jobs:
       - name: Publish to PyPI
         if: ${{ !inputs.dry_run }}
         uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Get previous tag
+        if: ${{ !inputs.dry_run }}
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD 2>/dev/null || echo "")
+          echo "PREV_TAG=${PREV_TAG}" >> $GITHUB_ENV
 
       - name: Create git tag
         if: ${{ !inputs.dry_run }}
@@ -73,3 +82,21 @@ jobs:
         run: |
           VERSION=$(python -c "import beanie; print(beanie.__version__)")
           gh release create "v${VERSION}" --generate-notes --title "v${VERSION}"
+
+      - name: Update changelog
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          VERSION=$(python -c "import beanie; print(beanie.__version__)")
+          pip install openai requests
+          python scripts/generate_changelog.py \
+            --prev-tag "$PREV_TAG" \
+            --new-version "$VERSION" \
+            --repo BeanieODM/beanie
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/changelog.md
+          git commit -m "docs: changelog for v${VERSION}"
+          git push origin main
