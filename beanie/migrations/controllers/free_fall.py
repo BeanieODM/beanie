@@ -1,8 +1,29 @@
-from inspect import signature
+import inspect
+import sys
 from typing import Any, List, Type
 
 from beanie.migrations.controllers.base import BaseMigrationController
 from beanie.odm.documents import Document
+
+if sys.version_info >= (3, 14):
+    from annotationlib import Format
+
+    def signature(
+        obj,
+        *,
+        follow_wrapped=True,
+        globals=None,
+        locals=None,
+        eval_str=False,
+        annotation_format=Format.VALUE,
+    ):
+        return inspect.signature(obj, annotation_format=Format.FORWARDREF)
+else:
+
+    def signature(
+        obj, *, follow_wrapped=True, globals=None, locals=None, eval_str=False
+    ):
+        return inspect.signature(obj)
 
 
 def free_fall_migration(document_models: List[Type[Document]]):

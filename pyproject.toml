@@ -7,11 +7,9 @@ name = "beanie"
 version = "2.0.1"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
-requires-python = ">=3.10,<3.14"
-license = { file="LICENSE" }
-authors = [
-    {name = "Roman Right", email = "roman-right@protonmail.com"}
-]
+requires-python = ">=3.10,<3.15"
+license = { file = "LICENSE" }
+authors = [{ name = "Roman Right", email = "roman-right@protonmail.com" }]
 keywords = ["mongodb", "odm", "orm", "pydantic", "mongo", "async", "python"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
@@ -28,6 +26,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
     "pydantic>=2.4,<3.0",
@@ -58,7 +57,7 @@ doc = [
     "pydoc-markdown>=4.8",
     "mkdocs>=1.4",
     "mkdocs-material>=9.0",
-    "jinja2>=3.0.3"
+    "jinja2>=3.0.3",
 ]
 queue = ["beanie-batteries-queue>=0.2"]
 ci = [
@@ -95,20 +94,14 @@ exclude_lines = [
     'pragma: no cover',
     'if TYPE_CHECKING:',
     'if typing.TYPE_CHECKING:',
-    'if __name__ == .__main__.:'
+    'if __name__ == .__main__.:',
 ]
 
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = "--cov"
-testpaths = [
-    "tests",
-]
-filterwarnings = [
-    "error",
-    "ignore::DeprecationWarning",
-    "ignore::UserWarning",
-]
+testpaths = ["tests"]
+filterwarnings = ["error", "ignore::DeprecationWarning", "ignore::UserWarning"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 
