@@ -504,6 +504,16 @@ class DocumentWithRevisionTurnedOn(Document):
         use_state_management = True
 
 
+class DocumentWithRevisionAndUniqueField(Document):
+    num_1: int
+    num_2: int
+    unique_field: Indexed(str, unique=True)
+
+    class Settings:
+        use_revision = True
+        use_state_management = True
+
+
 class DocumentWithPydanticConfig(Document):
     if IS_PYDANTIC_V2:
         model_config = ConfigDict(validate_assignment=True)

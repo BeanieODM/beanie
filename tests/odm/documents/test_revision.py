@@ -1,10 +1,11 @@
 import pytest
-from pymongo.errors import BulkWriteError
+from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from beanie import BulkWriter
 from beanie.exceptions import RevisionIdWasChanged
 from beanie.odm.operators.update.general import Inc
 from tests.odm.models import (
+    DocumentWithRevisionAndUniqueField,
     DocumentWithRevisionTurnedOn,
     LockWithRevision,
     WindowWithRevision,
@@ -166,3 +167,71 @@ async def test_revision_id_for_link():
 
     await window.insert()
     assert lock.revision_id == lock_rev_id
+
+
+async def test_duplicate_key_error_on_unique_field_not_converted_to_revision_error():
+    """Regression test: a DuplicateKeyError on a user-defined unique index
+    should propagate as DuplicateKeyError, not be swallowed and re-raised
+    as RevisionIdWasChanged. See issue #1057."""
+    doc1 = DocumentWithRevisionAndUniqueField(
+        num_1=1, num_2=2, unique_field="unique_value"
+    )
+    await doc1.insert()
+
+    doc2 = DocumentWithRevisionAndUniqueField(
+        num_1=3, num_2=4, unique_field="unique_value"
+    )
+    with pytest.raises(DuplicateKeyError):
+        await doc2.insert()
+
+
+async def test_save_duplicate_unique_field_raises_duplicate_key_error():
+    """Regression test: calling save() on a document whose unique field
+    collides with an existing document should raise DuplicateKeyError,
+    not RevisionIdWasChanged. See issue #1057."""
+    doc1 = DocumentWithRevisionAndUniqueField(
+        num_1=1, num_2=2, unique_field="save_unique"
+    )
+    await doc1.save()
+
+    doc2 = DocumentWithRevisionAndUniqueField(
+        num_1=3, num_2=4, unique_field="save_unique"
+    )
+    with pytest.raises(DuplicateKeyError):
+        await doc2.save()
+
+
+async def test_update_duplicate_unique_field_raises_duplicate_key_error():
+    """Regression test: updating a field to a value that violates a unique
+    constraint should raise DuplicateKeyError, not RevisionIdWasChanged.
+    See issue #1057."""
+    doc1 = DocumentWithRevisionAndUniqueField(
+        num_1=1, num_2=2, unique_field="update_val_a"
+    )
+    await doc1.insert()
+
+    doc2 = DocumentWithRevisionAndUniqueField(
+        num_1=3, num_2=4, unique_field="update_val_b"
+    )
+    await doc2.insert()
+
+    doc2.unique_field = "update_val_a"
+    with pytest.raises(DuplicateKeyError):
+        await doc2.save()
+
+
+async def test_revision_conflict_still_raises_revision_error():
+    """Ensure that actual revision conflicts still raise
+    RevisionIdWasChanged after the DuplicateKeyError fix."""
+    doc = DocumentWithRevisionAndUniqueField(
+        num_1=1, num_2=2, unique_field="rev_conflict"
+    )
+    await doc.insert()
+
+    stale = await DocumentWithRevisionAndUniqueField.get(doc.id)
+    doc.num_1 = 10
+    await doc.save()
+
+    stale.num_1 = 20
+    with pytest.raises(RevisionIdWasChanged):
+        await stale.save()
