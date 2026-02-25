@@ -1,7 +1,8 @@
 import sys
+from collections.abc import Sequence
 
 from pymongo.asynchronous.database import AsyncDatabase
-from typing_extensions import Sequence, get_args, get_origin
+from typing_extensions import get_args, get_origin
 
 from beanie.odm.utils.pydantic import (
     get_extra_field_info,
@@ -18,12 +19,10 @@ else:
 import importlib
 import inspect
 from importlib.metadata import version
-from typing import (  # type: ignore
-    List,
+from types import GenericAlias
+from typing import (
     Optional,
-    Type,
     Union,
-    _GenericAlias,
 )
 
 from pydantic import BaseModel
@@ -65,7 +64,7 @@ class Initializer:
         connection_string: Optional[str] = None,
         document_models: Optional[
             Sequence[
-                Union[Type["DocType"], Type["UnionDocType"], Type["View"], str]
+                Union[type["DocType"], type["UnionDocType"], type["View"], str]
             ]
         ] = None,
         allow_index_dropping: bool = False,
@@ -87,12 +86,12 @@ class Initializer:
         :return: None
         """
 
-        self.inited_classes: List[Type] = []
+        self.inited_classes: list[type] = []
         self.allow_index_dropping = allow_index_dropping
         self.skip_indexes = skip_indexes
         self.recreate_views = recreate_views
 
-        self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
+        self.models_with_updated_forward_refs: list[type[BaseModel]] = []
 
         if (connection_string is None and database is None) or (
             connection_string is not None and database is not None
@@ -120,8 +119,8 @@ class Initializer:
             ModelType.View: 2,
         }
 
-        self.document_models: List[
-            Union[Type[DocType], Type[UnionDocType], Type[View]]
+        self.document_models: list[
+            Union[type[DocType], type[UnionDocType], type[View]]
         ] = [
             self.get_model(model) if isinstance(model, str) else model
             for model in document_models
@@ -158,7 +157,7 @@ class Initializer:
                     DocsRegistry.register(name, obj)
 
     @staticmethod
-    def get_model(dot_path: str) -> Type["DocType"]:
+    def get_model(dot_path: str) -> type["DocType"]:
         """
         Get the model by the path in format bar.foo.Model
 
@@ -181,7 +180,7 @@ class Initializer:
             )
 
     def init_settings(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        self, cls: Union[type[Document], type[View], type[UnionDoc]]
     ):
         """
         Init Settings
@@ -231,7 +230,7 @@ class Initializer:
         for cls in classes:
             # Check if annotation is one of the custom classes
             if (
-                isinstance(field.annotation, _GenericAlias)
+                isinstance(field.annotation, GenericAlias)
                 and field.annotation.__origin__ is cls
             ):
                 if cls is Link:
@@ -253,9 +252,9 @@ class Initializer:
 
             # Check if annotation is List[custom class]
             elif (
-                (origin is List or origin is list)
+                (origin is list or origin is list)
                 and len(args) == 1
-                and isinstance(args[0], _GenericAlias)
+                and isinstance(args[0], GenericAlias)
                 and args[0].__origin__ is cls
             ):
                 if cls is Link:
@@ -293,7 +292,7 @@ class Initializer:
                 optional_args = get_args(optional)
 
                 if (
-                    isinstance(optional, _GenericAlias)
+                    isinstance(optional, GenericAlias)
                     and optional.__origin__ is cls
                 ):
                     if cls is Link:
@@ -318,9 +317,9 @@ class Initializer:
                         )
 
                 elif (
-                    (optional_origin is List or optional_origin is list)
+                    (optional_origin is list or optional_origin is list)
                     and len(optional_args) == 1
-                    and isinstance(optional_args[0], _GenericAlias)
+                    and isinstance(optional_args[0], GenericAlias)
                     and optional_args[0].__origin__ is cls
                 ):
                     if cls is Link:
@@ -364,7 +363,7 @@ class Initializer:
     # Document
 
     @staticmethod
-    def set_default_class_vars(cls: Type[Document]):
+    def set_default_class_vars(cls: type[Document]):
         """
         Set default class variables.
 
@@ -390,7 +389,7 @@ class Initializer:
                 expiration_time=cls.get_settings().cache_expiration_time,
             )
 
-    def update_forward_refs(self, cls: Type[BaseModel]) -> None:
+    def update_forward_refs(self, cls: type[BaseModel]) -> None:
         """
         Update forward refs
         :param cls: Type[BaseModel] - class to update forward refs
@@ -534,7 +533,7 @@ class Initializer:
         ]
 
         if document_settings.merge_indexes:
-            result: List[IndexModelField] = []
+            result: list[IndexModelField] = []
             for subclass in reversed(cls.mro()):
                 if issubclass(subclass, Document) and not subclass == Document:
                     if (
@@ -572,7 +571,7 @@ class Initializer:
                 IndexModelField.list_to_index_model(new_indexes)
             )
 
-    async def init_document(self, cls: Type[Document]) -> Optional[Output]:
+    async def init_document(self, cls: type[Document]) -> Optional[Output]:
         """
         Init Document-based class
 
@@ -634,7 +633,7 @@ class Initializer:
 
     # Views
 
-    def init_view_fields(self, cls: Type[View]) -> None:
+    def init_view_fields(self, cls: type[View]) -> None:
         """
         Init class fields
         :return: None
@@ -661,7 +660,7 @@ class Initializer:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
 
-    def init_view_collection(self, cls: Type[View]):
+    def init_view_collection(self, cls: type[View]):
         """
         Init collection for View
 
@@ -679,7 +678,7 @@ class Initializer:
         view_settings.pymongo_db = self.database
         view_settings.pymongo_collection = self.database[view_settings.name]
 
-    async def init_view(self, cls: Type[View]):
+    async def init_view(self, cls: type[View]):
         """
         Init View-based class
 
@@ -708,7 +707,7 @@ class Initializer:
 
     # Union Doc
 
-    async def init_union_doc(self, cls: Type[UnionDoc]):
+    async def init_union_doc(self, cls: type[UnionDoc]):
         """
         Init Union Doc based class
 
@@ -727,7 +726,7 @@ class Initializer:
 
     @staticmethod
     def check_deprecations(
-        cls: Union[Type[Document], Type[View], Type[UnionDoc]],
+        cls: Union[type[Document], type[View], type[UnionDoc]],
     ):
         if hasattr(cls, "Collection"):
             raise Deprecation(
@@ -739,7 +738,7 @@ class Initializer:
     # Final
 
     async def init_class(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
+        self, cls: Union[type[Document], type[View], type[UnionDoc]]
     ):
         """
         Init Document, View or UnionDoc based class.
@@ -766,7 +765,7 @@ async def init_beanie(
     database: Optional[AsyncDatabase] = None,
     connection_string: Optional[str] = None,
     document_models: Optional[
-        Sequence[Union[Type[Document], Type[UnionDoc], Type["View"], str]]
+        Sequence[Union[type[Document], type[UnionDoc], type["View"], str]]
     ] = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,

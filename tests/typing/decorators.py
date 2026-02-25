@@ -1,4 +1,5 @@
-from typing import Any, Callable, Coroutine
+from collections.abc import Coroutine
+from typing import Any, Callable
 
 from typing_extensions import Protocol, TypeAlias, assert_type
 

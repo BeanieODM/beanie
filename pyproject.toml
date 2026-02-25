@@ -121,6 +121,9 @@ ignore_missing_imports = true
 
 [tool.pyright]
 include = ["tests/typing", "beanie"]
+reportUnusedImport = "error"
+pythonVersion = "3.9"
+typeCheckingMode = "basic"
 
 [tool.ruff]
 line-length = 79
@@ -129,9 +132,14 @@ target-version = "py39"
 include = ["**/*.py", ".github/**/*.py"]
 
 [tool.ruff.lint]
+select = ["U"]
 ignore = ["E501"]
 extend-select = ["I001"]
 per-file-ignores = { "tests/*" = ["E711"] }
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.pyupgrade]
+# Preserve types, even if a file imports `from __future__ import annotations`.
+keep-runtime-typing = true

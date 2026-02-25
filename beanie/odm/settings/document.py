@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import ConfigDict, Field
 
@@ -15,7 +15,7 @@ class DocumentSettings(ItemSettings):
     use_revision: bool = False
     single_root_inheritance: bool = False
 
-    indexes: List[IndexModelField] = Field(default_factory=list)
+    indexes: list[IndexModelField] = Field(default_factory=list)
     merge_indexes: bool = False
     timeseries: Optional[TimeSeriesConfig] = None
 

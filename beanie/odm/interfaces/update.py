@@ -1,6 +1,7 @@
 from abc import abstractmethod
+from collections.abc import Mapping
 from datetime import datetime
-from typing import Any, Dict, Mapping, Optional, Union
+from typing import Any, Optional, Union
 
 from pymongo.asynchronous.client_session import AsyncClientSession
 
@@ -30,7 +31,7 @@ class UpdateMethods:
 
     def set(
         self,
-        expression: Dict[Union[ExpressionField, str, Any], Any],
+        expression: dict[Union[ExpressionField, str, Any], Any],
         session: Optional[AsyncClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
@@ -63,7 +64,7 @@ class UpdateMethods:
 
     def current_date(
         self,
-        expression: Dict[Union[datetime, ExpressionField, str], Any],
+        expression: dict[Union[datetime, ExpressionField, str], Any],
         session: Optional[AsyncClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
@@ -87,7 +88,7 @@ class UpdateMethods:
 
     def inc(
         self,
-        expression: Dict[Union[ExpressionField, float, int, str], Any],
+        expression: dict[Union[ExpressionField, float, int, str], Any],
         session: Optional[AsyncClientSession] = None,
         bulk_writer: Optional[BulkWriter] = None,
         **kwargs: Any,
