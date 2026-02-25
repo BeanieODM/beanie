@@ -72,7 +72,7 @@ class MigrationNode:
         :param allow_index_dropping: if index dropping is allowed
         :return: None
         """
-        if mode.direction == RunningDirections.FORWARD:
+        if mode.direction is RunningDirections.FORWARD:
             migration_node = self.next_migration
             if migration_node is None:
                 return None
@@ -96,7 +96,7 @@ class MigrationNode:
                     migration_node = migration_node.next_migration
                     if migration_node is None:
                         break
-        elif mode.direction == RunningDirections.BACKWARD:
+        elif mode.direction is RunningDirections.BACKWARD:
             migration_node = self
             if mode.distance == 0:
                 logger.info("Running migrations backward without limit")

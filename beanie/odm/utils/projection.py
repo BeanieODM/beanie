@@ -12,9 +12,9 @@ def get_projection(
     model: Type[ProjectionModelType],
 ) -> Optional[Dict[str, int]]:
     if hasattr(model, "get_model_type") and (
-        model.get_model_type() == ModelType.UnionDoc  # type: ignore
+        model.get_model_type() is ModelType.UnionDoc  # type: ignore
         or (  # type: ignore
-            model.get_model_type() == ModelType.Document  # type: ignore
+            model.get_model_type() is ModelType.Document  # type: ignore
             and model._inheritance_inited  # type: ignore
         )
     ):  # type: ignore
