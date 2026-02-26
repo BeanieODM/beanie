@@ -4,7 +4,6 @@ from pymongo.asynchronous.database import AsyncDatabase
 from typing_extensions import Sequence, get_args, get_origin
 
 from beanie.odm.utils.pydantic import (
-    IS_PYDANTIC_V2,
     get_extra_field_info,
     get_model_fields,
     parse_model,
@@ -92,8 +91,6 @@ class Initializer:
         self.allow_index_dropping = allow_index_dropping
         self.skip_indexes = skip_indexes
         self.recreate_views = recreate_views
-
-        self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
 
         if (connection_string is None and database is None) or (
             connection_string is not None and database is not None
@@ -209,19 +206,6 @@ class Initializer:
             cls._settings = parse_model(ViewSettings, settings_vars)
         if issubclass(cls, UnionDoc):
             cls._settings = parse_model(UnionDocSettings, settings_vars)
-
-    if not IS_PYDANTIC_V2:
-
-        def update_forward_refs(self, cls: Type[BaseModel]):
-            """
-            Update forward refs
-
-            :param cls: Type[BaseModel] - class to update forward refs
-            :return: None
-            """
-            if cls not in self.models_with_updated_forward_refs:
-                cls.update_forward_refs()
-                self.models_with_updated_forward_refs.append(cls)
 
     # General. Relations
 
@@ -409,10 +393,6 @@ class Initializer:
         Init class fields
         :return: None
         """
-
-        if not IS_PYDANTIC_V2:
-            self.update_forward_refs(cls)
-
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
@@ -638,7 +618,7 @@ class Initializer:
 
     # Views
 
-    def init_view_fields(self, cls) -> None:
+    def init_view_fields(self, cls: Type[View]) -> None:
         """
         Init class fields
         :return: None
@@ -665,7 +645,7 @@ class Initializer:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
 
-    def init_view_collection(self, cls):
+    def init_view_collection(self, cls: Type[View]):
         """
         Init collection for View
 
