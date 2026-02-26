@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
 
 from beanie import BackLink, Link, PydanticObjectId
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
     DocumentTestModelWithSoftDelete,
     DocumentWithBackLink,
@@ -34,10 +33,6 @@ def data_maker_backlink_pair():
     return link_doc, back_link_doc
 
 
-@pytest.mark.skipif(
-    not IS_PYDANTIC_V2,
-    reason="model dumping support is more complete with pydantic v2",
-)
 def test_id_types_preserved_when_dumping_to_python():
     dumped = data_maker().model_dump(mode="python")
     assert isinstance(dumped["my_id"], PydanticObjectId)
