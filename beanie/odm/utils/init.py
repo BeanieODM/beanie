@@ -64,9 +64,7 @@ class Initializer:
         database: AsyncDatabase = None,
         connection_string: Optional[str] = None,
         document_models: Optional[
-            Sequence[
-                Union[Type["DocType"], Type["UnionDocType"], Type["View"], str]
-            ]
+            Sequence[Union[Type["DocType"], Type["UnionDocType"], Type["View"], str]]
         ] = None,
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
@@ -91,6 +89,8 @@ class Initializer:
         self.allow_index_dropping = allow_index_dropping
         self.skip_indexes = skip_indexes
         self.recreate_views = recreate_views
+
+        self.models_with_updated_forward_refs: List[type[BaseModel]] = []
 
         if (connection_string is None and database is None) or (
             connection_string is not None and database is not None
@@ -127,9 +127,7 @@ class Initializer:
 
         self.fill_docs_registry()
 
-        self.document_models.sort(
-            key=lambda val: sort_order[val.get_model_type()]
-        )
+        self.document_models.sort(key=lambda val: sort_order[val.get_model_type()])
 
         self._database_major_version: int = -1
         self._existing_collections: list[str] = []
@@ -178,9 +176,7 @@ class Initializer:
                 f"module '{module_name}' has no class called '{class_name}'"
             )
 
-    def init_settings(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
-    ):
+    def init_settings(self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]):
         """
         Init Settings
 
@@ -199,9 +195,7 @@ class Initializer:
                 if not attr.startswith("__")
             }
         if issubclass(cls, Document):
-            cls._document_settings = parse_model(
-                DocumentSettings, settings_vars
-            )
+            cls._document_settings = parse_model(DocumentSettings, settings_vars)
         if issubclass(cls, View):
             cls._settings = parse_model(ViewSettings, settings_vars)
         if issubclass(cls, UnionDoc):
@@ -209,9 +203,7 @@ class Initializer:
 
     # General. Relations
 
-    def detect_link(
-        self, field: FieldInfo, field_name: str
-    ) -> Optional[LinkInfo]:
+    def detect_link(self, field: FieldInfo, field_name: str) -> Optional[LinkInfo]:
         """
         It detects link and returns LinkInfo if any found.
 
@@ -290,10 +282,7 @@ class Initializer:
                 optional_origin = get_origin(optional)
                 optional_args = get_args(optional)
 
-                if (
-                    isinstance(optional, _GenericAlias)
-                    and optional.__origin__ is cls
-                ):
+                if isinstance(optional, _GenericAlias) and optional.__origin__ is cls:
                     if cls is Link:
                         return LinkInfo(
                             field_name=field_name,
@@ -354,9 +343,7 @@ class Initializer:
             if link_info.nested_links is None:
                 link_info.nested_links = {}
             link_info.nested_links[k] = nested_link_info
-            new_depth = (
-                current_depth - 1 if current_depth is not None else None
-            )
+            new_depth = current_depth - 1 if current_depth is not None else None
             self.check_nested_links(nested_link_info, current_depth=new_depth)
 
     # Document
@@ -388,11 +375,25 @@ class Initializer:
                 expiration_time=cls.get_settings().cache_expiration_time,
             )
 
+    def update_forward_refs(self, cls: Type[BaseModel]) -> None:
+        """
+        Update forward refs
+        :param cls: Type[BaseModel] - class to update forward refs
+        :return: None
+        """
+        if cls not in self.models_with_updated_forward_refs:
+            # Rebuilding the model triggers alias generation etc.
+            cls.model_rebuild()
+            self.models_with_updated_forward_refs.append(cls)
+
     def init_document_fields(self, cls) -> None:
         """
         Init class fields
         :return: None
         """
+
+        self.update_forward_refs(cls)
+
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
@@ -400,17 +401,13 @@ class Initializer:
             setattr(cls, k, ExpressionField(path))
 
             link_info = self.detect_link(v, k)
-            depth_level = cls.get_settings().max_nesting_depths_per_field.get(
-                k, None
-            )
+            depth_level = cls.get_settings().max_nesting_depths_per_field.get(k, None)
             if depth_level is None:
                 depth_level = cls.get_settings().max_nesting_depth
             if link_info is not None:
                 if depth_level > 0 or depth_level is None:
                     cls._link_fields[k] = link_info
-                    self.check_nested_links(
-                        link_info, current_depth=depth_level
-                    )
+                    self.check_nested_links(link_info, current_depth=depth_level)
                 elif depth_level <= 0:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
@@ -448,9 +445,7 @@ class Initializer:
 
         if document_settings.union_doc is not None:
             name = cls.get_settings().name or cls.__name__
-            document_settings.name = document_settings.union_doc.register_doc(
-                name, cls
-            )
+            document_settings.name = document_settings.union_doc.register_doc(name, cls)
             document_settings.union_doc_alias = name
 
         # set a name
@@ -459,10 +454,7 @@ class Initializer:
             document_settings.name = cls.__name__
 
         # check mongodb version fits
-        if (
-            document_settings.timeseries is not None
-            and cls._database_major_version < 5
-        ):
+        if document_settings.timeseries is not None and cls._database_major_version < 5:
             raise MongoDBVersionError(
                 "Timeseries are supported by MongoDB version 5 and higher"
             )
@@ -473,9 +465,7 @@ class Initializer:
             and document_settings.name not in self._existing_collections
         ):
             collection = await self.database.create_collection(
-                **document_settings.timeseries.build_query(
-                    document_settings.name
-                )
+                **document_settings.timeseries.build_query(document_settings.name)
             )
         else:
             collection = self.database[document_settings.name]
@@ -491,9 +481,7 @@ class Initializer:
 
         index_information = await collection.index_information()
 
-        old_indexes = IndexModelField.from_pymongo_index_information(
-            index_information
-        )
+        old_indexes = IndexModelField.from_pymongo_index_information(index_information)
         new_indexes = []
 
         # Indexed field wrapped with Indexed()
@@ -521,18 +509,13 @@ class Initializer:
             result: List[IndexModelField] = []
             for subclass in reversed(cls.mro()):
                 if issubclass(subclass, Document) and not subclass == Document:
-                    if (
-                        subclass not in self.inited_classes
-                        and not subclass == cls
-                    ):
+                    if subclass not in self.inited_classes and not subclass == cls:
                         await self.init_class(subclass)
                     if subclass.get_settings().indexes:
                         result = IndexModelField.merge_indexes(
                             result, subclass.get_settings().indexes
                         )
-            found_indexes = IndexModelField.merge_indexes(
-                found_indexes, result
-            )
+            found_indexes = IndexModelField.merge_indexes(found_indexes, result)
 
         else:
             if document_settings.indexes:
@@ -545,9 +528,7 @@ class Initializer:
         # delete indexes
         # Only drop indexes if the user specifically allows for it
         if allow_index_dropping:
-            for index in IndexModelField.list_difference(
-                old_indexes, new_indexes
-            ):
+            for index in IndexModelField.list_difference(old_indexes, new_indexes):
                 await collection.drop_index(index.name)
 
         # create indices
@@ -630,17 +611,13 @@ class Initializer:
             path = v.alias or k
             setattr(cls, k, ExpressionField(path))
             link_info = self.detect_link(v, k)
-            depth_level = cls.get_settings().max_nesting_depths_per_field.get(
-                k, None
-            )
+            depth_level = cls.get_settings().max_nesting_depths_per_field.get(k, None)
             if depth_level is None:
                 depth_level = cls.get_settings().max_nesting_depth
             if link_info is not None:
                 if depth_level > 0:
                     cls._link_fields[k] = link_info
-                    self.check_nested_links(
-                        link_info, current_depth=depth_level
-                    )
+                    self.check_nested_links(link_info, current_depth=depth_level)
                 elif depth_level <= 0:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
@@ -675,10 +652,7 @@ class Initializer:
         self.init_view_fields(cls)
         self.init_cache(cls)
 
-        if (
-            self.recreate_views
-            or cls._settings.name not in self._existing_collections
-        ):
+        if self.recreate_views or cls._settings.name not in self._existing_collections:
             if cls._settings.name in self._existing_collections:
                 await cls.get_pymongo_collection().drop()
 
@@ -722,9 +696,7 @@ class Initializer:
 
     # Final
 
-    async def init_class(
-        self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]
-    ):
+    async def init_class(self, cls: Union[Type[Document], Type[View], Type[UnionDoc]]):
         """
         Init Document, View or UnionDoc based class.
 
