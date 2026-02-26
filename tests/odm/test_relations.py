@@ -656,10 +656,6 @@ class TestOther:
 
         assert addresses_count[0] == {"count": 10}
 
-    @pytest.mark.skipif(
-        not IS_PYDANTIC_V2,
-        reason="model dumping support is more complete with pydantic v2",
-    )
     async def test_dump_model_with_fetched_backlink(
         self, link_and_backlink_doc_pair
     ):
