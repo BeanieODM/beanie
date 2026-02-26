@@ -45,10 +45,6 @@ def test_id_types_serialized_when_dumping_to_json():
     assert isinstance(dumped["fake_doc"]["id"], str)
 
 
-@pytest.mark.skipif(
-    not IS_PYDANTIC_V2,
-    reason="model dumping support is more complete with pydantic v2",
-)
 def test_backlink_serialization_to_json_when_fetched():
     link_doc, back_link_doc = data_maker_backlink_pair()
 
