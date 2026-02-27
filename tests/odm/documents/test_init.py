@@ -1,7 +1,10 @@
+from importlib.metadata import version
+
 import pytest
 from pymongo import IndexModel
 
 from beanie import Document, Indexed, init_beanie
+from beanie import __version__ as beanie_version
 from beanie.exceptions import CollectionWasNotInitialized
 from beanie.odm.utils.projection import get_projection
 from tests.odm.models import (
@@ -60,6 +63,38 @@ async def test_init_wrong_params(settings, db):
 
     with pytest.raises(ValueError):
         await init_beanie(connection_string=settings.mongodb_dsn)
+
+
+async def test_metadata_connection_string(settings):
+    class NewDocument(Document):
+        test_str: str
+
+    await init_beanie(
+        connection_string=settings.mongodb_dsn, document_models=[NewDocument]
+    )
+
+    metadata = NewDocument.get_pymongo_collection().database.client.options.pool_options.metadata
+    assert (
+        "beanie" in metadata["driver"]["name"]
+        and beanie_version in metadata["driver"]["version"]
+    )
+
+
+@pytest.mark.skipif(
+    version("pymongo") < "4.14",
+    reason="append_metadata was added in PyMongo 4.14",
+)
+async def test_metadata_database(db):
+    class NewDocument(Document):
+        test_str: str
+
+    await init_beanie(database=db, document_models=[NewDocument])
+
+    metadata = NewDocument.get_pymongo_collection().database.client.options.pool_options.metadata
+    assert (
+        "beanie" in metadata["driver"]["name"]
+        and beanie_version in metadata["driver"]["version"]
+    )
 
 
 async def test_collection_with_custom_name():
