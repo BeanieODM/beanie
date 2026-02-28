@@ -103,7 +103,9 @@ class Color:
     ) -> core_schema.CoreSchema:
         return core_schema.json_or_python_schema(
             json_schema=core_schema.str_schema(),
-            python_schema=core_schema.no_info_plain_validator_function(cls._validate),
+            python_schema=core_schema.no_info_plain_validator_function(
+                cls._validate
+            ),
         )
 
 
@@ -783,7 +785,9 @@ class BDocument(RootDocument):
 
 class StateAndDecimalFieldModel(Document):
     amt: DecimalAnnotation
-    other_amt: DecimalAnnotation = Field(decimal_places=1, multiple_of=0.5, default=0)
+    other_amt: DecimalAnnotation = Field(
+        decimal_places=1, multiple_of=0.5, default=0
+    )
 
     class Settings:
         name = "amounts"
@@ -852,7 +856,9 @@ class DocWithCollectionInnerClass(Document):
 
 class DocumentWithDecimalField(Document):
     amt: DecimalAnnotation
-    other_amt: DecimalAnnotation = Field(decimal_places=1, multiple_of=0.5, default=0)
+    other_amt: DecimalAnnotation = Field(
+        decimal_places=1, multiple_of=0.5, default=0
+    )
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -863,7 +869,9 @@ class DocumentWithDecimalField(Document):
         use_revision = True
         use_state_management = True
         indexes = [
-            pymongo.IndexModel(keys=[("amt", pymongo.ASCENDING)], name="amt_ascending"),
+            pymongo.IndexModel(
+                keys=[("amt", pymongo.ASCENDING)], name="amt_ascending"
+            ),
             pymongo.IndexModel(
                 keys=[("other_amt", pymongo.DESCENDING)],
                 name="other_amt_descending",
@@ -944,8 +952,8 @@ class DocumentWithOptionalListBackLink(Document):
 
 
 class DocumentWithUnionTypeExpressionOptionalBackLink(Document):
-    back_link_list: type_union(List[BackLink[DocumentWithListLink]], None) = Field(
-        json_schema_extra={"original_field": "link"}
+    back_link_list: type_union(List[BackLink[DocumentWithListLink]], None) = (
+        Field(json_schema_extra={"original_field": "link"})
     )
     back_link: type_union(BackLink[DocumentWithLink], None) = Field(
         json_schema_extra={"original_field": "link"}
@@ -1064,7 +1072,9 @@ class DocumentWithIndexedObjectId(Document):
 class DocumentToTestSync(Document):
     s: str = "TEST"
     i: int = 1
-    n: Nested = Nested(integer=1, option_1=Option1(s="test"), union=Option1(s="test"))
+    n: Nested = Nested(
+        integer=1, option_1=Option1(s="test"), union=Option1(s="test")
+    )
     o: Optional[Option2] = None
     d: Dict[str, Any] = {}
 
