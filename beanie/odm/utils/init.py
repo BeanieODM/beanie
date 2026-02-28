@@ -670,6 +670,8 @@ class Initializer:
         :param cls:
         :return:
         """
+        cls._database_major_version = self._database_major_version
+
         self.init_settings(cls)
         self.init_view_collection(cls)
         self.init_view_fields(cls)

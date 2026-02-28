@@ -27,6 +27,9 @@ class View(
 
     """
 
+    # Database
+    _database_major_version: ClassVar[int] = 4
+
     # Relations
     _link_fields: ClassVar[Optional[Dict[str, LinkInfo]]] = None
 
