@@ -45,7 +45,7 @@ def get_top_level_nones(
     # pipeline - including it here would conflict with the $set that
     # SetRevisionId produces, causing a MongoDB OperationFailure.
     if document.get_settings().use_revision:
-        exclude = exclude | {"revision_id"}
+        exclude.add("revision_id")
     dictionary = get_dict(document, exclude=exclude, keep_nulls=True)
     return {k: v for k, v in dictionary.items() if v is None}
 
