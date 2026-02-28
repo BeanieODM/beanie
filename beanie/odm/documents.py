@@ -20,15 +20,15 @@ from typing import (
 )
 from uuid import UUID, uuid4
 
-from bson import DBRef, ObjectId
+from bson import DBRef
 from lazy_model import LazyModel
 from pydantic import (
     ConfigDict,
     Field,
     PrivateAttr,
     ValidationError,
+    model_validator,
 )
-from pydantic.class_validators import root_validator
 from pydantic.main import BaseModel
 from pymongo import InsertOne
 from pymongo.asynchronous.client_session import AsyncClientSession
@@ -93,7 +93,6 @@ from beanie.odm.settings.document import DocumentSettings
 from beanie.odm.utils.dump import get_dict, get_top_level_nones
 from beanie.odm.utils.parsing import apply_changes, merge_models
 from beanie.odm.utils.pydantic import (
-    IS_PYDANTIC_V2,
     get_extra_field_info,
     get_field_type,
     get_model_dump,
@@ -109,9 +108,6 @@ from beanie.odm.utils.state import (
 )
 from beanie.odm.utils.typing import extract_id_class
 from beanie.odm.utils.update_merge import merge_update_expressions
-
-if IS_PYDANTIC_V2:
-    from pydantic import model_validator
 
 if TYPE_CHECKING:
     from beanie.odm.views import View
@@ -138,8 +134,7 @@ def json_schema_extra(schema: Dict[str, Any], model: Type["Document"]) -> None:
         k = field.alias or k
         if k not in properties:
             continue
-        field_info = field if IS_PYDANTIC_V2 else field.field_info
-        if field_info.exclude:
+        if field.exclude:
             del properties[k]
 
 
@@ -171,19 +166,11 @@ class Document(
     Mapped to the PydanticObjectId class
     """
 
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            json_schema_extra=json_schema_extra,
-            populate_by_name=True,
-            alias_generator=document_alias_generator,
-        )
-    else:
-
-        class Config:
-            json_encoders = {ObjectId: str}
-            allow_population_by_field_name = True
-            fields = {"id": "_id"}
-            schema_extra = staticmethod(json_schema_extra)
+    model_config = ConfigDict(
+        json_schema_extra=json_schema_extra,
+        populate_by_name=True,
+        alias_generator=document_alias_generator,
+    )
 
     id: Optional[PydanticObjectId] = Field(
         default=None, description="MongoDB document ObjectID"
@@ -234,17 +221,9 @@ class Document(
                     ]
         return values
 
-    if IS_PYDANTIC_V2:
-
-        @model_validator(mode="before")
-        def fill_back_refs(cls, values):
-            return cls._fill_back_refs(values)
-
-    else:
-
-        @root_validator(pre=True)
-        def fill_back_refs(cls, values):
-            return cls._fill_back_refs(values)
+    @model_validator(mode="before")
+    def fill_back_refs(cls, values):
+        return cls._fill_back_refs(values)
 
     @classmethod
     async def get(
@@ -294,7 +273,7 @@ class Document(
         :return: None
         """
         if (
-            merge_strategy == MergeStrategy.local
+            merge_strategy is MergeStrategy.local
             and self.get_settings().use_state_management is False
         ):
             raise ValueError(
@@ -306,7 +285,7 @@ class Document(
         if document is None:
             raise DocumentNotFound
 
-        if merge_strategy == MergeStrategy.local:
+        if merge_strategy is MergeStrategy.local:
             original_changes = self.get_changes()
             new_state = document.get_saved_state()
             if new_state is None:
@@ -316,7 +295,7 @@ class Document(
             )
             merge_models(self, document)
             apply_changes(changes_to_apply, self)
-        elif merge_strategy == MergeStrategy.remote:
+        elif merge_strategy is MergeStrategy.remote:
             merge_models(self, document)
         else:
             raise ValueError("Invalid merge strategy")
@@ -339,7 +318,7 @@ class Document(
         """
         if self.get_settings().use_revision:
             self.revision_id = uuid4()
-        if link_rule == WriteRules.WRITE:
+        if link_rule is WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
@@ -417,7 +396,7 @@ class Document(
         if bulk_writer is None:
             return await document.insert(link_rule=link_rule, session=session)
         else:
-            if link_rule == WriteRules.WRITE:
+            if link_rule is WriteRules.WRITE:
                 raise NotSupported(
                     "Cascade insert with bulk writing not supported"
                 )
@@ -449,7 +428,7 @@ class Document(
         :param link_rule: InsertRules - how to manage link fields
         :return: InsertManyResult
         """
-        if link_rule == WriteRules.WRITE:
+        if link_rule is WriteRules.WRITE:
             raise NotSupported(
                 "Cascade insert not supported for insert many method"
             )
@@ -488,10 +467,10 @@ class Document(
         if self.id is None:
             raise ValueError("Document must have an id")
 
-        if bulk_writer is not None and link_rule != WriteRules.DO_NOTHING:
+        if bulk_writer is not None and link_rule is not WriteRules.DO_NOTHING:
             raise NotSupported
 
-        if link_rule == WriteRules.WRITE:
+        if link_rule is WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
@@ -567,7 +546,7 @@ class Document(
         :param ignore_revision: bool - do force save.
         :return: self
         """
-        if link_rule == WriteRules.WRITE:
+        if link_rule is WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
@@ -600,15 +579,20 @@ class Document(
                             )
 
         if self.get_settings().keep_nulls is False:
-            return await self.update(
+            arguments: list[Union[SetOperator, Unset]] = [
                 SetOperator(
                     get_dict(
                         self,
                         to_db=True,
                         keep_nulls=self.get_settings().keep_nulls,
                     )
-                ),
-                Unset(get_top_level_nones(self)),
+                )
+            ]
+            nones = get_top_level_nones(self)
+            if nones:
+                arguments.append(Unset(nones))
+            return await self.update(
+                *arguments,
                 session=session,
                 ignore_revision=ignore_revision,
                 upsert=True,
@@ -651,9 +635,12 @@ class Document(
             return None
         changes = self.get_changes()
         if self.get_settings().keep_nulls is False:
+            arguments: list[Union[SetOperator, Unset]] = [SetOperator(changes)]
+            nones = get_top_level_nones(self)
+            if nones:
+                arguments.append(Unset(nones))
             return await self.update(
-                SetOperator(changes),
-                Unset(get_top_level_nones(self)),
+                *arguments,
                 ignore_revision=ignore_revision,
                 session=session,
                 bulk_writer=bulk_writer,
@@ -929,7 +916,7 @@ class Document(
         :return: Optional[DeleteResult] - pymongo DeleteResult instance.
         """
 
-        if link_rule == DeleteRules.DELETE_LINKS:
+        if link_rule is DeleteRules.DELETE_LINKS:
             link_fields = self.get_link_fields()
             if link_fields is not None:
                 for field_info in link_fields.values():
@@ -1045,25 +1032,20 @@ class Document(
     @property
     @saved_state_needed
     def is_changed(self) -> bool:
-        if self._saved_state == get_dict(
+        return self._saved_state != get_dict(
             self,
             to_db=True,
             keep_nulls=self.get_settings().keep_nulls,
             exclude={"revision_id"},
-        ):
-            return False
-        return True
+        )
 
     @property
     @saved_state_needed
     @previous_saved_state_needed
     def has_changed(self) -> bool:
-        if (
-            self._previous_saved_state is None
-            or self._previous_saved_state == self._saved_state
-        ):
+        if self._previous_saved_state is None:
             return False
-        return True
+        return self._previous_saved_state != self._saved_state
 
     def _collect_updates(
         self, old_dict: Dict[str, Any], new_dict: Dict[str, Any]
@@ -1169,7 +1151,7 @@ class Document(
             try:
                 parse_model(cls, json_document)
             except ValidationError as e:
-                if inspection_result.status == InspectionStatuses.OK:
+                if inspection_result.status is InspectionStatuses.OK:
                     inspection_result.status = InspectionStatuses.FAIL
                 inspection_result.errors.append(
                     InspectionError(
@@ -1192,16 +1174,10 @@ class Document(
             DeprecationWarning,
             stacklevel=2,
         )
-        if IS_PYDANTIC_V2:
-            for name, field in hidden_fields:
-                field.exclude = True
-                del field.json_schema_extra["hidden"]
-            cls.model_rebuild(force=True)
-        else:
-            for name, field in hidden_fields:
-                field.field_info.exclude = True
-                del field.field_info.extra["hidden"]
-                cls.__exclude_fields__[name] = True
+        for name, field in hidden_fields:
+            field.exclude = True
+            del field.json_schema_extra["hidden"]
+        cls.model_rebuild(force=True)
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args: Any, **kwargs: Any):
@@ -1283,7 +1259,6 @@ class Document(
             An instance of BulkWriter configured with the provided settings.
 
         Example Usage:
-        --------------
         This method is typically used within an asynchronous context manager.
 
         .. code-block:: python
@@ -1297,9 +1272,32 @@ class Document(
 
 
 class DocumentWithSoftDelete(Document):
+    """
+    Implements **soft deletion** for Beanie documents.
+
+    Instead of permanently removing a document from the database,
+    this subclass marks the document as deleted by setting the
+    optional ``deleted_at`` field to the current UTC timestamp. Normal query
+    operations automatically exclude such documents, while special
+    query methods can retrieve them when needed.
+
+    Fields:
+
+    - `deleted_at` - marks the document as deleted by setting this field
+    to the current UTC timestamp
+
+    """
+
     deleted_at: Optional[datetime] = None
 
     def is_deleted(self) -> bool:
+        """
+        Returns whether the document has been soft-deleted.
+
+        :returns: bool
+            ``True`` if the document's ``deleted_at`` field is set;
+            otherwise ``False``.
+        """
         return self.deleted_at is not None
 
     async def hard_delete(
@@ -1310,6 +1308,22 @@ class DocumentWithSoftDelete(Document):
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs: Any,
     ) -> Optional[DeleteResult]:
+        """
+        Permanently deletes the document from the database, unlike :meth:`delete`.
+
+        :param session: Optional[AsyncClientSession]
+            The MongoDB async session used for the operation.
+        :param bulk_writer: Optional[BulkWriter]
+            A bulk writer used for batching multiple write operations.
+        :param link_rule: DeleteRules
+            Determines how linked documents are handled. Defaults to ``DeleteRules.DO_NOTHING``.
+        :param skip_actions: Optional[List[Union[ActionDirections, str]]]
+            A list of lifecycle actions to skip during deletion.
+        :param **pymongo_kwargs: Any
+            Additional keyword arguments forwarded to PyMongo.
+        :returns: Optional[DeleteResult]
+            The result of the PyMongo delete operation, if available.
+        """
         return await super().delete(
             session=session,
             bulk_writer=bulk_writer,
@@ -1326,6 +1340,27 @@ class DocumentWithSoftDelete(Document):
         skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
         **pymongo_kwargs,
     ) -> Optional[DeleteResult]:
+        """
+        Overrides the base :meth:`delete`.
+        Marks the document as deleted by setting the ``deleted_at`` timestamp.
+
+
+        The document remains in the database but is excluded from all
+        standard queries such as :meth:`find`, :meth:`find_one`, and
+        :meth:`find_many`.
+
+        :param session: Optional[AsyncClientSession]
+            The MongoDB async session used for the operation.
+        :param bulk_writer: Optional[BulkWriter]
+            A bulk writer used for batching multiple write operations.
+        :param link_rule: DeleteRules
+            Determines how linked documents are handled. Defaults to ``DeleteRules.DO_NOTHING``.
+        :param skip_actions: Optional[List[Union[ActionDirections, str]]]
+            A list of lifecycle actions to skip during deletion.
+        :param **pymongo_kwargs: Any
+            Additional keyword arguments forwarded to PyMongo.
+        :returns: None
+        """
         self.deleted_at = datetime.now(tz=timezone.utc)
         await self.save()
         return None
@@ -1347,6 +1382,12 @@ class DocumentWithSoftDelete(Document):
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
+        """
+        Returns a query object including both active and soft-deleted documents.
+
+        :returns: ``FindMany``
+            A query object that includes both deleted and non-deleted documents.
+        """
         return cls._find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
@@ -1379,6 +1420,16 @@ class DocumentWithSoftDelete(Document):
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindMany[FindType], FindMany["DocumentProjectionType"]]:
+        """
+        Returns a query object that excludes soft-deleted documents.
+
+        This overrides the base :meth:`find_many` method by automatically
+        applying a filter ``{"deleted_at": None}``.
+
+        :returns: ``FindMany``
+            A query object for fetching only non-deleted documents.
+
+        """
         args = cls._add_class_id_filter(args, with_children) + (
             {"deleted_at": None},
         )
@@ -1410,6 +1461,16 @@ class DocumentWithSoftDelete(Document):
         nesting_depths_per_field: Optional[Dict[str, int]] = None,
         **pymongo_kwargs: Any,
     ) -> Union[FindOne[FindType], FindOne["DocumentProjectionType"]]:
+        """
+        Returns a single document that has not been soft-deleted.
+
+        This overrides the base :meth:`find_one` method by automatically
+        applying a filter ``{"deleted_at": None}``.
+
+        :returns: ``FindOne``
+            A query object for a single non-deleted document.
+
+        """
         args = cls._add_class_id_filter(args, with_children) + (
             {"deleted_at": None},
         )

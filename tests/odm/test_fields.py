@@ -12,7 +12,6 @@ from beanie.exceptions import CollectionWasNotInitialized
 from beanie.odm.fields import PydanticObjectId
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
     DocumentTestModel,
     DocumentTestModelIndexFlagsAnnotated,
@@ -116,22 +115,15 @@ async def test_excluded(document):
     await doc.insert()
     stored_doc = await DocumentWithExcludedField.get(doc.id)
     assert stored_doc is not None
-    if IS_PYDANTIC_V2:
-        assert "included_field" in stored_doc.model_dump()
-        assert "excluded_field" not in stored_doc.model_dump()
-    else:
-        assert "included_field" in stored_doc.dict()
-        assert "excluded_field" not in stored_doc.dict()
+    assert "included_field" in stored_doc.model_dump()
+    assert "excluded_field" not in stored_doc.model_dump()
 
 
 async def test_hidden(deprecated_init_beanie):
     document = DocumentWithDeprecatedHiddenField(test_hidden=["abc", "def"])
     await document.insert()
     document = await DocumentWithDeprecatedHiddenField.find_one()
-    if IS_PYDANTIC_V2:
-        assert "test_hidden" not in document.model_dump()
-    else:
-        assert "test_hidden" not in document.dict()
+    assert "test_hidden" not in document.model_dump()
 
 
 def test_revision_id_not_in_schema():
@@ -142,10 +134,7 @@ def test_revision_id_not_in_schema():
 
         bar: int = 3
 
-    if IS_PYDANTIC_V2:
-        schema = Foo.model_json_schema()
-    else:
-        schema = Foo.schema()
+    schema = Foo.model_json_schema()
     assert "revision_id" not in schema["properties"]
 
     # check that the document has not been initialized,
@@ -157,10 +146,7 @@ def test_revision_id_not_in_schema():
 @pytest.mark.parametrize("exclude", [{"test_int"}, {"test_doc": {"test_int"}}])
 async def test_param_exclude(document, exclude):
     document = await DocumentTestModel.find_one()
-    if IS_PYDANTIC_V2:
-        doc_dict = document.model_dump(exclude=exclude)
-    else:
-        doc_dict = document.dict(exclude=exclude)
+    doc_dict = document.model_dump(exclude=exclude)
     if isinstance(exclude, AbstractSet):
         for k in exclude:
             assert k not in doc_dict
