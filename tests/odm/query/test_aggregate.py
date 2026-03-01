@@ -135,7 +135,7 @@ async def test_aggregate_pymongo_kwargs(preset_documents):
         )
 
 
-async def test_clone(preset_documents):
+def test_clone(preset_documents):
     q = Sample.find(Sample.increment >= 4).aggregate(
         [{"$group": {"_id": "$string", "total": {"$sum": "$integer"}}}]
     )
@@ -154,9 +154,7 @@ async def test_clone(preset_documents):
 
 @pytest.mark.parametrize("text_query_count", [0, 1, 2])
 @pytest.mark.parametrize("non_text_query_count", [0, 1, 2])
-async def test_with_text_queries(
-    text_query_count: int, non_text_query_count: int
-):
+def test_with_text_queries(text_query_count: int, non_text_query_count: int):
     text_query = {"$text": {"$search": "text_search"}}
     non_text_query = {"s": "test_string"}
     aggregation_pipeline = [{"$count": "count"}]

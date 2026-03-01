@@ -2,7 +2,6 @@ import logging
 import types
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
-from typing import List, Optional, Type
 
 from pymongo.asynchronous.client_session import AsyncClientSession
 from pymongo.asynchronous.database import AsyncDatabase
@@ -24,10 +23,10 @@ class MigrationNode:
     def __init__(
         self,
         name: str,
-        forward_class: Optional[Type[Document]] = None,
-        backward_class: Optional[Type[Document]] = None,
-        next_migration: Optional["MigrationNode"] = None,
-        prev_migration: Optional["MigrationNode"] = None,
+        forward_class: type[Document] | None = None,
+        backward_class: type[Document] | None = None,
+        next_migration: "MigrationNode | None" = None,
+        prev_migration: "MigrationNode | None" = None,
     ):
         """
         Node of the migration linked list
@@ -46,9 +45,9 @@ class MigrationNode:
 
     @staticmethod
     async def clean_current_migration():
-        await MigrationLog.find(
-            {"is_current": True},
-        ).update({"$set": {"is_current": False}})
+        await MigrationLog.find({"is_current": True}).update(
+            {"$set": {"is_current": False}}
+        )
 
     async def update_current_migration(self):
         """
@@ -88,7 +87,7 @@ class MigrationNode:
                         break
             else:
                 logger.info(f"Running {mode.distance} migrations forward")
-                for i in range(mode.distance):
+                for _ in range(mode.distance):
                     await migration_node.run_forward(
                         allow_index_dropping=allow_index_dropping,
                         use_transaction=use_transaction,
@@ -110,7 +109,7 @@ class MigrationNode:
                         break
             else:
                 logger.info(f"Running {mode.distance} migrations backward")
-                for i in range(mode.distance):
+                for _ in range(mode.distance):
                     await migration_node.run_backward(
                         allow_index_dropping=allow_index_dropping,
                         use_transaction=use_transaction,
@@ -145,7 +144,7 @@ class MigrationNode:
             await self.clean_current_migration()
 
     async def run_migration_class(
-        self, cls: Type, allow_index_dropping: bool, use_transaction: bool
+        self, cls: type, allow_index_dropping: bool, use_transaction: bool
     ):
         """
         Run Backward or Forward migration class
@@ -177,7 +176,7 @@ class MigrationNode:
 
     async def run_migrations(
         self,
-        migrations: List[BaseMigrationController],
+        migrations: list[BaseMigrationController],
         db: AsyncDatabase,
         allow_index_dropping: bool,
         session: AsyncClientSession,
@@ -190,8 +189,7 @@ class MigrationNode:
                     allow_index_dropping=allow_index_dropping,
                 )  # TODO this is slow
             logger.info(
-                f"Running migration {migration.function.__name__} "
-                f"from module {self.name}"
+                f"Running migration {migration.function.__name__} from module {self.name}"
             )
             await migration.run(session=session)
 

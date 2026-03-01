@@ -7,7 +7,7 @@ from beanie.odm.queries.update import UpdateResponse
 from tests.odm.models import Sample
 
 
-async def test_update_query():
+def test_update_query():
     q = (
         Sample.find_many(Sample.integer == 1)
         .update(Set({Sample.integer: 10}))
@@ -54,7 +54,7 @@ async def test_update_many(preset_documents):
         Sample.find_many(Sample.increment > 4)
         .find_many(Sample.nested.optional == None)
         .update(Set({Sample.increment: 100}))
-    )  # noqa
+    )
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3
     for sample in result:
@@ -66,7 +66,7 @@ async def test_update_many_linked_method(preset_documents):
         Sample.find_many(Sample.increment > 4)
         .find_many(Sample.nested.optional == None)
         .update_many(Set({Sample.increment: 100}))
-    )  # noqa
+    )
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3
     for sample in result:
@@ -134,7 +134,7 @@ async def test_update_many_with_session(preset_documents, session):
     )
     assert q.session == session
 
-    await q  # noqa
+    await q
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3
     for sample in result:

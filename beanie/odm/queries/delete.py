@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Dict, Generator, Mapping, Optional, Type
+from collections.abc import Generator, Mapping
+from typing import TYPE_CHECKING, Any
 
 from pymongo import DeleteMany as DeleteManyPyMongo
 from pymongo import DeleteOne as DeleteOnePyMongo
@@ -20,22 +21,22 @@ class DeleteQuery(SessionMethods, CloneInterface):
 
     def __init__(
         self,
-        document_model: Type["DocType"],
+        document_model: type["DocType"],
         find_query: Mapping[str, Any],
-        bulk_writer: Optional[BulkWriter] = None,
+        bulk_writer: BulkWriter | None = None,
         **pymongo_kwargs: Any,
     ):
         self.document_model = document_model
         self.find_query = find_query
-        self.session: Optional[AsyncClientSession] = None
+        self.session: AsyncClientSession | None = None
         self.bulk_writer = bulk_writer
-        self.pymongo_kwargs: Dict[str, Any] = pymongo_kwargs
+        self.pymongo_kwargs: dict[str, Any] = pymongo_kwargs
 
 
 class DeleteMany(DeleteQuery):
     def __await__(
         self,
-    ) -> Generator[DeleteResult, None, Optional[DeleteResult]]:
+    ) -> Generator[DeleteResult, None, DeleteResult | None]:
         """
         Run the query
         :return:
@@ -61,7 +62,7 @@ class DeleteMany(DeleteQuery):
 class DeleteOne(DeleteQuery):
     def __await__(
         self,
-    ) -> Generator[DeleteResult, None, Optional[DeleteResult]]:
+    ) -> Generator[DeleteResult, None, DeleteResult | None]:
         """
         Run the query
         :return:

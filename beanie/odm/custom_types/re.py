@@ -1,8 +1,8 @@
 import re
+from typing import Annotated
 
 import bson
 import pydantic
-from typing_extensions import Annotated
 
 Pattern = Annotated[
     re.Pattern,

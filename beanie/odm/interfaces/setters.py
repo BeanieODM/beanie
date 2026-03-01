@@ -1,10 +1,10 @@
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from beanie.odm.settings.document import DocumentSettings
 
 
 class SettersInterface:
-    _document_settings: ClassVar[Optional[DocumentSettings]]
+    _document_settings: ClassVar[DocumentSettings | None]
 
     @classmethod
     def set_collection(cls, collection):

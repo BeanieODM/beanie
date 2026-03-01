@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Type, Union
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel
 
@@ -41,9 +41,7 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
             left.__setattr__(k, right_value)
 
 
-def apply_changes(
-    changes: Dict[str, Any], target: Union[BaseModel, Dict[str, Any]]
-):
+def apply_changes(changes: dict[str, Any], target: BaseModel | dict[str, Any]):
     for key, value in changes.items():
         if "." in key:
             key_parts = key.split(".")
@@ -88,7 +86,7 @@ def save_state(item: BaseModel):
 
 
 def parse_obj(
-    model: Union[Type[BaseModel], Type["Document"]],
+    model: type[BaseModel] | type["Document"],
     data: Any,
     lazy_parse: bool = False,
 ) -> BaseModel:
