@@ -34,7 +34,7 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
                 merge_models(left_value, right_value)
             continue
         if isinstance(right_value, list):
-            if any(isinstance(i, (Link, Backlink)) for i in right_value):
+            if any(isinstance(i, (Link, BackLink)) for i in right_value):
                 continue
             left.__setattr__(k, right_value)
         elif not isinstance(right_value, (Link, BackLink)):
