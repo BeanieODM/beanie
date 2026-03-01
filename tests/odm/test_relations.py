@@ -12,7 +12,6 @@ from beanie.odm.fields import (
     WriteRules,
 )
 from beanie.odm.utils.pydantic import (
-    IS_PYDANTIC_V2,
     get_model_fields,
     parse_model,
 )
@@ -170,11 +169,7 @@ class TestInsert:
         house = parse_model(House, house_not_inserted)
         await house.insert(link_rule=WriteRules.WRITE)
 
-        if IS_PYDANTIC_V2:
-            json_str = house.model_dump_json()
-        else:
-            json_str = house.json()
-        assert json_str is not None
+        assert house.model_dump_json() is not None
 
     async def test_multi_insert_links(self):
         house = House(name="random", windows=[], door=Door())
@@ -661,6 +656,20 @@ class TestOther:
 
         assert addresses_count[0] == {"count": 10}
 
+    async def test_dump_model_with_fetched_backlink(
+        self, link_and_backlink_doc_pair
+    ):
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+
+        document_with_fetched_backlinks = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True, nesting_depth=1
+        )
+
+        assert document_with_fetched_backlinks is not None
+        model_json = document_with_fetched_backlinks.model_dump(mode="json")
+
+        assert model_json["back_link"] == {"collection": "DocumentWithLink"}
+
     async def test_with_chaining_aggregation_and_text_search(self):
         # ARRANGE
         NUM_DOCS = 10
@@ -938,26 +947,16 @@ class HouseForReversedOrderInit(Document):
 class DoorForReversedOrderInit(Document):
     height: int = 2
     width: int = 1
-    if IS_PYDANTIC_V2:
-        house: BackLink[HouseForReversedOrderInit] = Field(
-            json_schema_extra={"original_field": "door"}
-        )
-    else:
-        house: BackLink[HouseForReversedOrderInit] = Field(
-            original_field="door"
-        )
+    house: BackLink[HouseForReversedOrderInit] = Field(
+        json_schema_extra={"original_field": "door"}
+    )
 
 
 class PersonForReversedOrderInit(Document):
     name: str
-    if IS_PYDANTIC_V2:
-        house: List[BackLink[HouseForReversedOrderInit]] = Field(
-            json_schema_extra={"original_field": "owners"}
-        )
-    else:
-        house: List[BackLink[HouseForReversedOrderInit]] = Field(
-            original_field="owners"
-        )
+    house: List[BackLink[HouseForReversedOrderInit]] = Field(
+        json_schema_extra={"original_field": "owners"}
+    )
 
 
 class TestDeleteBackLinks:
