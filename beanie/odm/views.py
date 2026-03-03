@@ -4,6 +4,7 @@ from typing import Any, ClassVar
 from pydantic import BaseModel
 
 from beanie.exceptions import ViewWasNotInitialized
+from beanie.odm.cache import LRUCache
 from beanie.odm.fields import Link, LinkInfo
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import DetectionInterface, ModelType
@@ -35,6 +36,9 @@ class View(
 
     # Settings
     _settings: ClassVar[ViewSettings]
+
+    # Cache
+    _cache: ClassVar[LRUCache | None] = None
 
     @classmethod
     def get_settings(cls) -> ViewSettings:

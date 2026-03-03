@@ -194,7 +194,7 @@ class Document(
             for field_name, link_info in cls._link_fields.items():
                 if (
                     link_info.link_type
-                    in [LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT]
+                    in (LinkTypes.BACK_DIRECT, LinkTypes.OPTIONAL_BACK_DIRECT)
                     and field_name not in values
                 ):
                     values[field_name] = BackLink[link_info.document_class](
@@ -202,7 +202,7 @@ class Document(
                     )
                 if (
                     link_info.link_type
-                    in [LinkTypes.BACK_LIST, LinkTypes.OPTIONAL_BACK_LIST]
+                    in (LinkTypes.BACK_LIST, LinkTypes.OPTIONAL_BACK_LIST)
                     and field_name not in values
                 ):
                     values[field_name] = [

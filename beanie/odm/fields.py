@@ -496,11 +496,7 @@ class IndexModelField:
     def list_difference(
         left: list["IndexModelField"], right: list["IndexModelField"]
     ):
-        result = []
-        for index in left:
-            if index not in right:
-                result.append(index)
-        return result
+        return [index for index in left if index not in right]
 
     @staticmethod
     def list_to_index_model(left: list["IndexModelField"]):
@@ -508,7 +504,7 @@ class IndexModelField:
 
     @classmethod
     def from_pymongo_index_information(cls, index_info: dict):
-        result = []
+        result: list[IndexModelField] = []
         for name, details in index_info.items():
             fields = details["key"]
             if ("_id", 1) in fields:

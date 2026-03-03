@@ -1,15 +1,11 @@
 import collections
 import datetime
 from datetime import timedelta, timezone
-from typing import Any
-
-from pydantic import BaseModel, Field
+from typing import Any, TypedDict
 
 
-class CachedItem(BaseModel):
-    timestamp: datetime.datetime = Field(
-        default_factory=lambda: datetime.datetime.now(tz=timezone.utc)
-    )
+class CachedItem(TypedDict):
+    timestamp: datetime.datetime
     value: Any
 
 
@@ -19,16 +15,16 @@ class LRUCache:
         self.expiration_time: timedelta = expiration_time
         self.cache: collections.OrderedDict = collections.OrderedDict()
 
-    def get(self, key) -> CachedItem | None:
+    def get(self, key: Any) -> Any | None:
         try:
             item: CachedItem = self.cache.pop(key)
             if (
-                datetime.datetime.now(tz=timezone.utc) - item.timestamp
+                datetime.datetime.now(tz=timezone.utc) - item["timestamp"]
                 > self.expiration_time
             ):
                 return None
             self.cache[key] = item
-            return item.value
+            return item["value"]
         except KeyError:
             return None
 
@@ -38,7 +34,9 @@ class LRUCache:
         except KeyError:
             if len(self.cache) >= self.capacity:
                 self.cache.popitem(last=False)
-        self.cache[key] = CachedItem(value=value)
+        self.cache[key] = CachedItem(
+            value=value, timestamp=datetime.datetime.now(tz=timezone.utc)
+        )
 
     @staticmethod
     def create_key(*args):

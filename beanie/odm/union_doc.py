@@ -4,6 +4,7 @@ from pymongo.asynchronous.client_session import AsyncClientSession
 
 from beanie.exceptions import UnionDocNotInited
 from beanie.odm.bulk import BulkWriter
+from beanie.odm.cache import LRUCache
 from beanie.odm.interfaces.aggregate import AggregateInterface
 from beanie.odm.interfaces.detector import DetectionInterface, ModelType
 from beanie.odm.interfaces.find import FindInterface
@@ -22,6 +23,9 @@ class UnionDoc(
     _document_models: ClassVar[dict[str, type] | None] = None
     _is_inited: ClassVar[bool] = False
     _settings: ClassVar[UnionDocSettings]
+
+    # Cache
+    _cache: ClassVar[LRUCache | None] = None
 
     @classmethod
     def get_settings(cls) -> UnionDocSettings:

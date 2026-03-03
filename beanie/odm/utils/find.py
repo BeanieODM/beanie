@@ -45,10 +45,10 @@ def construct_query(
         current_depth is not None and current_depth <= 0
     ):
         return
-    if link_info.link_type in [
+    if link_info.link_type in (
         LinkTypes.DIRECT,
         LinkTypes.OPTIONAL_DIRECT,
-    ]:
+    ):
         if database_major_version >= 5 or link_info.nested_links is None:
             lookup_steps = [
                 {
@@ -151,10 +151,10 @@ def construct_query(
                 )
             queries += lookup_steps
 
-    elif link_info.link_type in [
+    elif link_info.link_type in (
         LinkTypes.BACK_DIRECT,
         LinkTypes.OPTIONAL_BACK_DIRECT,
-    ]:
+    ):
         if database_major_version >= 5 or link_info.nested_links is None:
             lookup_steps = [
                 {
@@ -260,10 +260,10 @@ def construct_query(
                 )
             queries += lookup_steps
 
-    elif link_info.link_type in [
+    elif link_info.link_type in (
         LinkTypes.LIST,
         LinkTypes.OPTIONAL_LIST,
-    ]:
+    ):
         if database_major_version >= 5 or link_info.nested_links is None:
             queries.append(
                 {
@@ -310,10 +310,10 @@ def construct_query(
                 )
             queries.append(lookup_step)
 
-    elif link_info.link_type in [
+    elif link_info.link_type in (
         LinkTypes.BACK_LIST,
         LinkTypes.OPTIONAL_BACK_LIST,
-    ]:
+    ):
         if database_major_version >= 5 or link_info.nested_links is None:
             queries.append(
                 {

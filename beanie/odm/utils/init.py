@@ -19,7 +19,7 @@ from pymongo.driver_info import DriverInfo
 from beanie.exceptions import Deprecation, MongoDBVersionError
 from beanie.odm.actions import ActionRegistry
 from beanie.odm.cache import LRUCache
-from beanie.odm.documents import DocType, Document
+from beanie.odm.documents import Document
 from beanie.odm.fields import (
     BackLink,
     ExpressionField,
@@ -32,7 +32,7 @@ from beanie.odm.registry import DocsRegistry
 from beanie.odm.settings.document import DocumentSettings, IndexModelField
 from beanie.odm.settings.union_doc import UnionDocSettings
 from beanie.odm.settings.view import ViewSettings
-from beanie.odm.union_doc import UnionDoc, UnionDocType
+from beanie.odm.union_doc import UnionDoc
 from beanie.odm.utils.pydantic import (
     get_extra_field_info,
     get_model_fields,
@@ -55,7 +55,7 @@ class Initializer:
         database: AsyncDatabase | None = None,
         connection_string: str | None = None,
         document_models: Sequence[
-            type["DocType"] | type["UnionDocType"] | type["View"] | str
+            type["Document"] | type["UnionDoc"] | type["View"] | str
         ]
         | None = None,
         allow_index_dropping: bool = False,
@@ -111,7 +111,7 @@ class Initializer:
         }
 
         self.document_models: list[
-            type[DocType] | type[UnionDocType] | type[View]
+            type[Document] | type[UnionDoc] | type[View]
         ] = [
             self.get_model(model) if isinstance(model, str) else model
             for model in document_models
@@ -151,7 +151,9 @@ class Initializer:
                     DocsRegistry.register(name, obj)
 
     @staticmethod
-    def get_model(dot_path: str) -> type["DocType"]:
+    def get_model(
+        dot_path: str,
+    ) -> type[Document] | type[UnionDoc] | type[View]:
         """
         Get the model by the path in format bar.foo.Model
 
@@ -347,7 +349,7 @@ class Initializer:
     # Document
 
     @staticmethod
-    def set_default_class_vars(cls: type[Document]):
+    def set_default_class_vars(model: type[Document]):
         """
         Set default class variables.
 
@@ -355,25 +357,27 @@ class Initializer:
         to init settings
         :return:
         """
-        cls._children = dict()
-        cls._parent = None
-        cls._inheritance_inited = False
-        cls._class_id = None
-        cls._link_fields = None
+        model._children = dict()
+        model._parent = None
+        model._inheritance_inited = False
+        model._class_id = None
+        model._link_fields = None
 
     @staticmethod
-    def init_cache(cls) -> None:
+    def init_cache(
+        model: type[Document] | type[UnionDoc] | type[View],
+    ) -> None:
         """
         Init model's cache
         :return: None
         """
-        if cls.get_settings().use_cache:
-            cls._cache = LRUCache(
-                capacity=cls.get_settings().cache_capacity,
-                expiration_time=cls.get_settings().cache_expiration_time,
+        if model._cache is not None:
+            model._cache = LRUCache(
+                capacity=model.get_settings().cache_capacity,
+                expiration_time=model.get_settings().cache_expiration_time,
             )
 
-    def init_document_fields(self, cls) -> None:
+    def init_document_fields(self, cls: type[Document]) -> None:
         """
         Init class fields
         :return: None
@@ -403,23 +407,23 @@ class Initializer:
         cls._check_hidden_fields()
 
     @staticmethod
-    def init_actions(cls):
+    def init_actions(model: type[Document]):
         """
         Init event-based actions
         """
-        ActionRegistry.clean_actions(cls)
-        for attr in dir(cls):
-            f = getattr(cls, attr)
+        ActionRegistry.clean_actions(model)
+        for attr in dir(model):
+            f = getattr(model, attr)
             if inspect.isfunction(f):
                 if hasattr(f, "has_action"):
                     ActionRegistry.add_action(
-                        document_class=cls,
+                        document_class=model,
                         event_types=f.event_types,  # type: ignore
                         action_direction=f.action_direction,  # type: ignore
                         funct=f,
                     )
 
-    async def init_document_collection(self, cls):
+    async def init_document_collection(self, cls: type[Document]):
         """
         Init collection for the Document-based class
         :param cls:
@@ -467,7 +471,9 @@ class Initializer:
 
         cls.set_collection(collection)
 
-    async def init_indexes(self, cls, allow_index_dropping: bool = False):
+    async def init_indexes(
+        self, cls: type[Document], allow_index_dropping: bool = False
+    ):
         """
         Async indexes initializer
         """
@@ -479,7 +485,7 @@ class Initializer:
         old_indexes = IndexModelField.from_pymongo_index_information(
             index_information
         )
-        new_indexes = []
+        new_indexes: list[IndexModelField] = []
 
         # Indexed field wrapped with Indexed()
         indexed_fields = (
@@ -534,7 +540,7 @@ class Initializer:
 
         # create indices
         if found_indexes:
-            new_indexes += await collection.create_indexes(
+            await collection.create_indexes(
                 IndexModelField.list_to_index_model(new_indexes)
             )
 
@@ -684,6 +690,7 @@ class Initializer:
         :return:
         """
         self.init_settings(cls)
+        self.init_cache(cls)
         if cls._settings.name is None:
             cls._settings.name = cls.__name__
 
@@ -695,9 +702,9 @@ class Initializer:
 
     @staticmethod
     def check_deprecations(
-        cls: type[Document] | type[View] | type[UnionDoc],
+        model: type[Document] | type[View] | type[UnionDoc],
     ):
-        if hasattr(cls, "Collection"):
+        if hasattr(model, "Collection"):
             raise Deprecation(
                 "Collection inner class is not supported more. "
                 "Please use Settings instead. "
@@ -734,7 +741,7 @@ async def init_beanie(
     database: AsyncDatabase | None = None,
     connection_string: str | None = None,
     document_models: Sequence[
-        type[Document] | type[UnionDoc] | type["View"] | str
+        type[Document] | type[UnionDoc] | type[View] | str
     ]
     | None = None,
     allow_index_dropping: bool = False,
@@ -746,7 +753,7 @@ async def init_beanie(
 
     :param database: Optional[AsyncDatabase] - pymongo database instance. Defaults to None.
     :param connection_string: Optional[str] - MongoDB connection string.  Defaults to None.
-    :param document_models: Optional[Sequence[Union[type[Document], type[UnionDoc], type["View"], str]]]
+    :param document_models: Optional[Sequence[Union[type[Document], type[UnionDoc], type[View], str]]]
         - model classes or strings with dot separated paths. Defaults to None.
     :param allow_index_dropping: bool - if index dropping is allowed.
         Defaults to False.

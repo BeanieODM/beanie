@@ -1,9 +1,12 @@
 from datetime import timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, ConfigDict, Field
 from pymongo.asynchronous.collection import AsyncCollection
 from pymongo.asynchronous.database import AsyncDatabase
+
+if TYPE_CHECKING:
+    from beanie import UnionDoc
 
 
 class ItemSettings(BaseModel):
@@ -18,7 +21,10 @@ class ItemSettings(BaseModel):
     pymongo_db: AsyncDatabase | None = None
     pymongo_collection: AsyncCollection | None = None
 
-    union_doc: type | None = None
+    if TYPE_CHECKING:
+        union_doc: UnionDoc | None = None
+    else:
+        union_doc: type | None = None
     union_doc_alias: str | None = None
     class_id: str = "_class_id"
 

@@ -64,19 +64,17 @@ class AggregationQuery(
 
     def _get_cache(self):
         if (
-            self.document_model.get_settings().use_cache
-            and self.ignore_cache is False
+            self.ignore_cache is False
+            and self.document_model._cache is not None
         ):
-            return self.document_model._cache.get(self._cache_key)  # type: ignore
-        else:
-            return None
+            return self.document_model._cache.get(self._cache_key)
 
-    def _set_cache(self, data):
+    def _set_cache(self, data) -> None:
         if (
-            self.document_model.get_settings().use_cache
-            and self.ignore_cache is False
+            self.ignore_cache is False
+            and self.document_model._cache is not None
         ):
-            return self.document_model._cache.set(self._cache_key, data)  # type: ignore
+            self.document_model._cache.set(self._cache_key, data)
 
     def get_aggregation_pipeline(
         self,

@@ -593,19 +593,17 @@ class FindMany(
 
     def _get_cache(self):
         if (
-            self.document_model.get_settings().use_cache
-            and self.ignore_cache is False
+            self.ignore_cache is False
+            and self.document_model._cache is not None
         ):
-            return self.document_model._cache.get(self._cache_key)  # type: ignore
-        else:
-            return None
+            return self.document_model._cache.get(self._cache_key)
 
     def _set_cache(self, data):
         if (
-            self.document_model.get_settings().use_cache
-            and self.ignore_cache is False
+            self.ignore_cache is False
+            and self.document_model._cache is not None
         ):
-            return self.document_model._cache.set(self._cache_key, data)  # type: ignore
+            return self.document_model._cache.set(self._cache_key, data)
 
     def build_aggregation_pipeline(
         self, *extra_stages: dict[str, Any]
@@ -1003,8 +1001,8 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         # projection = get_projection(self.projection_model)
         if (
-            self.document_model.get_settings().use_cache
-            and self.ignore_cache is False
+            self.ignore_cache is False
+            and self.document_model._cache is not None
         ):
             cache_key = LRUCache.create_key(
                 "FindOne",
