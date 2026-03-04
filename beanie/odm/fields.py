@@ -333,9 +333,9 @@ class Link(Generic[T]):
 
     @classmethod
     async def fetch_many(cls, links: list["Link[T]"]) -> list["T | Link[T]"]:
-        coros = []
-        for link in links:
-            coros.append(link.fetch())
+        coros = [link.fetch() for link in links]
+        if not coros:
+            return []
         return await asyncio.gather(*coros)
 
     @staticmethod

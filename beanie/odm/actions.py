@@ -120,10 +120,13 @@ class ActionRegistry:
         if action_direction in exclude:
             return
 
-        document_class = instance.__class__
         actions_list = cls.get_action_list(
-            document_class, event_type, action_direction
+            instance.__class__, event_type, action_direction
         )
+
+        if not actions_list:
+            return
+
         coros = []
         for action in actions_list:
             if action.__name__ in exclude:
@@ -133,7 +136,8 @@ class ActionRegistry:
                 coros.append(action(instance))
             elif inspect.isfunction(action):
                 action(instance)
-        await asyncio.gather(*coros)
+        if coros:
+            await asyncio.gather(*coros)
 
 
 # `Any` because there is arbitrary attribute assignment on this type
