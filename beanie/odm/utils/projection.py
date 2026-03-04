@@ -2,7 +2,8 @@ from typing import TypeVar
 
 from pydantic import BaseModel
 
-from beanie.odm.interfaces.detector import ModelType
+from beanie.odm.documents import Document
+from beanie.odm.union_doc import UnionDoc
 from beanie.odm.utils.pydantic import get_config_value, get_model_fields
 
 ProjectionModelType = TypeVar("ProjectionModelType", bound=BaseModel)
@@ -11,13 +12,9 @@ ProjectionModelType = TypeVar("ProjectionModelType", bound=BaseModel)
 def get_projection(
     model: type[ProjectionModelType],
 ) -> dict[str, int] | None:
-    if hasattr(model, "get_model_type") and (
-        model.get_model_type() is ModelType.UnionDoc  # type: ignore
-        or (  # type: ignore
-            model.get_model_type() is ModelType.Document  # type: ignore
-            and model._inheritance_inited  # type: ignore
-        )
-    ):  # type: ignore
+    if isinstance(model, UnionDoc) or (
+        isinstance(model, Document) and model._inheritance_inited
+    ):
         return None
 
     if hasattr(model, "Settings"):  # MyPy checks

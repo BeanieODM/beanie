@@ -54,10 +54,10 @@ class Initializer:
         self,
         database: AsyncDatabase | None = None,
         connection_string: str | None = None,
-        document_models: Sequence[
-            type["Document"] | type["UnionDoc"] | type["View"] | str
-        ]
-        | None = None,
+        document_models: (
+            Sequence[type["Document"] | type["UnionDoc"] | type["View"] | str]
+            | None
+        ) = None,
         allow_index_dropping: bool = False,
         recreate_views: bool = False,
         skip_indexes: bool = False,
@@ -689,6 +689,8 @@ class Initializer:
         :param cls:
         :return:
         """
+        cls._database_major_version = self._database_major_version
+
         self.init_settings(cls)
         self.init_cache(cls)
         if cls._settings.name is None:
@@ -740,10 +742,9 @@ class Initializer:
 async def init_beanie(
     database: AsyncDatabase | None = None,
     connection_string: str | None = None,
-    document_models: Sequence[
-        type[Document] | type[UnionDoc] | type[View] | str
-    ]
-    | None = None,
+    document_models: (
+        Sequence[type[Document] | type[UnionDoc] | type[View] | str] | None
+    ) = None,
     allow_index_dropping: bool = False,
     recreate_views: bool = False,
     skip_indexes: bool = False,

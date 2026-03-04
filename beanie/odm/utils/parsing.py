@@ -7,11 +7,12 @@ from beanie.exceptions import (
     DocWasNotRegisteredInUnionClass,
     UnionHasNoRegisteredDocs,
 )
-from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.utils.pydantic import get_config_value, parse_model
 
 if TYPE_CHECKING:
     from beanie.odm.documents import Document
+    from beanie.odm.union_doc import UnionDoc
+    from beanie.odm.views import View
 
 
 def merge_models(left: BaseModel, right: BaseModel) -> None:
@@ -86,56 +87,47 @@ def save_state(item: BaseModel):
 
 
 def parse_obj(
-    model: type[BaseModel] | type["Document"],
+    model: type[BaseModel] | type["Document | View | UnionDoc"],
     data: Any,
     lazy_parse: bool = False,
 ) -> BaseModel:
-    if (
-        hasattr(model, "get_model_type")
-        and model.get_model_type() is ModelType.UnionDoc  # type: ignore
-    ):
-        if model._document_models is None:  # type: ignore
+    from beanie import Document, UnionDoc
+
+    if isinstance(model, UnionDoc):
+        if model._document_models is None:
             raise UnionHasNoRegisteredDocs
 
         if isinstance(data, dict):
-            class_name = data[model.get_settings().class_id]  # type: ignore
+            class_name = data[model.get_settings().class_id]
         else:
             class_name = data._class_id
 
-        if class_name not in model._document_models:  # type: ignore
+        if class_name not in model._document_models:
             raise DocWasNotRegisteredInUnionClass
         return parse_obj(
-            model=model._document_models[class_name],  # type: ignore
+            model=model._document_models[class_name],
             data=data,
             lazy_parse=lazy_parse,
-        )  # type: ignore
-    if (
-        hasattr(model, "get_model_type")
-        and model.get_model_type() is ModelType.Document  # type: ignore
-        and model._inheritance_inited  # type: ignore
-    ):
-        if isinstance(data, dict):
-            class_name = data.get(model.get_settings().class_id)  # type: ignore
-        elif hasattr(data, model.get_settings().class_id):  # type: ignore
-            class_name = data._class_id
-        else:
-            class_name = None
+        )
+    elif isinstance(model, Document):
+        if model._inheritance_inited:
+            if isinstance(data, dict):
+                class_name = data.get(model.get_settings().class_id)
+            elif hasattr(data, model.get_settings().class_id):
+                class_name = data._class_id
+            else:
+                class_name = None
 
-        if model._children and class_name in model._children:  # type: ignore
-            return parse_obj(
-                model=model._children[class_name],  # type: ignore
-                data=data,
-                lazy_parse=lazy_parse,
-            )  # type: ignore
-
-    if (
-        lazy_parse
-        and hasattr(model, "get_model_type")
-        and model.get_model_type() is ModelType.Document  # type: ignore
-    ):
-        o = model.lazy_parse(data, {"_id"})  # type: ignore
-        o._saved_state = {"_id": o.id}
-        return o
-    result = parse_model(model, data)
+            if model._children and class_name in model._children:
+                return parse_obj(
+                    model=model._children[class_name],  # type: ignore
+                    data=data,
+                    lazy_parse=lazy_parse,
+                )
+        if lazy_parse:
+            o = model.lazy_parse(data, {"_id"})  # type: ignore
+            o._saved_state = {"_id": o.id}
+            return o
+    result = parse_model(model, data)  # pyright: ignore[reportArgumentType]
     save_state(result)
     return result

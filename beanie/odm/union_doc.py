@@ -27,6 +27,9 @@ class UnionDoc(
     # Cache
     _cache: ClassVar[LRUCache | None] = None
 
+    # Database
+    _database_major_version: ClassVar[int] = 4
+
     @classmethod
     def get_settings(cls) -> UnionDocSettings:
         return cls._settings
