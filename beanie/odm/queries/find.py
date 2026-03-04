@@ -166,7 +166,13 @@ class FindQuery(
 
         :return: bool
         """
-        return await self.count() > 0
+        cursor = self.document_model.get_pymongo_collection().find(
+            filter=self.get_filter_query(),
+            projection={"_id": 1},
+            limit=1,
+            session=self.session,
+        )
+        return await anext(cursor, None) is not None
 
 
 class FindMany(
