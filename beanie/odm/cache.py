@@ -28,7 +28,7 @@ class LRUCache:
         except KeyError:
             return None
 
-    def set(self, key, value) -> None:
+    def set(self, key: Any, value: Any) -> None:
         try:
             self.cache.pop(key)
         except KeyError:
@@ -39,5 +39,5 @@ class LRUCache:
         )
 
     @staticmethod
-    def create_key(*args):
+    def create_key(*args: Any):
         return str(args)  # TODO think about this

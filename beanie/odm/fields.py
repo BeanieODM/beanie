@@ -533,10 +533,8 @@ class IndexModelField:
     def merge_indexes(
         left: list["IndexModelField"], right: list["IndexModelField"]
     ):
-        left_dict = {index.fields: index for index in left}
-        right_dict = {index.fields: index for index in right}
-        left_dict.update(right_dict)
-        return list(left_dict.values())
+        merge_dict = {index.fields: index for index in left + right}
+        return list(merge_dict.values())
 
     @classmethod
     def _validate(cls, v: Any) -> "IndexModelField":

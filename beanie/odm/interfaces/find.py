@@ -427,6 +427,8 @@ class FindInterface:
 
     @classmethod
     def _add_class_id_filter(cls, args: tuple, with_children: bool = False):
+        from beanie.odm.documents import Document
+
         settings = cls.get_settings()
         class_id = settings.class_id
 
@@ -434,10 +436,7 @@ class FindInterface:
         if any(isinstance(a, Iterable) and class_id in a for a in args):
             return args
 
-        if (
-            cls.get_model_type() is ModelType.Document
-            and cls._inheritance_inited
-        ):
+        if isinstance(cls, Document) and cls._inheritance_inited:
             if not with_children:
                 args += ({class_id: cls._class_id},)
             else:

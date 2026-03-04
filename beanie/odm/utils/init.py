@@ -27,7 +27,6 @@ from beanie.odm.fields import (
     LinkInfo,
     LinkTypes,
 )
-from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.registry import DocsRegistry
 from beanie.odm.settings.document import DocumentSettings, IndexModelField
 from beanie.odm.settings.union_doc import UnionDocSettings
@@ -104,11 +103,14 @@ class Initializer:
 
         self.database: AsyncDatabase = database  # type: ignore
 
-        sort_order = {
-            ModelType.UnionDoc: 0,
-            ModelType.Document: 1,
-            ModelType.View: 2,
-        }
+        def sort_key(obj):
+            if isinstance(obj, UnionDoc):
+                return 0
+            elif isinstance(obj, Document):
+                return 1
+            elif isinstance(obj, View):
+                return 2
+            return 99  # fallback for unexpected types
 
         self.document_models: list[
             type[Document] | type[UnionDoc] | type[View]
@@ -119,9 +121,7 @@ class Initializer:
 
         self.fill_docs_registry()
 
-        self.document_models.sort(
-            key=lambda val: sort_order[val.get_model_type()]
-        )
+        self.document_models.sort(key=sort_key)
 
         self._database_major_version: int = -1
         self._existing_collections: list[str] = []
