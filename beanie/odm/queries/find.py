@@ -166,6 +166,7 @@ class FindQuery(
             projection={"_id": 1},
             limit=1,
             session=self.session,
+            **self.pymongo_kwargs,
         )
         return await anext(cursor, None) is not None
 
