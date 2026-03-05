@@ -4,7 +4,6 @@ from pydantic import Field
 
 from beanie import Document, Indexed, Link
 from beanie.odm.fields import BackLink
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 
 
 class WindowAPI(Document):
@@ -33,8 +32,6 @@ class House(Document):
 
 class Person(Document):
     name: str
-    house: BackLink[House] = (
-        Field(json_schema_extra={"original_field": "owner"})
-        if IS_PYDANTIC_V2
-        else Field(original_field="owner")
+    house: BackLink[House] = Field(
+        json_schema_extra={"original_field": "owner"}
     )

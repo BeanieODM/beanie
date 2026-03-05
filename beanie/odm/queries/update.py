@@ -304,7 +304,7 @@ class UpdateOne(UpdateQuery):
 
     async def _update(self):
         if not self.bulk_writer:
-            if self.response_type == UpdateResponse.UPDATE_RESULT:
+            if self.response_type is UpdateResponse.UPDATE_RESULT:
                 return await self.document_model.get_pymongo_collection().update_one(
                     self.find_query,
                     self.update_query,
@@ -318,7 +318,7 @@ class UpdateOne(UpdateQuery):
                     session=self.session,
                     return_document=(
                         ReturnDocument.BEFORE
-                        if self.response_type == UpdateResponse.OLD_DOCUMENT
+                        if self.response_type is UpdateResponse.OLD_DOCUMENT
                         else ReturnDocument.AFTER
                     ),
                     **self.pymongo_kwargs,
@@ -348,11 +348,11 @@ class UpdateOne(UpdateQuery):
             return update_result
 
         if (
-            self.response_type == UpdateResponse.UPDATE_RESULT
+            self.response_type is UpdateResponse.UPDATE_RESULT
             and update_result is not None
             and update_result.matched_count == 0
         ) or (
-            self.response_type != UpdateResponse.UPDATE_RESULT
+            self.response_type is not UpdateResponse.UPDATE_RESULT
             and update_result is None
         ):
             return (

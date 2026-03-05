@@ -4,7 +4,6 @@ from pymongo.asynchronous.database import AsyncDatabase
 from typing_extensions import Sequence, get_args, get_origin
 
 from beanie.odm.utils.pydantic import (
-    IS_PYDANTIC_V2,
     get_extra_field_info,
     get_model_fields,
     parse_model,
@@ -93,8 +92,6 @@ class Initializer:
         self.skip_indexes = skip_indexes
         self.recreate_views = recreate_views
 
-        self.models_with_updated_forward_refs: List[Type[BaseModel]] = []
-
         if (connection_string is None and database is None) or (
             connection_string is not None and database is not None
         ):
@@ -134,9 +131,20 @@ class Initializer:
             key=lambda val: sort_order[val.get_model_type()]
         )
 
+        self._database_major_version: int = -1
+        self._existing_collections: list[str] = []
+
     def __await__(self):
+        yield from self._load_cached_info().__await__()
         for model in self.document_models:
             yield from self.init_class(model).__await__()
+
+    async def _load_cached_info(self):
+        build_info = await self.database.command({"buildInfo": 1})
+        self._database_major_version = int(build_info["version"].split(".")[0])
+        self._existing_collections = await self.database.list_collection_names(
+            authorizedCollections=True, nameOnly=True
+        )
 
     # General
     def fill_docs_registry(self):
@@ -198,19 +206,6 @@ class Initializer:
             cls._settings = parse_model(ViewSettings, settings_vars)
         if issubclass(cls, UnionDoc):
             cls._settings = parse_model(UnionDocSettings, settings_vars)
-
-    if not IS_PYDANTIC_V2:
-
-        def update_forward_refs(self, cls: Type[BaseModel]):
-            """
-            Update forward refs
-
-            :param cls: Type[BaseModel] - class to update forward refs
-            :return: None
-            """
-            if cls not in self.models_with_updated_forward_refs:
-                cls.update_forward_refs()
-                self.models_with_updated_forward_refs.append(cls)
 
     # General. Relations
 
@@ -398,10 +393,6 @@ class Initializer:
         Init class fields
         :return: None
         """
-
-        if not IS_PYDANTIC_V2:
-            self.update_forward_refs(cls)
-
         if cls._link_fields is None:
             cls._link_fields = {}
         for k, v in get_model_fields(cls).items():
@@ -479,10 +470,7 @@ class Initializer:
         # create pymongo collection
         if (
             document_settings.timeseries is not None
-            and document_settings.name
-            not in await self.database.list_collection_names(
-                authorizedCollections=True, nameOnly=True
-            )
+            and document_settings.name not in self._existing_collections
         ):
             collection = await self.database.create_collection(
                 **document_settings.timeseries.build_query(
@@ -579,9 +567,7 @@ class Initializer:
             return None
 
         # get db version
-        build_info = await self.database.command({"buildInfo": 1})
-        mongo_version = build_info["version"]
-        cls._database_major_version = int(mongo_version.split(".")[0])
+        cls._database_major_version = self._database_major_version
         if cls not in self.inited_classes:
             self.set_default_class_vars(cls)
             self.init_settings(cls)
@@ -632,7 +618,7 @@ class Initializer:
 
     # Views
 
-    def init_view_fields(self, cls) -> None:
+    def init_view_fields(self, cls: Type[View]) -> None:
         """
         Init class fields
         :return: None
@@ -659,7 +645,7 @@ class Initializer:
                     link_info.is_fetchable = False
                     cls._link_fields[k] = link_info
 
-    def init_view_collection(self, cls):
+    def init_view_collection(self, cls: Type[View]):
         """
         Init collection for View
 
@@ -684,16 +670,18 @@ class Initializer:
         :param cls:
         :return:
         """
+        cls._database_major_version = self._database_major_version
+
         self.init_settings(cls)
         self.init_view_collection(cls)
         self.init_view_fields(cls)
         self.init_cache(cls)
 
-        collection_names = await self.database.list_collection_names(
-            authorizedCollections=True, nameOnly=True
-        )
-        if self.recreate_views or cls._settings.name not in collection_names:
-            if cls._settings.name in collection_names:
+        if (
+            self.recreate_views
+            or cls._settings.name not in self._existing_collections
+        ):
+            if cls._settings.name in self._existing_collections:
                 await cls.get_pymongo_collection().drop()
 
             await self.database.command(
