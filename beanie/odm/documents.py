@@ -59,7 +59,6 @@ from beanie.odm.fields import (
     WriteRules,
 )
 from beanie.odm.interfaces.aggregate import AggregateInterface
-from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
 from beanie.odm.interfaces.inheritance import InheritanceInterface
@@ -1171,10 +1170,6 @@ class Document(
     @classmethod
     def get_link_fields(cls) -> dict[str, LinkInfo] | None:
         return cls._link_fields
-
-    @classmethod
-    def get_model_type(cls) -> ModelType:
-        return ModelType.Document
 
     @classmethod
     async def distinct(

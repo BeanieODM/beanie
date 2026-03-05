@@ -7,7 +7,6 @@ from beanie.exceptions import ViewWasNotInitialized
 from beanie.odm.cache import LRUCache
 from beanie.odm.fields import Link, LinkInfo
 from beanie.odm.interfaces.aggregate import AggregateInterface
-from beanie.odm.interfaces.detector import DetectionInterface, ModelType
 from beanie.odm.interfaces.find import FindInterface
 from beanie.odm.interfaces.getters import OtherGettersInterface
 from beanie.odm.settings.view import ViewSettings
@@ -18,7 +17,6 @@ class View(
     FindInterface,
     AggregateInterface,
     OtherGettersInterface,
-    DetectionInterface,
 ):
     """
     What is needed:
@@ -73,7 +71,3 @@ class View(
     @classmethod
     def get_link_fields(cls) -> dict[str, LinkInfo] | None:
         return cls._link_fields
-
-    @classmethod
-    def get_model_type(cls) -> ModelType:
-        return ModelType.View

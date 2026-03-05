@@ -14,7 +14,6 @@ from pydantic import (
 from pymongo.asynchronous.client_session import AsyncClientSession
 
 from beanie.odm.enums import SortDirection
-from beanie.odm.interfaces.detector import ModelType
 from beanie.odm.queries.find import FindMany, FindOne
 from beanie.odm.settings.base import ItemSettings
 
@@ -36,11 +35,6 @@ class FindInterface:
     _inheritance_inited: bool = False
     _class_id: ClassVar[str | None]
     _children: ClassVar[dict[str, type["Document"]]]
-
-    @classmethod
-    @abstractmethod
-    def get_model_type(cls) -> ModelType:
-        pass
 
     @classmethod
     @abstractmethod
