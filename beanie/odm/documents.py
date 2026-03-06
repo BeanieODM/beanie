@@ -211,7 +211,9 @@ class Document(
                     and field_name not in values
                 ):
                     values[field_name] = [
-                        BackLink[link_info.document_class](link_info.document_class)
+                        BackLink[link_info.document_class](
+                            link_info.document_class
+                        )
                     ]
         return values
 
@@ -284,7 +286,9 @@ class Document(
             new_state = document.get_saved_state()
             if new_state is None:
                 raise DocumentWasNotSaved
-            changes_to_apply = self._collect_updates(new_state, original_changes)
+            changes_to_apply = self._collect_updates(
+                new_state, original_changes
+            )
             merge_models(self, document)
             apply_changes(changes_to_apply, self)
         elif merge_strategy is MergeStrategy.remote:
@@ -339,7 +343,9 @@ class Document(
                                 ]
                             )
         result = await self.get_pymongo_collection().insert_one(
-            get_dict(self, to_db=True, keep_nulls=self.get_settings().keep_nulls),
+            get_dict(
+                self, to_db=True, keep_nulls=self.get_settings().keep_nulls
+            ),
             session=session,
         )
         new_id = result.inserted_id
@@ -380,12 +386,16 @@ class Document(
         :return: DocType
         """
         if not isinstance(document, cls):
-            raise TypeError("Inserting document must be of the original document class")
+            raise TypeError(
+                "Inserting document must be of the original document class"
+            )
         if bulk_writer is None:
             return await document.insert(link_rule=link_rule, session=session)
         else:
             if link_rule is WriteRules.WRITE:
-                raise NotSupported("Cascade insert with bulk writing not supported")
+                raise NotSupported(
+                    "Cascade insert with bulk writing not supported"
+                )
             bulk_writer.add_operation(
                 type(document),
                 InsertOne(
@@ -415,7 +425,9 @@ class Document(
         :return: InsertManyResult
         """
         if link_rule is WriteRules.WRITE:
-            raise NotSupported("Cascade insert not supported for insert many method")
+            raise NotSupported(
+                "Cascade insert not supported for insert many method"
+            )
         documents_list = [
             get_dict(
                 document,
@@ -542,7 +554,9 @@ class Document(
                         LinkTypes.OPTIONAL_BACK_DIRECT,
                     ]:
                         if isinstance(value, Document):
-                            await value.save(link_rule=link_rule, session=session)
+                            await value.save(
+                                link_rule=link_rule, session=session
+                            )
                     if field_info.link_type in [
                         LinkTypes.LIST,
                         LinkTypes.OPTIONAL_LIST,
@@ -552,7 +566,9 @@ class Document(
                         if isinstance(value, List):
                             await asyncio.gather(
                                 *[
-                                    obj.save(link_rule=link_rule, session=session)
+                                    obj.save(
+                                        link_rule=link_rule, session=session
+                                    )
                                     for obj in value
                                     if isinstance(obj, Document)
                                 ]
@@ -648,10 +664,14 @@ class Document(
         """
         ids_list = [document.id for document in documents]
         if await cls.find(In(cls.id, ids_list)).count() != len(ids_list):
-            raise ReplaceError("Some of the documents are not exist in the collection")
+            raise ReplaceError(
+                "Some of the documents are not exist in the collection"
+            )
         async with BulkWriter(session=session) as bulk_writer:
             for document in documents:
-                await document.replace(bulk_writer=bulk_writer, session=session)
+                await document.replace(
+                    bulk_writer=bulk_writer, session=session
+                )
 
     @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
@@ -1092,7 +1112,9 @@ class Document(
                 if inspection_result.status is InspectionStatuses.OK:
                     inspection_result.status = InspectionStatuses.FAIL
                 inspection_result.errors.append(
-                    InspectionError(document_id=json_document["_id"], error=str(e))
+                    InspectionError(
+                        document_id=json_document["_id"], error=str(e)
+                    )
                 )
         return inspection_result
 
@@ -1202,7 +1224,9 @@ class Document(
             async with Document.bulk_writer(ordered=True) as bulk:
                 await Document.insert_one(Document(field="value"), bulk_writer=bulk)
         """
-        return BulkWriter(session, ordered, cls, bypass_document_validation, comment)
+        return BulkWriter(
+            session, ordered, cls, bypass_document_validation, comment
+        )
 
 
 class DocumentWithSoftDelete(Document):
@@ -1364,7 +1388,9 @@ class DocumentWithSoftDelete(Document):
             A query object for fetching only non-deleted documents.
 
         """
-        args = cls._add_class_id_filter(args, with_children) + ({"deleted_at": None},)
+        args = cls._add_class_id_filter(args, with_children) + (
+            {"deleted_at": None},
+        )
         return cls._find_many_query_class(document_model=cls).find_many(
             *args,
             sort=sort,
@@ -1403,7 +1429,9 @@ class DocumentWithSoftDelete(Document):
             A query object for a single non-deleted document.
 
         """
-        args = cls._add_class_id_filter(args, with_children) + ({"deleted_at": None},)
+        args = cls._add_class_id_filter(args, with_children) + (
+            {"deleted_at": None},
+        )
         return cls._find_one_query_class(document_model=cls).find_one(
             *args,
             projection_model=projection_model,
