@@ -81,15 +81,12 @@ class ActionRegistry:
         if cls._actions.get(document_class) is None:
             cls._actions[document_class] = {
                 action_type: {
-                    action_direction: []
-                    for action_direction in ActionDirections
+                    action_direction: [] for action_direction in ActionDirections
                 }
                 for action_type in EventTypes
             }
         for event_type in event_types:
-            cls._actions[document_class][event_type][action_direction].append(
-                funct
-            )
+            cls._actions[document_class][event_type][action_direction].append(funct)
 
     @classmethod
     def get_action_list(
@@ -127,9 +124,7 @@ class ActionRegistry:
             return
 
         document_class = instance.__class__
-        actions_list = cls.get_action_list(
-            document_class, event_type, action_direction
-        )
+        actions_list = cls.get_action_list(document_class, event_type, action_direction)
         coros = []
         for action in actions_list:
             if action.__name__ in exclude:
@@ -183,9 +178,7 @@ def before_event(
     :param args: Union[List[EventTypes], EventTypes] - event types
     :return: None
     """
-    return register_action(
-        action_direction=ActionDirections.BEFORE, event_types=args
-    )
+    return register_action(action_direction=ActionDirections.BEFORE, event_types=args)
 
 
 def after_event(
@@ -199,9 +192,7 @@ def after_event(
     :return: None
     """
 
-    return register_action(
-        action_direction=ActionDirections.AFTER, event_types=args
-    )
+    return register_action(action_direction=ActionDirections.AFTER, event_types=args)
 
 
 def wrap_with_actions(

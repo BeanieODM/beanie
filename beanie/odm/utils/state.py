@@ -82,8 +82,8 @@ def previous_saved_state_needed(
 
 
 def save_state_after(
-    f: AsyncDocMethod[P, R],
-) -> AsyncDocMethod[P, R]:
+    f: "AsyncDocMethod[P, R]",
+) -> "AsyncDocMethod[P, R]":
     @wraps(f)
     async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         self: DocType = args[0]  # type: ignore
