@@ -206,9 +206,7 @@ def after_event(
 
 def wrap_with_actions(
     event_type: EventTypes,
-) -> Callable[
-    ["AsyncDocMethod[DocType, P, R]"], "AsyncDocMethod[DocType, P, R]"
-]:
+) -> Callable[["AsyncDocMethod[P, R]"], "AsyncDocMethod[P, R]"]:
     """
     Helper function to wrap Document methods with
     before and after event listeners
@@ -217,17 +215,18 @@ def wrap_with_actions(
     """
 
     def decorator(
-        f: "AsyncDocMethod[DocType, P, R]",
-    ) -> "AsyncDocMethod[DocType, P, R]":
+        f: "AsyncDocMethod[P, R]",
+    ) -> "AsyncDocMethod[P, R]":
         @wraps(f)
         async def wrapper(  # type: ignore
-            self: "DocType",
             *args: P.args,
             skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
             **kwargs: P.kwargs,
         ) -> R:
             if skip_actions is None:
                 skip_actions = []
+
+            self: DocType = args[0]  # type: ignore
 
             await ActionRegistry.run_actions(
                 self,
@@ -237,7 +236,6 @@ def wrap_with_actions(
             )
 
             result = await f(
-                self,
                 *args,
                 skip_actions=skip_actions,  # type: ignore[arg-type]
                 **kwargs,

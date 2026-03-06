@@ -37,7 +37,7 @@ from pymongo.results import (
     DeleteResult,
     InsertManyResult,
 )
-from typing_extensions import Concatenate, ParamSpec, Self, TypeAlias
+from typing_extensions import ParamSpec, Self, TypeAlias
 
 from beanie.exceptions import (
     CollectionWasNotInitialized,
@@ -115,11 +115,9 @@ DocType = TypeVar("DocType", bound="Document")
 P = ParamSpec("P")
 R = TypeVar("R")
 # can describe both sync and async, where R itself is a coroutine
-AnyDocMethod: TypeAlias = Callable[Concatenate[DocType, P], R]
+AnyDocMethod: TypeAlias = Callable[P, R]
 # describes only async
-AsyncDocMethod: TypeAlias = Callable[
-    Concatenate[DocType, P], Coroutine[Any, Any, R]
-]
+AsyncDocMethod: TypeAlias = Callable[P, Coroutine[Any, Any, R]]
 DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 
 

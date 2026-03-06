@@ -11,11 +11,12 @@ R = TypeVar("R")
 
 
 def validate_self_before(
-    f: "AsyncDocMethod[DocType, P, R]",
-) -> "AsyncDocMethod[DocType, P, R]":
+    f: AsyncDocMethod[P, R],
+) -> AsyncDocMethod[P, R]:
     @wraps(f)
-    async def wrapper(self: "DocType", *args: P.args, **kwargs: P.kwargs) -> R:
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        self: DocType = args[0]  # type: ignore
         await self.validate_self(*args, **kwargs)
-        return await f(self, *args, **kwargs)
+        return await f(*args, **kwargs)
 
     return wrapper
