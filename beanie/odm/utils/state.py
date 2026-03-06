@@ -23,8 +23,8 @@ def check_if_state_saved(self: "DocType"):
 
 
 def saved_state_needed(
-    f: AnyDocMethod[P, R],
-) -> AnyDocMethod[P, R]:
+    f: "AnyDocMethod[P, R]",
+) -> "AnyDocMethod[P, R]":
     @wraps(f)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         self: DocType = args[0]  # type: ignore
@@ -58,8 +58,8 @@ def check_if_previous_state_saved(self: "DocType"):
 
 
 def previous_saved_state_needed(
-    f: AnyDocMethod[P, R],
-) -> AnyDocMethod[P, R]:
+    f: "AnyDocMethod[P, R]",
+) -> "AnyDocMethod[P, R]":
     @wraps(f)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         self: DocType = args[0]  # type: ignore
