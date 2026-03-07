@@ -250,6 +250,6 @@ def wrap_with_actions(
 
             return result
 
-        return wrapper
+        return wrapper  # type: ignore
 
     return decorator
