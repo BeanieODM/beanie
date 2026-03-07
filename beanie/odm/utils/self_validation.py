@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, TypeVar
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import AsyncDocMethod, DocType
+    from beanie import Document
+    from beanie.odm.documents import AsyncDocMethod
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -15,7 +16,7 @@ def validate_self_before(
 ) -> "AsyncDocMethod[P, R]":
     @wraps(f)
     async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: DocType = args[0]  # type: ignore
+        self: Document = args[0]  # type: ignore
         await self.validate_self(*args, **kwargs)
         return await f(*args, **kwargs)
 
