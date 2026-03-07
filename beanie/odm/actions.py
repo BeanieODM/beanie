@@ -18,7 +18,7 @@ from typing import (
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import AsyncDocMethod, DocType, Document
+    from beanie.odm.documents import AsyncDocMethod, Document
 
 P = ParamSpec("P")
 R = TypeVar("R")
