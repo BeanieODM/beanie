@@ -226,7 +226,7 @@ def wrap_with_actions(
             if skip_actions is None:
                 skip_actions = []
 
-            self: DocType = args[0]  # type: ignore
+            self: "Document" = args[0]  # type: ignore
 
             await ActionRegistry.run_actions(
                 self,
