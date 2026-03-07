@@ -7,6 +7,7 @@ from typing_extensions import ParamSpec
 from beanie.exceptions import StateManagementIsTurnedOff, StateNotSaved
 
 if TYPE_CHECKING:
+    from beanie import Document
     from beanie.odm.documents import AnyDocMethod, AsyncDocMethod, DocType
 
 P = ParamSpec("P")
@@ -27,13 +28,13 @@ def saved_state_needed(
 ) -> "AnyDocMethod[P, R]":
     @wraps(f)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: DocType = args[0]  # type: ignore
+        self: Document = args[0]  # type: ignore
         check_if_state_saved(self)
         return f(*args, **kwargs)
 
     @wraps(f)
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: DocType = args[0]  # type: ignore
+        self: Document = args[0]  # type: ignore
         check_if_state_saved(self)
         # type ignore because there is no nice/proper way to annotate both sync
         # and async case without parametrized TypeVar, which is not supported
@@ -62,13 +63,13 @@ def previous_saved_state_needed(
 ) -> "AnyDocMethod[P, R]":
     @wraps(f)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: DocType = args[0]  # type: ignore
+        self: Document = args[0]  # type: ignore
         check_if_previous_state_saved(self)
         return f(*args, **kwargs)
 
     @wraps(f)
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: DocType = args[0]  # type: ignore
+        self: Document = args[0]  # type: ignore
         check_if_previous_state_saved(self)
         # type ignore because there is no nice/proper way to annotate both sync
         # and async case without parametrized TypeVar, which is not supported
@@ -86,7 +87,7 @@ def save_state_after(
 ) -> "AsyncDocMethod[P, R]":
     @wraps(f)
     async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: DocType = args[0]  # type: ignore
+        self: Document = args[0]  # type: ignore
         result = await f(*args, **kwargs)
         self._save_state()
         return result
