@@ -1,17 +1,7 @@
 from abc import abstractmethod
+from collections.abc import Callable, Generator, Mapping
 from enum import Enum
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    Generator,
-    List,
-    Mapping,
-    Optional,
-    Type,
-    Union,
-)
+from typing import TYPE_CHECKING, Any
 
 from pymongo import ReturnDocument
 from pymongo import UpdateMany as UpdateManyPyMongo
@@ -47,23 +37,23 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
 
     def __init__(
         self,
-        document_model: Type["DocType"],
+        document_model: type["DocType"],
         find_query: Mapping[str, Any],
     ):
         self.document_model = document_model
         self.find_query = find_query
-        self.update_expressions: List[Mapping[str, Any]] = []
+        self.update_expressions: list[Mapping[str, Any]] = []
         self.session = None
         self.is_upsert = False
-        self.upsert_insert_doc: Optional["DocType"] = None
-        self.encoders: Dict[Any, Callable[[Any], Any]] = {}
-        self.bulk_writer: Optional[BulkWriter] = None
+        self.upsert_insert_doc: "DocType | None" = None  # noqa: UP037
+        self.encoders: dict[Any, Callable[[Any], Any]] = {}
+        self.bulk_writer: BulkWriter | None = None
         self.encoders = self.document_model.get_settings().bson_encoders
-        self.pymongo_kwargs: Dict[str, Any] = {}
+        self.pymongo_kwargs: dict[str, Any] = {}
 
     @property
-    def update_query(self) -> Dict[str, Any]:
-        query: Union[Dict[str, Any], List[Dict[str, Any]], None] = None
+    def update_query(self) -> dict[str, Any]:
+        query: dict[str, Any] | list[dict[str, Any]] | None = None
         for expression in self.update_expressions:
             if isinstance(expression, BaseUpdateOperator):
                 if query is None:
@@ -107,8 +97,8 @@ class UpdateMany(UpdateQuery):
     def update(
         self,
         *args: Mapping[str, Any],
-        session: Optional[AsyncClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
+        session: AsyncClientSession | None = None,
+        bulk_writer: BulkWriter | None = None,
         **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
@@ -131,7 +121,7 @@ class UpdateMany(UpdateQuery):
         self,
         *args: Mapping[str, Any],
         on_insert: "DocType",
-        session: Optional[AsyncClientSession] = None,
+        session: AsyncClientSession | None = None,
         **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
@@ -151,8 +141,8 @@ class UpdateMany(UpdateQuery):
     def update_many(
         self,
         *args: Mapping[str, Any],
-        session: Optional[AsyncClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
+        session: AsyncClientSession | None = None,
+        bulk_writer: BulkWriter | None = None,
         **pymongo_kwargs: Any,
     ):
         """
@@ -189,7 +179,7 @@ class UpdateMany(UpdateQuery):
     def __await__(
         self,
     ) -> Generator[
-        Any, None, Union[UpdateResult, InsertOneResult, Optional["DocType"]]
+        Any, None, "UpdateResult | InsertOneResult | DocType | None"
     ]:
         """
         Run the query
@@ -218,15 +208,15 @@ class UpdateOne(UpdateQuery):
     """
 
     def __init__(self, *args: Any, **kwargs: Any):
-        super(UpdateOne, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.response_type = UpdateResponse.UPDATE_RESULT
 
     def update(
         self,
         *args: Mapping[str, Any],
-        session: Optional[AsyncClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        response_type: Optional[UpdateResponse] = None,
+        session: AsyncClientSession | None = None,
+        bulk_writer: BulkWriter | None = None,
+        response_type: UpdateResponse | None = None,
         **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
@@ -252,8 +242,8 @@ class UpdateOne(UpdateQuery):
         self,
         *args: Mapping[str, Any],
         on_insert: "DocType",
-        session: Optional[AsyncClientSession] = None,
-        response_type: Optional[UpdateResponse] = None,
+        session: AsyncClientSession | None = None,
+        response_type: UpdateResponse | None = None,
         **pymongo_kwargs: Any,
     ) -> "UpdateQuery":
         """
@@ -279,9 +269,9 @@ class UpdateOne(UpdateQuery):
     def update_one(
         self,
         *args: Mapping[str, Any],
-        session: Optional[AsyncClientSession] = None,
-        bulk_writer: Optional[BulkWriter] = None,
-        response_type: Optional[UpdateResponse] = None,
+        session: AsyncClientSession | None = None,
+        bulk_writer: BulkWriter | None = None,
+        response_type: UpdateResponse | None = None,
         **pymongo_kwargs: Any,
     ):
         """
@@ -337,7 +327,7 @@ class UpdateOne(UpdateQuery):
     def __await__(
         self,
     ) -> Generator[
-        Any, None, Union[UpdateResult, InsertOneResult, Optional["DocType"]]
+        Any, None, "UpdateResult | InsertOneResult | DocType | None"
     ]:
         """
         Run the query

@@ -16,7 +16,7 @@ from tests.odm.models import (
 )
 
 
-async def test_find_query():
+def test_find_query():
     q = Sample.find_many(Sample.integer == 1).get_filter_query()
     assert q == {"integer": 1}
 
@@ -41,7 +41,7 @@ async def test_find_many(preset_documents):
         await Sample.find_many(Sample.integer > 1)
         .find_many(Sample.nested.optional == None)
         .to_list()
-    )  # noqa
+    )
     assert len(result) == 2
     for a in result:
         assert a.integer > 1
@@ -50,7 +50,7 @@ async def test_find_many(preset_documents):
     len_result = 0
     async for a in Sample.find_many(Sample.integer > 1).find_many(
         Sample.nested.optional == None
-    ):  # noqa
+    ):
         assert a in result
         len_result += 1
 
@@ -80,7 +80,7 @@ async def test_find_many_skip(preset_documents):
         Sample.find_many(Sample.increment > 2)
         .find_many(Sample.nested.optional == None)
         .skip(1)
-    ):  # noqa
+    ):
         assert sample in result
         len_result += 1
 
@@ -100,7 +100,7 @@ async def test_find_many_limit(preset_documents):
         .sort(Sample.increment)
         .limit(2)
         .to_list()
-    )  # noqa
+    )
     assert len(result) == 2
     for a in result:
         assert a.increment > 2
@@ -112,7 +112,7 @@ async def test_find_many_limit(preset_documents):
         .find(Sample.nested.optional == None)
         .sort(Sample.increment)
         .limit(2)
-    ):  # noqa
+    ):
         assert a in result
         len_result += 1
 
@@ -134,20 +134,20 @@ async def test_find_all(preset_documents):
 async def test_find_one(preset_documents):
     a = await Sample.find_one(Sample.integer > 1).find_one(
         Sample.nested.optional == None
-    )  # noqa
+    )
     assert a.integer > 1
     assert a.nested.optional is None
 
     a = await Sample.find_one(Sample.integer > 100).find_one(
         Sample.nested.optional == None
-    )  # noqa
+    )
     assert a is None
 
 
 async def test_get(preset_documents):
     a = await Sample.find_one(Sample.integer > 1).find_one(
         Sample.nested.optional == None
-    )  # noqa
+    )
     assert a.integer > 1
     assert a.nested.optional is None
 
@@ -305,7 +305,7 @@ async def test_find_many_with_session(preset_documents, session):
     len_result = 0
     async for a in Sample.find_many(Sample.integer > 1).find_many(
         Sample.nested.optional == None
-    ):  # noqa
+    ):
         assert a in result
         len_result += 1
 

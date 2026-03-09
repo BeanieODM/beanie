@@ -1,5 +1,5 @@
 import datetime
-import sys
+from collections.abc import Callable
 from enum import Enum
 from ipaddress import (
     IPv4Address,
@@ -10,17 +10,12 @@ from ipaddress import (
     IPv6Network,
 )
 from pathlib import Path
-from typing import (
+from typing import (  # noqa: UP035
+    Annotated,
     Any,
-    Callable,
     ClassVar,
-    Dict,
     List,
     Optional,
-    Set,
-    Tuple,
-    Type,
-    Union,
 )
 from uuid import UUID, uuid4
 
@@ -41,7 +36,6 @@ from pydantic import (
 )
 from pydantic_core import core_schema
 from pymongo import IndexModel
-from typing_extensions import Annotated
 
 from beanie import (
     DecimalAnnotation,
@@ -60,16 +54,6 @@ from beanie.odm.custom_types.bson.binary import BsonBinary
 from beanie.odm.fields import BackLink, Link, PydanticObjectId
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
-
-if sys.version_info >= (3, 10):
-
-    def type_union(A, B):
-        return A | B
-
-else:
-
-    def type_union(A, B):
-        return Union[A, B]
 
 
 class Color:
@@ -93,7 +77,7 @@ class Color:
     @classmethod
     def __get_pydantic_core_schema__(
         cls,
-        _source_type: Type[Any],
+        _source_type: type[Any],
         _handler: Callable[[Any], core_schema.CoreSchema],
     ) -> core_schema.CoreSchema:
         return core_schema.json_or_python_schema(
@@ -119,13 +103,13 @@ class Option1(BaseModel):
 class Nested(BaseModel):
     integer: int
     option_1: Option1
-    union: Union[Option1, Option2]
-    optional: Optional[Option2] = None
+    union: Option1 | Option2
+    optional: Option2 | None = None
 
 
 class GeoObject(BaseModel):
     type: str = "Point"
-    coordinates: Tuple[float, float]
+    coordinates: tuple[float, float]
 
 
 class Sample(Document):
@@ -135,8 +119,8 @@ class Sample(Document):
     float_num: float
     string: str
     nested: Nested
-    optional: Optional[Option2] = None
-    union: Union[Option1, Option2]
+    optional: Option2 | None = None
+    union: Option1 | Option2
     geo: GeoObject
     const: str = "TEST"
 
@@ -155,7 +139,7 @@ class DocumentTestModel(Document):
     test_int: int
     test_doc: SubDocument
     test_str: str
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
 
     class Settings:
         use_cache = True
@@ -176,7 +160,7 @@ class DocumentTestModelWithLink(Document):
 
 class DocumentTestModelWithCustomCollectionName(Document):
     test_int: int
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
     test_str: str
 
     class Settings:
@@ -186,7 +170,7 @@ class DocumentTestModelWithCustomCollectionName(Document):
 
 class DocumentTestModelWithSimpleIndex(Document):
     test_int: Indexed(int)
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
     test_str: Indexed(str, index_type=pymongo.TEXT)
 
 
@@ -210,7 +194,7 @@ class DocumentTestModelIndexFlagsAnnotated(Document):
 
 class DocumentTestModelWithComplexIndex(Document):
     test_int: int
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
     test_str: str
 
     class Settings:
@@ -230,7 +214,7 @@ class DocumentTestModelWithComplexIndex(Document):
 
 class DocumentTestModelWithDroppedIndex(Document):
     test_int: int
-    test_list: List[SubDocument]
+    test_list: list[SubDocument]
     test_str: str
 
     class Settings:
@@ -252,7 +236,7 @@ class DocumentTestModelFailInspection(Document):
 
 
 class DocumentWithDeprecatedHiddenField(Document):
-    test_hidden: Optional[List[str]] = Field(
+    test_hidden: list[str] | None = Field(
         default=None, json_schema_extra={"hidden": True}
     )
 
@@ -279,8 +263,8 @@ class DocumentWithCustomFiledsTypes(Document):
     ipv6interface: IPv6Interface
     ipv6network: IPv6Network
     timedelta: datetime.timedelta
-    set_type: Set[str]
-    tuple_type: Tuple[int, str]
+    set_type: set[str]
+    tuple_type: tuple[int, str]
     path: Path
 
     class Settings:
@@ -401,7 +385,7 @@ class InternalDoc(BaseModel):
     _private_field: str = PrivateAttr(default="TEST_PRIVATE")
     num: int = 100
     string: str = "test"
-    lst: List[int] = [1, 2, 3, 4, 5]
+    lst: list[int] = [1, 2, 3, 4, 5]
 
     def change_private(self):
         self._private_field = "PRIVATE_CHANGED"
@@ -514,13 +498,13 @@ class Lock(Document):
 class Window(Document):
     x: int
     y: int
-    lock: Optional[Link[Lock]] = None
+    lock: Link[Lock] | None = None
 
 
 class WindowWithValidationOnSave(Document):
     x: int
     y: int
-    lock: Optional[Link[Lock]] = None
+    lock: Link[Lock] | None = None
 
     class Settings:
         validate_on_save = True
@@ -528,8 +512,8 @@ class WindowWithValidationOnSave(Document):
 
 class Door(Document):
     t: int = 10
-    window: Optional[Link[Window]] = None
-    locks: Optional[List[Link[Lock]]] = None
+    window: Link[Window] | None = None
+    locks: list[Link[Lock]] | None = None
 
 
 class Roof(Document):
@@ -537,10 +521,10 @@ class Roof(Document):
 
 
 class House(Document):
-    windows: List[Link[Window]]
+    windows: list[Link[Window]]
     door: Link[Door]
-    roof: Optional[Link[Roof]] = None
-    yards: Optional[List[Link[Yard]]] = None
+    roof: Link[Roof] | None = None
+    yards: list[Link[Yard]] | None = None
     height: Indexed(int) = 2
     name: Indexed(str)
 
@@ -550,8 +534,8 @@ class House(Document):
 
 
 class DocumentForEncodingTest(Document):
-    bytes_field: Optional[bytes] = None
-    datetime_field: Optional[datetime.datetime] = None
+    bytes_field: bytes | None = None
+    datetime_field: datetime.datetime | None = None
 
 
 class DocumentWithTimeseries(Document):
@@ -588,7 +572,7 @@ class DocumentMultiModelOne(Document):
 class DocumentMultiModelTwo(Document):
     str_filed: str = "test"
     shared: int = 0
-    linked_doc: Optional[Link[DocumentMultiModelOne]] = None
+    linked_doc: Link[DocumentMultiModelOne] | None = None
 
     class Settings:
         union_doc = DocumentUnion
@@ -630,7 +614,7 @@ class WindowWithRevision(Document):
 
 
 class HouseWithRevision(Document):
-    windows: List[Link[WindowWithRevision]]
+    windows: list[Link[WindowWithRevision]]
 
     class Settings:
         use_revision = True
@@ -667,7 +651,7 @@ class Bicycle(Vehicle):
 class Fuelled(BaseModel):
     """Just a mixin"""
 
-    fuel: Optional[str] = None
+    fuel: str | None = None
 
 
 class Car(Vehicle, Fuelled):
@@ -683,7 +667,7 @@ class Bus(Car, Fuelled):
 
 class Owner(Document):
     name: str
-    vehicles: List[Link[Vehicle]] = []
+    vehicles: list[Link[Vehicle]] = []
 
 
 class MixinNonRoot(BaseModel):
@@ -708,14 +692,14 @@ class Child(BaseModel):
 
 
 class SampleWithMutableObjects(Document):
-    d: Dict[str, Child]
-    lst: List[Child]
+    d: dict[str, Child]
+    lst: list[Child]
 
 
 class SampleLazyParsing(Document):
     i: int
     s: str
-    lst: List[int] = Field(
+    lst: list[int] = Field(
         [],
     )
 
@@ -762,24 +746,24 @@ class StateAndDecimalFieldModel(Document):
 
 
 class Region(Document):
-    state: Optional[str] = "TEST"
-    city: Optional[str] = "TEST"
-    district: Optional[str] = "TEST"
+    state: str | None = "TEST"
+    city: str | None = "TEST"
+    district: str | None = "TEST"
 
 
 class UsersAddresses(Document):
-    region_id: Optional[Link[Region]] = None
-    phone_number: Optional[str] = None
-    street: Optional[str] = None
+    region_id: Link[Region] | None = None
+    phone_number: str | None = None
+    street: str | None = None
 
 
 class AddressView(BaseModel):
-    id: Optional[PydanticObjectId] = Field(alias="_id", default=None)
-    phone_number: Optional[str] = None
-    street: Optional[str] = None
-    state: Optional[str] = None
-    city: Optional[str] = None
-    district: Optional[str] = None
+    id: PydanticObjectId | None = Field(alias="_id", default=None)
+    phone_number: str | None = None
+    street: str | None = None
+    state: str | None = None
+    city: str | None = None
+    district: str | None = None
 
     class Settings:
         projection = {
@@ -793,7 +777,7 @@ class AddressView(BaseModel):
 
 
 class SelfLinked(Document):
-    item: Optional[Link["SelfLinked"]] = None
+    item: Link["SelfLinked"] | None = None
     s: str
 
     class Settings:
@@ -809,7 +793,7 @@ class LoopedLinksA(Document):
 
 
 class LoopedLinksB(Document):
-    a: Optional[Link[LoopedLinksA]] = None
+    a: Link[LoopedLinksA] | None = None
     s: str
 
 
@@ -846,12 +830,12 @@ class DocumentWithDecimalField(Document):
 
 
 class ModelWithOptionalField(BaseModel):
-    s: Optional[str] = None
+    s: str | None = None
     i: int
 
 
 class DocumentWithKeepNullsFalse(Document):
-    o: Optional[str] = None
+    o: str | None = None
     m: ModelWithOptionalField
 
     class Settings:
@@ -861,7 +845,7 @@ class DocumentWithKeepNullsFalse(Document):
 
 class DocumentWithRevisionAndKeepNullsFalse(Document):
     name: str
-    description: Optional[str] = None
+    description: str | None = None
 
     class Settings:
         use_revision = True
@@ -870,7 +854,7 @@ class DocumentWithRevisionAndKeepNullsFalse(Document):
 
 class DocumentWithExcludedField(Document):
     included_field: int
-    excluded_field: Optional[int] = Field(default=None, exclude=True)
+    excluded_field: int | None = Field(default=None, exclude=True)
 
 
 class ReleaseElemMatch(BaseModel):
@@ -880,7 +864,16 @@ class ReleaseElemMatch(BaseModel):
 
 
 class PackageElemMatch(Document):
-    releases: List[ReleaseElemMatch] = []
+    releases: list[ReleaseElemMatch] = []
+
+
+class DocumentToBeLinked(Document):
+    s: str = "TEST"
+
+
+class DocumentWithListOfLinks(Document):
+    links: list[Link[DocumentToBeLinked]]
+    s: str = "TEST"
 
 
 class DocumentWithLink(Document):
@@ -888,9 +881,24 @@ class DocumentWithLink(Document):
     s: str = "TEST"
 
 
-class DocumentWithOptionalLink(Document):
-    link: Optional[Link["DocumentWithBackLink"]]
+class DocumentWithListLink(Document):
+    link: list[Link["DocumentWithListBackLink"]]
     s: str = "TEST"
+
+
+class DocumentWithOptionalLink(Document):
+    link: Link["DocumentWithBackLink"] | None
+    s: str = "TEST"
+
+
+class DocumentWithUnionTypeExpressionOptionalLink(Document):
+    link: Link[DocumentToBeLinked] | None = None
+    link_list: list[Link[DocumentToBeLinked]] | None = None
+
+
+class DocumentWithOptionalTypingOptionalLink(Document):
+    link: Optional[Link[DocumentToBeLinked]] = None  # noqa: UP045
+    link_list: Optional[List[Link[DocumentToBeLinked]]] = None  # noqa: UP006, UP045
 
 
 class DocumentWithBackLink(Document):
@@ -901,48 +909,45 @@ class DocumentWithBackLink(Document):
 
 
 class DocumentWithOptionalBackLink(Document):
-    back_link: Optional[BackLink[DocumentWithLink]] = Field(
+    back_link: BackLink[DocumentWithLink] | None = Field(
         json_schema_extra={"original_field": "link"},
     )
     i: int = 1
 
 
-class DocumentWithListLink(Document):
-    link: List[Link["DocumentWithListBackLink"]]
-    s: str = "TEST"
-
-
 class DocumentWithListBackLink(Document):
-    back_link: List[BackLink[DocumentWithListLink]] = Field(
+    back_link: list[BackLink[DocumentWithListLink]] = Field(
         json_schema_extra={"original_field": "link"},
     )
     i: int = 1
 
 
 class DocumentWithOptionalListBackLink(Document):
-    back_link: Optional[List[BackLink[DocumentWithListLink]]] = Field(
+    back_link: list[BackLink[DocumentWithListLink]] | None = Field(
         json_schema_extra={"original_field": "link"},
     )
     i: int = 1
 
 
 class DocumentWithUnionTypeExpressionOptionalBackLink(Document):
-    back_link_list: type_union(List[BackLink[DocumentWithListLink]], None) = (
-        Field(json_schema_extra={"original_field": "link"})
-    )
-    back_link: type_union(BackLink[DocumentWithLink], None) = Field(
+    back_link_list: list[BackLink[DocumentWithListLink]] | None = Field(
         json_schema_extra={"original_field": "link"}
     )
+    back_link: BackLink[DocumentWithLink] | None = Field(
+        json_schema_extra={"original_field": "link"}
+    )
+
     i: int = 1
 
 
-class DocumentToBeLinked(Document):
-    s: str = "TEST"
-
-
-class DocumentWithListOfLinks(Document):
-    links: List[Link[DocumentToBeLinked]]
-    s: str = "TEST"
+class DocumentWithOptionalTypingOptionalBackLink(Document):
+    back_link_list: Optional[List[BackLink[DocumentWithListLink]]] = Field(  # noqa: UP006, UP045
+        json_schema_extra={"original_field": "link"}
+    )
+    back_link: Optional[BackLink[DocumentWithLink]] = Field(  # noqa: UP045
+        json_schema_extra={"original_field": "link"}
+    )
+    i: int = 1
 
 
 class DocumentWithTimeStampToTestConsistency(Document):
@@ -1011,7 +1016,7 @@ class DocumentWithTextIndexAndLink(Document):
 
 
 class DocumentWithList(Document):
-    list_values: List[str]
+    list_values: list[str]
 
 
 class DocumentWithBsonBinaryField(Document):
@@ -1019,7 +1024,7 @@ class DocumentWithBsonBinaryField(Document):
 
 
 class DocumentWithRootModelAsAField(Document):
-    pets: RootModel[List[str]]
+    pets: RootModel[list[str]]
 
 
 class DocWithCallWrapper(Document):
@@ -1035,7 +1040,7 @@ class DocumentWithHttpUrlField(Document):
 
 
 class DocumentWithComplexDictKey(Document):
-    dict_field: Dict[UUID, datetime.datetime]
+    dict_field: dict[UUID, datetime.datetime]
 
 
 class DocumentWithIndexedObjectId(Document):
@@ -1050,8 +1055,8 @@ class DocumentToTestSync(Document):
     n: Nested = Nested(
         integer=1, option_1=Option1(s="test"), union=Option1(s="test")
     )
-    o: Optional[Option2] = None
-    d: Dict[str, Any] = {}
+    o: Option2 | None = None
+    d: dict[str, Any] = {}
 
     class Settings:
         use_state_management = True
@@ -1076,7 +1081,7 @@ class DocumentWithBackLinkForNesting(Document):
 
 
 class LongSelfLink(Document):
-    link: Optional[Link["LongSelfLink"]] = None
+    link: Link["LongSelfLink"] | None = None
 
     class Settings:
         max_nesting_depth = 50
@@ -1088,11 +1093,11 @@ class DictEnum(str, Enum):
 
 
 class DocumentWithEnumKeysDict(Document):
-    color: Dict[DictEnum, str]
+    color: dict[DictEnum, str]
 
 
 class BsonRegexDoc(Document):
-    regex: Optional[Regex] = None
+    regex: Regex | None = None
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -1100,4 +1105,4 @@ class BsonRegexDoc(Document):
 
 
 class NativeRegexDoc(Document):
-    regex: Optional[re.Pattern]
+    regex: re.Pattern | None

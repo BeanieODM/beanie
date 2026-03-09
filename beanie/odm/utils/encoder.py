@@ -7,17 +7,15 @@ import operator
 import pathlib
 import re
 import uuid
-from enum import Enum
-from typing import (
-    Any,
+from collections.abc import (
     Callable,
     Container,
     Iterable,
     Mapping,
     MutableMapping,
-    Optional,
-    Tuple,
 )
+from enum import Enum
+from typing import Any
 
 import bson
 import pydantic
@@ -147,7 +145,7 @@ class Encoder:
 
     def _iter_model_items(
         self, obj: pydantic.BaseModel
-    ) -> Iterable[Tuple[str, Any]]:
+    ) -> Iterable[tuple[str, Any]]:
         keep_nulls = self.keep_nulls
         get_model_field = get_model_fields(obj).get
         for key, value in obj.__iter__():
@@ -160,25 +158,20 @@ class Encoder:
                 yield key, value
 
     def _should_exclude_field(
-        self, key: str, field_info: Optional[pydantic.fields.FieldInfo]
+        self, key: str, field_info: pydantic.fields.FieldInfo | None
     ):
-        exclude, include = (
-            self.exclude,
-            self.include,
-        )
-
-        if key in include:
+        if key in self.include:
             return False
 
         is_pydantic_excluded_field = (
             field_info is not None and field_info.exclude is True
         )
-        return key in exclude or is_pydantic_excluded_field
+        return key in self.exclude or is_pydantic_excluded_field
 
 
 def _get_encoder(
     obj: Any, custom_encoders: Mapping[type, SingleArgCallable]
-) -> Optional[SingleArgCallable]:
+) -> SingleArgCallable | None:
     encoder = custom_encoders.get(type(obj))
     if encoder is not None:
         return encoder

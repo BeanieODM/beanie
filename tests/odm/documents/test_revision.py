@@ -22,7 +22,7 @@ async def test_replace():
     doc.num_2 = 3
     await doc.replace()
 
-    for i in range(5):
+    for _ in range(5):
         found_doc = await DocumentWithRevisionTurnedOn.get(doc.id)
         found_doc.num_1 += 1
         await found_doc.replace()
@@ -44,7 +44,7 @@ async def test_update():
     await doc.update(Inc({DocumentWithRevisionTurnedOn.num_1: 1}))
     await doc.update(Inc({DocumentWithRevisionTurnedOn.num_1: 1}))
 
-    for i in range(5):
+    for _ in range(5):
         found_doc = await DocumentWithRevisionTurnedOn.get(doc.id)
         await found_doc.update(Inc({DocumentWithRevisionTurnedOn.num_1: 1}))
 
@@ -68,7 +68,7 @@ async def test_save_changes():
     doc.num_2 = 3
     await doc.save_changes()
 
-    for i in range(5):
+    for _ in range(5):
         found_doc = await DocumentWithRevisionTurnedOn.get(doc.id)
         found_doc.num_1 += 1
         await found_doc.save_changes()
@@ -91,7 +91,7 @@ async def test_save():
     doc.num_2 = 3
     await doc.save()
 
-    for i in range(5):
+    for _ in range(5):
         found_doc = await DocumentWithRevisionTurnedOn.get(doc.id)
         found_doc.num_1 += 1
         await found_doc.save()
@@ -121,7 +121,7 @@ async def test_update_bulk_writer():
 
     doc = await DocumentWithRevisionTurnedOn.get(doc.id)
 
-    for i in range(5):
+    for _ in range(5):
         found_doc = await DocumentWithRevisionTurnedOn.get(doc.id)
         found_doc.num_1 += 1
         async with BulkWriter() as bulk_writer:

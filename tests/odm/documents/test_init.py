@@ -18,15 +18,19 @@ from tests.odm.models import (
     DocumentTestModelWithIndexFlags,
     DocumentTestModelWithIndexFlagsAliases,
     DocumentTestModelWithSimpleIndex,
+    DocumentToBeLinked,
     DocumentWithCustomInit,
     DocumentWithIndexMerging2,
     DocumentWithLink,
     DocumentWithListLink,
+    DocumentWithOptionalTypingOptionalBackLink,
+    DocumentWithOptionalTypingOptionalLink,
     DocumentWithUnionTypeExpressionOptionalBackLink,
+    DocumentWithUnionTypeExpressionOptionalLink,
 )
 
 
-async def test_init_collection_was_not_initialized():
+def test_init_collection_was_not_initialized():
     class NewDocument(Document):
         test_str: str
 
@@ -97,7 +101,7 @@ async def test_metadata_database(db):
     )
 
 
-async def test_collection_with_custom_name():
+def test_collection_with_custom_name():
     collection = (
         DocumentTestModelWithCustomCollectionName.get_pymongo_collection()
     )
@@ -279,7 +283,7 @@ async def test_document_string_import(db):
         )
 
 
-async def test_projection():
+def test_projection():
     projection = get_projection(DocumentTestModel)
     assert projection == {
         "_id": 1,
@@ -340,7 +344,7 @@ async def test_merge_indexes():
     )
 
 
-async def test_custom_init():
+def test_custom_init():
     assert DocumentWithCustomInit.s == "TEST2"
 
 
@@ -361,6 +365,36 @@ async def test_index_on_custom_types(db):
     await db.drop_collection("sample")
 
 
+async def test_init_document_with_union_type_expression_optional_link(db):
+    await init_beanie(
+        database=db,
+        document_models=[
+            DocumentToBeLinked,
+            DocumentWithUnionTypeExpressionOptionalLink,
+        ],
+    )
+
+    assert (
+        DocumentWithUnionTypeExpressionOptionalLink.get_link_fields().keys()
+        == {"link", "link_list"}
+    )
+
+
+async def test_init_document_with_typing_optional_link(db):
+    await init_beanie(
+        database=db,
+        document_models=[
+            DocumentToBeLinked,
+            DocumentWithOptionalTypingOptionalLink,
+        ],
+    )
+
+    assert DocumentWithOptionalTypingOptionalLink.get_link_fields().keys() == {
+        "link",
+        "link_list",
+    }
+
+
 async def test_init_document_with_union_type_expression_optional_back_link(db):
     await init_beanie(
         database=db,
@@ -377,6 +411,22 @@ async def test_init_document_with_union_type_expression_optional_back_link(db):
             "back_link_list",
             "back_link",
         }
+    )
+
+
+async def test_init_document_with_typing_optional_back_link(db):
+    await init_beanie(
+        database=db,
+        document_models=[
+            DocumentWithOptionalTypingOptionalBackLink,
+            DocumentWithListLink,
+            DocumentWithLink,
+        ],
+    )
+
+    assert (
+        DocumentWithOptionalTypingOptionalBackLink.get_link_fields().keys()
+        == {"back_link_list", "back_link"}
     )
 
 

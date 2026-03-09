@@ -1,5 +1,6 @@
 from abc import ABC
-from typing import Any, Dict, Mapping, Union
+from collections.abc import Mapping
+from typing import Any
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -13,9 +14,9 @@ class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
 
     def __init__(
         self,
-        *expressions: Union[
-            BaseFindOperator, Dict[str, Any], Mapping[str, Any], bool
-        ],
+        *expressions: (
+            BaseFindOperator | dict[str, Any] | Mapping[str, Any] | bool
+        ),
     ):
         self.expressions = list(expressions)
 
@@ -108,9 +109,9 @@ class Nor(BaseFindLogicalOperator):
 
     def __init__(
         self,
-        *expressions: Union[
-            BaseFindOperator, Dict[str, Any], Mapping[str, Any], bool
-        ],
+        *expressions: (
+            BaseFindOperator | dict[str, Any] | Mapping[str, Any] | bool
+        ),
     ):
         self.expressions = list(expressions)
 

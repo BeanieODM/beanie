@@ -76,7 +76,6 @@ __all__ = [
     # Element
     "Exists",
     "Type",
-    "Type",
     # Evaluation
     "Expr",
     "JsonSchema",

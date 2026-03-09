@@ -1,8 +1,7 @@
-from typing import Optional, Union
+from typing import Annotated, Optional, Union
 
 import pytest
 from pydantic import BaseModel
-from typing_extensions import Annotated
 
 from beanie import Document, Link
 from beanie.odm.fields import Indexed
@@ -17,11 +16,11 @@ class Lock(Document):
 class TestTyping:
     def test_extract_id_class(self):
         # Union
-        assert extract_id_class(Union[str, int]) is str
-        assert extract_id_class(Union[str, None]) is str
-        assert extract_id_class(Union[str, None, int]) is str
+        assert extract_id_class(Union[str, int]) is str  # noqa: UP007
+        assert extract_id_class(Union[str, None]) is str  # noqa: UP007
+        assert extract_id_class(Union[str, None, int]) is str  # noqa: UP007
         # Optional
-        assert extract_id_class(Optional[str]) is str
+        assert extract_id_class(Optional[str]) is str  # noqa: UP045
         # Link
         assert extract_id_class(Link[Lock]) == Lock
 

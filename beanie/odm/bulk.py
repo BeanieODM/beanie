@@ -1,7 +1,6 @@
-from __future__ import annotations
-
+from collections.abc import Mapping
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 from pymongo import (
     DeleteMany,
@@ -13,19 +12,20 @@ from pymongo import (
 )
 from pymongo.asynchronous.client_session import AsyncClientSession
 from pymongo.results import BulkWriteResult
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     from beanie import Document
     from beanie.odm.union_doc import UnionDoc
 
-_WriteOp = Union[
-    InsertOne[Mapping[Any, Any]],
-    DeleteOne,
-    DeleteMany,
-    ReplaceOne[Mapping[Any, Any]],
-    UpdateOne,
-    UpdateMany,
-]
+_WriteOp: TypeAlias = (
+    InsertOne[Mapping[Any, Any]]
+    | DeleteOne
+    | DeleteMany
+    | ReplaceOne[Mapping[Any, Any]]
+    | UpdateOne
+    | UpdateMany
+)
 
 
 class BulkWriter:
@@ -72,35 +72,35 @@ class BulkWriter:
 
     def __init__(
         self,
-        session: Optional[AsyncClientSession] = None,
+        session: AsyncClientSession | None = None,
         ordered: bool = True,
-        object_class: Optional[Type[Union[Document, UnionDoc]]] = None,
-        bypass_document_validation: Optional[bool] = False,
-        comment: Optional[Any] = None,
+        object_class: type["Document"] | type["UnionDoc"] | None = None,
+        bypass_document_validation: bool | None = False,
+        comment: Any | None = None,
     ) -> None:
-        self.operations: List[_WriteOp] = []
+        self.operations: list[_WriteOp] = []
         self.session = session
         self.ordered = ordered
         self.object_class = object_class
         self.bypass_document_validation = bypass_document_validation
         self.comment = comment
-        self._collection_name: Optional[str] = (
+        self._collection_name: str | None = (
             object_class.get_collection_name() if object_class else None
         )
 
-    async def __aenter__(self) -> "BulkWriter":
+    async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc: Optional[BaseException],
-        tb: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
     ) -> None:
         if exc_type is None:
             await self.commit()
 
-    async def commit(self) -> Optional[BulkWriteResult]:
+    async def commit(self) -> BulkWriteResult | None:
         """
         Commit all queued operations to the database.
 
@@ -130,7 +130,7 @@ class BulkWriter:
 
     def add_operation(
         self,
-        object_class: Type[Union[Document, UnionDoc]],
+        object_class: type["Document"] | type["UnionDoc"],
         operation: _WriteOp,
     ):
         """
