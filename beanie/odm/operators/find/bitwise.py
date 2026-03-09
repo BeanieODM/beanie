@@ -1,5 +1,3 @@
-from typing import Union
-
 from beanie.odm.fields import ExpressionField
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -7,7 +5,7 @@ from beanie.odm.operators.find import BaseFindOperator
 class BaseFindBitwiseOperator(BaseFindOperator):
     operator = ""
 
-    def __init__(self, field: Union[str, ExpressionField], bitmask):
+    def __init__(self, field: str | ExpressionField, bitmask):
         self.field = field
         self.bitmask = bitmask
 

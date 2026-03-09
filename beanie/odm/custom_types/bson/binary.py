@@ -1,8 +1,7 @@
-from typing import Any
+from typing import Annotated, Any
 
 import bson
 import pydantic
-from typing_extensions import Annotated
 
 
 def _to_bson_binary(value: Any) -> bson.Binary:

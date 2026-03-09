@@ -10,12 +10,12 @@ async def test_delete_many(preset_documents):
         await Sample.find_many(Sample.integer > 1)
         .find_many(Sample.nested.optional == None)
         .count()
-    )  # noqa
+    )
     delete_result = (
         await Sample.find_many(Sample.integer > 1)
         .find_many(Sample.nested.optional == None)
         .delete()
-    )  # noqa
+    )
     count_deleted = delete_result.deleted_count
     count_after = await Sample.count()
     assert count_before - count_find == count_after
@@ -25,7 +25,7 @@ async def test_delete_many(preset_documents):
         .find_many(Sample.nested.optional == None)
         .delete_many(),
         DeleteMany,
-    )  # noqa
+    )
 
 
 async def test_delete_all(preset_documents):
@@ -43,7 +43,7 @@ async def test_delete_self(preset_documents):
         await Sample.find_many(Sample.integer > 1)
         .find_many(Sample.nested.optional == None)
         .to_list()
-    )  # noqa
+    )
     a = result[0]
     delete_result = await a.delete()
     count_deleted = delete_result.deleted_count
@@ -58,7 +58,7 @@ async def test_delete_one(preset_documents):
         await Sample.find_one(Sample.integer > 1)
         .find_one(Sample.nested.optional == None)
         .delete()
-    )  # noqa
+    )
     count_after = await Sample.count()
     count_deleted = delete_result.deleted_count
     assert count_before == count_after + 1
@@ -69,7 +69,7 @@ async def test_delete_one(preset_documents):
         await Sample.find_one(Sample.integer > 1)
         .find_one(Sample.nested.optional == None)
         .delete_one()
-    )  # noqa
+    )
     count_deleted = delete_result.deleted_count
     count_after = await Sample.count()
     assert count_before == count_after + 1
@@ -82,12 +82,12 @@ async def test_delete_many_with_session(preset_documents, session):
         await Sample.find_many(Sample.integer > 1)
         .find_many(Sample.nested.optional == None)
         .count()
-    )  # noqa
+    )
     q = (
         Sample.find_many(Sample.integer > 1)
         .find_many(Sample.nested.optional == None)
         .delete(session=session)
-    )  # noqa
+    )
     assert q.session == session
 
     q = (
@@ -95,7 +95,7 @@ async def test_delete_many_with_session(preset_documents, session):
         .find_many(Sample.nested.optional == None)
         .delete()
         .set_session(session=session)
-    )  # noqa
+    )
 
     assert q.session == session
 

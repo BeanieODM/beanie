@@ -4,7 +4,7 @@ from beanie.odm.operators.find.logical import And, Nor, Not, Or
 from tests.odm.models import Sample
 
 
-async def test_and():
+def test_and():
     q = And(Sample.integer == 1)
     assert q == {"integer": 1}
 
@@ -24,7 +24,7 @@ async def test_not(preset_documents):
         await Sample.find(q).to_list()
 
 
-async def test_nor():
+def test_nor():
     q = Nor(Sample.integer == 1)
     assert q == {"$nor": [{"integer": 1}]}
 
@@ -32,7 +32,7 @@ async def test_nor():
     assert q == {"$nor": [{"integer": 1}, {"nested.integer": {"$gt": 3}}]}
 
 
-async def test_or():
+def test_or():
     q = Or(Sample.integer == 1)
     assert q == {"integer": 1}
 

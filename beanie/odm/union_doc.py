@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Dict, Optional, Type, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pymongo.asynchronous.client_session import AsyncClientSession
 
@@ -19,7 +19,7 @@ class UnionDoc(
     OtherGettersInterface,
     DetectionInterface,
 ):
-    _document_models: ClassVar[Optional[Dict[str, Type]]] = None
+    _document_models: ClassVar[dict[str, type] | None] = None
     _is_inited: ClassVar[bool] = False
     _settings: ClassVar[UnionDocSettings]
 
@@ -28,7 +28,7 @@ class UnionDoc(
         return cls._settings
 
     @classmethod
-    def register_doc(cls, name: str, doc_model: Type):
+    def register_doc(cls, name: str, doc_model: type):
         if cls._document_models is None:
             cls._document_models = {}
 
@@ -45,10 +45,10 @@ class UnionDoc(
     @classmethod
     def bulk_writer(
         cls,
-        session: Optional[AsyncClientSession] = None,
+        session: AsyncClientSession | None = None,
         ordered: bool = True,
         bypass_document_validation: bool = False,
-        comment: Optional[Any] = None,
+        comment: Any | None = None,
     ) -> BulkWriter:
         """
         Returns a BulkWriter instance for handling bulk write operations.

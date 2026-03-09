@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, Optional, Type, TypeVar, Union, overload
+from typing import Any, TypeVar, overload
 
 from pydantic import BaseModel
 from pymongo.asynchronous.client_session import AsyncClientSession
@@ -21,37 +21,37 @@ class AggregateInterface:
     @overload
     @classmethod
     def aggregate(
-        cls: Type[DocType],
+        cls: type[DocType],
         aggregation_pipeline: list,
         projection_model: None = None,
-        session: Optional[AsyncClientSession] = None,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
-    ) -> AggregationQuery[Dict[str, Any]]: ...
+    ) -> AggregationQuery[dict[str, Any]]: ...
 
     @overload
     @classmethod
     def aggregate(
-        cls: Type[DocType],
+        cls: type[DocType],
         aggregation_pipeline: list,
-        projection_model: Type[DocumentProjectionType],
-        session: Optional[AsyncClientSession] = None,
+        projection_model: type[DocumentProjectionType],
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
     ) -> AggregationQuery[DocumentProjectionType]: ...
 
     @classmethod
     def aggregate(
-        cls: Type[DocType],
+        cls: type[DocType],
         aggregation_pipeline: list,
-        projection_model: Optional[Type[DocumentProjectionType]] = None,
-        session: Optional[AsyncClientSession] = None,
+        projection_model: type[DocumentProjectionType] | None = None,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         **pymongo_kwargs: Any,
-    ) -> Union[
-        AggregationQuery[Dict[str, Any]],
-        AggregationQuery[DocumentProjectionType],
-    ]:
+    ) -> (
+        AggregationQuery[dict[str, Any]]
+        | AggregationQuery[DocumentProjectionType]
+    ):
         """
         Aggregate over collection.
         Returns [AggregationQuery](query.md#aggregationquery) query object
@@ -73,10 +73,10 @@ class AggregateInterface:
     @classmethod
     async def sum(
         cls,
-        field: Union[ExpressionField, float, int, str],
-        session: Optional[AsyncClientSession] = None,
+        field: ExpressionField | float | int | str,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
-    ) -> Optional[float]:
+    ) -> float | None:
         """
         Sum of values of the given field over the entire collection.
 
@@ -101,10 +101,10 @@ class AggregateInterface:
     @classmethod
     async def avg(
         cls,
-        field: Union[ExpressionField, float, int, str],
-        session: Optional[AsyncClientSession] = None,
+        field: ExpressionField | float | int | str,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
-    ) -> Optional[float]:
+    ) -> float | None:
         """
         Average of values of the given field over the entire collection.
 
@@ -128,10 +128,10 @@ class AggregateInterface:
     @classmethod
     async def max(
         cls,
-        field: Union[ExpressionField, str, Any],
-        session: Optional[AsyncClientSession] = None,
+        field: ExpressionField | str | Any,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """
         Max of the values of the given field over the entire collection.
 
@@ -154,10 +154,10 @@ class AggregateInterface:
     @classmethod
     async def min(
         cls,
-        field: Union[ExpressionField, str, Any],
-        session: Optional[AsyncClientSession] = None,
+        field: ExpressionField | str | Any,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """
         Min of the values of the given field over the entire collection.
 

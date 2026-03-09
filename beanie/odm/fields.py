@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import asyncio
 from collections import OrderedDict
 from dataclasses import dataclass
@@ -7,16 +5,10 @@ from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
-    Dict,
     Generic,
-    List,
-    Optional,
-    Tuple,
-    Type,
     TypeVar,
-    Union,
+    get_args,
 )
-from typing import OrderedDict as OrderedDictType
 
 from bson import DBRef, ObjectId
 from bson.errors import InvalidId
@@ -30,7 +22,6 @@ from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema
 from pydantic_core.core_schema import CoreSchema, ValidationInfo
 from pymongo import ASCENDING, IndexModel
-from typing_extensions import get_args
 
 from beanie.odm.enums import SortDirection
 from beanie.odm.operators.find.comparison import (
@@ -51,7 +42,7 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class IndexedAnnotation:
-    _indexed: Tuple[int, Dict[str, Any]]
+    _indexed: tuple[int, dict[str, Any]]
 
 
 def Indexed(typ=None, index_type=ASCENDING, **kwargs: Any):
@@ -84,7 +75,7 @@ def Indexed(typ=None, index_type=ASCENDING, **kwargs: Any):
 
         @classmethod
         def __get_pydantic_core_schema__(
-            cls, _source_type: Type[Any], _handler: GetCoreSchemaHandler
+            cls, _source_type: type[Any], _handler: GetCoreSchemaHandler
         ) -> CoreSchema:
             custom_type = getattr(typ, "__get_pydantic_core_schema__", None)
             if custom_type is not None:
@@ -114,7 +105,7 @@ class PydanticObjectId(ObjectId):
 
     @classmethod
     def __get_pydantic_core_schema__(
-        cls, source_type: Type[Any], handler: GetCoreSchemaHandler
+        cls, source_type: type[Any], handler: GetCoreSchemaHandler
     ) -> CoreSchema:
         definition = core_schema.definition_reference_schema(
             "PydanticObjectId"
@@ -210,7 +201,7 @@ class ExpressionField(str):
 
     def __eq__(self, other):
         if isinstance(other, ExpressionField):
-            return super(ExpressionField, self).__eq__(other)
+            return super().__eq__(other)
         return Eq(field=self, other=other)
 
     def __gt__(self, other):
@@ -266,9 +257,9 @@ class LinkTypes(str, Enum):
 class LinkInfo(BaseModel):
     field_name: str
     lookup_field_name: str
-    document_class: Type[BaseModel]  # Document class
+    document_class: type[BaseModel]  # Document class
     link_type: LinkTypes
-    nested_links: Optional[Dict] = None
+    nested_links: dict | None = None
     is_fetchable: bool = True
 
 
@@ -276,24 +267,24 @@ T = TypeVar("T")
 
 
 class Link(Generic[T]):
-    def __init__(self, ref: DBRef, document_class: Type[T]):
+    def __init__(self, ref: DBRef, document_class: type[T]):
         self.ref = ref
         self.document_class = document_class
 
-    async def fetch(self, fetch_links: bool = False) -> Union[T, Link[T]]:
+    async def fetch(self, fetch_links: bool = False) -> "T | Link[T]":
         result = await self.document_class.get(  # type: ignore
             self.ref.id, with_children=True, fetch_links=fetch_links
         )
         return result or self
 
     @classmethod
-    async def fetch_one(cls, link: Link[T]):
+    async def fetch_one(cls, link: "Link[T]"):
         return await link.fetch()
 
     @classmethod
     async def fetch_list(
         cls,
-        links: List[Union[Link[T], DocType]],
+        links: list["Link[T] | DocType"],
         fetch_links: bool = False,
     ):
         """
@@ -305,7 +296,7 @@ class Link(Generic[T]):
         data = Link.repack_links(links)  # type: ignore
         ids_to_fetch = []
         document_class = None
-        for doc_id, link in data.items():
+        for _doc_id, link in data.items():
             if isinstance(link, Link):
                 if document_class is None:
                     document_class = link.document_class
@@ -330,8 +321,8 @@ class Link(Generic[T]):
 
     @staticmethod
     def repack_links(
-        links: List[Union[Link[T], DocType]],
-    ) -> OrderedDictType[Any, Any]:
+        links: list["Link[T] | DocType"],
+    ) -> OrderedDict[Any, Any]:
         result = OrderedDict()
         for link in links:
             if isinstance(link, Link):
@@ -341,26 +332,26 @@ class Link(Generic[T]):
         return result
 
     @classmethod
-    async def fetch_many(cls, links: List[Link[T]]) -> List[Union[T, Link[T]]]:
+    async def fetch_many(cls, links: list["Link[T]"]) -> list["T | Link[T]"]:
         coros = []
         for link in links:
             coros.append(link.fetch())
         return await asyncio.gather(*coros)
 
     @staticmethod
-    def serialize(value: Union[Link[T], BaseModel]):
+    def serialize(value: "Link[T] | BaseModel"):
         if isinstance(value, Link):
             return value.to_dict()
         return value.model_dump(mode="json")
 
     @classmethod
     def wrapped_validate(
-        cls, source_type: Type[Any], handler: GetCoreSchemaHandler
+        cls, source_type: type[Any], handler: GetCoreSchemaHandler
     ):
         def validate(
-            v: Union[Link[T], T, DBRef, dict[str, Any]],
+            v: "Link[T] | T | DBRef | dict[str, Any]",
             validation_info: ValidationInfo,
-        ) -> Link[T] | T:
+        ) -> "Link[T] | T":
             document_class = DocsRegistry.evaluate_fr(  # type: ignore
                 get_args(source_type)[0]
             )
@@ -379,7 +370,7 @@ class Link(Generic[T]):
                     ),
                     document_class=document_class,
                 )
-            if isinstance(v, dict) or isinstance(v, BaseModel):
+            if isinstance(v, (dict, BaseModel)):
                 return parse_obj(document_class, v)
 
             # Default fallback case for unknown type
@@ -395,7 +386,7 @@ class Link(Generic[T]):
 
     @classmethod
     def __get_pydantic_core_schema__(
-        cls, source_type: Type[Any], handler: GetCoreSchemaHandler
+        cls, source_type: type[Any], handler: GetCoreSchemaHandler
     ) -> CoreSchema:
         return core_schema.json_or_python_schema(
             python_schema=core_schema.with_info_plain_validator_function(
@@ -435,20 +426,20 @@ class Link(Generic[T]):
 class BackLink(Generic[T]):
     """Back reference to a document"""
 
-    def __init__(self, document_class: Type[T]):
+    def __init__(self, document_class: type[T]):
         self.document_class = document_class
 
     @classmethod
     def wrapped_validate(
-        cls, source_type: Type[Any], handler: GetCoreSchemaHandler
+        cls, source_type: type[Any], handler: GetCoreSchemaHandler
     ):
         def validate(
-            v: Union[T, dict[str, Any]], validation_info: ValidationInfo
-        ) -> BackLink[T] | T:
+            v: T | dict[str, Any], validation_info: ValidationInfo
+        ) -> "BackLink[T] | T":
             document_class = DocsRegistry.evaluate_fr(  # type: ignore
                 get_args(source_type)[0]
             )
-            if isinstance(v, dict) or isinstance(v, BaseModel):
+            if isinstance(v, (dict, BaseModel)):
                 return parse_obj(document_class, v)
             return cls(document_class=document_class)
 
@@ -456,7 +447,7 @@ class BackLink(Generic[T]):
 
     @classmethod
     def __get_pydantic_core_schema__(
-        cls, source_type: Type[Any], handler: GetCoreSchemaHandler
+        cls, source_type: type[Any], handler: GetCoreSchemaHandler
     ) -> CoreSchema:
         # NOTE: BackLinks are only virtual fields, they shouldn't be serialized nor appear in the schema.
         return core_schema.json_or_python_schema(
@@ -503,7 +494,7 @@ class IndexModelField:
 
     @staticmethod
     def list_difference(
-        left: List[IndexModelField], right: List[IndexModelField]
+        left: list["IndexModelField"], right: list["IndexModelField"]
     ):
         result = []
         for index in left:
@@ -512,7 +503,7 @@ class IndexModelField:
         return result
 
     @staticmethod
-    def list_to_index_model(left: List[IndexModelField]):
+    def list_to_index_model(left: list["IndexModelField"]):
         return [index.index for index in left]
 
     @classmethod
@@ -530,12 +521,12 @@ class IndexModelField:
             result.append(index_model)
         return result
 
-    def same_fields(self, other: IndexModelField):
+    def same_fields(self, other: "IndexModelField"):
         return self.fields == other.fields
 
     @staticmethod
     def find_index_with_the_same_fields(
-        indexes: List[IndexModelField], index: IndexModelField
+        indexes: list["IndexModelField"], index: "IndexModelField"
     ):
         for i in indexes:
             if i.same_fields(index):
@@ -544,7 +535,7 @@ class IndexModelField:
 
     @staticmethod
     def merge_indexes(
-        left: List[IndexModelField], right: List[IndexModelField]
+        left: list["IndexModelField"], right: list["IndexModelField"]
     ):
         left_dict = {index.fields: index for index in left}
         right_dict = {index.fields: index for index in right}
@@ -560,6 +551,6 @@ class IndexModelField:
 
     @classmethod
     def __get_pydantic_core_schema__(
-        cls, source_type: Type[Any], handler: GetCoreSchemaHandler
+        cls, source_type: type[Any], handler: GetCoreSchemaHandler
     ) -> CoreSchema:
         return core_schema.no_info_plain_validator_function(cls._validate)

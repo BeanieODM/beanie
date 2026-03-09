@@ -91,7 +91,7 @@ async def test_bytes():
     assert isinstance(new_doc.bytes_field, bytes)
 
 
-async def test_bytes_already_binary():
+def test_bytes_already_binary():
     b = Binary(b"123", 3)
     encoded_b = Encoder().encode(b)
     assert isinstance(encoded_b, Binary)
@@ -137,7 +137,7 @@ def test_keep_nulls_false():
     assert encoded_doc == {"m": {"i": 10}}
 
 
-async def test_excluded():
+def test_excluded():
     doc = DocumentWithExcludedField(included_field=1, excluded_field=2)
     encoded_doc = Encoder().encode(doc)
     assert "included_field" in encoded_doc

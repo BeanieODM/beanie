@@ -1,7 +1,7 @@
 import collections
 import datetime
 from datetime import timedelta, timezone
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -19,7 +19,7 @@ class LRUCache:
         self.expiration_time: timedelta = expiration_time
         self.cache: collections.OrderedDict = collections.OrderedDict()
 
-    def get(self, key) -> Optional[CachedItem]:
+    def get(self, key) -> CachedItem | None:
         try:
             item: CachedItem = self.cache.pop(key)
             if (

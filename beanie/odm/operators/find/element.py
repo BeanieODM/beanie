@@ -1,5 +1,4 @@
 from abc import ABC
-from typing import List, Union
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -66,7 +65,7 @@ class Type(BaseFindElementOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/type/>
     """
 
-    def __init__(self, field, types: Union[List[str], str]):
+    def __init__(self, field, types: list[str] | str):
         self.field = field
         self.types = types
 
