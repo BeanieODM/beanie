@@ -125,7 +125,7 @@ include = ["tests/typing", "beanie"]
 [tool.ruff]
 line-length = 79
 fix = true
-target-version = "py39"
+target-version = "py310"
 include = ["**/*.py", ".github/**/*.py"]
 
 [tool.ruff.lint]
