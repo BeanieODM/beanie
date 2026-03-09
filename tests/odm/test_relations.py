@@ -922,7 +922,7 @@ class TestSaveBackLinks:
 
         Regression test for https://github.com/BeanieODM/beanie/issues/1006.
         """
-        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        _, back_link_doc = list_link_and_list_backlink_doc_pair
         back_link_doc = await DocumentWithListBackLink.get(
             back_link_doc.id, fetch_links=True
         )
