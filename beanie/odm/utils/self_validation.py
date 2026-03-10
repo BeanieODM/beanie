@@ -16,7 +16,7 @@ def validate_self_before(
 ) -> "AsyncDocMethod[P, R]":
     @wraps(f)
     async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self = cast(Document, args[0])
+        self = cast("Document", args[0])
         await self.validate_self()
         return await f(*args, **kwargs)
 

@@ -221,7 +221,7 @@ def wrap_with_actions(
                 kwargs.get("skip_actions") or []  # type: ignore[assignment]
             )
 
-            self = cast(Document, args[0])
+            self = cast("Document", args[0])
 
             await ActionRegistry.run_actions(
                 self,
