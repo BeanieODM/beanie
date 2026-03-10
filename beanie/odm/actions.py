@@ -213,7 +213,7 @@ def wrap_with_actions(
         f: "AsyncDocMethod[P, R]",
     ) -> "AsyncDocMethod[P, R]":
         @wraps(f)
-        async def wrapper(  # type: ignore
+        async def wrapper(
             *args: P.args,
             **kwargs: P.kwargs,
         ) -> R:
@@ -232,7 +232,6 @@ def wrap_with_actions(
 
             result = await f(
                 *args,
-                skip_actions=skip_actions,  # type: ignore[arg-type]
                 **kwargs,
             )
 
@@ -245,6 +244,6 @@ def wrap_with_actions(
 
             return result
 
-        return wrapper  # type: ignore[return-value]
+        return wrapper
 
     return decorator
