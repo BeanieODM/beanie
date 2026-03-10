@@ -230,7 +230,7 @@ def wrap_with_actions(
                 exclude=skip_actions,
             )
 
-            result = await f(*args,**kwargs)
+            result = await f(*args, **kwargs)
 
             await ActionRegistry.run_actions(
                 self,
