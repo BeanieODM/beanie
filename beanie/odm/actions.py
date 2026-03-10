@@ -7,6 +7,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     TypeVar,
+    cast,
 )
 
 from typing_extensions import ParamSpec
@@ -214,13 +215,13 @@ def wrap_with_actions(
         @wraps(f)
         async def wrapper(  # type: ignore
             *args: P.args,
-            skip_actions: list[ActionDirections | str] | None = None,
             **kwargs: P.kwargs,
         ) -> R:
-            if skip_actions is None:
-                skip_actions = []
+            skip_actions: list[ActionDirections | str] = (
+                kwargs.pop("skip_actions") or []  # type: ignore[assignment]
+            )
 
-            self: Document = args[0]  # type: ignore
+            self = cast(Document, args[0])
 
             await ActionRegistry.run_actions(
                 self,

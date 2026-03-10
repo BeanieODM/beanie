@@ -1,6 +1,6 @@
 import inspect
 from functools import wraps
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, TypeVar, cast
 
 from typing_extensions import ParamSpec
 
@@ -28,13 +28,13 @@ def saved_state_needed(
 ) -> "AnyDocMethod[P, R]":
     @wraps(f)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: Document = args[0]  # type: ignore
+        self = cast(Document, args[0])
         check_if_state_saved(self)
         return f(*args, **kwargs)
 
     @wraps(f)
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: Document = args[0]  # type: ignore
+        self = cast(Document, args[0])
         check_if_state_saved(self)
         # type ignore because there is no nice/proper way to annotate both sync
         # and async case without parametrized TypeVar, which is not supported
@@ -63,13 +63,13 @@ def previous_saved_state_needed(
 ) -> "AnyDocMethod[P, R]":
     @wraps(f)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: Document = args[0]  # type: ignore
+        self = cast(Document, args[0])
         check_if_previous_state_saved(self)
         return f(*args, **kwargs)
 
     @wraps(f)
     async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: Document = args[0]  # type: ignore
+        self = cast(Document, args[0])
         check_if_previous_state_saved(self)
         # type ignore because there is no nice/proper way to annotate both sync
         # and async case without parametrized TypeVar, which is not supported
@@ -87,7 +87,7 @@ def save_state_after(
 ) -> "AsyncDocMethod[P, R]":
     @wraps(f)
     async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: Document = args[0]  # type: ignore
+        self = cast(Document, args[0])
         result = await f(*args, **kwargs)
         self._save_state()
         return result

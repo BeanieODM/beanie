@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, TypeVar, cast
 
 from typing_extensions import ParamSpec
 
@@ -16,8 +16,8 @@ def validate_self_before(
 ) -> "AsyncDocMethod[P, R]":
     @wraps(f)
     async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self: Document = args[0]  # type: ignore
-        await self.validate_self(*args, **kwargs)
+        self = cast(Document, args[0])
+        await self.validate_self()
         return await f(*args, **kwargs)
 
     return wrapper
