@@ -218,7 +218,7 @@ def wrap_with_actions(
             **kwargs: P.kwargs,
         ) -> R:
             skip_actions: list[ActionDirections | str] = (
-                kwargs.get("skip_actions") or []  # type: ignore[assignment]
+                kwargs.pop("skip_actions") or []  # type: ignore[assignment]
             )
 
             self = cast("Document", args[0])
@@ -232,6 +232,7 @@ def wrap_with_actions(
 
             result = await f(
                 *args,
+                skip_actions=skip_actions,  # type: ignore[arg-type]
                 **kwargs,
             )
 
