@@ -7,12 +7,13 @@ from typing import (
     TYPE_CHECKING,
     Any,
     TypeVar,
+    cast,
 )
 
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import AsyncDocMethod, DocType, Document
+    from beanie.odm.documents import AsyncDocMethod, Document
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -200,7 +201,7 @@ def after_event(
 
 def wrap_with_actions(
     event_type: EventTypes,
-) -> Callable[["AsyncDocMethod[DocType, P, R]"], Any]:
+) -> Callable[["AsyncDocMethod[P, R]"], "AsyncDocMethod[P, R]"]:
     """
     Helper function to wrap Document methods with
     before and after event listeners
@@ -209,17 +210,18 @@ def wrap_with_actions(
     """
 
     def decorator(
-        f: "AsyncDocMethod[DocType, P, R]",
-    ) -> "AsyncDocMethod[DocType, P, R]":
+        f: "AsyncDocMethod[P, R]",
+    ) -> "AsyncDocMethod[P, R]":
         @wraps(f)
-        async def wrapper(  # type: ignore
-            self: "DocType",
+        async def wrapper(
             *args: P.args,
-            skip_actions: list[ActionDirections | str] | None = None,
             **kwargs: P.kwargs,
         ) -> R:
-            if skip_actions is None:
-                skip_actions = []
+            skip_actions: list[ActionDirections | str] = (
+                kwargs.get("skip_actions") or []  # type: ignore[assignment]
+            )
+
+            self = cast("Document", args[0])
 
             await ActionRegistry.run_actions(
                 self,
@@ -228,12 +230,7 @@ def wrap_with_actions(
                 exclude=skip_actions,
             )
 
-            result = await f(
-                self,
-                *args,
-                skip_actions=skip_actions,  # type: ignore[arg-type]
-                **kwargs,
-            )
+            result = await f(*args, **kwargs)
 
             await ActionRegistry.run_actions(
                 self,

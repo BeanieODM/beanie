@@ -1,12 +1,13 @@
 import inspect
 from functools import wraps
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, cast, overload
 
 from typing_extensions import ParamSpec
 
 from beanie.exceptions import StateManagementIsTurnedOff, StateNotSaved
 
 if TYPE_CHECKING:
+    from beanie import Document
     from beanie.odm.documents import AnyDocMethod, AsyncDocMethod, DocType
 
 P = ParamSpec("P")
@@ -22,27 +23,33 @@ def check_if_state_saved(self: "DocType"):
         raise StateNotSaved("No state was saved")
 
 
+@overload
 def saved_state_needed(
-    f: "AnyDocMethod[DocType, P, R]",
-) -> "AnyDocMethod[DocType, P, R]":
+    f: "AsyncDocMethod[P, R]",
+) -> "AsyncDocMethod[P, R]": ...
+@overload
+def saved_state_needed(
+    f: "AnyDocMethod[P, R]",
+) -> "AnyDocMethod[P, R]": ...
+
+
+def saved_state_needed(
+    f: "AnyDocMethod[P, Any]",
+) -> "AnyDocMethod[P, Any]":
     @wraps(f)
-    def sync_wrapper(self: "DocType", *args: P.args, **kwargs: P.kwargs) -> R:
+    def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
+        self = cast("Document", args[0])
         check_if_state_saved(self)
-        return f(self, *args, **kwargs)
+        return f(*args, **kwargs)
 
     @wraps(f)
-    async def async_wrapper(
-        self: "DocType", *args: P.args, **kwargs: P.kwargs
-    ) -> R:
+    async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
+        self = cast("Document", args[0])
         check_if_state_saved(self)
-        # type ignore because there is no nice/proper way to annotate both sync
-        # and async case without parametrized TypeVar, which is not supported
-        return await f(self, *args, **kwargs)  # type: ignore[misc]
+        return await f(*args, **kwargs)
 
     if inspect.iscoroutinefunction(f):
-        # type ignore because there is no nice/proper way to annotate both sync
-        # and async case without parametrized TypeVar, which is not supported
-        return async_wrapper  # type: ignore[return-value]
+        return async_wrapper
     return sync_wrapper
 
 
@@ -57,36 +64,43 @@ def check_if_previous_state_saved(self: "DocType"):
         )
 
 
+@overload
 def previous_saved_state_needed(
-    f: "AnyDocMethod[DocType, P, R]",
-) -> "AnyDocMethod[DocType, P, R]":
+    f: "AsyncDocMethod[P, R]",
+) -> "AsyncDocMethod[P, R]": ...
+@overload
+def previous_saved_state_needed(
+    f: "AnyDocMethod[P, R]",
+) -> "AnyDocMethod[P, R]": ...
+
+
+def previous_saved_state_needed(
+    f: "AnyDocMethod[P, Any]",
+) -> "AnyDocMethod[P, Any]":
     @wraps(f)
-    def sync_wrapper(self: "DocType", *args: P.args, **kwargs: P.kwargs) -> R:
+    def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
+        self = cast("Document", args[0])
         check_if_previous_state_saved(self)
-        return f(self, *args, **kwargs)
+        return f(*args, **kwargs)
 
     @wraps(f)
-    async def async_wrapper(
-        self: "DocType", *args: P.args, **kwargs: P.kwargs
-    ) -> R:
+    async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
+        self = cast("Document", args[0])
         check_if_previous_state_saved(self)
-        # type ignore because there is no nice/proper way to annotate both sync
-        # and async case without parametrized TypeVar, which is not supported
-        return await f(self, *args, **kwargs)  # type: ignore[misc]
+        return await f(*args, **kwargs)
 
     if inspect.iscoroutinefunction(f):
-        # type ignore because there is no nice/proper way to annotate both sync
-        # and async case without parametrized TypeVar, which is not supported
-        return async_wrapper  # type: ignore[return-value]
+        return async_wrapper
     return sync_wrapper
 
 
 def save_state_after(
-    f: "AsyncDocMethod[DocType, P, R]",
-) -> "AsyncDocMethod[DocType, P, R]":
+    f: "AsyncDocMethod[P, R]",
+) -> "AsyncDocMethod[P, R]":
     @wraps(f)
-    async def wrapper(self: "DocType", *args: P.args, **kwargs: P.kwargs) -> R:
-        result = await f(self, *args, **kwargs)
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        self = cast("Document", args[0])
+        result = await f(*args, **kwargs)
         self._save_state()
         return result
 
