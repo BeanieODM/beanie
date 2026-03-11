@@ -163,6 +163,28 @@ class FindQuery(
         """
         return await self.count() > 0
 
+    async def distinct(
+        self,
+        key: str,
+        session: AsyncClientSession | None = None,
+        **kwargs: Any,
+    ) -> list:
+        """
+        Get a list of distinct values for `key` among documents matching
+        the query filter.
+
+        :param key: Field name for which to return distinct values.
+        :param session: Optional pymongo session.
+        :return: List of distinct values.
+        """
+        kwargs = {**self.pymongo_kwargs, **kwargs}
+        return await self.document_model.get_pymongo_collection().distinct(
+            key=key,
+            filter=self.get_filter_query(),
+            session=session or self.session,
+            **kwargs,
+        )
+
 
 class FindMany(
     FindQuery[FindQueryResultType],
@@ -717,6 +739,58 @@ class FindMany(
 
         return await super().count()
 
+    async def distinct(
+        self,
+        key: str,
+        session: AsyncClientSession | None = None,
+        **kwargs: Any,
+    ) -> list:
+        """
+        Get a list of distinct values for `key` among documents matching
+        the query filter.  When ``fetch_links`` is enabled the query is
+        executed via an aggregation pipeline so that ``$lookup`` stages
+        are included.
+
+        Sort, skip and limit stages are excluded from the pipeline
+        because MongoDB's distinct command does not support pagination
+        and distinct values are order-independent.
+
+        :param key: Field name for which to return distinct values.
+        :param session: Optional pymongo session.
+        :return: List of distinct values.
+        """
+        if self.fetch_links:
+            aggregation_pipeline: list[dict[str, Any]] = [
+                stage
+                for stage in self.build_aggregation_pipeline()
+                if "$sort" not in stage
+                and "$skip" not in stage
+                and "$limit" not in stage
+            ]
+            aggregation_pipeline.append(
+                {
+                    "$unwind": {
+                        "path": f"${key}",
+                        "preserveNullAndEmptyArrays": True,
+                    }
+                }
+            )
+            aggregation_pipeline.append(
+                {"$group": {"_id": None, "distinct": {"$addToSet": f"${key}"}}}
+            )
+            kwargs = {**self.pymongo_kwargs, **kwargs}
+            cursor = (
+                await self.document_model.get_pymongo_collection().aggregate(
+                    aggregation_pipeline,
+                    session=session or self.session,
+                    **kwargs,
+                )
+            )
+            result = await cursor.to_list(length=1)
+            return result[0]["distinct"] if result else []
+
+        return await super().distinct(key, session=session, **kwargs)
+
 
 class FindOne(FindQuery[FindQueryResultType]):
     """
@@ -1042,3 +1116,29 @@ class FindOne(FindQuery[FindQueryResultType]):
                 **self.pymongo_kwargs,
             ).count()
         return await super().count()
+
+    async def distinct(
+        self,
+        key: str,
+        session: AsyncClientSession | None = None,
+        **kwargs: Any,
+    ) -> list:
+        """
+        Get a list of distinct values for `key` among documents matching
+        the query filter.  Delegates to :meth:`FindMany.distinct` when
+        ``fetch_links`` is enabled.
+
+        :param key: Field name for which to return distinct values.
+        :param session: Optional pymongo session.
+        :return: List of distinct values.
+        """
+        if self.fetch_links:
+            return await self.document_model.find_many(
+                *self.find_expressions,
+                session=self.session,
+                fetch_links=self.fetch_links,
+                nesting_depth=self.nesting_depth,
+                nesting_depths_per_field=self.nesting_depths_per_field,
+                **self.pymongo_kwargs,
+            ).distinct(key, session=session, **kwargs)
+        return await super().distinct(key, session=session, **kwargs)
