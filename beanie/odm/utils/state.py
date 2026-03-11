@@ -1,5 +1,4 @@
 import inspect
-from collections.abc import Callable
 from functools import wraps
 from typing import TYPE_CHECKING, Any, TypeVar, cast, overload
 
@@ -35,8 +34,8 @@ def saved_state_needed(
 
 
 def saved_state_needed(
-    f: Callable[P, Any],
-) -> Callable[P, Any]:
+    f: "AnyDocMethod[P, Any]",
+) -> "AnyDocMethod[P, Any]":
     @wraps(f)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
         self = cast("Document", args[0])
@@ -76,8 +75,8 @@ def previous_saved_state_needed(
 
 
 def previous_saved_state_needed(
-    f: Callable[P, Any],
-) -> Callable[P, Any]:
+    f: "AnyDocMethod[P, Any]",
+) -> "AnyDocMethod[P, Any]":
     @wraps(f)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
         self = cast("Document", args[0])
