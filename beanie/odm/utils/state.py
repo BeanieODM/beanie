@@ -26,12 +26,12 @@ def check_if_state_saved(self: "DocType"):
 
 @overload
 def saved_state_needed(
-    f: AsyncDocMethod[P, R],
-) -> AsyncDocMethod[P, R]: ...
+    f: "AsyncDocMethod[P, R]",
+) -> "AsyncDocMethod[P, R]": ...
 @overload
 def saved_state_needed(
-    f: AnyDocMethod[P, R],
-) -> AnyDocMethod[P, R]: ...
+    f: "AnyDocMethod[P, R]",
+) -> "AnyDocMethod[P, R]": ...
 
 
 def saved_state_needed(
@@ -67,12 +67,12 @@ def check_if_previous_state_saved(self: "DocType"):
 
 @overload
 def previous_saved_state_needed(
-    f: AsyncDocMethod[P, R],
-) -> AsyncDocMethod[P, R]: ...
+    f: "AsyncDocMethod[P, R]",
+) -> "AsyncDocMethod[P, R]": ...
 @overload
 def previous_saved_state_needed(
-    f: AnyDocMethod[P, R],
-) -> AnyDocMethod[P, R]: ...
+    f: "AnyDocMethod[P, R]",
+) -> "AnyDocMethod[P, R]": ...
 
 
 def previous_saved_state_needed(
