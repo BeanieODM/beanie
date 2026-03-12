@@ -29,7 +29,7 @@ class Note(Document):
         name = "notes"
 
 
-@pytest.fixture()
+@pytest.fixture
 async def notes(db):
     await init_beanie(database=db, document_models=[OldNote])
     await OldNote.delete_all()
@@ -37,7 +37,7 @@ async def notes(db):
         note = OldNote(name=str(i), tag=Tag(name="test", color="red"))
         await note.insert()
     yield
-    # await OldNote.delete_all()
+    await OldNote.delete_all()
 
 
 async def test_migration_rename_field(settings, notes, db):

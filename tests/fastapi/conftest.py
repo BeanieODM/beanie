@@ -13,8 +13,8 @@ from tests.fastapi.models import (
 )
 
 
-@pytest.fixture(autouse=True)
-async def api_client(clean_db):
+@pytest.fixture
+async def api_client():
     """api client fixture."""
     async with LifespanManager(app, startup_timeout=100, shutdown_timeout=100):
         server_name = "http://localhost"
