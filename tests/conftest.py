@@ -15,11 +15,8 @@ def settings():
 
 @pytest.fixture(scope="session")
 async def cli(settings):
-    client = AsyncMongoClient(settings.mongodb_dsn)
-
-    yield client
-
-    await client.close()
+    async with AsyncMongoClient(settings.mongodb_dsn) as client:
+        yield client
 
 
 @pytest.fixture(scope="session")
