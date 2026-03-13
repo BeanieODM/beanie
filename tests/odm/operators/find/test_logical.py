@@ -19,8 +19,8 @@ async def test_not(preset_documents):
     docs = await Sample.find(q).to_list()
     assert len(docs) == 7
 
+    q = Not(And(Sample.integer == 1, Sample.nested.integer > 3))
     with pytest.raises(AttributeError):
-        q = Not(And(Sample.integer == 1, Sample.nested.integer > 3))
         await Sample.find(q).to_list()
 
 

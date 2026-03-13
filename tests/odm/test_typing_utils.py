@@ -25,8 +25,8 @@ class TestTyping:
         assert extract_id_class(Link[Lock]) == Lock
 
     @pytest.mark.parametrize(
-        "type,result",
-        (
+        "type, result",
+        [
             (str, None),
             (Indexed(str), (1, {})),
             (Indexed(str, "text", unique=True), ("text", {"unique": True})),
@@ -36,7 +36,7 @@ class TestTyping:
                 (1, {"unique": True}),
             ),
             (Annotated[str, "other metadata"], None),
-        ),
+        ],
     )
     def test_get_index_attributes(self, type, result):
         class Foo(BaseModel):

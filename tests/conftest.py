@@ -8,12 +8,12 @@ class Settings(BaseSettings):
     mongodb_db_name: str = "beanie_db"
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def settings():
     return Settings()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 async def cli(settings):
     client = AsyncMongoClient(settings.mongodb_dsn)
 
@@ -22,6 +22,6 @@ async def cli(settings):
     await client.close()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def db(cli, settings):
     return cli[settings.mongodb_db_name]

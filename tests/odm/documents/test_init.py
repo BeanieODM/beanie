@@ -78,10 +78,8 @@ async def test_metadata_connection_string(settings):
     )
 
     metadata = NewDocument.get_pymongo_collection().database.client.options.pool_options.metadata
-    assert (
-        "beanie" in metadata["driver"]["name"]
-        and beanie_version in metadata["driver"]["version"]
-    )
+    assert "beanie" in metadata["driver"]["name"]
+    assert beanie_version in metadata["driver"]["version"]
 
 
 @pytest.mark.skipif(
@@ -95,10 +93,8 @@ async def test_metadata_database(db):
     await init_beanie(database=db, document_models=[NewDocument])
 
     metadata = NewDocument.get_pymongo_collection().database.client.options.pool_options.metadata
-    assert (
-        "beanie" in metadata["driver"]["name"]
-        and beanie_version in metadata["driver"]["version"]
-    )
+    assert "beanie" in metadata["driver"]["name"]
+    assert beanie_version in metadata["driver"]["version"]
 
 
 def test_collection_with_custom_name():

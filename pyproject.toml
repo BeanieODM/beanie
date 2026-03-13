@@ -52,6 +52,7 @@ test = [
     "pydantic-settings>=2",
     "pydantic-extra-types>=2",
     "pydantic[email]",
+    "time-machine>=3.2.0"
 ]
 doc = [
     "Pygments>=2.8.0",
@@ -111,7 +112,8 @@ filterwarnings = [
     "ignore::UserWarning",
 ]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
 
 [tool.beanie.migrations]
 path = "beanie/example_migration"
@@ -143,6 +145,9 @@ exclude = [
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 120
 
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
+
 [tool.ruff.lint]
 preview = true
 select =  [
@@ -160,7 +165,9 @@ select =  [
     # flake8-simplify
     "SIM",
     # Ruff specific
-    "RUF"
+    "RUF",
+    # Pytest
+    "PT"
 ]
 ignore = [
     "E501",
@@ -178,7 +185,8 @@ ignore = [
     "SIM102",
     "SIM103",
     "SIM108",
-    "SIM118"
+    "SIM118",
+    "PT011"
 ]
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"

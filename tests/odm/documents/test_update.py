@@ -89,10 +89,8 @@ async def test_save(document):
 
 async def test_save_not_saved(document_not_inserted):
     await document_not_inserted.save()
-    assert (
-        hasattr(document_not_inserted, "id")
-        and document_not_inserted.id is not None
-    )
+    assert hasattr(document_not_inserted, "id")
+    assert document_not_inserted.id is not None
     from_db = await DocumentTestModel.get(document_not_inserted.id)
     assert from_db == document_not_inserted
 
@@ -100,10 +98,8 @@ async def test_save_not_saved(document_not_inserted):
 async def test_save_not_found(document_not_inserted):
     document_not_inserted.id = PydanticObjectId()
     await document_not_inserted.save()
-    assert (
-        hasattr(document_not_inserted, "id")
-        and document_not_inserted.id is not None
-    )
+    assert hasattr(document_not_inserted, "id")
+    assert document_not_inserted.id is not None
     from_db = await DocumentTestModel.get(document_not_inserted.id)
     assert from_db == document_not_inserted
 

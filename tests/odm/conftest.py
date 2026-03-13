@@ -4,6 +4,7 @@ from random import randint
 
 import pytest
 
+from beanie.odm.documents import Document
 from beanie.odm.utils.init import init_beanie
 from tests.odm.models import (
     ADocument,
@@ -270,7 +271,7 @@ async def preset_documents(point):
     await Sample.insert_many(documents=docs)
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_doc_not_saved(point):
     nested = Nested(
         integer=0,
@@ -312,7 +313,7 @@ def recwarn_always(recwarn):
     return recwarn
 
 
-@pytest.fixture()
+@pytest.fixture
 async def deprecated_init_beanie(db, recwarn_always):
     await init_beanie(
         database=db,
@@ -326,25 +327,45 @@ async def deprecated_init_beanie(db, recwarn_always):
         in str(recwarn_always[0].message)
     )
 
-    yield
-
-    for model in TESTING_MODELS:
-        await model.get_pymongo_collection().drop()
-        await model.get_pymongo_collection().drop_indexes()
+    return
 
 
 @pytest.fixture(autouse=True)
+async def clean_db():
+    async def _cleanup() -> None:
+        seen = set()
+        for model in TESTING_MODELS:
+            if not issubclass(model, Document):
+                continue
+
+            collection = model.get_pymongo_collection()
+            key = (collection.database.name, collection.name)
+
+            # Avoid cleaning the same shared collection multiple times
+            if key in seen:
+                continue
+            seen.add(key)
+
+            await collection.delete_many({})
+
+            # Reset model cache
+            cache = getattr(model, "_cache", None)
+            if cache is not None:
+                cache.cache.clear()
+
+    await _cleanup()
+    yield
+    await _cleanup()
+
+
+@pytest.fixture(scope="session", autouse=True)
 async def init(db):
     await init_beanie(
         database=db,
         document_models=TESTING_MODELS,
     )
 
-    yield
-
-    for model in TESTING_MODELS:
-        await model.get_pymongo_collection().drop()
-        await model.get_pymongo_collection().drop_indexes()
+    return
 
 
 @pytest.fixture

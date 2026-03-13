@@ -28,7 +28,7 @@ class Note(Document):
         name = "notes"
 
 
-@pytest.fixture()
+@pytest.fixture
 async def notes(db):
     await init_beanie(database=db, document_models=[OldNote])
     await OldNote.delete_all()

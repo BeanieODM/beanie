@@ -733,7 +733,7 @@ class TestOther:
         }
 
 
-@pytest.fixture()
+@pytest.fixture
 async def link_and_backlink_doc_pair():
     back_link_doc = DocumentWithBackLink()
     await back_link_doc.insert()
@@ -742,7 +742,7 @@ async def link_and_backlink_doc_pair():
     return link_doc, back_link_doc
 
 
-@pytest.fixture()
+@pytest.fixture
 async def list_link_and_list_backlink_doc_pair():
     back_link_doc = DocumentWithListBackLink()
     await back_link_doc.insert()

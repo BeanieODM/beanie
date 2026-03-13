@@ -72,7 +72,7 @@ async def test_unordered_update(documents, document):
     await documents(5)
     doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 0)
     doc.test_int = 100
-    with pytest.raises(BulkWriteError):
+    with pytest.raises(BulkWriteError):  # noqa: PT012
         async with BulkWriter(ordered=False) as bulk_writer:
             await DocumentTestModel.insert_one(
                 document, bulk_writer=bulk_writer
@@ -221,7 +221,7 @@ async def test_ordered_bulk(documents):
     doc = await DocumentMultiModelOne.insert_one(DocumentMultiModelOne())
     assert doc
     assert doc.id
-    with pytest.raises(BulkWriteError):
+    with pytest.raises(BulkWriteError):  # noqa: PT012
         async with BulkWriter(ordered=True) as bulk_writer:
             doc1 = DocumentMultiModelOne()
             doc1.id = doc.id
