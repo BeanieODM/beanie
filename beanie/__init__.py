@@ -14,6 +14,7 @@ from beanie.odm.actions import (
     before_event,
 )
 from beanie.odm.bulk import BulkWriter
+from beanie.odm.client import ODMClient
 from beanie.odm.custom_types import DecimalAnnotation
 from beanie.odm.custom_types.bson.binary import BsonBinary
 from beanie.odm.documents import (
@@ -66,6 +67,7 @@ __all__ = [
     "Update",
     # Bulk Write
     "BulkWriter",
+    "ODMClient",
     # Migrations
     "iterative_migration",
     "free_fall_migration",
