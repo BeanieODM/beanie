@@ -1,6 +1,7 @@
 import logging
 import types
 from importlib.machinery import SourceFileLoader
+from importlib.util import spec_from_file_location
 from pathlib import Path
 
 from pymongo.asynchronous.client_session import AsyncClientSession
@@ -219,11 +220,19 @@ class MigrationNode:
         prev_migration_node = root_migration_node
 
         for name in names:
-            loader = SourceFileLoader(
-                (path / name).stem, str((path / name).absolute())
-            )
+            file_path = (path / name).absolute()
+            loader = SourceFileLoader(file_path.stem, str(file_path))
             module = types.ModuleType(loader.name)
+
+            # Set essential module metadata before execution
+            module.__file__ = str(file_path)
+            module.__loader__ = loader
+            module.__spec__ = spec_from_file_location(
+                loader.name, str(file_path), loader=loader
+            )
+
             loader.exec_module(module)
+
             forward_class = getattr(module, "Forward", None)
             backward_class = getattr(module, "Backward", None)
             migration_node = cls(
