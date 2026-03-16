@@ -5,7 +5,6 @@ from pymongo import IndexModel
 
 from beanie import Document, Indexed, init_beanie
 from beanie import __version__ as beanie_version
-from beanie.exceptions import CollectionWasNotInitialized
 from beanie.odm.utils.projection import get_projection
 from tests.odm.models import (
     Color,
@@ -28,14 +27,6 @@ from tests.odm.models import (
     DocumentWithUnionTypeExpressionOptionalBackLink,
     DocumentWithUnionTypeExpressionOptionalLink,
 )
-
-
-def test_init_collection_was_not_initialized():
-    class NewDocument(Document):
-        test_str: str
-
-    with pytest.raises(CollectionWasNotInitialized):
-        NewDocument(test_str="test")
 
 
 async def test_init_connection_string(settings):

@@ -181,10 +181,6 @@ class Document(
     # Database
     _database_major_version: ClassVar[int] = 4
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self.get_pymongo_collection()
-
     @classmethod
     def _fill_back_refs(cls, values):
         if cls._link_fields:
