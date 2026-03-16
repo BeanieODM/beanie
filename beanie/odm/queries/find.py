@@ -53,9 +53,9 @@ FindQueryResultType = TypeVar("FindQueryResultType", bound=BaseModel)
 
 
 def build_sort_list(
-    *args: str
-    | tuple[str, SortDirection]
-    | list[tuple[str, SortDirection]]
+    *args: Any
+    | tuple[Any, SortDirection]
+    | list[tuple[Any, SortDirection]]
     | None,
 ) -> list[tuple[str, SortDirection]]:
     sort_list: list[tuple[str, SortDirection]] = []
