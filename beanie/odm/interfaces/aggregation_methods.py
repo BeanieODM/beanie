@@ -14,8 +14,8 @@ class AggregateMethods:
     @abstractmethod
     def aggregate(
         self,
-        aggregation_pipeline,
-        projection_model=None,
+        aggregation_pipeline: list[Any],
+        projection_model: None = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
     ): ...

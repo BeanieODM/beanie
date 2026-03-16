@@ -71,7 +71,7 @@ class AggregationQuery(
         else:
             return None
 
-    def _set_cache(self, data):
+    def _set_cache(self, data: Any):
         if (
             self.document_model.get_settings().use_cache
             and self.ignore_cache is False
@@ -91,7 +91,7 @@ class AggregationQuery(
                 projection_pipeline = [{"$project": projection}]
         return match_pipeline + self.aggregation_pipeline + projection_pipeline
 
-    async def get_cursor(self) -> "AsyncCommandCursor":
+    async def get_cursor(self) -> "AsyncCommandCursor[dict[str, Any]]":
         aggregation_pipeline = self.get_aggregation_pipeline()
         return await self.document_model.get_pymongo_collection().aggregate(
             aggregation_pipeline, session=self.session, **self.pymongo_kwargs

@@ -1,7 +1,5 @@
 from abc import abstractmethod
 
-from pymongo.asynchronous.collection import AsyncCollection
-
 from beanie.odm.settings.base import ItemSettings
 
 
@@ -12,7 +10,7 @@ class OtherGettersInterface:
         pass
 
     @classmethod
-    def get_pymongo_collection(cls) -> AsyncCollection:
+    def get_pymongo_collection(cls):
         return cls.get_settings().pymongo_collection
 
     @classmethod

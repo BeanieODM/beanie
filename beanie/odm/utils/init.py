@@ -3,8 +3,12 @@ import inspect
 from importlib.metadata import version
 from types import UnionType
 from typing import (  # noqa: UP035
+    Any,
+    Generic,
     List,
+    Mapping,
     Sequence,
+    TypeVar,
     Union,
     get_args,
     get_origin,
@@ -49,10 +53,13 @@ class Output(BaseModel):
     collection_name: str
 
 
-class Initializer:
+DocumentType = TypeVar("DocumentType", bound=Mapping[str, Any])
+
+
+class Initializer(Generic[DocumentType]):
     def __init__(
         self,
-        database: AsyncDatabase | None = None,
+        database: AsyncDatabase[DocumentType] | None = None,
         connection_string: str | None = None,
         document_models: Sequence[
             type["DocType"] | type["UnionDocType"] | type["View"] | str
@@ -92,7 +99,7 @@ class Initializer:
         if document_models is None:
             raise ValueError("document_models parameter must be set")
         if connection_string is not None:
-            database = AsyncMongoClient(
+            database = AsyncMongoClient[DocumentType](
                 connection_string, driver=_DRIVER_METADATA
             ).get_default_database()
 
@@ -102,7 +109,7 @@ class Initializer:
         ):
             database.client.append_metadata(_DRIVER_METADATA)
 
-        self.database: AsyncDatabase = database  # type: ignore
+        self.database = database
 
         sort_order = {
             ModelType.UnionDoc: 0,
@@ -362,7 +369,7 @@ class Initializer:
         cls._link_fields = None
 
     @staticmethod
-    def init_cache(cls) -> None:
+    def init_cache(cls: type[Document]) -> None:
         """
         Init model's cache
         :return: None
@@ -373,7 +380,7 @@ class Initializer:
                 expiration_time=cls.get_settings().cache_expiration_time,
             )
 
-    def init_document_fields(self, cls) -> None:
+    def init_document_fields(self, cls: type[Document]) -> None:
         """
         Init class fields
         :return: None
@@ -731,7 +738,7 @@ class Initializer:
 
 
 async def init_beanie(
-    database: AsyncDatabase | None = None,
+    database: AsyncDatabase[DocumentType] | None = None,
     connection_string: str | None = None,
     document_models: Sequence[
         type[Document] | type[UnionDoc] | type["View"] | str

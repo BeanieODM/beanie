@@ -1,5 +1,6 @@
 from abc import ABC
 from enum import Enum
+from typing import Any, Generic, Literal, TypeVar
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -7,7 +8,10 @@ from beanie.odm.operators.find import BaseFindOperator
 class BaseFindGeospatialOperator(BaseFindOperator, ABC): ...
 
 
-class GeoIntersects(BaseFindGeospatialOperator):
+_GeoIntersectsType = TypeVar("_GeoIntersectsType", bound=str)
+
+
+class GeoIntersects(BaseFindGeospatialOperator, Generic[_GeoIntersectsType]):
     """
     `$geoIntersects` query operator
 
@@ -49,7 +53,12 @@ class GeoIntersects(BaseFindGeospatialOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/geoIntersects/>
     """
 
-    def __init__(self, field, geo_type: str, coordinates: list[list[float]]):
+    def __init__(
+        self,
+        field: Any,
+        geo_type: _GeoIntersectsType,
+        coordinates: list[list[float]],
+    ):
         self.field = field
         self.geo_type = geo_type
         self.coordinates = coordinates
@@ -116,7 +125,10 @@ class GeoWithin(BaseFindGeospatialOperator):
     """
 
     def __init__(
-        self, field, geo_type: GeoWithinTypes, coordinates: list[list[float]]
+        self,
+        field: Any,
+        geo_type: GeoWithinTypes,
+        coordinates: list[list[float]],
     ):
         self.field = field
         self.geo_type = geo_type
@@ -176,7 +188,7 @@ class Box(BaseFindGeospatialOperator):
     """
 
     def __init__(
-        self, field, lower_left: list[float], upper_right: list[float]
+        self, field: Any, lower_left: list[float], upper_right: list[float]
     ):
         self.field = field
         self.coordinates = [lower_left, upper_right]
@@ -233,7 +245,7 @@ class Near(BaseFindGeospatialOperator):
 
     def __init__(
         self,
-        field,
+        field: Any,
         longitude: float,
         latitude: float,
         max_distance: float | None = None,
@@ -247,7 +259,16 @@ class Near(BaseFindGeospatialOperator):
 
     @property
     def query(self):
-        expression = {
+        expression: dict[
+            str,
+            dict[
+                str,
+                dict[
+                    Literal["$geometry", "$maxDistance", "$minDistance"],
+                    dict[str, str | list[float]] | float,
+                ],
+            ],
+        ] = {
             self.field: {
                 self.operator: {
                     "$geometry": {
@@ -260,11 +281,11 @@ class Near(BaseFindGeospatialOperator):
         if self.max_distance:
             expression[self.field][self.operator]["$maxDistance"] = (
                 self.max_distance
-            )  # type: ignore
+            )
         if self.min_distance:
             expression[self.field][self.operator]["$minDistance"] = (
                 self.min_distance
-            )  # type: ignore
+            )
         return expression
 
 

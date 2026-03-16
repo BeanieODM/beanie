@@ -124,7 +124,7 @@ class FindQuery(
             **pymongo_kwargs,
         ).set_session(session=session)
 
-    def project(self, projection_model):
+    def project(self, projection_model: type[FindQueryResultType] | None):
         """
         Apply projection parameter
         :param projection_model: Optional[type[BaseModel]] - projection model
@@ -142,7 +142,7 @@ class FindQuery(
         Number of found documents
         :return: int
         """
-        kwargs = {}
+        kwargs: dict[str, Any] = {}
         if isinstance(self, FindMany):
             if self.limit_number:
                 kwargs["limit"] = self.limit_number
@@ -268,19 +268,16 @@ class FindMany(
 
     @overload
     def project(
-        self: "FindMany",
-        projection_model: None,
+        self, projection_model: None
     ) -> "FindMany[FindQueryResultType]": ...
 
     @overload
     def project(
-        self: "FindMany",
-        projection_model: type[FindQueryProjectionType],
+        self, projection_model: type[FindQueryProjectionType]
     ) -> "FindMany[FindQueryProjectionType]": ...
 
     def project(
-        self: "FindMany",
-        projection_model: type[FindQueryProjectionType] | None,
+        self, projection_model: type[FindQueryProjectionType] | None
     ) -> Union[
         "FindMany[FindQueryResultType]", "FindMany[FindQueryProjectionType]"
     ]:
@@ -600,7 +597,7 @@ class FindMany(
         else:
             return None
 
-    def _set_cache(self, data):
+    def _set_cache(self, data: Any):
         if (
             self.document_model.get_settings().use_cache
             and self.ignore_cache is False
