@@ -53,9 +53,9 @@ FindQueryResultType = TypeVar("FindQueryResultType", bound=BaseModel)
 
 
 def build_sort_list(
-    *args: Any
-    | tuple[Any, SortDirection]
-    | list[tuple[Any, SortDirection]]
+    *args: str
+    | tuple[str, SortDirection]
+    | list[tuple[str, SortDirection]]
     | None,
 ) -> list[tuple[str, SortDirection]]:
     sort_list: list[tuple[str, SortDirection]] = []
@@ -404,7 +404,7 @@ class FindMany(
         the sort order for this query.
         :return: self
         """
-        self.sort_expressions = build_sort_list(*args)
+        self.sort_expressions.extend(build_sort_list(*args))
         return self
 
     def skip(self, n: int | None) -> "FindMany[FindQueryResultType]":
