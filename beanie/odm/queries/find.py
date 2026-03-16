@@ -404,7 +404,7 @@ class FindMany(
         the sort order for this query.
         :return: self
         """
-        self.sort_expressions = build_sort_list(*args) if args else []
+        self.sort_expressions = build_sort_list(*args)
         return self
 
     def skip(self, n: int | None) -> "FindMany[FindQueryResultType]":
