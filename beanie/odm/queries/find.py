@@ -57,7 +57,7 @@ def build_sort_list(
     | tuple[str, SortDirection]
     | list[tuple[str, SortDirection]]
     | None,
-):
+) -> list[tuple[str, SortDirection]]:
     sort_list: list[tuple[str, SortDirection]] = []
 
     for arg in args:
@@ -216,7 +216,7 @@ class FindMany(
         projection_model: None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -233,7 +233,7 @@ class FindMany(
         projection_model: type[FindQueryProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -249,7 +249,7 @@ class FindMany(
         projection_model: type[FindQueryProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -327,7 +327,7 @@ class FindMany(
         projection_model: None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -344,7 +344,7 @@ class FindMany(
         projection_model: type[FindQueryProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -360,7 +360,7 @@ class FindMany(
         projection_model: type[FindQueryProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -391,9 +391,9 @@ class FindMany(
 
     def sort(
         self,
-        *args: str
-        | tuple[str, SortDirection]
-        | list[tuple[str, SortDirection]]
+        *args: Any
+        | tuple[Any, SortDirection]
+        | list[tuple[Any, SortDirection]]
         | None,
     ) -> "FindMany[FindQueryResultType]":
         """
@@ -764,7 +764,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self: "FindOne[FindQueryResultType]",
         *args: Mapping[Any, Any] | bool,
         projection_model: None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -778,7 +778,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self: "FindOne[FindQueryResultType]",
         *args: Mapping[Any, Any] | bool,
         projection_model: type[FindQueryProjectionType],
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -791,7 +791,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self: "FindOne[FindQueryResultType]",
         *args: Mapping[Any, Any] | bool,
         projection_model: type[FindQueryProjectionType] | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
