@@ -1,5 +1,7 @@
 import re
 from abc import ABC
+from collections.abc import Mapping
+from typing import Any, Generic, TypeVar
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -7,7 +9,10 @@ from beanie.odm.operators.find import BaseFindOperator
 class BaseFindEvaluationOperator(BaseFindOperator, ABC): ...
 
 
-class Expr(BaseFindEvaluationOperator):
+_ExpressionType = TypeVar("_ExpressionType", bound=dict[str, Any])
+
+
+class Expr(BaseFindEvaluationOperator, Generic[_ExpressionType]):
     """
     `$type` query operator
 
@@ -31,7 +36,7 @@ class Expr(BaseFindEvaluationOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/expr/>
     """
 
-    def __init__(self, expression: dict):
+    def __init__(self, expression: _ExpressionType):
         self.expression = expression
 
     @property
@@ -39,7 +44,7 @@ class Expr(BaseFindEvaluationOperator):
         return {"$expr": self.expression}
 
 
-class JsonSchema(BaseFindEvaluationOperator):
+class JsonSchema(BaseFindEvaluationOperator, Generic[_ExpressionType]):
     """
     `$jsonSchema` query operator
 
@@ -47,7 +52,7 @@ class JsonSchema(BaseFindEvaluationOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/>
     """
 
-    def __init__(self, expression: dict):
+    def __init__(self, expression: _ExpressionType):
         self.expression = expression
 
     @property
@@ -78,13 +83,13 @@ class Mod(BaseFindEvaluationOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/mod/>
     """
 
-    def __init__(self, field, divisor: int, remainder: int):
+    def __init__(self, field: Any, divisor: int, remainder: int):
         self.field = field
         self.divisor = divisor
         self.remainder = remainder
 
     @property
-    def query(self):
+    def query(self) -> Mapping[str, Mapping[str, list[int]]]:
         return {self.field: {"$mod": [self.divisor, self.remainder]}}
 
 
@@ -98,7 +103,7 @@ class RegEx(BaseFindEvaluationOperator):
 
     def __init__(
         self,
-        field,
+        field: Any,
         pattern: str | re.Pattern[bytes] | re.Pattern[str],
         options: str | None = None,
     ):

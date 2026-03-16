@@ -1,10 +1,16 @@
+from typing import Any, Generic, TypeVar
+
 from beanie.odm.operators.update import BaseUpdateOperator
 
+_ArrayExpressionType = TypeVar("_ArrayExpressionType", bound=Any)
 
-class BaseUpdateArrayOperator(BaseUpdateOperator):
+
+class BaseUpdateArrayOperator(
+    BaseUpdateOperator, Generic[_ArrayExpressionType]
+):
     operator = ""
 
-    def __init__(self, expression):
+    def __init__(self, expression: _ArrayExpressionType):
         self.expression = expression
 
     @property
@@ -12,7 +18,7 @@ class BaseUpdateArrayOperator(BaseUpdateOperator):
         return {self.operator: self.expression}
 
 
-class AddToSet(BaseUpdateArrayOperator):
+class AddToSet(BaseUpdateArrayOperator[_ArrayExpressionType]):
     """
     `$addToSet` update array query operator
 
@@ -38,7 +44,7 @@ class AddToSet(BaseUpdateArrayOperator):
     operator = "$addToSet"
 
 
-class Pop(BaseUpdateArrayOperator):
+class Pop(BaseUpdateArrayOperator[_ArrayExpressionType]):
     """
     `$pop` update array query operator
 
@@ -64,7 +70,7 @@ class Pop(BaseUpdateArrayOperator):
     operator = "$pop"
 
 
-class Pull(BaseUpdateArrayOperator):
+class Pull(BaseUpdateArrayOperator[_ArrayExpressionType]):
     """
     `$pull` update array query operator
 
@@ -90,7 +96,7 @@ class Pull(BaseUpdateArrayOperator):
     operator = "$pull"
 
 
-class Push(BaseUpdateArrayOperator):
+class Push(BaseUpdateArrayOperator[_ArrayExpressionType]):
     """
     `$push` update array query operator
 
@@ -116,7 +122,7 @@ class Push(BaseUpdateArrayOperator):
     operator = "$push"
 
 
-class PullAll(BaseUpdateArrayOperator):
+class PullAll(BaseUpdateArrayOperator[_ArrayExpressionType]):
     """
     `$pullAll` update array query operator
 

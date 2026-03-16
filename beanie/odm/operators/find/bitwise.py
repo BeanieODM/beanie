@@ -1,11 +1,14 @@
-from beanie.odm.fields import ExpressionField
+from typing import Any, Generic, TypeVar
+
 from beanie.odm.operators.find import BaseFindOperator
 
+BitmaskType = TypeVar("BitmaskType", bound=Any)
 
-class BaseFindBitwiseOperator(BaseFindOperator):
+
+class BaseFindBitwiseOperator(BaseFindOperator, Generic[BitmaskType]):
     operator = ""
 
-    def __init__(self, field: str | ExpressionField, bitmask):
+    def __init__(self, field: Any, bitmask: BitmaskType):
         self.field = field
         self.bitmask = bitmask
 
@@ -14,7 +17,7 @@ class BaseFindBitwiseOperator(BaseFindOperator):
         return {self.field: {self.operator: self.bitmask}}
 
 
-class BitsAllClear(BaseFindBitwiseOperator):
+class BitsAllClear(BaseFindBitwiseOperator[BitmaskType]):
     """
     `$bitsAllClear` query operator
 
@@ -25,7 +28,7 @@ class BitsAllClear(BaseFindBitwiseOperator):
     operator = "$bitsAllClear"
 
 
-class BitsAllSet(BaseFindBitwiseOperator):
+class BitsAllSet(BaseFindBitwiseOperator[BitmaskType]):
     """
     `$bitsAllSet` query operator
 
@@ -36,7 +39,7 @@ class BitsAllSet(BaseFindBitwiseOperator):
     operator = "$bitsAllSet"
 
 
-class BitsAnyClear(BaseFindBitwiseOperator):
+class BitsAnyClear(BaseFindBitwiseOperator[BitmaskType]):
     """
     `$bitsAnyClear` query operator
 
@@ -47,7 +50,7 @@ class BitsAnyClear(BaseFindBitwiseOperator):
     operator = "$bitsAnyClear"
 
 
-class BitsAnySet(BaseFindBitwiseOperator):
+class BitsAnySet(BaseFindBitwiseOperator[BitmaskType]):
     """
     `$bitsAnySet` query operator
 

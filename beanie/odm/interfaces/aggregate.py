@@ -15,14 +15,14 @@ DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 class AggregateInterface:
     @classmethod
     @abstractmethod
-    def find_all(cls) -> FindMany:
+    def find_all(cls) -> FindMany[BaseModel]:
         pass
 
     @overload
     @classmethod
     def aggregate(
         cls: type[DocType],
-        aggregation_pipeline: list,
+        aggregation_pipeline: list[Any],
         projection_model: None = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
@@ -33,7 +33,7 @@ class AggregateInterface:
     @classmethod
     def aggregate(
         cls: type[DocType],
-        aggregation_pipeline: list,
+        aggregation_pipeline: list[Any],
         projection_model: type[DocumentProjectionType],
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
@@ -43,7 +43,7 @@ class AggregateInterface:
     @classmethod
     def aggregate(
         cls: type[DocType],
-        aggregation_pipeline: list,
+        aggregation_pipeline: list[Any],
         projection_model: type[DocumentProjectionType] | None = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,

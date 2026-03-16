@@ -1,6 +1,6 @@
 from abc import ABC
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, Literal
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -148,7 +148,7 @@ class Not(BaseFindLogicalOperator):
         self.expression = expression
 
     @property
-    def query(self):
+    def query(self) -> dict[str, dict[Literal["$not"], Any]]:
         if len(self.expression) == 1:
             expression_key = list(self.expression.keys())[0]
             if expression_key.startswith("$"):

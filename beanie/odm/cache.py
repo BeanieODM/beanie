@@ -1,27 +1,31 @@
 import collections
 import datetime
 from datetime import timedelta, timezone
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, Field
 
+CachedValueType = TypeVar("CachedValueType", bound=Any)
 
-class CachedItem(BaseModel):
+
+class CachedItem(BaseModel, Generic[CachedValueType]):
     timestamp: datetime.datetime = Field(
         default_factory=lambda: datetime.datetime.now(tz=timezone.utc)
     )
-    value: Any
+    value: CachedValueType
 
 
 class LRUCache:
     def __init__(self, capacity: int, expiration_time: timedelta):
         self.capacity: int = capacity
         self.expiration_time: timedelta = expiration_time
-        self.cache: collections.OrderedDict = collections.OrderedDict()
+        self.cache: collections.OrderedDict[Any, CachedItem[Any]] = (
+            collections.OrderedDict()
+        )
 
-    def get(self, key) -> CachedItem | None:
+    def get(self, key: Any) -> CachedItem[Any] | None:
         try:
-            item: CachedItem = self.cache.pop(key)
+            item: CachedItem[Any] = self.cache.pop(key)
             if (
                 datetime.datetime.now(tz=timezone.utc) - item.timestamp
                 > self.expiration_time
@@ -32,7 +36,7 @@ class LRUCache:
         except KeyError:
             return None
 
-    def set(self, key, value) -> None:
+    def set(self, key: Any, value: Any) -> None:
         try:
             self.cache.pop(key)
         except KeyError:
@@ -41,5 +45,5 @@ class LRUCache:
         self.cache[key] = CachedItem(value=value)
 
     @staticmethod
-    def create_key(*args):
+    def create_key(*args: Any):
         return str(args)  # TODO think about this

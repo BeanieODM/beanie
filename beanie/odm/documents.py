@@ -186,7 +186,7 @@ class Document(
         self.get_pymongo_collection()
 
     @classmethod
-    def _fill_back_refs(cls, values):
+    def _fill_back_refs(cls, values: dict[str, Any]):
         if cls._link_fields:
             for field_name, link_info in cls._link_fields.items():
                 if (
@@ -210,7 +210,7 @@ class Document(
         return values
 
     @model_validator(mode="before")
-    def fill_back_refs(cls, values):
+    def fill_back_refs(cls, values: dict[str, Any]):
         return cls._fill_back_refs(values)
 
     @classmethod

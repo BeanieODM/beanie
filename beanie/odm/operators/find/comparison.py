@@ -1,23 +1,28 @@
+from collections.abc import Mapping
+from typing import Any, Generic, TypeVar
+
 from beanie.odm.operators.find import BaseFindOperator
 
+OtherType = TypeVar("OtherType", bound=Any)
 
-class BaseFindComparisonOperator(BaseFindOperator):
+
+class BaseFindComparisonOperator(BaseFindOperator, Generic[OtherType]):
     operator = ""
 
     def __init__(
         self,
-        field,
-        other,
+        field: Any,
+        other: OtherType,
     ) -> None:
         self.field = field
         self.other = other
 
     @property
-    def query(self):
+    def query(self) -> Mapping[str, Mapping[str, OtherType]]:
         return {self.field: {self.operator: self.other}}
 
 
-class Eq(BaseFindComparisonOperator):
+class Eq(BaseFindComparisonOperator[OtherType]):
     """
     `equal` query operator
 
@@ -45,7 +50,7 @@ class Eq(BaseFindComparisonOperator):
         return {self.field: self.other}
 
 
-class GT(BaseFindComparisonOperator):
+class GT(BaseFindComparisonOperator[OtherType]):
     """
     `$gt` query operator
 
@@ -71,7 +76,7 @@ class GT(BaseFindComparisonOperator):
     operator = "$gt"
 
 
-class GTE(BaseFindComparisonOperator):
+class GTE(BaseFindComparisonOperator[OtherType]):
     """
     `$gte` query operator
 
@@ -97,7 +102,7 @@ class GTE(BaseFindComparisonOperator):
     operator = "$gte"
 
 
-class In(BaseFindComparisonOperator):
+class In(BaseFindComparisonOperator[OtherType]):
     """
     `$in` query operator
 
@@ -123,7 +128,7 @@ class In(BaseFindComparisonOperator):
     operator = "$in"
 
 
-class NotIn(BaseFindComparisonOperator):
+class NotIn(BaseFindComparisonOperator[OtherType]):
     """
     `$nin` query operator
 
@@ -149,7 +154,7 @@ class NotIn(BaseFindComparisonOperator):
     operator = "$nin"
 
 
-class LT(BaseFindComparisonOperator):
+class LT(BaseFindComparisonOperator[OtherType]):
     """
     `$lt` query operator
 
@@ -175,7 +180,7 @@ class LT(BaseFindComparisonOperator):
     operator = "$lt"
 
 
-class LTE(BaseFindComparisonOperator):
+class LTE(BaseFindComparisonOperator[OtherType]):
     """
     `$lte` query operator
 
@@ -201,7 +206,7 @@ class LTE(BaseFindComparisonOperator):
     operator = "$lte"
 
 
-class NE(BaseFindComparisonOperator):
+class NE(BaseFindComparisonOperator[OtherType]):
     """
     `$ne` query operator
 
