@@ -53,6 +53,7 @@ class FindInterface:
         cls: type[FindType],
         *args: Mapping[Any, Any] | bool,
         projection_model: None = None,
+        sort: str | list[tuple[str, SortDirection]] | None = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -68,6 +69,7 @@ class FindInterface:
         cls: type[FindType],
         *args: Mapping[Any, Any] | bool,
         projection_model: type["DocumentProjectionType"],
+        sort: str | list[tuple[str, SortDirection]] | None = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -82,6 +84,7 @@ class FindInterface:
         cls: type[FindType],
         *args: Mapping[Any, Any] | bool,
         projection_model: type["DocumentProjectionType"] | None = None,
+        sort: str | list[tuple[str, SortDirection]] | None = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -97,6 +100,7 @@ class FindInterface:
 
         :param args: *Mapping[Any, Any] - search criteria
         :param projection_model: Optional[type[BaseModel]] - projection model
+        :param sort: Union[None, str, list[tuple[str, SortDirection]]] - A key or a list of (key, direction) pairs specifying the sort order for this query.
         :param session: Optional[AsyncClientSession] - pymongo session.
         :param ignore_cache: bool
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
@@ -106,6 +110,7 @@ class FindInterface:
         return cls._find_one_query_class(document_model=cls).find_one(
             *args,
             projection_model=projection_model,
+            sort=sort,
             session=session,
             ignore_cache=ignore_cache,
             fetch_links=fetch_links,
