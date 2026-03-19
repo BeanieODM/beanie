@@ -731,7 +731,7 @@ class BusWithCustomClassId(CarWithCustomClassId, Fuelled):
 
 class OwnerLinksToCustomClassId(Document):
     name: str
-    vehicles: List[Link[VehicleWithCustomClassId]] = []
+    vehicles: list[Link[VehicleWithCustomClassId]] = []
 
 
 class MixinNonRoot(BaseModel):
