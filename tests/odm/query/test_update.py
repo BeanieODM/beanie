@@ -1,4 +1,4 @@
-import asyncio
+import datetime as dt
 
 import pytest
 
@@ -7,7 +7,7 @@ from beanie.odm.queries.update import UpdateResponse
 from tests.odm.models import Sample
 
 
-async def test_update_query():
+def test_update_query():
     q = (
         Sample.find_many(Sample.integer == 1)
         .update(Set({Sample.integer: 10}))
@@ -54,7 +54,7 @@ async def test_update_many(preset_documents):
         Sample.find_many(Sample.increment > 4)
         .find_many(Sample.nested.optional == None)
         .update(Set({Sample.increment: 100}))
-    )  # noqa
+    )
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3
     for sample in result:
@@ -66,7 +66,7 @@ async def test_update_many_linked_method(preset_documents):
         Sample.find_many(Sample.increment > 4)
         .find_many(Sample.nested.optional == None)
         .update_many(Set({Sample.increment: 100}))
-    )  # noqa
+    )
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3
     for sample in result:
@@ -134,7 +134,7 @@ async def test_update_many_with_session(preset_documents, session):
     )
     assert q.session == session
 
-    await q  # noqa
+    await q
     result = await Sample.find_many(Sample.increment == 100).to_list()
     assert len(result) == 3
     for sample in result:
@@ -142,31 +142,41 @@ async def test_update_many_with_session(preset_documents, session):
 
 
 async def test_update_many_upsert_with_insert(
-    preset_documents, sample_doc_not_saved
+    preset_documents, sample_doc_not_saved, time_machine
 ):
+    time_machine.move_to(dt.datetime(2025, 1, 1, tzinfo=dt.timezone.utc))
+
     await Sample.find_many(Sample.integer > 100000).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
-    await asyncio.sleep(2)
-    new_docs = await Sample.find_many(
+
+    # Advance time to ensure eventual consistency/cache expiration
+    time_machine.shift(dt.timedelta(seconds=11))
+
+    docs = await Sample.find_many(
         Sample.string == sample_doc_not_saved.string
     ).to_list()
-    assert len(new_docs) == 1
-    doc = new_docs[0]
+    assert len(docs) == 1
+    doc = docs[0]
     assert doc.integer == sample_doc_not_saved.integer
 
 
 async def test_update_many_upsert_without_insert(
-    preset_documents, sample_doc_not_saved
+    preset_documents, sample_doc_not_saved, time_machine
 ):
+    time_machine.move_to(dt.datetime(2025, 1, 1, tzinfo=dt.timezone.utc))
+
     await Sample.find_many(Sample.integer > 1).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
-    await asyncio.sleep(2)
-    new_docs = await Sample.find_many(
+
+    # Advance time to ensure eventual consistency/cache expiration
+    time_machine.shift(dt.timedelta(seconds=11))
+
+    docs = await Sample.find_many(
         Sample.string == sample_doc_not_saved.string
     ).to_list()
-    assert len(new_docs) == 0
+    assert len(docs) == 0
 
 
 async def test_update_one_upsert_with_insert(
@@ -175,11 +185,11 @@ async def test_update_one_upsert_with_insert(
     await Sample.find_one(Sample.integer > 100000).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
-    new_docs = await Sample.find_many(
+    docs = await Sample.find_many(
         Sample.string == sample_doc_not_saved.string
     ).to_list()
-    assert len(new_docs) == 1
-    doc = new_docs[0]
+    assert len(docs) == 1
+    doc = docs[0]
     assert doc.integer == sample_doc_not_saved.integer
 
 
@@ -189,10 +199,10 @@ async def test_update_one_upsert_without_insert(
     await Sample.find_one(Sample.integer > 1).upsert(
         Set({Sample.integer: 100}), on_insert=sample_doc_not_saved
     )
-    new_docs = await Sample.find_many(
+    docs = await Sample.find_many(
         Sample.string == sample_doc_not_saved.string
     ).to_list()
-    assert len(new_docs) == 0
+    assert len(docs) == 0
 
 
 async def test_update_one_upsert_without_insert_return_doc(
@@ -205,10 +215,10 @@ async def test_update_one_upsert_without_insert_return_doc(
     )
     assert isinstance(result, Sample)
 
-    new_docs = await Sample.find_many(
+    docs = await Sample.find_many(
         Sample.string == sample_doc_not_saved.string
     ).to_list()
-    assert len(new_docs) == 0
+    assert len(docs) == 0
 
 
 async def test_update_pymongo_kwargs(preset_documents):

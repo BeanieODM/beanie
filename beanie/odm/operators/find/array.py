@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, Optional
+from typing import Any
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -69,7 +69,7 @@ class ElemMatch(BaseFindArrayOperator):
     def __init__(
         self,
         field,
-        expression: Optional[dict] = None,
+        expression: dict | None = None,
         **kwargs: Any,
     ):
         self.field = field

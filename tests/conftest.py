@@ -1,12 +1,6 @@
 import pytest
+from pydantic_settings import BaseSettings
 from pymongo import AsyncMongoClient
-
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
-
-if IS_PYDANTIC_V2:
-    from pydantic_settings import BaseSettings
-else:
-    from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -14,12 +8,12 @@ class Settings(BaseSettings):
     mongodb_db_name: str = "beanie_db"
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def settings():
     return Settings()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 async def cli(settings):
     client = AsyncMongoClient(settings.mongodb_dsn)
 
@@ -28,6 +22,6 @@ async def cli(settings):
     await client.close()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def db(cli, settings):
     return cli[settings.mongodb_db_name]

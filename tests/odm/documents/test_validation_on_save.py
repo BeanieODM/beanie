@@ -1,11 +1,8 @@
-from typing import Optional
-
 import pytest
 from bson import ObjectId
 from pydantic import BaseModel, ValidationError
 
 from beanie import PydanticObjectId
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
 from tests.odm.models import (
     DocumentWithValidationOnSave,
     Lock,
@@ -38,16 +35,13 @@ async def test_validate_on_save_changes():
 
 async def test_validate_on_save_keep_the_id_type():
     class UpdateModel(BaseModel):
-        num_1: Optional[int] = None
-        related: Optional[PydanticObjectId] = None
+        num_1: int | None = None
+        related: PydanticObjectId | None = None
 
     doc = DocumentWithValidationOnSave(num_1=1, num_2=2)
     await doc.insert()
     update = UpdateModel(related=PydanticObjectId())
-    if IS_PYDANTIC_V2:
-        doc = doc.model_copy(update=update.model_dump(exclude_unset=True))
-    else:
-        doc = doc.copy(update=update.dict(exclude_unset=True))
+    doc = doc.model_copy(update=update.model_dump(exclude_unset=True))
     doc.num_2 = 1000
     await doc.save()
     in_db = (

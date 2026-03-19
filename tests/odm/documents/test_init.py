@@ -1,7 +1,10 @@
+from importlib.metadata import version
+
 import pytest
 from pymongo import IndexModel
 
 from beanie import Document, Indexed, init_beanie
+from beanie import __version__ as beanie_version
 from beanie.exceptions import CollectionWasNotInitialized
 from beanie.odm.utils.projection import get_projection
 from tests.odm.models import (
@@ -15,15 +18,19 @@ from tests.odm.models import (
     DocumentTestModelWithIndexFlags,
     DocumentTestModelWithIndexFlagsAliases,
     DocumentTestModelWithSimpleIndex,
+    DocumentToBeLinked,
     DocumentWithCustomInit,
     DocumentWithIndexMerging2,
     DocumentWithLink,
     DocumentWithListLink,
+    DocumentWithOptionalTypingOptionalBackLink,
+    DocumentWithOptionalTypingOptionalLink,
     DocumentWithUnionTypeExpressionOptionalBackLink,
+    DocumentWithUnionTypeExpressionOptionalLink,
 )
 
 
-async def test_init_collection_was_not_initialized():
+def test_init_collection_was_not_initialized():
     class NewDocument(Document):
         test_str: str
 
@@ -62,7 +69,35 @@ async def test_init_wrong_params(settings, db):
         await init_beanie(connection_string=settings.mongodb_dsn)
 
 
-async def test_collection_with_custom_name():
+async def test_metadata_connection_string(settings):
+    class NewDocument(Document):
+        test_str: str
+
+    await init_beanie(
+        connection_string=settings.mongodb_dsn, document_models=[NewDocument]
+    )
+
+    metadata = NewDocument.get_pymongo_collection().database.client.options.pool_options.metadata
+    assert "beanie" in metadata["driver"]["name"]
+    assert beanie_version in metadata["driver"]["version"]
+
+
+@pytest.mark.skipif(
+    version("pymongo") < "4.14",
+    reason="append_metadata was added in PyMongo 4.14",
+)
+async def test_metadata_database(db):
+    class NewDocument(Document):
+        test_str: str
+
+    await init_beanie(database=db, document_models=[NewDocument])
+
+    metadata = NewDocument.get_pymongo_collection().database.client.options.pool_options.metadata
+    assert "beanie" in metadata["driver"]["name"]
+    assert beanie_version in metadata["driver"]["version"]
+
+
+def test_collection_with_custom_name():
     collection = (
         DocumentTestModelWithCustomCollectionName.get_pymongo_collection()
     )
@@ -244,7 +279,7 @@ async def test_document_string_import(db):
         )
 
 
-async def test_projection():
+def test_projection():
     projection = get_projection(DocumentTestModel)
     assert projection == {
         "_id": 1,
@@ -305,7 +340,7 @@ async def test_merge_indexes():
     )
 
 
-async def test_custom_init():
+def test_custom_init():
     assert DocumentWithCustomInit.s == "TEST2"
 
 
@@ -326,6 +361,36 @@ async def test_index_on_custom_types(db):
     await db.drop_collection("sample")
 
 
+async def test_init_document_with_union_type_expression_optional_link(db):
+    await init_beanie(
+        database=db,
+        document_models=[
+            DocumentToBeLinked,
+            DocumentWithUnionTypeExpressionOptionalLink,
+        ],
+    )
+
+    assert (
+        DocumentWithUnionTypeExpressionOptionalLink.get_link_fields().keys()
+        == {"link", "link_list"}
+    )
+
+
+async def test_init_document_with_typing_optional_link(db):
+    await init_beanie(
+        database=db,
+        document_models=[
+            DocumentToBeLinked,
+            DocumentWithOptionalTypingOptionalLink,
+        ],
+    )
+
+    assert DocumentWithOptionalTypingOptionalLink.get_link_fields().keys() == {
+        "link",
+        "link_list",
+    }
+
+
 async def test_init_document_with_union_type_expression_optional_back_link(db):
     await init_beanie(
         database=db,
@@ -342,6 +407,22 @@ async def test_init_document_with_union_type_expression_optional_back_link(db):
             "back_link_list",
             "back_link",
         }
+    )
+
+
+async def test_init_document_with_typing_optional_back_link(db):
+    await init_beanie(
+        database=db,
+        document_models=[
+            DocumentWithOptionalTypingOptionalBackLink,
+            DocumentWithListLink,
+            DocumentWithLink,
+        ],
+    )
+
+    assert (
+        DocumentWithOptionalTypingOptionalBackLink.get_link_fields().keys()
+        == {"back_link_list", "back_link"}
     )
 
 

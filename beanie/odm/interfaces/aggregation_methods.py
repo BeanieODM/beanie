@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, cast
 
 from pymongo.asynchronous.client_session import AsyncClientSession
 
@@ -16,16 +16,16 @@ class AggregateMethods:
         self,
         aggregation_pipeline,
         projection_model=None,
-        session: Optional[AsyncClientSession] = None,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
     ): ...
 
     async def sum(
         self,
-        field: Union[ExpressionField, float, int, str],
-        session: Optional[AsyncClientSession] = None,
+        field: ExpressionField | float | int | str,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
-    ) -> Optional[float]:
+    ) -> float | None:
         """
         Sum of values of the given field
 
@@ -52,8 +52,8 @@ class AggregateMethods:
         ]
 
         # As we did not supply a projection we can safely cast the type (hinting to mypy that we know the type)
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
+        result: list[dict[str, Any]] = cast(
+            list[dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
@@ -66,10 +66,10 @@ class AggregateMethods:
 
     async def avg(
         self,
-        field: Union[ExpressionField, float, int, str],
-        session: Optional[AsyncClientSession] = None,
+        field: ExpressionField | float | int | str,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
-    ) -> Optional[float]:
+    ) -> float | None:
         """
         Average of values of the given field
 
@@ -94,8 +94,8 @@ class AggregateMethods:
             {"$project": {"_id": 0, "avg": 1}},
         ]
 
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
+        result: list[dict[str, Any]] = cast(
+            list[dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
@@ -108,10 +108,10 @@ class AggregateMethods:
 
     async def max(
         self,
-        field: Union[ExpressionField, str, Any],
-        session: Optional[AsyncClientSession] = None,
+        field: ExpressionField | str | Any,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """
         Max of the values of the given field
 
@@ -135,8 +135,8 @@ class AggregateMethods:
             {"$project": {"_id": 0, "max": 1}},
         ]
 
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
+        result: list[dict[str, Any]] = cast(
+            list[dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,
@@ -149,10 +149,10 @@ class AggregateMethods:
 
     async def min(
         self,
-        field: Union[ExpressionField, str, Any],
-        session: Optional[AsyncClientSession] = None,
+        field: ExpressionField | str | Any,
+        session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """
         Min of the values of the given field
 
@@ -176,8 +176,8 @@ class AggregateMethods:
             {"$project": {"_id": 0, "min": 1}},
         ]
 
-        result: List[Dict[str, Any]] = cast(
-            List[Dict[str, Any]],
+        result: list[dict[str, Any]] = cast(
+            list[dict[str, Any]],
             await self.aggregate(
                 aggregation_pipeline=pipeline,
                 session=session,

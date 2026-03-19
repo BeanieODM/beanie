@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, ClassVar, Dict, Optional, Union
+from typing import Any, ClassVar
 
 from pydantic import BaseModel
 
@@ -27,8 +27,11 @@ class View(
 
     """
 
+    # Database
+    _database_major_version: ClassVar[int] = 4
+
     # Relations
-    _link_fields: ClassVar[Optional[Dict[str, LinkInfo]]] = None
+    _link_fields: ClassVar[dict[str, LinkInfo] | None] = None
 
     # Settings
     _settings: ClassVar[ViewSettings]
@@ -45,7 +48,7 @@ class View(
             raise ViewWasNotInitialized
         return cls._settings
 
-    async def fetch_link(self, field: Union[str, Any]):
+    async def fetch_link(self, field: str | Any):
         ref_obj = getattr(self, field, None)
         if isinstance(ref_obj, Link):
             value = await ref_obj.fetch(fetch_links=True)
@@ -63,7 +66,7 @@ class View(
         await asyncio.gather(*coros)
 
     @classmethod
-    def get_link_fields(cls) -> Optional[Dict[str, LinkInfo]]:
+    def get_link_fields(cls) -> dict[str, LinkInfo] | None:
         return cls._link_fields
 
     @classmethod

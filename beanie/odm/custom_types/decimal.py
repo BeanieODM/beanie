@@ -1,8 +1,8 @@
 import decimal
+from typing import Annotated
 
 import bson
 import pydantic
-from typing_extensions import Annotated
 
 DecimalAnnotation = Annotated[
     decimal.Decimal,

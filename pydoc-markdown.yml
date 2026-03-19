@@ -73,6 +73,8 @@ renderer:
           source: docs/tutorial/lazy_parse.md
         - title: Updating & Deleting
           source: docs/tutorial/update.md
+        - title: Soft Delete
+          source: docs/tutorial/soft_delete.md
         - title: Indexes
           source: docs/tutorial/indexes.md
         - title: Multi-model pattern

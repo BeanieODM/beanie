@@ -1,5 +1,6 @@
 import pytest
 from pydantic.main import BaseModel
+from pymongo.errors import BulkWriteError
 
 from beanie import Indexed, init_beanie
 from beanie.executors.migrate import MigrationSettings, run_migrate
@@ -29,7 +30,7 @@ class Note(Document):
         name = "notes"
 
 
-@pytest.fixture()
+@pytest.fixture
 async def notes(db):
     await init_beanie(database=db, document_models=[OldNote])
     await OldNote.delete_all()
@@ -49,7 +50,7 @@ async def test_migration_break(settings, notes, db):
         database_name=settings.mongodb_db_name,
         path="tests/migrations/migrations_for_test/break",
     )
-    with pytest.raises(Exception):
+    with pytest.raises(BulkWriteError):
         await run_migrate(migration_settings)
 
     await init_beanie(database=db, document_models=[OldNote])

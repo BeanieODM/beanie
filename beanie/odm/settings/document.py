@@ -1,14 +1,8 @@
-from typing import List, Optional
-
-from pydantic import Field
+from pydantic import ConfigDict, Field
 
 from beanie.odm.fields import IndexModelField
 from beanie.odm.settings.base import ItemSettings
 from beanie.odm.settings.timeseries import TimeSeriesConfig
-from beanie.odm.utils.pydantic import IS_PYDANTIC_V2
-
-if IS_PYDANTIC_V2:
-    from pydantic import ConfigDict
 
 
 class DocumentSettings(ItemSettings):
@@ -19,9 +13,9 @@ class DocumentSettings(ItemSettings):
     use_revision: bool = False
     single_root_inheritance: bool = False
 
-    indexes: List[IndexModelField] = Field(default_factory=list)
+    indexes: list[IndexModelField] = Field(default_factory=list)
     merge_indexes: bool = False
-    timeseries: Optional[TimeSeriesConfig] = None
+    timeseries: TimeSeriesConfig | None = None
 
     lazy_parsing: bool = False
 
@@ -30,11 +24,6 @@ class DocumentSettings(ItemSettings):
     max_nesting_depths_per_field: dict = Field(default_factory=dict)
     max_nesting_depth: int = 3
 
-    if IS_PYDANTIC_V2:
-        model_config = ConfigDict(
-            arbitrary_types_allowed=True,
-        )
-    else:
-
-        class Config:
-            arbitrary_types_allowed = True
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+    )

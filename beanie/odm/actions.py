@@ -1,24 +1,19 @@
 import asyncio
 import inspect
+from collections.abc import Callable
 from enum import Enum
 from functools import wraps
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Type,
     TypeVar,
-    Union,
+    cast,
 )
 
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
-    from beanie.odm.documents import AsyncDocMethod, DocType, Document
+    from beanie.odm.documents import AsyncDocMethod, Document
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -53,21 +48,21 @@ After = ActionDirections.AFTER
 
 
 class ActionRegistry:
-    _actions: Dict[
-        Type["Document"],
-        Dict[EventTypes, Dict[ActionDirections, List[Callable[..., Any]]]],
+    _actions: dict[
+        type["Document"],
+        dict[EventTypes, dict[ActionDirections, list[Callable[..., Any]]]],
     ] = {}
 
     @classmethod
-    def clean_actions(cls, document_class: Type["Document"]):
+    def clean_actions(cls, document_class: type["Document"]):
         if cls._actions.get(document_class) is not None:
             del cls._actions[document_class]
 
     @classmethod
     def add_action(
         cls,
-        document_class: Type["Document"],
-        event_types: List[EventTypes],
+        document_class: type["Document"],
+        event_types: list[EventTypes],
         action_direction: ActionDirections,
         funct: Callable,
     ):
@@ -94,10 +89,10 @@ class ActionRegistry:
     @classmethod
     def get_action_list(
         cls,
-        document_class: Type["Document"],
+        document_class: type["Document"],
         event_type: EventTypes,
         action_direction: ActionDirections,
-    ) -> List[Callable]:
+    ) -> list[Callable]:
         """
         Get stored action list
         :param document_class: Type - document class
@@ -115,7 +110,7 @@ class ActionRegistry:
         instance: "Document",
         event_type: EventTypes,
         action_direction: ActionDirections,
-        exclude: List[Union[ActionDirections, str]],
+        exclude: list[ActionDirections | str],
     ):
         """
         Run actions
@@ -147,7 +142,7 @@ F = TypeVar("F", bound=Any)
 
 
 def register_action(
-    event_types: Tuple[Union[List[EventTypes], EventTypes], ...],
+    event_types: tuple[list[EventTypes] | EventTypes, ...],
     action_direction: ActionDirections,
 ) -> Callable[[F], F]:
     """
@@ -174,7 +169,7 @@ def register_action(
 
 
 def before_event(
-    *args: Union[List[EventTypes], EventTypes],
+    *args: list[EventTypes] | EventTypes,
 ) -> Callable[[F], F]:
     """
     Decorator. It adds action, which should run before mentioned one
@@ -189,7 +184,7 @@ def before_event(
 
 
 def after_event(
-    *args: Union[List[EventTypes], EventTypes],
+    *args: list[EventTypes] | EventTypes,
 ) -> Callable[[F], F]:
     """
     Decorator. It adds action, which should run after mentioned one
@@ -206,7 +201,7 @@ def after_event(
 
 def wrap_with_actions(
     event_type: EventTypes,
-) -> Callable[["AsyncDocMethod[DocType, P, R]"], Any]:
+) -> Callable[["AsyncDocMethod[P, R]"], "AsyncDocMethod[P, R]"]:
     """
     Helper function to wrap Document methods with
     before and after event listeners
@@ -215,17 +210,18 @@ def wrap_with_actions(
     """
 
     def decorator(
-        f: "AsyncDocMethod[DocType, P, R]",
-    ) -> "AsyncDocMethod[DocType, P, R]":
+        f: "AsyncDocMethod[P, R]",
+    ) -> "AsyncDocMethod[P, R]":
         @wraps(f)
-        async def wrapper(  # type: ignore
-            self: "DocType",
+        async def wrapper(
             *args: P.args,
-            skip_actions: Optional[List[Union[ActionDirections, str]]] = None,
             **kwargs: P.kwargs,
         ) -> R:
-            if skip_actions is None:
-                skip_actions = []
+            skip_actions: list[ActionDirections | str] = (
+                kwargs.get("skip_actions") or []  # type: ignore[assignment]
+            )
+
+            self = cast("Document", args[0])
 
             await ActionRegistry.run_actions(
                 self,
@@ -234,12 +230,7 @@ def wrap_with_actions(
                 exclude=skip_actions,
             )
 
-            result = await f(
-                self,
-                *args,
-                skip_actions=skip_actions,  # type: ignore[arg-type]
-                **kwargs,
-            )
+            result = await f(*args, **kwargs)
 
             await ActionRegistry.run_actions(
                 self,

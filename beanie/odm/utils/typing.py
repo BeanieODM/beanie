@@ -1,18 +1,12 @@
 import inspect
-import sys
-from typing import Any, Dict, Optional, Tuple, Type
+from typing import Any, get_args, get_origin
 
 from beanie.odm.fields import IndexedAnnotation
 
-from .pydantic import IS_PYDANTIC_V2, get_field_type
-
-if sys.version_info >= (3, 8):
-    from typing import get_args, get_origin
-else:
-    from typing_extensions import get_args, get_origin
+from .pydantic import get_field_type
 
 
-def extract_id_class(annotation) -> Type[Any]:
+def extract_id_class(annotation) -> type[Any]:
     if get_origin(annotation) is not None:
         try:
             annotation = next(
@@ -22,10 +16,10 @@ def extract_id_class(annotation) -> Type[Any]:
             annotation = None
     if inspect.isclass(annotation):
         return annotation
-    raise ValueError("Unknown annotation: {}".format(annotation))
+    raise ValueError(f"Unknown annotation: {annotation}")
 
 
-def get_index_attributes(field) -> Optional[Tuple[int, Dict[str, Any]]]:
+def get_index_attributes(field) -> tuple[int, dict[str, Any]] | None:
     """Gets the index attributes from the field, if it is indexed.
 
     :param field: The field to get the index attributes from.
@@ -40,19 +34,9 @@ def get_index_attributes(field) -> Optional[Tuple[int, Dict[str, Any]]]:
 
     # For fields that are use `Indexed` within `Annotated`, the field will have
     # metadata that might contain an `IndexedAnnotation` instance.
-    if IS_PYDANTIC_V2:
-        # In Pydantic 2, the field has a `metadata` attribute with
-        # the annotations.
-        metadata = getattr(field, "metadata", None)
-    elif hasattr(field, "annotation") and hasattr(
-        field.annotation, "__metadata__"
-    ):
-        # In Pydantic 1, the field has an `annotation` attribute with the
-        # type assigned to the field. If the type is annotated, it will
-        # have a `__metadata__` attribute with the annotations.
-        metadata = field.annotation.__metadata__
-    else:
-        return None
+    # In Pydantic 2, the field has a `metadata` attribute with
+    # the annotations.
+    metadata = getattr(field, "metadata", None)
 
     if metadata is None:
         return None
@@ -72,3 +56,32 @@ def get_index_attributes(field) -> Optional[Tuple[int, Dict[str, Any]]]:
     )
 
     return getattr(indexed_annotation, "_indexed", None)
+
+
+def is_generic_alias(obj: Any) -> bool:
+    """Check if the object is a typing or built-in generic alias (e.g., list[str], List[int]).
+
+    :param obj: An object instance.
+
+    :return: True if obj is a typing or built-in generic alias, False otherwise.
+    """
+
+    # Check built-in generic aliases (e.g. list[str])
+    try:
+        from types import GenericAlias
+
+        if isinstance(obj, GenericAlias):
+            return True
+    except ImportError:
+        pass  # Python < 3.9
+
+    # Check legacy typing generics (e.g. typing.List[str])
+    try:
+        from typing import _GenericAlias  # type: ignore[attr-defined]
+
+        if isinstance(obj, _GenericAlias):
+            return True
+    except ImportError:
+        pass
+
+    return False

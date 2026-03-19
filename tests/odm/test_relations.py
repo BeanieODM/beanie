@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 from pydantic.fields import Field
 
@@ -12,7 +10,6 @@ from beanie.odm.fields import (
     WriteRules,
 )
 from beanie.odm.utils.pydantic import (
-    IS_PYDANTIC_V2,
     get_model_fields,
     parse_model,
 )
@@ -170,11 +167,7 @@ class TestInsert:
         house = parse_model(House, house_not_inserted)
         await house.insert(link_rule=WriteRules.WRITE)
 
-        if IS_PYDANTIC_V2:
-            json_str = house.model_dump_json()
-        else:
-            json_str = house.json()
-        assert json_str is not None
+        assert house.model_dump_json() is not None
 
     async def test_multi_insert_links(self):
         house = House(name="random", windows=[], door=Door())
@@ -360,7 +353,7 @@ class TestFind:
 
     async def test_fetch_list_with_some_prefetched(self):
         docs = []
-        for i in range(10):
+        for _ in range(10):
             doc = DocumentToBeLinked()
             await doc.save()
             docs.append(doc)
@@ -642,13 +635,13 @@ class TestOther:
         region = Region()
         await region.insert()
 
-        for i in range(10):
+        for _ in range(10):
             await UsersAddresses(region_id=region).insert()
 
         region_2 = Region()
         await region_2.insert()
 
-        for i in range(10):
+        for _ in range(10):
             await UsersAddresses(region_id=region_2).insert()
 
         addresses_count = (
@@ -660,6 +653,20 @@ class TestOther:
         )
 
         assert addresses_count[0] == {"count": 10}
+
+    async def test_dump_model_with_fetched_backlink(
+        self, link_and_backlink_doc_pair
+    ):
+        _link_doc, back_link_doc = link_and_backlink_doc_pair
+
+        document_with_fetched_backlinks = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True, nesting_depth=1
+        )
+
+        assert document_with_fetched_backlinks is not None
+        model_json = document_with_fetched_backlinks.model_dump(mode="json")
+
+        assert model_json["back_link"] == {"collection": "DocumentWithLink"}
 
     async def test_with_chaining_aggregation_and_text_search(self):
         # ARRANGE
@@ -726,7 +733,7 @@ class TestOther:
         }
 
 
-@pytest.fixture()
+@pytest.fixture
 async def link_and_backlink_doc_pair():
     back_link_doc = DocumentWithBackLink()
     await back_link_doc.insert()
@@ -735,7 +742,7 @@ async def link_and_backlink_doc_pair():
     return link_doc, back_link_doc
 
 
-@pytest.fixture()
+@pytest.fixture
 async def list_link_and_list_backlink_doc_pair():
     back_link_doc = DocumentWithListBackLink()
     await back_link_doc.insert()
@@ -788,7 +795,7 @@ class TestFindBackLinks:
 
 class TestReplaceBackLinks:
     async def test_do_nothing(self, link_and_backlink_doc_pair):
-        link_doc, back_link_doc = link_and_backlink_doc_pair
+        _link_doc, back_link_doc = link_and_backlink_doc_pair
         back_link_doc.back_link.s = "new value"
         await back_link_doc.replace()
         new_back_link_doc = await DocumentWithBackLink.get(
@@ -797,7 +804,7 @@ class TestReplaceBackLinks:
         assert new_back_link_doc.back_link.s == "TEST"
 
     async def test_do_nothing_list(self, list_link_and_list_backlink_doc_pair):
-        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        _link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
         back_link_doc = await DocumentWithListBackLink.get(
             back_link_doc.id, fetch_links=True
         )
@@ -811,7 +818,7 @@ class TestReplaceBackLinks:
             assert lnk.s == "TEST"
 
     async def test_write(self, link_and_backlink_doc_pair):
-        link_doc, back_link_doc = link_and_backlink_doc_pair
+        _link_doc, back_link_doc = link_and_backlink_doc_pair
         back_link_doc = await DocumentWithBackLink.get(
             back_link_doc.id, fetch_links=True
         )
@@ -825,7 +832,7 @@ class TestReplaceBackLinks:
     async def test_do_nothing_write_list(
         self, list_link_and_list_backlink_doc_pair
     ):
-        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        _link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
         back_link_doc = await DocumentWithListBackLink.get(
             back_link_doc.id, fetch_links=True
         )
@@ -841,7 +848,7 @@ class TestReplaceBackLinks:
 
 class TestSaveBackLinks:
     async def test_do_nothing(self, link_and_backlink_doc_pair):
-        link_doc, back_link_doc = link_and_backlink_doc_pair
+        _link_doc, back_link_doc = link_and_backlink_doc_pair
         back_link_doc.back_link.s = "new value"
         await back_link_doc.save()
         new_back_link_doc = await DocumentWithBackLink.get(
@@ -850,7 +857,7 @@ class TestSaveBackLinks:
         assert new_back_link_doc.back_link.s == "TEST"
 
     async def test_do_nothing_list(self, list_link_and_list_backlink_doc_pair):
-        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        _link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
         back_link_doc = await DocumentWithListBackLink.get(
             back_link_doc.id, fetch_links=True
         )
@@ -864,7 +871,7 @@ class TestSaveBackLinks:
             assert lnk.s == "TEST"
 
     async def test_write(self, link_and_backlink_doc_pair):
-        link_doc, back_link_doc = link_and_backlink_doc_pair
+        _link_doc, back_link_doc = link_and_backlink_doc_pair
         back_link_doc = await DocumentWithBackLink.get(
             back_link_doc.id, fetch_links=True
         )
@@ -876,7 +883,7 @@ class TestSaveBackLinks:
         assert new_back_link_doc.back_link.s == "new value"
 
     async def test_write_list(self, list_link_and_list_backlink_doc_pair):
-        link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
+        _link_doc, back_link_doc = list_link_and_list_backlink_doc_pair
         back_link_doc = await DocumentWithListBackLink.get(
             back_link_doc.id, fetch_links=True
         )
@@ -889,36 +896,65 @@ class TestSaveBackLinks:
         for lnk in new_back_link_doc.back_link:
             assert lnk.s == "new value"
 
+    async def test_save_preserves_fetched_back_link(
+        self, link_and_backlink_doc_pair
+    ):
+        """Fetched BackLink must not revert to a reference after save().
+
+        Regression test for https://github.com/BeanieODM/beanie/issues/1006.
+        """
+        link_doc, back_link_doc = link_and_backlink_doc_pair
+        back_link_doc = await DocumentWithBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        assert isinstance(back_link_doc.back_link, DocumentWithLink)
+
+        back_link_doc.i = 42
+        await back_link_doc.save()
+
+        assert isinstance(back_link_doc.back_link, DocumentWithLink)
+        assert back_link_doc.back_link.id == link_doc.id
+
+    async def test_save_preserves_fetched_list_back_link(
+        self, list_link_and_list_backlink_doc_pair
+    ):
+        """Fetched list BackLinks must not revert to references after save().
+
+        Regression test for https://github.com/BeanieODM/beanie/issues/1006.
+        """
+        _, back_link_doc = list_link_and_list_backlink_doc_pair
+        back_link_doc = await DocumentWithListBackLink.get(
+            back_link_doc.id, fetch_links=True
+        )
+        for lnk in back_link_doc.back_link:
+            assert isinstance(lnk, DocumentWithListLink)
+
+        back_link_doc.i = 42
+        await back_link_doc.save()
+
+        for lnk in back_link_doc.back_link:
+            assert isinstance(lnk, DocumentWithListLink)
+
 
 class HouseForReversedOrderInit(Document):
     name: str
     door: Link["DoorForReversedOrderInit"]
-    owners: List[Link["PersonForReversedOrderInit"]]
+    owners: list[Link["PersonForReversedOrderInit"]]
 
 
 class DoorForReversedOrderInit(Document):
     height: int = 2
     width: int = 1
-    if IS_PYDANTIC_V2:
-        house: BackLink[HouseForReversedOrderInit] = Field(
-            json_schema_extra={"original_field": "door"}
-        )
-    else:
-        house: BackLink[HouseForReversedOrderInit] = Field(
-            original_field="door"
-        )
+    house: BackLink[HouseForReversedOrderInit] = Field(
+        json_schema_extra={"original_field": "door"}
+    )
 
 
 class PersonForReversedOrderInit(Document):
     name: str
-    if IS_PYDANTIC_V2:
-        house: List[BackLink[HouseForReversedOrderInit]] = Field(
-            json_schema_extra={"original_field": "owners"}
-        )
-    else:
-        house: List[BackLink[HouseForReversedOrderInit]] = Field(
-            original_field="owners"
-        )
+    house: list[BackLink[HouseForReversedOrderInit]] = Field(
+        json_schema_extra={"original_field": "owners"}
+    )
 
 
 class TestDeleteBackLinks:
