@@ -29,8 +29,9 @@ Strategies
     the update expression and a before_event handler.
 """
 
+from collections.abc import Mapping
 from enum import Enum
-from typing import Any, Dict, List, Mapping, Set, Union
+from typing import Any
 
 from beanie.odm.operators.update import BaseUpdateOperator
 from beanie.odm.operators.update.general import SetRevisionId
@@ -50,7 +51,7 @@ class ActionConflictResolution(str, Enum):
 class MergeConflictError(Exception):
     """Raised when ``RAISE`` strategy detects conflicting fields."""
 
-    def __init__(self, conflicting_fields: Set[str]) -> None:
+    def __init__(self, conflicting_fields: set[str]) -> None:
         self.conflicting_fields = conflicting_fields
         fields_str = ", ".join(sorted(conflicting_fields))
         super().__init__(
@@ -61,8 +62,8 @@ class MergeConflictError(Exception):
 
 
 def _consolidate_update_query(
-    update_args: List[Union[Dict[str, Any], Mapping[str, Any]]],
-) -> Dict[str, Dict[str, Any]]:
+    update_args: list[dict[str, Any] | Mapping[str, Any]],
+) -> dict[str, dict[str, Any]]:
     """Build a single consolidated MongoDB update dict from a list of
     update expressions.
 
@@ -76,7 +77,7 @@ def _consolidate_update_query(
         BaseUpdateOperator instances, etc.)
     :return: consolidated ``{operator: {field: value, ...}, ...}`` dict
     """
-    consolidated: Dict[str, Dict[str, Any]] = {}
+    consolidated: dict[str, dict[str, Any]] = {}
 
     for arg in update_args:
         if isinstance(arg, SetRevisionId):
@@ -91,7 +92,9 @@ def _consolidate_update_query(
         elif isinstance(arg, Mapping):
             raw = dict(arg)
         else:
-            continue
+            raise TypeError(
+                f"Unsupported update expression type: {type(arg)!r}"
+            )
 
         for operator_key, fields in raw.items():
             if not isinstance(fields, (dict, Mapping)):
@@ -104,24 +107,24 @@ def _consolidate_update_query(
 
 
 def _extract_targeted_fields(
-    consolidated: Dict[str, Dict[str, Any]],
-) -> Set[str]:
+    consolidated: dict[str, dict[str, Any]],
+) -> set[str]:
     """Extract the set of all field names targeted by any update operator.
 
     :param consolidated: output of ``_consolidate_update_query``
     :return: set of dotted field paths
     """
-    fields: Set[str] = set()
+    fields: set[str] = set()
     for operator_fields in consolidated.values():
         fields.update(operator_fields.keys())
     return fields
 
 
 def merge_update_expressions(
-    update_args: List[Union[Dict[str, Any], Mapping[str, Any]]],
-    action_changes: Dict[str, Any],
+    update_args: list[dict[str, Any] | Mapping[str, Any]],
+    action_changes: dict[str, Any],
     strategy: ActionConflictResolution = ActionConflictResolution.UPDATE_WINS,
-) -> List[Union[Dict[str, Any], Mapping[str, Any]]]:
+) -> list[dict[str, Any] | Mapping[str, Any]]:
     """Merge before_event field changes into update arguments.
 
     Produces a single consolidated update expression that includes both
@@ -143,7 +146,7 @@ def merge_update_expressions(
     if not action_changes:
         return list(update_args)
 
-    if strategy == ActionConflictResolution.ACTION_OVERRIDE:
+    if strategy is ActionConflictResolution.ACTION_OVERRIDE:
         passthrough = _collect_passthrough(update_args)
         return [{"$set": dict(action_changes)}] + passthrough
 
@@ -151,7 +154,7 @@ def merge_update_expressions(
     targeted = _extract_targeted_fields(consolidated)
     conflicting = set(action_changes.keys()) & targeted
 
-    if conflicting and strategy == ActionConflictResolution.RAISE:
+    if conflicting and strategy is ActionConflictResolution.RAISE:
         raise MergeConflictError(conflicting)
 
     set_fields = consolidated.get("$set", {})
@@ -164,7 +167,7 @@ def merge_update_expressions(
             if key not in targeted:
                 set_fields[key] = value
 
-    elif strategy == ActionConflictResolution.ACTION_WINS:
+    elif strategy is ActionConflictResolution.ACTION_WINS:
         # Remove conflicting fields from non-$set operators
         for operator_key in list(consolidated.keys()):
             if operator_key == "$set":
@@ -190,8 +193,8 @@ def merge_update_expressions(
 
 
 def _collect_passthrough(
-    update_args: List[Union[Dict[str, Any], Mapping[str, Any]]],
-) -> List[Any]:
+    update_args: list[dict[str, Any] | Mapping[str, Any]],
+) -> list[Any]:
     """Collect expressions that the merger does not process.
 
     ``SetRevisionId`` and aggregation pipeline (list) expressions are
@@ -200,10 +203,6 @@ def _collect_passthrough(
     :param update_args: original update expression list
     :return: list of pass-through expressions
     """
-    result: List[Any] = []
-    for arg in update_args:
-        if isinstance(arg, SetRevisionId):
-            result.append(arg)
-        elif isinstance(arg, list):
-            result.append(arg)
-    return result
+    return [
+        arg for arg in update_args if isinstance(arg, (SetRevisionId, list))
+    ]

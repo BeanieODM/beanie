@@ -390,7 +390,7 @@ class DocumentWithUpdateFieldAction(Document):
     """Document where before_event(Update) modifies a regular persisted field."""
 
     name: str
-    tag: Optional[str] = None
+    tag: str | None = None
 
     @before_event(Update)
     def set_tag(self):
@@ -401,7 +401,7 @@ class DocumentWithValidateOnSaveAction(Document):
     """Document with before_event + validate_on_save to test ordering."""
 
     name: str
-    normalized_name: Optional[str] = None
+    normalized_name: str | None = None
 
     @before_event(Insert, Replace, Save)
     def normalize(self):
@@ -415,7 +415,7 @@ class DocumentWithActionWinsStrategy(Document):
     """Document using ACTION_WINS conflict resolution."""
 
     name: str
-    tag: Optional[str] = None
+    tag: str | None = None
 
     @before_event(Update)
     def set_tag(self):

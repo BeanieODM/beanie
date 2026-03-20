@@ -135,7 +135,7 @@ class Sample(Document):
         self.updated_at = datetime.now(timezone.utc)
 ```
 
-When `sample.set({"name": "new_name"})` is called, the `updated_at` field will also be
+When `await sample.set({"name": "new_name"})` is called, the `updated_at` field will also be
 included as a `$set` operation in the update expression.
 
 ### Conflict resolution

@@ -696,26 +696,45 @@ class Document(
                 "skip_sync parameter is not supported. The document get synced always using atomic operation."
             )
 
-        pre_action_state = get_dict(
-            self, to_db=True, keep_nulls=self.get_settings().keep_nulls
+        has_before_actions = (
+            ActionDirections.BEFORE not in skip_actions
+            and bool(
+                ActionRegistry.get_action_list(
+                    self.__class__,
+                    EventTypes.UPDATE,
+                    ActionDirections.BEFORE,
+                )
+            )
         )
 
-        await ActionRegistry.run_actions(
-            self,
-            event_type=EventTypes.UPDATE,
-            action_direction=ActionDirections.BEFORE,
-            exclude=skip_actions,
-        )
+        if has_before_actions:
+            # Always diff with keep_nulls=True so that fields set to
+            # None by a before_event handler are detected as changes
+            # (they would be silently dropped with keep_nulls=False).
+            pre_action_state = get_dict(self, to_db=True, keep_nulls=True)
 
-        post_action_state = get_dict(
-            self, to_db=True, keep_nulls=self.get_settings().keep_nulls
-        )
-        action_changes = {
-            key: value
-            for key, value in post_action_state.items()
-            if key not in ("_id", "revision_id")
-            and pre_action_state.get(key) != value
-        }
+            await ActionRegistry.run_actions(
+                self,
+                event_type=EventTypes.UPDATE,
+                action_direction=ActionDirections.BEFORE,
+                exclude=skip_actions,
+            )
+
+            post_action_state = get_dict(self, to_db=True, keep_nulls=True)
+            action_changes = {
+                key: value
+                for key, value in post_action_state.items()
+                if key not in ("_id", "revision_id")
+                and pre_action_state.get(key) != value
+            }
+        else:
+            await ActionRegistry.run_actions(
+                self,
+                event_type=EventTypes.UPDATE,
+                action_direction=ActionDirections.BEFORE,
+                exclude=skip_actions,
+            )
+            action_changes = {}
 
         arguments: list[Any] = list(args)
         if action_changes:
