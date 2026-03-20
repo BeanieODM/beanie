@@ -21,6 +21,7 @@ class ItemSettings(BaseModel):
     union_doc: type | None = None
     union_doc_alias: str | None = None
     class_id: str = "_class_id"
+    class_id_value: str | None = None
 
     is_root: bool = False
 

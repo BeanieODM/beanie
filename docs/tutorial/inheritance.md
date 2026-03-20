@@ -33,7 +33,7 @@ class Vehicle(Document):
     #                          Bus
     # shared attribute for all children
     color: str
-    
+
     class Settings:
         is_root = True
 
@@ -60,11 +60,40 @@ class Car(Vehicle, Fuelled):
 class Bus(Car, Fuelled):
     """Inheritance chain is Vehicle -> Car -> Bus, it is also stored in Vehicle collection"""
     seats: int
-    
-    
+
+
 class Owner(Document):
     vehicles: Optional[List[Link[Vehicle]]]
 ```
+
+### Custom class identifiers
+
+By default, Beanie uses the `_class_id` field to store the document type discriminator. You can override the discriminator field name using the `class_id` setting.
+
+The value of the document type discriminator field is derived automatically from the document class name and the inheritance hierarchy. You have the option to manually set this value using the `class_id_value` setting.
+
+See the example below:
+
+```py
+class Vehicle(Document):
+    color: str
+
+    class Settings:
+        is_root = True
+        class_id = "type"           # Custom discriminator field name (default: "_class_id")
+
+
+class Car(Vehicle):
+    class Settings:
+        class_id_value = "car"        # Custom discriminator value (default: "Vehicle.Car")
+
+
+class Bus(Vehicle):
+    # Uses default: class_id_value = "Vehicle.Bus"
+    ...
+```
+
+In this example, the `type` field will store the discriminator value for each document, and in the `Car` class, `"car"` will be used as the `type` field's value instead of an automatically calculated one.
 
 ### Inserts
 
