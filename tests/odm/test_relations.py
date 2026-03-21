@@ -1,4 +1,5 @@
 import pytest
+from bson import DBRef
 from pydantic.fields import Field
 
 from beanie import Document, init_beanie
@@ -1063,7 +1064,7 @@ class TestBuildAggregations:
             ]
         )
         assert aggregation.get_aggregation_pipeline() == [
-            {"$match": {"door.$id": door.id}},
+            {"$match": {"door": DBRef(Door.get_collection_name(), door.id)}},
             {"$group": {"_id": "$height", "count": {"$sum": 1}}},
         ]
         result = await aggregation.to_list()
