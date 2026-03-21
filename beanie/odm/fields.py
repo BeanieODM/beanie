@@ -193,6 +193,35 @@ class FieldResolution:
 
 
 class ExpressionField(str):
+    """A string subclass used to build type-safe MongoDB query expressions.
+
+    Instances are created automatically when you access a field on a
+    :class:`~beanie.Document` class (e.g. ``Product.price``).  Attribute
+    access chains are translated into dot-notation paths (e.g.
+    ``Product.category.name`` → ``"category.name"``), and Pydantic field
+    aliases are resolved automatically.
+
+    Comparison operators (``==``, ``>``, ``>=``, ``<``, ``<=``, ``!=``)
+    return the appropriate :mod:`beanie.odm.operators.find` objects so
+    they can be passed directly to ``find()`` / ``find_one()``.
+
+    Unary ``+`` / ``-`` return ``(field, SortDirection)`` tuples accepted
+    by ``sort()``.
+
+    Example::
+
+        # Field access
+        Product.category.name        # ExpressionField("category.name")
+
+        # Query operators
+        Product.find(Product.price > 10)
+        Product.find(Product.name == "Chocolate")
+
+        # Sorting
+        Product.find().sort(+Product.price)
+        Product.find().sort(-Product.price)
+    """
+
     def __new__(cls, path, field_resolution=None):
         instance = super().__new__(cls, path)
         instance._field_resolution = (
@@ -309,29 +338,37 @@ class ExpressionField(str):
         return hash(str(self))
 
     def __eq__(self, other):
+        """Return an equality filter expression, or delegate to str.__eq__ when comparing two ExpressionFields."""
         if isinstance(other, ExpressionField):
             return super().__eq__(other)
         return Eq(field=self, other=other)
 
     def __gt__(self, other):
+        """Return a greater-than filter expression."""
         return GT(field=self, other=other)
 
     def __ge__(self, other):
+        """Return a greater-than-or-equal filter expression."""
         return GTE(field=self, other=other)
 
     def __lt__(self, other):
+        """Return a less-than filter expression."""
         return LT(field=self, other=other)
 
     def __le__(self, other):
+        """Return a less-than-or-equal filter expression."""
         return LTE(field=self, other=other)
 
     def __ne__(self, other):
+        """Return a not-equal filter expression."""
         return NE(field=self, other=other)
 
     def __pos__(self):
+        """Return an ascending sort tuple ``(field, SortDirection.ASCENDING)``."""
         return self, SortDirection.ASCENDING
 
     def __neg__(self):
+        """Return a descending sort tuple ``(field, SortDirection.DESCENDING)``."""
         return self, SortDirection.DESCENDING
 
     def __copy__(self):
@@ -342,16 +379,53 @@ class ExpressionField(str):
 
 
 class DeleteRules(str, Enum):
+    """Controls what happens to linked documents when the parent is deleted.
+
+    Pass as the ``link_rule`` argument to :meth:`~beanie.Document.delete`.
+
+    - ``DO_NOTHING`` *(default)* — linked documents are left untouched.
+    - ``DELETE_LINKS`` — each linked document is also deleted recursively.
+
+    Example::
+
+        await article.delete(link_rule=DeleteRules.DELETE_LINKS)
+    """
+
     DO_NOTHING = "DO_NOTHING"
     DELETE_LINKS = "DELETE_LINKS"
 
 
 class WriteRules(str, Enum):
+    """Controls whether linked documents are persisted when the parent is saved.
+
+    Pass as the ``link_rule`` argument to
+    :meth:`~beanie.Document.insert`, :meth:`~beanie.Document.save`,
+    :meth:`~beanie.Document.replace`, etc.
+
+    - ``DO_NOTHING`` *(default)* — linked documents are **not** written;
+      only the DBRef is stored on the parent.
+    - ``WRITE`` — each linked document is upserted to the database before
+      the parent is written.
+
+    Example::
+
+        await article.insert(link_rule=WriteRules.WRITE)
+    """
+
     DO_NOTHING = "DO_NOTHING"
     WRITE = "WRITE"
 
 
 class LinkTypes(str, Enum):
+    """Internal classification of relation field variants.
+
+    Used by Beanie's initialisation logic to determine how a
+    :class:`Link` or :class:`BackLink` field should be fetched and
+    serialised.  You will not normally need to reference these values
+    directly — they are set automatically when a document class is
+    initialised.
+    """
+
     DIRECT = "DIRECT"
     OPTIONAL_DIRECT = "OPTIONAL_DIRECT"
     LIST = "LIST"
@@ -364,6 +438,13 @@ class LinkTypes(str, Enum):
 
 
 class LinkInfo(BaseModel):
+    """Runtime metadata describing a relation field on a document class.
+
+    Populated automatically by Beanie's initialisation step and stored
+    on ``Document._link_fields``.  Used internally to resolve fetch
+    queries and to apply :class:`WriteRules` / :class:`DeleteRules`.
+    """
+
     field_name: str
     lookup_field_name: str
     document_class: type[BaseModel]  # Document class
@@ -376,11 +457,43 @@ T = TypeVar("T")
 
 
 class Link(Generic[T]):
+    """A lazy reference to another :class:`~beanie.Document`.
+
+    Stored in MongoDB as a ``DBRef`` (``{"$ref": ..., "$id": ...}``).
+    The referenced document is **not** loaded from the database until
+    :meth:`fetch` (or a higher-level helper such as
+    :meth:`~beanie.Document.fetch_link`) is awaited.
+
+    Declare a relation field using ``Link[T]`` as the type annotation::
+
+        class Article(Document):
+            author: Link[Author]
+            # Optional relation
+            editor: Link[Author] | None = None
+            # List of relations
+            tags: list[Link[Tag]] = []
+
+    Insert behaviour is controlled by :class:`WriteRules` and delete
+    behaviour by :class:`DeleteRules`.
+
+    To resolve the reference, either:
+
+    - ``await article.fetch_link(Article.author)`` — fetches one field
+    - ``await article.fetch_all_links()`` — fetches all link fields
+    - Pass ``fetch_links=True`` to ``find()`` / ``find_one()`` / ``get()``
+    """
+
     def __init__(self, ref: DBRef, document_class: type[T]):
         self.ref = ref
         self.document_class = document_class
 
     async def fetch(self, fetch_links: bool = False) -> "T | Link[T]":
+        """Fetch the referenced document from the database.
+
+        :param fetch_links: If ``True``, also resolve link fields on the
+            fetched document.
+        :return: The resolved document, or ``self`` if not found.
+        """
         result = await self.document_class.get(  # type: ignore
             self.ref.id, with_children=True, fetch_links=fetch_links
         )
@@ -388,6 +501,7 @@ class Link(Generic[T]):
 
     @classmethod
     async def fetch_one(cls, link: "Link[T]"):
+        """Fetch a single link. Convenience wrapper around :meth:`fetch`."""
         return await link.fetch()
 
     @classmethod
@@ -432,6 +546,8 @@ class Link(Generic[T]):
     def repack_links(
         links: list["Link[T] | DocType"],
     ) -> OrderedDict[Any, Any]:
+        """Convert a mixed list of Link objects and resolved documents into an
+        OrderedDict keyed by document id, preserving insertion order."""
         result = OrderedDict()
         for link in links:
             if isinstance(link, Link):
@@ -442,6 +558,11 @@ class Link(Generic[T]):
 
     @classmethod
     async def fetch_many(cls, links: list["Link[T]"]) -> list["T | Link[T]"]:
+        """Fetch multiple links concurrently using ``asyncio.gather``.
+
+        Unlike :meth:`fetch_list`, this method issues one database
+        round-trip per link rather than a single batched query.
+        """
         coros = []
         for link in links:
             coros.append(link.fetch())
@@ -526,14 +647,44 @@ class Link(Generic[T]):
         )
 
     def to_ref(self):
+        """Return the underlying :class:`~bson.DBRef` for this link."""
         return self.ref
 
     def to_dict(self):
+        """Serialise the link as ``{"id": str, "collection": str}``."""
         return {"id": str(self.ref.id), "collection": self.ref.collection}
 
 
 class BackLink(Generic[T]):
-    """Back reference to a document"""
+    """A virtual back-reference from a child document to its parent.
+
+    ``BackLink`` fields are **not** stored in MongoDB — they are resolved
+    at query time by searching the referenced collection for documents
+    whose :class:`Link` field points back to the current document.
+
+    Declare a back-reference using ``BackLink[T]`` as the type
+    annotation and set the ``original_field`` extra to the name of the
+    forward-``Link`` field on the related model::
+
+        from beanie import Document, Link, BackLink
+        from pydantic import Field
+
+        class Author(Document):
+            name: str
+            # Each Author can see all Articles that reference it
+            articles: list[BackLink["Article"]] = Field(
+                original_field="author", default=[]
+            )
+
+        class Article(Document):
+            title: str
+            author: Link[Author]
+
+    Back-references are resolved lazily.  Call
+    :meth:`~beanie.Document.fetch_link` or
+    :meth:`~beanie.Document.fetch_all_links` to populate them, or pass
+    ``fetch_links=True`` to ``find()`` / ``find_one()``.
+    """
 
     def __init__(self, document_class: type[T]):
         self.document_class = document_class
@@ -582,6 +733,14 @@ class BackLink(Generic[T]):
 
 
 class IndexModelField:
+    """Wrapper around :class:`~pymongo.IndexModel` used internally by Beanie.
+
+    Provides equality comparison (by field key + options) and utility
+    helpers for diffing and merging index lists during collection
+    initialisation.  Not part of the public API — use
+    :func:`Indexed` or ``Document.Settings.indexes`` to declare indexes.
+    """
+
     def __init__(self, index: IndexModel):
         self.index = index
         self.name = index.document["name"]
