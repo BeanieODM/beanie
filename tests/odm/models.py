@@ -48,12 +48,17 @@ from beanie import (
     Update,
     ValidateOnSave,
 )
-from beanie.odm.actions import Delete, after_event, before_event
+from beanie.odm.actions import (
+    Delete,
+    after_event,
+    before_event,
+)
 from beanie.odm.custom_types import re
 from beanie.odm.custom_types.bson.binary import BsonBinary
 from beanie.odm.fields import BackLink, Link, PydanticObjectId
 from beanie.odm.settings.timeseries import TimeSeriesConfig
 from beanie.odm.union_doc import UnionDoc
+from beanie.odm.utils.update_merge import ActionConflictResolution
 
 
 class Color:
@@ -379,6 +384,45 @@ class DocumentWithActions2(Document):
 
 
 class InheritedDocumentWithActions(DocumentWithActions): ...
+
+
+class DocumentWithUpdateFieldAction(Document):
+    """Document where before_event(Update) modifies a regular persisted field."""
+
+    name: str
+    tag: str | None = None
+
+    @before_event(Update)
+    def set_tag(self):
+        self.tag = "updated"
+
+
+class DocumentWithValidateOnSaveAction(Document):
+    """Document with before_event + validate_on_save to test ordering."""
+
+    name: str
+    normalized_name: str | None = None
+
+    @before_event(Insert, Replace, Save)
+    def normalize(self):
+        self.normalized_name = self.name.strip().lower()
+
+    class Settings:
+        validate_on_save = True
+
+
+class DocumentWithActionWinsStrategy(Document):
+    """Document using ACTION_WINS conflict resolution."""
+
+    name: str
+    tag: str | None = None
+
+    @before_event(Update)
+    def set_tag(self):
+        self.tag = "action_value"
+
+    class Settings:
+        action_conflict_resolution = ActionConflictResolution.ACTION_WINS
 
 
 class InternalDoc(BaseModel):

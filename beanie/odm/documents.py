@@ -41,6 +41,7 @@ from beanie.exceptions import (
 )
 from beanie.odm.actions import (
     ActionDirections,
+    ActionRegistry,
     EventTypes,
     wrap_with_actions,
 )
@@ -98,6 +99,7 @@ from beanie.odm.utils.state import (
     saved_state_needed,
 )
 from beanie.odm.utils.typing import extract_id_class
+from beanie.odm.utils.update_merge import merge_update_expressions
 
 if TYPE_CHECKING:
     from beanie.odm.views import View
@@ -288,9 +290,9 @@ class Document(
         else:
             raise ValueError("Invalid merge strategy")
 
+    @validate_self_before
     @wrap_with_actions(EventTypes.INSERT)
     @save_state_after
-    @validate_self_before
     async def insert(
         self: Self,
         *,
@@ -432,9 +434,9 @@ class Document(
             documents_list, session=session, **pymongo_kwargs
         )
 
+    @validate_self_before
     @wrap_with_actions(EventTypes.REPLACE)
     @save_state_after
-    @validate_self_before
     async def replace(
         self: Self,
         ignore_revision: bool = False,
@@ -515,9 +517,9 @@ class Document(
                 raise DocumentNotFound
         return self
 
+    @validate_self_before
     @wrap_with_actions(EventTypes.SAVE)
     @save_state_after
-    @validate_self_before
     async def save(
         self: Self,
         session: AsyncClientSession | None = None,
@@ -602,8 +604,8 @@ class Document(
             )
 
     @saved_state_needed
-    @wrap_with_actions(EventTypes.SAVE_CHANGES)
     @validate_self_before
+    @wrap_with_actions(EventTypes.SAVE_CHANGES)
     async def save_changes(
         self: Self,
         ignore_revision: bool = False,
@@ -665,7 +667,6 @@ class Document(
                     bulk_writer=bulk_writer, session=session
                 )
 
-    @wrap_with_actions(EventTypes.UPDATE)
     @save_state_after
     async def update(
         self: Self,
@@ -687,12 +688,62 @@ class Document(
         :param pymongo_kwargs: pymongo native parameters for update operation
         :return: self
         """
-        arguments: list[Any] = list(args)
+        if skip_actions is None:
+            skip_actions = []
 
         if skip_sync is not None:
             raise DeprecationWarning(
                 "skip_sync parameter is not supported. The document get synced always using atomic operation."
             )
+
+        has_before_actions = (
+            ActionDirections.BEFORE not in skip_actions
+            and bool(
+                ActionRegistry.get_action_list(
+                    self.__class__,
+                    EventTypes.UPDATE,
+                    ActionDirections.BEFORE,
+                )
+            )
+        )
+
+        if has_before_actions:
+            # Always diff with keep_nulls=True so that fields set to
+            # None by a before_event handler are detected as changes
+            # (they would be silently dropped with keep_nulls=False).
+            pre_action_state = get_dict(self, to_db=True, keep_nulls=True)
+
+            await ActionRegistry.run_actions(
+                self,
+                event_type=EventTypes.UPDATE,
+                action_direction=ActionDirections.BEFORE,
+                exclude=skip_actions,
+            )
+
+            post_action_state = get_dict(self, to_db=True, keep_nulls=True)
+            action_changes = {
+                key: value
+                for key, value in post_action_state.items()
+                if key not in ("_id", "revision_id")
+                and pre_action_state.get(key) != value
+            }
+        else:
+            await ActionRegistry.run_actions(
+                self,
+                event_type=EventTypes.UPDATE,
+                action_direction=ActionDirections.BEFORE,
+                exclude=skip_actions,
+            )
+            action_changes = {}
+
+        arguments: list[Any] = list(args)
+        if action_changes:
+            arguments = merge_update_expressions(
+                arguments,
+                action_changes,
+                strategy=self.get_settings().action_conflict_resolution,
+            )
+
         use_revision_id = self.get_settings().use_revision
 
         if self.id is not None:
@@ -734,6 +785,14 @@ class Document(
             if use_revision_id and not ignore_revision and result is None:
                 raise RevisionIdWasChanged
             merge_models(self, result)
+
+        await ActionRegistry.run_actions(
+            self,
+            event_type=EventTypes.UPDATE,
+            action_direction=ActionDirections.AFTER,
+            exclude=skip_actions,
+        )
+
         return self
 
     @classmethod
