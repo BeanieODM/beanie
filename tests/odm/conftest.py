@@ -49,6 +49,7 @@ from tests.odm.models import (
     DocumentWithCustomIdInt,
     DocumentWithCustomIdUUID,
     DocumentWithCustomInit,
+    DocumentWithCustomIterRootModel,
     DocumentWithDecimalField,
     DocumentWithDeprecatedHiddenField,
     DocumentWithEnumKeysDict,
@@ -230,6 +231,8 @@ TESTING_MODELS = [
     DocumentWithExcludedField,
     DocumentWithFrozenField,
 ]
+
+TESTING_MODELS.append(DocumentWithCustomIterRootModel)
 
 
 @pytest.fixture

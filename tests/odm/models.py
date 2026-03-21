@@ -1095,8 +1095,23 @@ class DocumentWithBsonBinaryField(Document):
     binary_field: BsonBinary
 
 
+class IterableRootList(RootModel[list[int]]):
+    """RootModel with custom __iter__ that yields non-tuple values."""
+
+    def __iter__(self):
+        return iter(self.root)
+
+
 class DocumentWithRootModelAsAField(Document):
     pets: RootModel[list[str]]
+
+
+class DocumentWithCustomIterRootModel(Document):
+    """Document with a RootModel field that overrides __iter__."""
+
+    items: IterableRootList = Field(
+        default_factory=lambda: IterableRootList([])
+    )
 
 
 class DocWithCallWrapper(Document):
