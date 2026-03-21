@@ -1,0 +1,26 @@
+{
+  "$schema": "https://context7.com/schema.json",
+  "projectTitle": "Beanie ODM",
+  "description": "Async Python ODM for MongoDB built on Motor and Pydantic v2. Provides document modeling, CRUD operations, aggregation pipelines, relations (Link/BackLink), event hooks, migrations, and FastAPI integration.",
+  "branch": "main",
+  "folders": ["docs", "beanie"],
+  "excludeFolders": ["tests", "assets", "scripts"],
+  "excludeFiles": ["CHANGELOG.md", "CODE_OF_CONDUCT.md", "CONTRIBUTING.md"],
+  "rules": [
+    "Always call init_beanie() with the Motor AsyncIOMotorClient and list of document models before using the ODM",
+    "Use async/await for all database operations — all query methods are coroutines",
+    "Use find(), find_one(), find_all() for queries; chain .sort(), .skip(), .limit() before awaiting",
+    "Use .update(), .set(), .inc() for partial updates; use .save() to persist full document changes",
+    "Use Link[] and BackLink[] field types for document relations; call fetch_link() or fetch_all_links() to resolve them",
+    "Use @before_event and @after_event decorators with Insert/Update/Delete/Save events for hooks",
+    "Use BulkWriter context manager for batch operations to reduce round trips",
+    "Indexed() field wrapper creates MongoDB indexes; compound indexes use compound_index in Settings",
+    "Document.Settings inner class configures collection name, indexes, timeseries, and other options",
+    "Use WriteRules.CASCADE or WriteRules.DO_NOTHING when saving documents with relations"
+  ],
+  "previousVersions": [
+    {"tag": "v2.0.0"},
+    {"tag": "v1.26.0"},
+    {"tag": "v1.25.0"}
+  ]
+}
