@@ -921,6 +921,14 @@ class DocumentWithExcludedField(Document):
     excluded_field: int | None = Field(default=None, exclude=True)
 
 
+class DocumentWithFrozenField(Document):
+    name: str
+    immutable_value: str = Field(frozen=True)
+
+    class Settings:
+        name = "docs_with_frozen_field"
+
+
 class ReleaseElemMatch(BaseModel):
     major_ver: int
     minor_ver: int
