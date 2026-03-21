@@ -41,13 +41,15 @@ class BaseCursorQuery(Generic[CursorResultType]):
     async def __anext__(self) -> CursorResultType:
         if self.cursor is None:
             self.cursor = await self.get_cursor()
+            self._projection = self.get_projection_model()
 
         assert self.cursor is not None
         next_item = await self.cursor.__anext__()
-        projection = self.get_projection_model()
-        if projection is None:
+        if self._projection is None:
             return next_item
-        return parse_obj(projection, next_item, lazy_parse=self.lazy_parse)  # type: ignore
+        return parse_obj(
+            self._projection, next_item, lazy_parse=self.lazy_parse
+        )  # type: ignore
 
     @abstractmethod
     def _get_cache(self) -> list[dict[str, Any]]: ...

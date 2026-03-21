@@ -7,8 +7,21 @@ from beanie.odm.utils.pydantic import get_config_value, get_model_fields
 
 ProjectionModelType = TypeVar("ProjectionModelType", bound=BaseModel)
 
+_projection_cache: dict[type, dict[str, int] | None] = {}
+
 
 def get_projection(
+    model: type[ProjectionModelType],
+) -> dict[str, int] | None:
+    if model in _projection_cache:
+        return _projection_cache[model]
+
+    result = _compute_projection(model)
+    _projection_cache[model] = result
+    return result
+
+
+def _compute_projection(
     model: type[ProjectionModelType],
 ) -> dict[str, int] | None:
     if hasattr(model, "get_model_type") and (
