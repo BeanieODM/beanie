@@ -41,6 +41,7 @@ from tests.odm.models import (
     DocumentWithActions,
     DocumentWithActions2,
     DocumentWithActionWinsStrategy,
+    DocumentWithAliasedLink,
     DocumentWithBackLink,
     DocumentWithBackLinkForNesting,
     DocumentWithBsonBinaryField,
@@ -52,6 +53,7 @@ from tests.odm.models import (
     DocumentWithCustomInit,
     DocumentWithCustomIterRootModel,
     DocumentWithDecimalField,
+    DocumentWithDeepNestedAlias,
     DocumentWithDeprecatedHiddenField,
     DocumentWithEnumKeysDict,
     DocumentWithExcludedField,
@@ -68,6 +70,7 @@ from tests.odm.models import (
     DocumentWithListBackLink,
     DocumentWithListLink,
     DocumentWithListOfLinks,
+    DocumentWithNestedAlias,
     DocumentWithOptionalBackLink,
     DocumentWithOptionalListBackLink,
     DocumentWithPydanticConfig,
@@ -236,6 +239,9 @@ TESTING_MODELS = [
     NativeRegexDoc,
     DocumentWithExcludedField,
     DocumentWithFrozenField,
+    DocumentWithNestedAlias,
+    DocumentWithDeepNestedAlias,
+    DocumentWithAliasedLink,
 ]
 
 TESTING_MODELS.append(DocumentWithCustomIterRootModel)
