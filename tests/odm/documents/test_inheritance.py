@@ -25,13 +25,13 @@ class TestInheritance:
         await Car(color="grey", body="sedan", fuel="gasoline").insert()
         await Bus(color="white", seats=50, body="bus", fuel="diesel").insert()
 
-        await Vehicle.delete_all(with_children=False)
+        await Vehicle.delete_all()
 
-        assert await Vehicle.find_all().count() == 4
+        assert await Vehicle.find_all(with_children=True).count() == 4
 
         await Vehicle.delete_all(with_children=True)
 
-        assert await Vehicle.find_all().count() == 0
+        assert await Vehicle.find_all(with_children=True).count() == 0
 
     async def test_inheritance(self, db):
         bicycle_1 = await Bicycle(color="white", frame=54, wheels=29).insert()
