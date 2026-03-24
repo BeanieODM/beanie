@@ -18,6 +18,21 @@ from tests.odm.models import (
 
 
 class TestInheritance:
+    async def test_delete_all(self, db):
+        # Create documents
+        await Bicycle(color="white", frame=54, wheels=29).insert()
+        await Bike(color="black", fuel="gasoline").insert()
+        await Car(color="grey", body="sedan", fuel="gasoline").insert()
+        await Bus(color="white", seats=50, body="bus", fuel="diesel").insert()
+
+        await Vehicle.delete_all(with_children=False)
+
+        assert await Vehicle.find_all().count() == 4
+
+        await Vehicle.delete_all(with_children=True)
+
+        assert await Vehicle.find_all().count() == 0
+
     async def test_inheritance(self, db):
         bicycle_1 = await Bicycle(color="white", frame=54, wheels=29).insert()
         bicycle_2 = await Bicycle(color="red", frame=52, wheels=28).insert()
