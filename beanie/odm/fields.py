@@ -46,7 +46,9 @@ class IndexedAnnotation:
     _indexed: tuple[int, dict[str, Any]]
 
 
-def Indexed(typ=None, index_type=ASCENDING, **kwargs: Any):
+def Indexed(
+    typ: type | None = None, index_type: int = ASCENDING, **kwargs: Any
+):
     """
     If `typ` is defined, returns a subclass of `typ` with an extra attribute
     `_indexed` as a tuple:
@@ -96,7 +98,7 @@ class PydanticObjectId(ObjectId):
     """
 
     @classmethod
-    def _validate(cls, v):
+    def _validate(cls, v: Any):
         if isinstance(v, bytes):
             v = v.decode("utf-8")
         try:
@@ -257,7 +259,7 @@ class ExpressionField(str):
 
         return FieldResolution()
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Any):
         """
         Get sub field
 
@@ -271,7 +273,7 @@ class ExpressionField(str):
             ),
         )
 
-    def __getattr__(self, item):
+    def __getattr__(self, item: Any):
         """Get sub field, resolving aliases from nested Pydantic models.
 
         Alias resolution is performed through the model class carried
@@ -308,24 +310,24 @@ class ExpressionField(str):
     def __hash__(self):
         return hash(str(self))
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any):
         if isinstance(other, ExpressionField):
             return super().__eq__(other)
         return Eq(field=self, other=other)
 
-    def __gt__(self, other):
+    def __gt__(self, other: Any):
         return GT(field=self, other=other)
 
-    def __ge__(self, other):
+    def __ge__(self, other: Any):
         return GTE(field=self, other=other)
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any):
         return LT(field=self, other=other)
 
-    def __le__(self, other):
+    def __le__(self, other: Any):
         return LTE(field=self, other=other)
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any):
         return NE(field=self, other=other)
 
     def __pos__(self):
@@ -337,7 +339,7 @@ class ExpressionField(str):
     def __copy__(self):
         return self
 
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo: Any):
         return self
 
 
@@ -595,7 +597,7 @@ class IndexModelField:
             )
         )
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any):
         return self.fields == other.fields and self.options == other.options
 
     def __repr__(self):
@@ -616,7 +618,7 @@ class IndexModelField:
         return [index.index for index in left]
 
     @classmethod
-    def from_pymongo_index_information(cls, index_info: dict):
+    def from_pymongo_index_information(cls, index_info: dict[str, Any]):
         result = []
         for name, details in index_info.items():
             fields = details["key"]

@@ -1,3 +1,5 @@
+from typing import Any
+
 from beanie.odm.operators.find import BaseFindOperator
 
 
@@ -6,7 +8,7 @@ class BaseFindComparisonOperator(BaseFindOperator):
 
     def __init__(
         self,
-        field,
+        field: Any,
         other,
     ) -> None:
         self.field = field

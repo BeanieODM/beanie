@@ -6,7 +6,7 @@ from beanie.odm.fields import IndexedAnnotation
 from .pydantic import get_field_type
 
 
-def extract_id_class(annotation) -> type[Any]:
+def extract_id_class(annotation: Any) -> type[Any]:
     if get_origin(annotation) is not None:
         try:
             annotation = next(
@@ -19,7 +19,7 @@ def extract_id_class(annotation) -> type[Any]:
     raise ValueError(f"Unknown annotation: {annotation}")
 
 
-def get_index_attributes(field) -> tuple[int, dict[str, Any]] | None:
+def get_index_attributes(field: Any) -> tuple[int, dict[str, Any]] | None:
     """Gets the index attributes from the field, if it is indexed.
 
     :param field: The field to get the index attributes from.

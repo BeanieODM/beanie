@@ -362,7 +362,7 @@ class Initializer:
         cls._link_fields = None
 
     @staticmethod
-    def init_cache(cls) -> None:
+    def init_cache(cls: type[Document] | type[View]) -> None:
         """
         Init model's cache
         :return: None
@@ -373,7 +373,7 @@ class Initializer:
                 expiration_time=cls.get_settings().cache_expiration_time,
             )
 
-    def init_document_fields(self, cls) -> None:
+    def init_document_fields(self, cls: type[Document]) -> None:
         """
         Init class fields
         :return: None

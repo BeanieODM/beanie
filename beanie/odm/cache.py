@@ -19,7 +19,7 @@ class LRUCache:
         self.expiration_time: timedelta = expiration_time
         self.cache: collections.OrderedDict = collections.OrderedDict()
 
-    def get(self, key) -> CachedItem | None:
+    def get(self, key: Any) -> CachedItem | None:
         try:
             item: CachedItem = self.cache.pop(key)
             if (
@@ -32,7 +32,7 @@ class LRUCache:
         except KeyError:
             return None
 
-    def set(self, key, value) -> None:
+    def set(self, key: Any, value: Any) -> None:
         try:
             self.cache.pop(key)
         except KeyError:
@@ -41,5 +41,5 @@ class LRUCache:
         self.cache[key] = CachedItem(value=value)
 
     @staticmethod
-    def create_key(*args):
+    def create_key(*args: Any):
         return str(args)  # TODO think about this
