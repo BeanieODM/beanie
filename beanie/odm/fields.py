@@ -1,5 +1,6 @@
 import asyncio
 from collections import OrderedDict
+from collections.abc import Coroutine
 from dataclasses import dataclass
 from enum import Enum
 from typing import (
@@ -368,7 +369,7 @@ class LinkInfo(BaseModel):
     lookup_field_name: str
     document_class: type[BaseModel]  # Document class
     link_type: LinkTypes
-    nested_links: dict | None = None
+    nested_links: dict[str, "LinkInfo"] | None = None
     is_fetchable: bool = True
 
 
@@ -403,7 +404,7 @@ class Link(Generic[T]):
         :return:
         """
         data = Link.repack_links(links)  # type: ignore
-        ids_to_fetch = []
+        ids_to_fetch: list[DBRef] = []
         document_class = None
         for _doc_id, link in data.items():
             if isinstance(link, Link):
@@ -431,8 +432,10 @@ class Link(Generic[T]):
     @staticmethod
     def repack_links(
         links: list["Link[T] | DocType"],
-    ) -> OrderedDict[Any, Any]:
-        result = OrderedDict()
+    ) -> OrderedDict[Any | PydanticObjectId | None, "Link[Any] | DocType"]:
+        result = OrderedDict[
+            Any | PydanticObjectId | None, Link[Any] | "DocType"
+        ]()
         for link in links:
             if isinstance(link, Link):
                 result[link.ref.id] = link
@@ -442,7 +445,7 @@ class Link(Generic[T]):
 
     @classmethod
     async def fetch_many(cls, links: list["Link[T]"]) -> list["T | Link[T]"]:
-        coros = []
+        coros: list[Coroutine[Any, Any, T | Link[T]]] = []
         for link in links:
             coros.append(link.fetch())
         return await asyncio.gather(*coros)
@@ -605,7 +608,7 @@ class IndexModelField:
     def list_difference(
         left: list["IndexModelField"], right: list["IndexModelField"]
     ):
-        result = []
+        result: list[IndexModelField] = []
         for index in left:
             if index not in right:
                 result.append(index)
@@ -617,7 +620,7 @@ class IndexModelField:
 
     @classmethod
     def from_pymongo_index_information(cls, index_info: dict):
-        result = []
+        result: list[IndexModelField] = []
         for name, details in index_info.items():
             fields = details["key"]
             if ("_id", 1) in fields:

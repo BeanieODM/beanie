@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from datetime import timedelta
 from typing import Any
 
@@ -15,8 +16,8 @@ class ItemSettings(BaseModel):
     bson_encoders: dict[Any, Any] = Field(default_factory=dict)
     projection: dict[str, Any] | None = None
 
-    pymongo_db: AsyncDatabase | None = None
-    pymongo_collection: AsyncCollection | None = None
+    pymongo_db: AsyncDatabase[Mapping[str, Any]] | None = None
+    pymongo_collection: AsyncCollection[Mapping[str, Any]] | None = None
 
     union_doc: type | None = None
     union_doc_alias: str | None = None

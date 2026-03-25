@@ -124,7 +124,7 @@ class FindQuery(
             **pymongo_kwargs,
         ).set_session(session=session)
 
-    def project(self, projection_model):
+    def project(self, projection_model) -> "FindQuery":
         """
         Apply projection parameter
         :param projection_model: Optional[type[BaseModel]] - projection model
