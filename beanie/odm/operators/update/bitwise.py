@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Any, Generic, TypeVar
 
 from beanie.odm.operators.update import BaseUpdateOperator
 
@@ -6,7 +7,12 @@ from beanie.odm.operators.update import BaseUpdateOperator
 class BaseUpdateBitwiseOperator(BaseUpdateOperator, ABC): ...
 
 
-class Bit(BaseUpdateBitwiseOperator):
+_BitwiseOperatorExpressionType = TypeVar(
+    "_BitwiseOperatorExpressionType", bound=dict[str, Any]
+)
+
+
+class Bit(BaseUpdateBitwiseOperator, Generic[_BitwiseOperatorExpressionType]):
     """
     `$bit` update query operator
 
@@ -14,7 +20,7 @@ class Bit(BaseUpdateBitwiseOperator):
     <https://docs.mongodb.com/manual/reference/operator/update/bit/>
     """
 
-    def __init__(self, expression: dict):
+    def __init__(self, expression: _BitwiseOperatorExpressionType):
         self.expression = expression
 
     @property

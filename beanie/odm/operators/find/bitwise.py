@@ -1,11 +1,12 @@
-from beanie.odm.fields import ExpressionField
+from typing import Any
+
 from beanie.odm.operators.find import BaseFindOperator
 
 
 class BaseFindBitwiseOperator(BaseFindOperator):
     operator = ""
 
-    def __init__(self, field: str | ExpressionField, bitmask):
+    def __init__(self, field, bitmask: Any):
         self.field = field
         self.bitmask = bitmask
 

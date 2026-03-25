@@ -1,5 +1,7 @@
 import re
 from abc import ABC
+from collections.abc import Mapping
+from typing import Any, Generic, TypeVar
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -7,7 +9,12 @@ from beanie.odm.operators.find import BaseFindOperator
 class BaseFindEvaluationOperator(BaseFindOperator, ABC): ...
 
 
-class Expr(BaseFindEvaluationOperator):
+_ExpressionExpressionType = TypeVar(
+    "_ExpressionExpressionType", bound=dict[str, Any]
+)
+
+
+class Expr(BaseFindEvaluationOperator, Generic[_ExpressionExpressionType]):
     """
     `$type` query operator
 
@@ -31,7 +38,7 @@ class Expr(BaseFindEvaluationOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/expr/>
     """
 
-    def __init__(self, expression: dict):
+    def __init__(self, expression: _ExpressionExpressionType):
         self.expression = expression
 
     @property
@@ -39,7 +46,9 @@ class Expr(BaseFindEvaluationOperator):
         return {"$expr": self.expression}
 
 
-class JsonSchema(BaseFindEvaluationOperator):
+class JsonSchema(
+    BaseFindEvaluationOperator, Generic[_ExpressionExpressionType]
+):
     """
     `$jsonSchema` query operator
 
@@ -47,7 +56,7 @@ class JsonSchema(BaseFindEvaluationOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/>
     """
 
-    def __init__(self, expression: dict):
+    def __init__(self, expression: _ExpressionExpressionType):
         self.expression = expression
 
     @property
@@ -84,7 +93,7 @@ class Mod(BaseFindEvaluationOperator):
         self.remainder = remainder
 
     @property
-    def query(self):
+    def query(self) -> Mapping[str, Mapping[str, list[int]]]:
         return {self.field: {"$mod": [self.divisor, self.remainder]}}
 
 
