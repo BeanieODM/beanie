@@ -158,6 +158,14 @@ await Vehicle.get(bus_2.id, with_children=True)
 # Bus(fuel='diesel', ..., color='yellow', body='minibus', seats=26)
 ```
 
+### Delete
+
+To delete all Documents in an inheritance tree
+
+```python
+await Vehicle.delete_all(with_children=True)
+```
+
 ### Relations
 
 Linked documents will be resolved into the respective classes
