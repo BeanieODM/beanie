@@ -411,7 +411,7 @@ class Initializer:
         """
         ActionRegistry.clean_actions(cls)
         for attr in dir(cls):
-            if attr.startswith("_"):  # Skip all private/magic attributes
+            if attr.startswith("__"):  # Skip only dunder/magic attributes
                 continue
 
             f = getattr(cls, attr)
