@@ -97,8 +97,10 @@ class Initializer:
             ).get_default_database()
 
         # append_metadata was added in PyMongo 4.14 and is a valid database name prior to that version
-        elif database is not None and hasattr(database.client, "append_metadata") and callable(
-            database.client.append_metadata
+        elif (
+            database is not None
+            and hasattr(database.client, "append_metadata")
+            and callable(database.client.append_metadata)
         ):
             database.client.append_metadata(_DRIVER_METADATA)
 
