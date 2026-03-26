@@ -6,12 +6,16 @@ on:
 jobs:
   publish_project:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: install flit
-        run: pip3 install flit
-      - name: publish project
-        env:
-          FLIT_USERNAME: __token__
-          FLIT_PASSWORD: ${{ secrets.FLIT_PASSWORD }}
-        run: flit publish
+        run: pip install flit
+      - name: build
+        run: flit build
+      - name: publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
