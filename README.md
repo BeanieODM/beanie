@@ -109,12 +109,12 @@ if __name__ == "__main__":
 ### Example Projects
 
 - **[Activity Log & Notification Service](https://github.com/documentdb/documentdb-samples-gallery/tree/main/activity-log-fastapi-py)** - Real-time event ingestion with FastAPI, Beanie ODM, and DocumentDB (MongoDB-compatible), an async backend for high-volume activity events with aggregation statistics and WebSocket alerts by [Khelan Modi](https://github.com/knowkhelan)
-- **[fastapi-cosmos-beanie](https://github.com/tonybaloney/ants-azure-demos/tree/master/fastapi-cosmos-beanie)** - FastAPI + Beanie ODM + Azure Cosmos Demo Application by [Anthony Shaw](https://github.com/tonybaloney)
 - **[fastapi-beanie-jwt](https://github.com/flyinactor91/fastapi-beanie-jwt)** - 
   Sample FastAPI server with JWT auth and Beanie ODM by [Michael duPont](https://github.com/flyinactor91)
+- **[fastapi-cosmos-beanie](https://github.com/tonybaloney/ants-azure-demos/tree/master/fastapi-cosmos-beanie)** - FastAPI + Beanie ODM + Azure Cosmos Demo Application by [Anthony Shaw](https://github.com/tonybaloney)
+- **[LCCN Predictor](https://github.com/baoliay2008/lccn_predictor)** - Leetcode contest rating predictor (FastAPI + Beanie ODM + React) by [L. Bao](https://github.com/baoliay2008)
 - **[Shortify](https://github.com/IHosseini083/Shortify)** - URL shortener RESTful API (FastAPI + Beanie ODM + JWT & OAuth2) by [
 Iliya Hosseini](https://github.com/IHosseini083)
-- **[LCCN Predictor](https://github.com/baoliay2008/lccn_predictor)** - Leetcode contest rating predictor (FastAPI + Beanie ODM + React) by [L. Bao](https://github.com/baoliay2008)
 
 ### Articles
 
