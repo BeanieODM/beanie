@@ -2,6 +2,52 @@
 
 Beanie project
 
+## [2.1.0] - 2026-03-20
+### Drop EOL Python 3.9, MongoDB 4.4/5.0/6.0, Pydantic v1
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/1287>
+### Speed up init by avoiding duplicate db commands
+- Author - [vvuk](https://github.com/vvuk)
+- PR <https://github.com/BeanieODM/beanie/pull/1276>
+### Improve class filter and is/is not for enum comparison
+- Author - [CAPITAINMARVEL](https://github.com/CAPITAINMARVEL)
+- PR <https://github.com/BeanieODM/beanie/pull/1275>
+### Fix OperationFailure when saving with keep_nulls=False and no None values
+- Author - [veeceey](https://github.com/veeceey)
+- PR <https://github.com/BeanieODM/beanie/pull/1271>
+### Fix FindQuery.count() ignoring pymongo_kwargs
+- Author - [veeceey](https://github.com/veeceey)
+- PR <https://github.com/BeanieODM/beanie/pull/1269>
+### Add Beanie version to handshake metadata
+- Author - [NoahStapp](https://github.com/NoahStapp)
+- PR <https://github.com/BeanieODM/beanie/pull/1255>
+### Docs: clarify state management description
+- Author - [smahn9123](https://github.com/smahn9123)
+- PR <https://github.com/BeanieODM/beanie/pull/1248>
+### Add docstring to DocumentWithSoftDelete
+- Author - [gugu-py](https://github.com/gugu-py)
+- PR <https://github.com/BeanieODM/beanie/pull/1241>
+### Fix: support frozen fields on save() and replace()
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/1282>
+### Fix: handle RootModel with custom __iter__ in save()
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/1284>
+### Fix: handle BackLink types in fetch_link and fetch_all_links
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/1286>
+### Fix: persist before_event changes to DB on save/update/replace
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/1279>
+### Fix: resolve Pydantic field aliases in nested expression field queries
+- Author - [roman-right](https://github.com/roman-right)
+- PR <https://github.com/BeanieODM/beanie/pull/1278>
+### Do not ignore deprecation warnings in tests
+- Author - [Viicos](https://github.com/Viicos)
+- PR <https://github.com/BeanieODM/beanie/pull/1123>
+
+[2.1.0]: https://pypi.org/project/beanie/2.1.0
+
 ## [2.0.1] - 2025-11-17
 ### Fix: exclude pymongo 4.15.0 due to a known issue
 - Author - [staticxterm](https://github.com/staticxterm)
