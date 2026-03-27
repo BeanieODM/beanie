@@ -40,7 +40,7 @@ class Set(BaseUpdateGeneralOperator):
 
 class SetRevisionId:
     """
-    `$set` update query operator
+    `$set` update query operator, with `revision_id` field as expression
 
     Example:
 
@@ -48,13 +48,13 @@ class SetRevisionId:
     class Sample(Document):
         one: int
 
-    Set({Sample.one: 2})
+    SetRevisionId(2)
     ```
 
     Will return query object like
 
     ```python
-    {"$set": {"one": 2}}
+    {"$set": {"revision_id": 2}}
     ```
 
     MongoDB doc:
