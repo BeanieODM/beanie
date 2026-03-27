@@ -1,4 +1,5 @@
 import asyncio
+import typing
 from collections.abc import Callable
 from inspect import isclass, signature
 from typing import Any
@@ -53,17 +54,19 @@ def iterative_migration(
             )
             if input_signature is None:
                 raise RuntimeError("input_signature must not be None")
-            self.input_document_model: type[Document] = (
-                input_signature.annotation
-            )
             output_signature = self.function_signature.parameters.get(
                 "output_document"
             )
             if output_signature is None:
                 raise RuntimeError("output_signature must not be None")
-            self.output_document_model: type[Document] = (
-                output_signature.annotation
-            )
+
+            # Use get_type_hints() to resolve annotations properly,
+            # including deferred annotations on Python 3.14+.
+            hints = typing.get_type_hints(function)
+            self.input_document_model: type[Document] = hints["input_document"]
+            self.output_document_model: type[Document] = hints[
+                "output_document"
+            ]
 
             if (
                 not isclass(self.input_document_model)
