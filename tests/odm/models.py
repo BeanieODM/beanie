@@ -397,6 +397,15 @@ class DocumentWithUpdateFieldAction(Document):
         self.tag = "updated"
 
 
+class DocumentWithUnderscoreAction(Document):
+    name: str
+    creator_id: str | None = None
+
+    @before_event(Insert)
+    def _set_creator(self):
+        self.creator_id = "some_user"
+
+
 class DocumentWithValidateOnSaveAction(Document):
     """Document with before_event + validate_on_save to test ordering."""
 

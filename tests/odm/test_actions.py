@@ -5,6 +5,7 @@ from tests.odm.models import (
     DocumentWithActions,
     DocumentWithActions2,
     DocumentWithActionWinsStrategy,
+    DocumentWithUnderscoreAction,
     DocumentWithUpdateFieldAction,
     DocumentWithValidateOnSaveAction,
     InheritedDocumentWithActions,
@@ -29,6 +30,18 @@ class TestActions:
         assert sample.name == test_name.capitalize()
         assert sample.num_1 == 1
         assert sample.num_2 == 9
+
+    async def test_underscore_prefixed_action(self):
+        sample = DocumentWithUnderscoreAction(name="test")
+
+        await sample.insert()
+
+        assert sample.creator_id == "some_user"
+
+        refetched = await DocumentWithUnderscoreAction.find_one(
+            {"_id": sample.id}
+        )
+        assert refetched.creator_id == "some_user"
 
     @pytest.mark.parametrize(
         "doc_class",
