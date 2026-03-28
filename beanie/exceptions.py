@@ -72,3 +72,10 @@ class Deprecation(Exception):
 
 class ApplyChangesException(Exception):
     pass
+
+
+class DocumentWasPartiallyLoaded(Exception):
+    """Raised when a whole-document write is attempted on a document that
+    was loaded through an exclusion projection (``.exclude()``)."""
+
+    pass

@@ -4,16 +4,25 @@ from enum import Enum
 import pytest
 from pydantic import BaseModel
 
+from beanie.exceptions import DocumentWasPartiallyLoaded
 from beanie.odm.enums import SortDirection
 from beanie.odm.operators.find.comparison import In
+from beanie.odm.utils.projection import get_exclusion_model
+from beanie.odm.utils.pydantic import get_model_fields
 from tests.odm.models import (
+    Bicycle,
     Color,
+    DocumentMultiModelOne,
+    DocumentTestModel,
+    DocumentUnion,
     DocumentWithBsonEncodersFiledsTypes,
     DocumentWithList,
+    DocumentWithNestedAlias,
     Door,
     House,
     Lock,
     Sample,
+    Vehicle,
     Window,
 )
 
@@ -555,3 +564,337 @@ async def test_distinct_array_field():
     # distinct on an array field should return individual elements, not arrays
     values = await DocumentWithList.find().distinct("list_values")
     assert sorted(values) == ["a", "b", "c", "d"]
+
+
+# --- Exclusion projection tests ---
+
+
+async def test_find_many_with_exclude(preset_documents):
+    """Basic exclusion: excluded fields become None, others are populated.
+    Also verifies that ExpressionField references work as arguments."""
+    # String field names
+    result = (
+        await Sample.find_many(Sample.integer == 0)
+        .exclude("float_num", "geo")
+        .to_list()
+    )
+    assert len(result) > 0
+    for doc in result:
+        assert isinstance(doc, Sample)
+        assert doc.string == "test_0"
+        assert doc.integer == 0
+        assert doc.float_num is None
+        assert doc.geo is None
+
+    # ExpressionField references (Sample.field_name)
+    result2 = (
+        await Sample.find_many(Sample.integer == 0)
+        .exclude(Sample.float_num, Sample.geo)
+        .to_list()
+    )
+    assert len(result2) > 0
+    for doc in result2:
+        assert isinstance(doc, Sample)
+        assert doc.float_num is None
+        assert doc.geo is None
+
+
+async def test_find_one_with_exclude(preset_documents):
+    """Exclusion works with find_one."""
+    doc = await Sample.find_one(Sample.integer == 0).exclude("float_num")
+    assert doc is not None
+    assert isinstance(doc, Sample)
+    assert doc.string == "test_0"
+    assert doc.integer == 0
+    assert doc.float_num is None
+
+
+def test_exclude_with_project_raises():
+    """Using exclude() and project() together raises ValueError."""
+
+    class SampleProjection(BaseModel):
+        string: str
+        integer: int
+
+    with pytest.raises(
+        ValueError, match=r"Cannot use exclude.*together with project"
+    ):
+        Sample.find_many(Sample.integer == 0).project(
+            projection_model=SampleProjection
+        ).exclude("float_num")
+
+    with pytest.raises(
+        ValueError, match=r"Cannot use project.*together with exclude"
+    ):
+        Sample.find_many(Sample.integer == 0).exclude("float_num").project(
+            projection_model=SampleProjection
+        )
+
+
+async def test_exclude_with_fetch_links():
+    """fetch_links runs through an aggregation pipeline, so exclusion is
+    applied with $unset rather than a projection."""
+    lock = await Lock(k=10).insert()
+    window = await Window(x=1, y=2, lock=lock).insert()
+    door = await Door(t=5, window=window, locks=[lock]).insert()
+    await House(
+        windows=[window], door=door, height=100, name="test_exclude"
+    ).insert()
+
+    many = (
+        await House.find(House.name == "test_exclude", fetch_links=True)
+        .exclude("height")
+        .to_list()
+    )
+    assert len(many) == 1
+    assert isinstance(many[0], House)
+    assert many[0].name == "test_exclude"
+    assert many[0].height is None
+    assert many[0].door.t == 5
+
+    one = await House.find_one(
+        House.name == "test_exclude", fetch_links=True
+    ).exclude("height")
+    assert isinstance(one, House)
+    assert one.name == "test_exclude"
+    assert one.height is None
+
+
+def test_exclude_clone():
+    """Cloning a query preserves _exclude_fields."""
+    q = Sample.find_many(Sample.integer == 1).exclude("float_num", "geo")
+    cloned = q.clone()
+
+    assert cloned._exclude_fields == ["float_num", "geo"]
+    # Modifying the clone should not affect the original
+    cloned._exclude_fields = []
+    cloned.exclude("string")
+    assert q._exclude_fields == ["float_num", "geo"]
+    assert cloned._exclude_fields == ["string"]
+
+
+def test_exclude_accumulates():
+    """Multiple .exclude() calls accumulate fields, not replace."""
+    q = (
+        Sample.find_many(Sample.integer == 1)
+        .exclude("float_num")
+        .exclude("geo")
+    )
+    assert q._exclude_fields == ["float_num", "geo"]
+
+    # Duplicates are not added
+    q.exclude("float_num")
+    assert q._exclude_fields == ["float_num", "geo"]
+
+
+async def test_exclude_nonexistent_field(preset_documents):
+    """Excluding a field that doesn't exist on the model is silently ignored."""
+    result = (
+        await Sample.find_many(Sample.integer == 0)
+        .exclude("nonexistent_field")
+        .to_list()
+    )
+    assert len(result) > 0
+    for doc in result:
+        assert isinstance(doc, Sample)
+        assert doc.string == "test_0"
+
+
+def test_exclude_projection_query():
+    """Field references are stored as Python paths and only converted to
+    MongoDB names when the query is built."""
+    q = Sample.find_many().exclude(Sample.id, "float_num")
+    assert q._exclude_fields == ["id", "float_num"]
+    assert q._get_exclusion_projection() == {"_id": 0, "float_num": 0}
+
+    # the MongoDB alias is accepted as input too, and normalises to the
+    # same Python name rather than being added a second time
+    assert Sample.find_many().exclude("_id")._exclude_fields == ["id"]
+
+    # aliases are resolved per segment of a nested path
+    nested = DocumentWithNestedAlias.find_many().exclude(
+        "nested_field.unit_class"
+    )
+    assert nested._get_exclusion_projection() == {"nested_field.unitClass": 0}
+
+
+def test_exclude_preserves_field_defaults():
+    """The generated exclusion model must keep every non-excluded field
+    exactly as declared.
+
+    ``init_beanie`` installs ``ExpressionField`` class attributes on
+    document models.  A naive ``create_model(__base__=...)`` makes
+    Pydantic adopt those as field *defaults*, so every field would
+    silently default to the string of its own name -- and that value
+    would be written back to MongoDB on the next save.
+    """
+    exclusion_model = get_exclusion_model(Sample, ("float_num",))
+
+    for name, field_info in get_model_fields(Sample).items():
+        derived = get_model_fields(exclusion_model)[name]
+        if name == "float_num":
+            assert derived.default is None
+            continue
+        assert derived.default == field_info.default, name
+        assert derived.default_factory is field_info.default_factory, name
+        assert derived.alias == field_info.alias, name
+        assert derived.is_required() == field_info.is_required(), name
+
+    # revision_id is never stored unless use_revision is on, so it is the
+    # field that surfaces the bug on every single excluded document.
+    derived_fields = get_model_fields(exclusion_model)
+    assert derived_fields["revision_id"].default is None
+    assert derived_fields["id"].default is None
+    assert derived_fields["const"].default == "TEST"
+
+
+async def test_exclude_with_inheritance(preset_documents):
+    """Exclusion applies to the concrete child class chosen by the
+    ``_class_id`` dispatch, not to the class the query was issued on."""
+    await Bicycle(color="red", frame=10, wheels=2).insert()
+
+    children = (
+        await Vehicle.find(Vehicle.color == "red", with_children=True)
+        .exclude("frame")
+        .to_list()
+    )
+    assert len(children) == 1
+    assert isinstance(children[0], Bicycle)
+    assert children[0].frame is None
+    assert children[0].wheels == 2
+
+    # querying the child directly keeps working
+    direct = (
+        await Bicycle.find(Bicycle.color == "red").exclude("wheels").to_list()
+    )
+    assert direct[0].wheels is None
+    assert direct[0].frame == 10
+
+
+async def test_exclude_with_union_doc():
+    """A UnionDoc is not a Pydantic model; exclusion must still resolve
+    against the registered document models."""
+    await DocumentMultiModelOne(int_filed=1, shared=11).insert()
+
+    docs = (
+        await DocumentUnion.find(DocumentMultiModelOne.shared == 11)
+        .exclude("int_filed")
+        .to_list()
+    )
+
+    assert len(docs) == 1
+    assert isinstance(docs[0], DocumentMultiModelOne)
+    assert docs[0].int_filed is None
+    assert docs[0].shared == 11
+
+
+async def test_exclude_nested_path(preset_documents):
+    """Dotted paths exclude a field inside an embedded model."""
+    docs = (
+        await Sample.find_many(Sample.integer == 0)
+        .exclude(Sample.nested.integer)
+        .to_list()
+    )
+    assert len(docs) > 0
+    for doc in docs:
+        assert isinstance(doc, Sample)
+        assert doc.nested.integer is None
+        assert doc.nested.option_1 is not None
+        assert doc.float_num is not None
+
+
+def test_exclude_nested_path_unsupported_raises():
+    """A nested path that cannot be rebuilt must fail loudly at
+    .exclude() time rather than blow up during parsing."""
+    with pytest.raises(ValueError, match=r"Cannot exclude nested field"):
+        Sample.find_many().exclude("union.s")
+
+
+async def test_exclude_with_aggregate_raises():
+    """Exclusion is undefined for aggregation output, so combining the
+    two must raise instead of being silently dropped."""
+    with pytest.raises(
+        ValueError, match=r"Cannot use exclude.*together with aggregate"
+    ):
+        Sample.find_many().exclude("float_num").aggregate([{"$count": "n"}])
+
+    # the aggregation helpers route through aggregate() as well
+    with pytest.raises(
+        ValueError, match=r"Cannot use exclude.*together with aggregate"
+    ):
+        await Sample.find_many().exclude("float_num").sum(Sample.float_num)
+
+
+def test_exclude_then_project_document_model_allowed():
+    """project(document_model) is a no-op, so it must not be rejected -
+    exclude() applies the same rule in the opposite order."""
+    q = Sample.find_many(Sample.integer == 0).exclude("float_num")
+    q.project(Sample)
+    assert q._exclude_fields == ["float_num"]
+
+
+async def test_exclude_refuses_whole_document_writes(preset_documents):
+    """Excluded fields are None on the instance; writing the whole
+    document back would overwrite the stored values."""
+    doc = await Sample.find_one(Sample.integer == 0).exclude("float_num")
+    assert doc.float_num is None
+
+    for operation in ("save", "replace", "insert"):
+        with pytest.raises(DocumentWasPartiallyLoaded):
+            await getattr(doc, operation)()
+
+    # targeted writes stay allowed
+    await doc.set({Sample.string: "renamed"})
+    reloaded = await Sample.get(doc.id)
+    assert reloaded.string == "renamed"
+    assert reloaded.float_num is not None
+
+
+async def test_exclude_with_lazy_parse(preset_documents):
+    """lazy_parse builds the document through a different branch of
+    parse_obj, which must see the exclusion too."""
+    docs = (
+        await Sample.find_many(Sample.integer == 0, lazy_parse=True)
+        .exclude("float_num")
+        .to_list()
+    )
+    assert len(docs) > 0
+    for doc in docs:
+        assert isinstance(doc, Sample)
+        assert doc.string == "test_0"
+        assert doc.float_num is None
+
+
+async def test_exclude_is_part_of_the_cache_key(documents):
+    """An excluded and a non-excluded query differ only in their
+    projection, so the cache must not serve one for the other."""
+    await documents(1, "cache_and_exclude")
+
+    full = await DocumentTestModel.find(
+        DocumentTestModel.test_str == "cache_and_exclude"
+    ).to_list()
+    assert full[0].test_int is not None
+
+    excluded = (
+        await DocumentTestModel.find(
+            DocumentTestModel.test_str == "cache_and_exclude"
+        )
+        .exclude("test_int")
+        .to_list()
+    )
+    assert excluded[0].test_int is None
+
+    # ... and the cached full result is still intact afterwards
+    again = await DocumentTestModel.find(
+        DocumentTestModel.test_str == "cache_and_exclude"
+    ).to_list()
+    assert again[0].test_int is not None
+
+    one_full = await DocumentTestModel.find_one(
+        DocumentTestModel.test_str == "cache_and_exclude"
+    )
+    one_excluded = await DocumentTestModel.find_one(
+        DocumentTestModel.test_str == "cache_and_exclude"
+    ).exclude("test_int")
+    assert one_full.test_int is not None
+    assert one_excluded.test_int is None

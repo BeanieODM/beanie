@@ -6,6 +6,7 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    get_args,
     overload,
 )
 
@@ -39,7 +40,8 @@ from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
 from beanie.odm.utils.find import construct_lookup_queries, split_text_query
 from beanie.odm.utils.parsing import parse_obj
-from beanie.odm.utils.projection import get_projection
+from beanie.odm.utils.projection import get_exclusion_model, get_projection
+from beanie.odm.utils.pydantic import get_model_fields
 from beanie.odm.utils.relations import resolve_query_paths
 
 if TYPE_CHECKING:
@@ -80,6 +82,7 @@ class FindQuery(
         self.lazy_parse = False
         self.nesting_depth: int | None = None
         self.nesting_depths_per_field: dict[str, int] | None = None
+        self._exclude_fields: list[str] = []
 
     def prepare_find_expressions(self):
         if self.document_model.get_link_fields() is not None:
@@ -124,6 +127,152 @@ class FindQuery(
             **pymongo_kwargs,
         ).set_session(session=session)
 
+    # ---- Exclusion projection helpers ----
+    #
+    # Data flow:
+    #   .exclude("id", Sample.float_num, "_id")
+    #       ↓  _resolve_path(db=False) normalises each input
+    #   _exclude_fields = ["id", "float_num"]   (canonical Python paths)
+    #       ↓                                ↓
+    #   _excluded_db_fields()            get_parse_exclusions()
+    #   → ["_id", "float_num"]           → passed to parse_obj(), which
+    #   (for MongoDB query)                 derives the relaxed model
+    #                                       *after* union / inheritance
+    #                                       dispatch has picked the
+    #                                       concrete document class.
+
+    def exclude(self, *fields: str) -> "FindQuery[FindQueryResultType]":
+        """
+        Exclude specific fields from query results (exclusion projection).
+
+        Accepts Python field names, MongoDB aliases, ExpressionField
+        references and dotted paths into embedded models — all are
+        normalised to Python field paths internally.  Multiple calls
+        accumulate.
+
+        Cannot be combined with ``.project()``.
+
+        :param fields: field names to exclude from results
+        :return: self
+        """
+        if self._has_custom_projection_model():
+            raise ValueError(
+                "Cannot use exclude() together with project(). "
+                "MongoDB does not allow mixing inclusion and exclusion projections."
+            )
+        added = False
+        for field in fields:
+            python_path = self._resolve_path(str(field), db=False)
+            if python_path not in self._exclude_fields:
+                self._exclude_fields.append(python_path)
+                added = True
+        if added:
+            self._validate_exclusions()
+        return self
+
+    def _has_custom_projection_model(self) -> bool:
+        return (
+            self.projection_model is not None
+            and self.projection_model is not self.document_model
+        )
+
+    def _exclusion_candidate_models(self) -> list[type[BaseModel]]:
+        """Models a field reference on this query may resolve against.
+
+        For a plain document that is just the document model.  For an
+        inheritance root it also covers the registered children, and for
+        a ``UnionDoc`` — which is not a Pydantic model at all — it is the
+        registered document models.
+        """
+        models: list[type[BaseModel]] = []
+        document_model: Any = self.document_model
+        if isinstance(document_model, type) and issubclass(
+            document_model, BaseModel
+        ):
+            models.append(document_model)
+        for registry in (
+            getattr(document_model, "_children", None),
+            getattr(document_model, "_document_models", None),
+        ):
+            if registry:
+                models.extend(
+                    model for model in registry.values() if model not in models
+                )
+        return models
+
+    @staticmethod
+    def _sub_models(annotation: Any) -> list[type[BaseModel]]:
+        """Models reachable through *annotation* for path traversal."""
+        if isinstance(annotation, type) and issubclass(annotation, BaseModel):
+            return [annotation]
+        return [
+            arg
+            for arg in get_args(annotation)
+            if isinstance(arg, type) and issubclass(arg, BaseModel)
+        ]
+
+    def _resolve_path(self, field: str, *, db: bool) -> str:
+        """Normalise a (possibly dotted) field reference.
+
+        With ``db=False`` the result is expressed in Python field names,
+        with ``db=True`` in MongoDB names.  Segments that match no known
+        field are passed through untouched, so excluding a field that
+        only exists in the database still works.
+        """
+        segments = field.split(".")
+        models = self._exclusion_candidate_models()
+        resolved: list[str] = []
+
+        for index, segment in enumerate(segments):
+            match: tuple[str, Any] | None = None
+            next_models: list[type[BaseModel]] = []
+            for model in models:
+                model_fields = get_model_fields(model)
+                field_info = model_fields.get(segment)
+                name = segment
+                if field_info is None:
+                    for candidate, info in model_fields.items():
+                        if info.alias == segment:
+                            name, field_info = candidate, info
+                            break
+                if field_info is not None:
+                    if match is None:
+                        match = (name, field_info)
+                    next_models.extend(self._sub_models(field_info.annotation))
+            if match is None:
+                resolved.extend(segments[index:])
+                break
+            name, field_info = match
+            resolved.append((field_info.alias or name) if db else name)
+            models = next_models
+
+        return ".".join(resolved)
+
+    def _validate_exclusions(self) -> None:
+        """Fail fast on exclusion paths that cannot be parsed back.
+
+        ``get_exclusion_model`` raises for dotted paths whose container
+        cannot be rebuilt.  Running it here surfaces the error at
+        ``.exclude()`` time rather than half-way through the query, and
+        the result is cached so it costs nothing later.
+        """
+        exclude_fields = tuple(self._exclude_fields)
+        for model in self._exclusion_candidate_models():
+            get_exclusion_model(model, exclude_fields)  # type: ignore[arg-type]
+
+    def _excluded_db_fields(self) -> list[str]:
+        """Return ``_exclude_fields`` translated to MongoDB field paths."""
+        return [
+            self._resolve_path(field, db=True)
+            for field in self._exclude_fields
+        ]
+
+    def _get_exclusion_projection(self) -> dict[str, int] | None:
+        """Build a MongoDB exclusion projection dict."""
+        if not self._exclude_fields:
+            return None
+        return {f: 0 for f in self._excluded_db_fields()}
+
     def project(self, projection_model):
         """
         Apply projection parameter
@@ -131,11 +280,22 @@ class FindQuery(
         :return: self
         """
         if projection_model is not None:
+            if (
+                self._exclude_fields
+                and projection_model is not self.document_model
+            ):
+                raise ValueError(
+                    "Cannot use project() together with exclude(). "
+                    "MongoDB does not allow mixing inclusion and exclusion projections."
+                )
             self.projection_model = projection_model
         return self
 
     def get_projection_model(self) -> type[FindQueryResultType]:
         return self.projection_model
+
+    def get_parse_exclusions(self) -> tuple[str, ...]:
+        return tuple(self._exclude_fields)
 
     async def count(self) -> int:
         """
@@ -298,6 +458,19 @@ class FindMany(
         :return: self
         """
         super().project(projection_model)
+        return self
+
+    def exclude(self, *fields: str) -> "FindMany[FindQueryResultType]":
+        """
+        Exclude specific fields from query results (exclusion projection).
+
+        Cannot be combined with ``.project()``. MongoDB does not allow
+        mixing inclusion and exclusion projections.
+
+        :param fields: field names to exclude from results
+        :return: self
+        """
+        super().exclude(*fields)
         return self
 
     @overload
@@ -575,6 +748,15 @@ class FindMany(
         :param ignore_cache: bool
         :return:[AggregationQuery](query.md#aggregationquery)
         """
+        if self._exclude_fields:
+            raise ValueError(
+                "Cannot use exclude() together with aggregate(). "
+                "An exclusion projection describes the documents a find "
+                "query returns, which is not well defined for the "
+                "arbitrary output of an aggregation pipeline. Drop the "
+                "excluded fields inside the pipeline instead, for "
+                f"example with {{'$unset': {self._excluded_db_fields()}}}."
+            )
         self.set_session(session=session)
         return self.AggregationQueryType(
             self.document_model,
@@ -592,7 +774,7 @@ class FindMany(
                 "type": "FindMany",
                 "filter": self.get_filter_query(),
                 "sort": self.sort_expressions,
-                "projection": get_projection(self.projection_model),
+                "projection": self._resolve_projection(),
                 "skip": self.skip_number,
                 "limit": self.limit_number,
             }
@@ -664,14 +846,31 @@ class FindMany(
             aggregation_pipeline.append({"$limit": self.limit_number})
         return aggregation_pipeline
 
+    def _resolve_projection(self) -> dict[str, int] | None:
+        """Resolve the effective projection, considering both
+        projection_model and _exclude_fields."""
+        exclusion = self._get_exclusion_projection()
+        if exclusion is not None:
+            return exclusion
+        return get_projection(self.projection_model)
+
     async def get_cursor(
         self,
     ) -> "AsyncCommandCursor[dict[str, Any]] | AsyncCursor[dict[str, Any]] | None":
+        projection = self._resolve_projection()
+
         if self.fetch_links:
             aggregation_pipeline = self.build_aggregation_pipeline()
-            projection = get_projection(self.projection_model)
 
-            if projection is not None:
+            if self._exclude_fields:
+                # Use $unset for exclusion in aggregation pipelines.
+                # $project only reliably supports inclusion for
+                # non-_id fields; $unset is the correct way to remove
+                # fields in an aggregation pipeline.
+                aggregation_pipeline.append(
+                    {"$unset": self._excluded_db_fields()}
+                )
+            elif projection is not None:
                 aggregation_pipeline.append({"$project": projection})
 
             return (
@@ -685,7 +884,7 @@ class FindMany(
         return self.document_model.get_pymongo_collection().find(
             filter=self.get_filter_query(),
             sort=self.sort_expressions,
-            projection=get_projection(self.projection_model),
+            projection=projection,
             skip=self.skip_number,
             limit=self.limit_number,
             session=self.session,
@@ -821,6 +1020,19 @@ class FindOne(FindQuery[FindQueryResultType]):
         :return: self
         """
         super().project(projection_model)
+        return self
+
+    def exclude(self, *fields: str) -> "FindOne[FindQueryResultType]":
+        """
+        Exclude specific fields from query results (exclusion projection).
+
+        Cannot be combined with ``.project()``. MongoDB does not allow
+        mixing inclusion and exclusion projections.
+
+        :param fields: field names to exclude from results
+        :return: self
+        """
+        super().exclude(*fields)
         return self
 
     @overload
@@ -1048,7 +1260,7 @@ class FindOne(FindQuery[FindQueryResultType]):
 
     async def _find_one(self):
         if self.fetch_links:
-            return await self.document_model.find_many(
+            find_many_query = self.document_model.find_many(
                 *self.find_expressions,
                 session=self.session,
                 fetch_links=self.fetch_links,
@@ -1056,10 +1268,20 @@ class FindOne(FindQuery[FindQueryResultType]):
                 nesting_depth=self.nesting_depth,
                 nesting_depths_per_field=self.nesting_depths_per_field,
                 **self.pymongo_kwargs,
-            ).first_or_none()
+            )
+            if self._exclude_fields:
+                find_many_query._exclude_fields = list(self._exclude_fields)
+            return await find_many_query.first_or_none()
+
+        exclusion = self._get_exclusion_projection()
+        projection = (
+            exclusion
+            if exclusion is not None
+            else get_projection(self.projection_model)
+        )
         return await self.document_model.get_pymongo_collection().find_one(
             filter=self.get_filter_query(),
-            projection=get_projection(self.projection_model),
+            projection=projection,
             session=self.session,
             **self.pymongo_kwargs,
         )
@@ -1082,6 +1304,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 self.projection_model,
                 self.session,
                 self.fetch_links,
+                self.get_parse_exclusions(),
             )
             document: dict[str, Any] = self.document_model._cache.get(  # type: ignore
                 cache_key
@@ -1093,10 +1316,17 @@ class FindOne(FindQuery[FindQueryResultType]):
             document = yield from self._find_one().__await__()  # type: ignore
         if document is None:
             return None
-        if type(document) is self.projection_model:
+        if isinstance(document, BaseModel):
+            # The fetch_links branch of _find_one() delegates to FindMany,
+            # which has already parsed (and relaxed) the document.
             return cast(FindQueryResultType, document)
         return cast(
-            FindQueryResultType, parse_obj(self.projection_model, document)
+            FindQueryResultType,
+            parse_obj(
+                self.projection_model,
+                document,
+                exclude_fields=self.get_parse_exclusions(),
+            ),
         )
 
     async def count(self) -> int:

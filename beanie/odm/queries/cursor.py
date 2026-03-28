@@ -30,6 +30,14 @@ class BaseCursorQuery(Generic[CursorResultType]):
     @abstractmethod
     def get_projection_model(self) -> type[BaseModel] | None: ...
 
+    def get_parse_exclusions(self) -> tuple[str, ...]:
+        """Field paths MongoDB was asked to omit from the response.
+
+        Queries that support exclusion projections override this so the
+        parsing model can be relaxed accordingly.
+        """
+        return ()
+
     @abstractmethod
     async def get_cursor(
         self,
@@ -47,7 +55,12 @@ class BaseCursorQuery(Generic[CursorResultType]):
         projection = self.get_projection_model()
         if projection is None:
             return next_item
-        return parse_obj(projection, next_item, lazy_parse=self.lazy_parse)  # type: ignore
+        return parse_obj(  # type: ignore
+            projection,
+            next_item,
+            lazy_parse=self.lazy_parse,
+            exclude_fields=self.get_parse_exclusions(),
+        )
 
     @abstractmethod
     def _get_cache(self) -> list[dict[str, Any]]: ...
@@ -72,10 +85,16 @@ class BaseCursorQuery(Generic[CursorResultType]):
             self._set_cache(pymongo_list)
         projection = self.get_projection_model()
         if projection is not None:
+            exclude_fields = self.get_parse_exclusions()
             return cast(
                 list[CursorResultType],
                 [
-                    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+                    parse_obj(
+                        projection,
+                        i,
+                        lazy_parse=self.lazy_parse,
+                        exclude_fields=exclude_fields,
+                    )
                     for i in pymongo_list
                 ],
             )

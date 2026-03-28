@@ -229,6 +229,66 @@ chocolates = await Product.find(
     Product.category.name == "Chocolate").project(ProductView).to_list()
 ```
 
+### Exclusion projections
+
+When you want to retrieve everything *except* a few fields, use the `.exclude()` method instead of defining a projection model that lists every field to include:
+
+```python
+# Exclude by field name
+products = await Product.find().exclude("internal_notes", "api_key").to_list()
+
+# Exclude using field references (catches typos at definition time)
+products = await Product.find().exclude(Product.internal_notes).to_list()
+```
+
+`.exclude()` works with `find_one` and `fetch_links` as well:
+
+```python
+product = await Product.find_one(
+    Product.id == product_id
+).exclude("internal_notes")
+
+products = await Product.find(
+    Product.category.name == "Chocolate", fetch_links=True
+).exclude("internal_notes").to_list()
+```
+
+Multiple `.exclude()` calls accumulate:
+
+```python
+# Excludes both fields
+products = await Product.find().exclude("field_a").exclude("field_b").to_list()
+```
+
+Dotted paths exclude a single field inside an embedded model, leaving the rest of it intact:
+
+```python
+products = await Product.find().exclude("supplier.contact_email").to_list()
+# product.supplier.contact_email is None, product.supplier.name is populated
+```
+
+Nested exclusion supports embedded models, optional embedded models and lists of them. Paths that beanie cannot rebuild — such as a field typed as a union of several models — raise a `ValueError` from `.exclude()` itself, so the problem surfaces before the query runs.
+
+Documents that use inheritance (`is_root = True`) or a `UnionDoc` are supported: the exclusion is applied to the concrete class each document belongs to, so `with_children=True` queries return properly typed children.
+
+#### Restrictions
+
+`.exclude()` and `.project()` cannot be combined — MongoDB does not allow mixing inclusion and exclusion projections in a single query. Passing the document model itself to `.project()` is still fine, since that is a no-op.
+
+`.exclude()` cannot be combined with `.aggregate()` (or the aggregation helpers `sum`, `avg`, `min`, `max`), because an exclusion projection describes the documents a *find* query returns, which is not well defined for arbitrary pipeline output. Drop the fields inside the pipeline instead:
+
+```python
+await Product.find(...).aggregate([{"$unset": ["internal_notes"]}, ...]).to_list()
+```
+
+> **Note:** Excluded fields are `None` on the returned documents, so beanie
+> refuses whole-document writes on them — `save()`, `replace()` and
+> `insert()` raise `DocumentWasPartiallyLoaded` rather than overwriting the
+> stored values with `None`. Targeted writes such as `save_changes()`,
+> `set()` and `update()` remain available because they only touch the fields
+> you name. Use `.exclude()` for read-oriented queries (API responses,
+> reports, etc.).
+
 ### Chaining `.find()` with `fetch_links=True`
 
 You can now safely chain `.find()` calls and preserve the `fetch_links` flag automatically:

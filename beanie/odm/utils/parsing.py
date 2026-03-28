@@ -8,6 +8,7 @@ from beanie.exceptions import (
     UnionHasNoRegisteredDocs,
 )
 from beanie.odm.interfaces.detector import ModelType
+from beanie.odm.utils.projection import get_exclusion_model
 from beanie.odm.utils.pydantic import (
     get_config_value,
     get_model_fields,
@@ -117,7 +118,16 @@ def parse_obj(
     model: type[BaseModel] | type["Document"],
     data: Any,
     lazy_parse: bool = False,
+    exclude_fields: tuple[str, ...] = (),
 ) -> BaseModel:
+    """Parse *data* with *model*.
+
+    *exclude_fields* holds Python field names (optionally dotted paths)
+    that MongoDB was asked to omit from the response.  They are applied
+    **after** union / inheritance dispatch, so that the exclusion model
+    is derived from the concrete class the document actually belongs to
+    rather than from the class the query was issued on.
+    """
     if (
         hasattr(model, "get_model_type")
         and model.get_model_type() is ModelType.UnionDoc  # type: ignore
@@ -136,6 +146,7 @@ def parse_obj(
             model=model._document_models[class_name],  # type: ignore
             data=data,
             lazy_parse=lazy_parse,
+            exclude_fields=exclude_fields,
         )  # type: ignore
     if (
         hasattr(model, "get_model_type")
@@ -154,7 +165,11 @@ def parse_obj(
                 model=model._children[class_name],  # type: ignore
                 data=data,
                 lazy_parse=lazy_parse,
+                exclude_fields=exclude_fields,
             )  # type: ignore
+
+    if exclude_fields:
+        model = get_exclusion_model(model, exclude_fields)  # type: ignore[arg-type]
 
     if (
         lazy_parse
