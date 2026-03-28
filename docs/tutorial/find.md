@@ -171,6 +171,34 @@ chocolates = await Product.find(
     Product.category.name == "Chocolate").limit(2).to_list()
 ```
 
+### Distinct
+
+To get a list of distinct values for a specific field, use the `distinct()` method.
+`distinct()` is available on `find()` / `find_many()` queries (not on `find_one()`):
+
+```python
+categories = await Product.find(Product.price < 10).distinct("category.name")
+```
+
+This also works with `fetch_links=True`, so you can filter by linked document fields:
+
+```python
+names = await Product.find(
+    Product.category.name == "Chocolate", fetch_links=True
+).distinct("name")
+```
+
+Note that `skip` and `limit` are ignored by `distinct()` since distinct values are unordered and MongoDB's distinct command does not support pagination.
+
+`distinct()` is a **terminal** method — it executes the query and returns a `list`, not a query object. Keep the following composition rules in mind:
+
+| Chain | Allowed | Rationale |
+|---|---|---|
+| `Model.find(filter).distinct(field)` | Yes | Natural "distinct over filtered set". |
+| `Model.find(filter).project(P).distinct(field)` | Yes | Projection does not affect distinct results. |
+| `Model.find(filter).distinct(field).aggregate(...)` | No | `distinct()` is terminal and returns a list. |
+| `Model.find(filter).aggregate(pipeline).distinct(field)` | No | Use `$group` / `$addToSet` inside the pipeline instead. |
+
 ### Projections
 
 When only a part of a document is required, projections can save a lot of database bandwidth and processing.

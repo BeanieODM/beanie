@@ -724,6 +724,67 @@ class FindMany(
 
         return await super().count()
 
+    async def distinct(
+        self,
+        key: Any,
+        session: AsyncClientSession | None = None,
+        **kwargs: Any,
+    ) -> list[Any]:
+        """
+        Get a list of distinct values for `key` among documents matching
+        the query filter.  When ``fetch_links`` is enabled the query is
+        executed via an aggregation pipeline so that ``$lookup`` stages
+        are included.
+
+        Sort, skip and limit stages are excluded from the pipeline
+        because MongoDB's distinct command does not support pagination
+        and distinct values are order-independent.
+
+        :param key: Field name for which to return distinct values.
+        :param session: Optional pymongo session. Defaults to None.
+        :return: List of distinct values.
+        """
+        if self.fetch_links:
+            aggregation_pipeline = [
+                *(
+                    stage
+                    for stage in self.build_aggregation_pipeline()
+                    if "$sort" not in stage
+                    and "$skip" not in stage
+                    and "$limit" not in stage
+                ),
+                {
+                    "$unwind": {
+                        "path": f"${key}",
+                        "preserveNullAndEmptyArrays": True,
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": None,
+                        "distinct": {"$addToSet": f"${key}"},
+                    }
+                },
+            ]
+            kwargs = {**self.pymongo_kwargs, **kwargs}
+            cursor = (
+                await self.document_model.get_pymongo_collection().aggregate(
+                    aggregation_pipeline,
+                    session=session or self.session,
+                    **kwargs,
+                )
+            )
+            result = await cursor.to_list(length=1)
+            return result[0]["distinct"] if result else []
+
+        kwargs = {**self.pymongo_kwargs, **kwargs}
+        return await self.document_model.get_pymongo_collection().distinct(
+            key=key,
+            filter=self.get_filter_query(),
+            session=session or self.session,
+            **kwargs,
+        )
+
 
 class FindOne(FindQuery[FindQueryResultType]):
     """
