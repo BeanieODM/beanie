@@ -15,7 +15,7 @@ DocumentProjectionType = TypeVar("DocumentProjectionType", bound=BaseModel)
 class AggregateInterface:
     @classmethod
     @abstractmethod
-    def find_all(cls) -> FindMany:
+    def find_all(cls) -> FindMany[BaseModel]:
         pass
 
     @overload

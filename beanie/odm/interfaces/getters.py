@@ -1,4 +1,6 @@
 from abc import abstractmethod
+from collections.abc import Mapping
+from typing import Any
 
 from pymongo.asynchronous.collection import AsyncCollection
 
@@ -12,8 +14,8 @@ class OtherGettersInterface:
         pass
 
     @classmethod
-    def get_pymongo_collection(cls) -> AsyncCollection:
-        return cls.get_settings().pymongo_collection
+    def get_pymongo_collection(cls) -> AsyncCollection[Mapping[str, Any]]:
+        return cls.get_settings().pymongo_collection  # type: ignore[return-value]
 
     @classmethod
     def get_collection_name(cls) -> str:

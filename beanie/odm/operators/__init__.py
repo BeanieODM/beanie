@@ -4,7 +4,7 @@ from copy import copy, deepcopy
 from typing import Any
 
 
-class BaseOperator(Mapping):
+class BaseOperator(Mapping[Any, Any]):
     """
     Base operator.
     """

@@ -3,8 +3,12 @@ import inspect
 from importlib.metadata import version
 from types import UnionType
 from typing import (  # noqa: UP035
+    Any,
+    Generic,
     List,
+    Mapping,
     Sequence,
+    TypeVar,
     Union,
     get_args,
     get_origin,
@@ -43,16 +47,18 @@ from beanie.odm.views import View
 
 _DRIVER_METADATA = DriverInfo(name="beanie", version=version("beanie"))
 
+DocumentType = TypeVar("DocumentType", bound=Mapping[str, Any])
+
 
 class Output(BaseModel):
     class_name: str
     collection_name: str
 
 
-class Initializer:
+class Initializer(Generic[DocumentType]):
     def __init__(
         self,
-        database: AsyncDatabase | None = None,
+        database: AsyncDatabase[DocumentType] | None = None,
         connection_string: str | None = None,
         document_models: Sequence[
             type["DocType"] | type["UnionDocType"] | type["View"] | str
@@ -102,7 +108,10 @@ class Initializer:
         ):
             database.client.append_metadata(_DRIVER_METADATA)
 
-        self.database: AsyncDatabase = database  # type: ignore
+        if database is None:
+            raise ValueError("database is required")
+
+        self.database = database
 
         sort_order = {
             ModelType.UnionDoc: 0,
@@ -746,7 +755,7 @@ class Initializer:
 
 
 async def init_beanie(
-    database: AsyncDatabase | None = None,
+    database: AsyncDatabase[DocumentType] | None = None,
     connection_string: str | None = None,
     document_models: Sequence[
         type[Document] | type[UnionDoc] | type["View"] | str

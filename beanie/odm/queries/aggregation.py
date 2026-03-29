@@ -91,7 +91,7 @@ class AggregationQuery(
                 projection_pipeline = [{"$project": projection}]
         return match_pipeline + self.aggregation_pipeline + projection_pipeline
 
-    async def get_cursor(self) -> "AsyncCommandCursor":
+    async def get_cursor(self) -> "AsyncCommandCursor[dict[str, Any]]":
         aggregation_pipeline = self.get_aggregation_pipeline()
         return await self.document_model.get_pymongo_collection().aggregate(
             aggregation_pipeline, session=self.session, **self.pymongo_kwargs
