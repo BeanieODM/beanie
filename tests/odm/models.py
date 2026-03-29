@@ -32,6 +32,7 @@ from pydantic import (
     RootModel,
     SecretBytes,
     SecretStr,
+    computed_field,
     validate_call,
 )
 from pydantic_core import core_schema
@@ -976,6 +977,28 @@ class DocumentWithFrozenField(Document):
 
     class Settings:
         name = "docs_with_frozen_field"
+
+
+class DocumentWithComputedField(Document):
+    num: int
+
+    _cached_uuid: str | None = None
+
+    @computed_field
+    @property
+    def doubled(self) -> int:
+        return self.num * 2
+
+    @computed_field
+    @property
+    def cacheable_uuid(self) -> str:
+        if self._cached_uuid is None:
+            self._cached_uuid = str(uuid4())
+        return self._cached_uuid
+
+    @cacheable_uuid.setter
+    def cacheable_uuid(self, new: str) -> None:
+        self._cached_uuid = new
 
 
 class ReleaseElemMatch(BaseModel):

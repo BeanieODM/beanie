@@ -14,6 +14,7 @@ from tests.odm.models import (
     DocumentForEncodingTest,
     DocumentForEncodingTestDate,
     DocumentWithComplexDictKey,
+    DocumentWithComputedField,
     DocumentWithDecimalField,
     DocumentWithEnumKeysDict,
     DocumentWithExcludedField,
@@ -142,6 +143,12 @@ def test_excluded():
     encoded_doc = Encoder().encode(doc)
     assert "included_field" in encoded_doc
     assert "excluded_field" not in encoded_doc
+
+
+def test_computed_field():
+    doc = DocumentWithComputedField(num=1)
+    encoded_doc = Encoder().encode(doc)
+    assert encoded_doc["doubled"] == 2
 
 
 def test_should_encode_pydantic_v2_url_correctly():

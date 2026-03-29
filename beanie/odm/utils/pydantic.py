@@ -1,6 +1,7 @@
 from typing import Any
 
 from pydantic import BaseModel, TypeAdapter
+from pydantic.fields import ComputedFieldInfo
 
 
 def parse_object_as(object_type: type, data: Any):
@@ -8,13 +9,28 @@ def parse_object_as(object_type: type, data: Any):
 
 
 def get_field_type(field):
-    return field.annotation
+    if isinstance(field, ComputedFieldInfo):
+        return field.return_type
+    else:
+        return field.annotation
 
 
 def get_model_fields(model):
     if not isinstance(model, type):
         model = model.__class__
-    return model.model_fields
+    return {**model.model_fields, **model.model_computed_fields}
+
+
+def get_model_all_items(model):
+    return {
+        **dict(model.__iter__()),
+        **{
+            key: getattr(model, key)
+            for key in {
+                **model.__class__.model_computed_fields,
+            }.keys()
+        },
+    }
 
 
 def parse_model(model_type: type[BaseModel], data: Any):

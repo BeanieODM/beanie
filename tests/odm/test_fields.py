@@ -16,6 +16,7 @@ from tests.odm.models import (
     DocumentTestModel,
     DocumentTestModelIndexFlagsAnnotated,
     DocumentWithBsonEncodersFiledsTypes,
+    DocumentWithComputedField,
     DocumentWithCustomFiledsTypes,
     DocumentWithDeprecatedHiddenField,
     DocumentWithExcludedField,
@@ -117,6 +118,45 @@ async def test_excluded(document):
     assert stored_doc is not None
     assert "included_field" in stored_doc.model_dump()
     assert "excluded_field" not in stored_doc.model_dump()
+
+
+async def test_computed_field():
+    doc = DocumentWithComputedField(num=1)
+    assert doc.doubled == 2
+
+    await doc.insert()
+    stored_doc = await DocumentWithComputedField.get(doc.id)
+    assert stored_doc
+    assert stored_doc.doubled == 2
+
+    stored_doc.num = 2
+    assert stored_doc.doubled == 4
+
+    await stored_doc.replace()
+    replaced_doc = await DocumentWithComputedField.get(doc.id)
+    assert replaced_doc
+    assert replaced_doc.doubled == 4
+
+
+async def test_computed_field_setter():
+    doc = DocumentWithComputedField(num=1)
+    await doc.insert()
+    cached_uui = doc.cacheable_uuid
+    db_raw_data = (
+        await DocumentWithComputedField.get_pymongo_collection().find_one(
+            {"_id": doc.id}
+        )
+    )
+    assert db_raw_data == {
+        "_id": doc.id,
+        "num": 1,
+        "doubled": 2,
+        "cacheable_uuid": cached_uui,
+    }
+
+    fetched_doc = await DocumentWithComputedField.get(doc.id)
+    assert fetched_doc
+    assert fetched_doc.cacheable_uuid != cached_uui
 
 
 async def test_hidden(deprecated_init_beanie):
