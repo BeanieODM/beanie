@@ -1342,7 +1342,7 @@ class DocumentWithSoftDelete(Document):
         projection_model: type["DocumentProjectionType"] | None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | Any | list[tuple[Any, SortDirection]] = None,
+        sort: Any = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
