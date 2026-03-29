@@ -53,7 +53,7 @@ class FindInterface:
         cls: type[FindType],
         *args: Mapping[Any, Any] | bool,
         projection_model: None = None,
-        sort: Any | list[tuple[Any, SortDirection]] | None = None,
+        sort: Any = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
