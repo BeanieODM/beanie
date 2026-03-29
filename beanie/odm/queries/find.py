@@ -278,7 +278,8 @@ class FindMany(
         self.find_expressions += args  # type: ignore # bool workaround
         self.skip(skip)
         self.limit(limit)
-        self.sort(sort)
+        if sort is not None:
+            self.sort(sort)
         self.project(projection_model)
         self.set_session(session=session)
         self.ignore_cache = ignore_cache
