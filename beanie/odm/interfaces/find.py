@@ -426,7 +426,9 @@ class FindInterface:
         return await cls.find_all().count()  # type: ignore
 
     @classmethod
-    def _add_class_id_filter(cls, args: tuple, with_children: bool = False):
+    def _add_class_id_filter(
+        cls, args: tuple[Any, ...], with_children: bool = False
+    ):
         settings = cls.get_settings()
         class_id = settings.class_id
 

@@ -1,5 +1,6 @@
 from abc import ABC
 from enum import Enum
+from typing import Any
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -49,7 +50,12 @@ class GeoIntersects(BaseFindGeospatialOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/geoIntersects/>
     """
 
-    def __init__(self, field, geo_type: str, coordinates: list[list[float]]):
+    def __init__(
+        self,
+        field: Any,
+        geo_type: str,
+        coordinates: list[list[float]],
+    ):
         self.field = field
         self.geo_type = geo_type
         self.coordinates = coordinates
@@ -116,7 +122,10 @@ class GeoWithin(BaseFindGeospatialOperator):
     """
 
     def __init__(
-        self, field, geo_type: GeoWithinTypes, coordinates: list[list[float]]
+        self,
+        field: Any,
+        geo_type: GeoWithinTypes,
+        coordinates: list[list[float]],
     ):
         self.field = field
         self.geo_type = geo_type
@@ -176,7 +185,7 @@ class Box(BaseFindGeospatialOperator):
     """
 
     def __init__(
-        self, field, lower_left: list[float], upper_right: list[float]
+        self, field: Any, lower_left: list[float], upper_right: list[float]
     ):
         self.field = field
         self.coordinates = [lower_left, upper_right]
@@ -233,7 +242,7 @@ class Near(BaseFindGeospatialOperator):
 
     def __init__(
         self,
-        field,
+        field: Any,
         longitude: float,
         latitude: float,
         max_distance: float | None = None,

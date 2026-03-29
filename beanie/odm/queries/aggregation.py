@@ -71,7 +71,7 @@ class AggregationQuery(
         else:
             return None
 
-    def _set_cache(self, data):
+    def _set_cache(self, data: Any):
         if (
             self.document_model.get_settings().use_cache
             and self.ignore_cache is False

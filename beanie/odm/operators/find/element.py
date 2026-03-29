@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Any
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -31,7 +32,7 @@ class Exists(BaseFindElementOperator):
 
     def __init__(
         self,
-        field,
+        field: Any,
         value: bool = True,
     ):
         self.field = field
@@ -65,7 +66,7 @@ class Type(BaseFindElementOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/type/>
     """
 
-    def __init__(self, field, types: list[str] | str):
+    def __init__(self, field: Any, types: list[str] | str):
         self.field = field
         self.types = types
 

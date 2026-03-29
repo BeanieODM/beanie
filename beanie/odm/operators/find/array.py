@@ -32,7 +32,7 @@ class All(BaseFindArrayOperator):
 
     def __init__(
         self,
-        field,
+        field: Any,
         values: list,
     ):
         self.field = field
@@ -68,7 +68,7 @@ class ElemMatch(BaseFindArrayOperator):
 
     def __init__(
         self,
-        field,
+        field: Any,
         expression: dict | None = None,
         **kwargs: Any,
     ):
@@ -109,7 +109,7 @@ class Size(BaseFindArrayOperator):
 
     def __init__(
         self,
-        field,
+        field: Any,
         num: int,
     ):
         self.field = field

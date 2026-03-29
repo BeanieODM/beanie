@@ -1,5 +1,6 @@
 import re
 from abc import ABC
+from typing import Any
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -78,7 +79,7 @@ class Mod(BaseFindEvaluationOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/mod/>
     """
 
-    def __init__(self, field, divisor: int, remainder: int):
+    def __init__(self, field: Any, divisor: int, remainder: int):
         self.field = field
         self.divisor = divisor
         self.remainder = remainder
@@ -98,7 +99,7 @@ class RegEx(BaseFindEvaluationOperator):
 
     def __init__(
         self,
-        field,
+        field: Any,
         pattern: str | re.Pattern[bytes] | re.Pattern[str],
         options: str | None = None,
     ):
