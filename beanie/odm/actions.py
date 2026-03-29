@@ -20,6 +20,31 @@ R = TypeVar("R")
 
 
 class EventTypes(str, Enum):
+    """Enumeration of document lifecycle events that can trigger actions.
+
+    Use these values (or their module-level aliases) with
+    :func:`before_event` and :func:`after_event` decorators to attach
+    hooks to specific operations on a :class:`~beanie.Document`.
+
+    Aliases defined at module level for convenience:
+    ``Insert``, ``Replace``, ``Save``, ``SaveChanges``,
+    ``ValidateOnSave``, ``Delete``, ``Update``.
+
+    Example::
+
+        class Article(Document):
+            title: str
+            slug: str
+
+            @before_event(Insert)
+            def generate_slug(self):
+                self.slug = self.title.lower().replace(" ", "-")
+
+            @after_event(Delete)
+            async def notify_deleted(self):
+                await send_notification(f"{self.title} was deleted")
+    """
+
     INSERT = "INSERT"
     REPLACE = "REPLACE"
     SAVE = "SAVE"
@@ -39,6 +64,13 @@ Update = EventTypes.UPDATE
 
 
 class ActionDirections(str, Enum):  # TODO think about this name
+    """Whether an action runs before or after the triggering event.
+
+    Module-level aliases ``Before`` and ``After`` are provided for
+    convenience and are the values typically passed to
+    :func:`before_event` / :func:`after_event`.
+    """
+
     BEFORE = "BEFORE"
     AFTER = "AFTER"
 

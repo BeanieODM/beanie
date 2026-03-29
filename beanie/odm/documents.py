@@ -135,6 +135,16 @@ def document_alias_generator(s: str) -> str:
 
 
 class MergeStrategy(str, Enum):
+    """Strategy used by :meth:`Document.sync` to resolve divergence between
+    the in-memory document and the current state in the database.
+
+    - ``remote`` *(default)* — overwrite the local copy with the database
+      version, discarding any unsaved local changes.
+    - ``local`` — re-apply local (unsaved) changes on top of the latest
+      database version.  Requires ``use_state_management = True`` in the
+      document's ``Settings``.
+    """
+
     local = "local"
     remote = "remote"
 
@@ -1056,6 +1066,12 @@ class Document(
     @property
     @saved_state_needed
     def is_changed(self) -> bool:
+        """``True`` if the document has unsaved changes relative to the last
+        saved state.
+
+        Requires ``use_state_management = True`` in the document's
+        ``Settings``; raises ``StateManagementIsTurnedOff`` otherwise.
+        """
         return self._saved_state != get_dict(
             self,
             to_db=True,
@@ -1067,6 +1083,13 @@ class Document(
     @saved_state_needed
     @previous_saved_state_needed
     def has_changed(self) -> bool:
+        """``True`` if the document's saved state differs from the *previous*
+        saved state (i.e. the document was modified between two consecutive
+        save operations).
+
+        Requires both ``use_state_management = True`` **and**
+        ``save_previous_state = True`` in the document's ``Settings``.
+        """
         if self._previous_saved_state is None:
             return False
         return self._previous_saved_state != self._saved_state
@@ -1112,6 +1135,15 @@ class Document(
 
     @saved_state_needed
     def get_changes(self) -> dict[str, Any]:
+        """Return a dict of field paths that have changed since the last save.
+
+        Keys are dot-notation field paths (e.g. ``"address.city"``), values
+        are the current (unsaved) values.  Returns an empty dict when nothing
+        has changed.
+
+        Requires ``use_state_management = True`` in the document's
+        ``Settings``.
+        """
         assert self._saved_state is not None
 
         return self._collect_updates(
@@ -1127,6 +1159,16 @@ class Document(
     @saved_state_needed
     @previous_saved_state_needed
     def get_previous_changes(self) -> dict[str, Any]:
+        """Return a dict of field paths that changed between the *previous*
+        saved state and the *current* saved state.
+
+        Useful for audit logging: call this inside an ``@after_event(Save)``
+        hook to see exactly what was updated.  Returns ``{}`` when no
+        previous state exists.
+
+        Requires both ``use_state_management = True`` and
+        ``save_previous_state = True`` in the document's ``Settings``.
+        """
         assert self._saved_state is not None
 
         if self._previous_saved_state is None:
@@ -1139,6 +1181,14 @@ class Document(
 
     @saved_state_needed
     def rollback(self) -> None:
+        """Discard unsaved changes by restoring the document to its last saved state.
+
+        All fields that differ from the saved state are reset in-place.
+        Has no effect if the document has not been changed.
+
+        Requires ``use_state_management = True`` in the document's
+        ``Settings``.
+        """
         assert self._saved_state is not None
 
         if self.is_changed:
@@ -1211,12 +1261,28 @@ class Document(
 
     @wrap_with_actions(event_type=EventTypes.VALIDATE_ON_SAVE)
     async def validate_self(self, *args: Any, **kwargs: Any):
+        """Re-validate all document fields using Pydantic's model parser.
+
+        Called automatically before write operations when
+        ``validate_on_save = True`` is set in the document's ``Settings``.
+        Also fires ``before_event(ValidateOnSave)`` /
+        ``after_event(ValidateOnSave)`` hooks.
+
+        You can call this manually to trigger validation without persisting::
+
+            await doc.validate_self()
+        """
         # TODO: it can be sync, but needs some actions controller improvements
         if self.get_settings().validate_on_save:
             new_model = parse_model(self.__class__, get_model_dump(self))
             merge_models(self, new_model)
 
     def to_ref(self):
+        """Return a :class:`~bson.DBRef` pointing to this document.
+
+        :raises DocumentWasNotSaved: if the document has not been inserted
+            yet (``id`` is ``None``).
+        """
         if self.id is None:
             raise DocumentWasNotSaved("Can not create dbref without id")
         return DBRef(self.get_pymongo_collection().name, self.id)
@@ -1264,6 +1330,19 @@ class Document(
             setattr(self, field, values)
 
     async def fetch_all_links(self):
+        """Resolve all :class:`~beanie.Link` and :class:`~beanie.BackLink`
+        fields on this document in a single concurrent call.
+
+        Equivalent to calling :meth:`fetch_link` for every relation field.
+        After awaiting, all link fields are replaced with the fetched
+        document instances (or lists of instances).
+
+        Example::
+
+            article = await Article.get(article_id)
+            await article.fetch_all_links()
+            print(article.author.name)  # Author is now resolved
+        """
         coros = []
         link_fields = self.get_link_fields()
         if link_fields is not None:
@@ -1287,12 +1366,39 @@ class Document(
         session: AsyncClientSession | None = None,
         **kwargs: Any,
     ) -> list:
+        """Return a list of distinct values for ``key`` across the collection.
+
+        :param key: The field name (or dot-notation path) to get distinct
+            values for.
+        :param filter: Optional MongoDB filter document to restrict the
+            documents considered.
+        :param session: Optional pymongo session for transactional use.
+        :param kwargs: Additional keyword arguments forwarded to the
+            underlying ``pymongo`` ``distinct`` call.
+        :return: List of distinct values.
+
+        Example::
+
+            categories = await Product.distinct("category.name")
+            active_tags = await Product.distinct(
+                "tags", filter={"active": True}
+            )
+        """
         return await cls.get_pymongo_collection().distinct(
             key=key, filter=filter, session=session, **kwargs
         )
 
     @classmethod
     def link_from_id(cls, id: Any):
+        """Create an unresolved :class:`~beanie.Link` for this document type
+        from a raw id value, without querying the database.
+
+        Useful when you already know the id and want to store a reference
+        without fetching the full document::
+
+            article.author = Author.link_from_id(known_author_id)
+            await article.save()
+        """
         ref = DBRef(id=id, collection=cls.get_collection_name())
         return Link(ref, document_class=cls)
 
