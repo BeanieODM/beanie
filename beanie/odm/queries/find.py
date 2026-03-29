@@ -52,6 +52,33 @@ FindQueryProjectionType = TypeVar("FindQueryProjectionType", bound=BaseModel)
 FindQueryResultType = TypeVar("FindQueryResultType", bound=BaseModel)
 
 
+def build_sort_list(
+    *args: str
+    | tuple[str, SortDirection]
+    | list[tuple[str, SortDirection]]
+    | None,
+) -> list[tuple[str, SortDirection]]:
+    sort_list: list[tuple[str, SortDirection]] = []
+
+    for arg in args:
+        if arg is None:
+            pass
+        elif isinstance(arg, list):
+            sort_list.extend(build_sort_list(*arg))
+        elif isinstance(arg, tuple):
+            sort_list.append(arg)
+        elif isinstance(arg, str):
+            if arg.startswith("+"):
+                sort_list.append((arg[1:], SortDirection.ASCENDING))
+            elif arg.startswith("-"):
+                sort_list.append((arg[1:], SortDirection.DESCENDING))
+            else:
+                sort_list.append((arg, SortDirection.ASCENDING))
+        else:
+            raise TypeError("Wrong argument type")
+    return sort_list
+
+
 class FindQuery(
     Generic[FindQueryResultType], UpdateMethods, SessionMethods, CloneInterface
 ):
@@ -196,7 +223,7 @@ class FindMany(
         projection_model: None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: Any = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -213,7 +240,7 @@ class FindMany(
         projection_model: type[FindQueryProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -229,7 +256,7 @@ class FindMany(
         projection_model: type[FindQueryProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -258,7 +285,8 @@ class FindMany(
         self.find_expressions += args  # type: ignore # bool workaround
         self.skip(skip)
         self.limit(limit)
-        self.sort(sort)
+        if sort is not None:
+            self.sort(sort)
         self.project(projection_model)
         self.set_session(session=session)
         self.ignore_cache = ignore_cache
@@ -307,7 +335,7 @@ class FindMany(
         projection_model: None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -324,7 +352,7 @@ class FindMany(
         projection_model: type[FindQueryProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -340,7 +368,7 @@ class FindMany(
         projection_model: type[FindQueryProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
-        sort: None | str | list[tuple[str, SortDirection]] = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -371,12 +399,10 @@ class FindMany(
 
     def sort(
         self,
-        *args: (
-            str
-            | tuple[str, SortDirection]
-            | list[tuple[str, SortDirection]]
-            | None
-        ),
+        *args: Any
+        | tuple[Any, SortDirection]
+        | list[tuple[Any, SortDirection]]
+        | None,
     ) -> "FindMany[FindQueryResultType]":
         """
         Add sort parameters
@@ -386,28 +412,7 @@ class FindMany(
         the sort order for this query.
         :return: self
         """
-        for arg in args:
-            if arg is None:
-                pass
-            elif isinstance(arg, list):
-                self.sort(*arg)
-            elif isinstance(arg, tuple):
-                self.sort_expressions.append(arg)
-            elif isinstance(arg, str):
-                if arg.startswith("+"):
-                    self.sort_expressions.append(
-                        (arg[1:], SortDirection.ASCENDING)
-                    )
-                elif arg.startswith("-"):
-                    self.sort_expressions.append(
-                        (arg[1:], SortDirection.DESCENDING)
-                    )
-                else:
-                    self.sort_expressions.append(
-                        (arg, SortDirection.ASCENDING)
-                    )
-            else:
-                raise TypeError("Wrong argument type")
+        self.sort_expressions.extend(build_sort_list(*args))
         return self
 
     def skip(self, n: int | None) -> "FindMany[FindQueryResultType]":
@@ -828,6 +833,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self: "FindOne[FindQueryResultType]",
         *args: Mapping[Any, Any] | bool,
         projection_model: None = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -841,6 +847,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self: "FindOne[FindQueryResultType]",
         *args: Mapping[Any, Any] | bool,
         projection_model: type[FindQueryProjectionType],
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -853,6 +860,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         self: "FindOne[FindQueryResultType]",
         *args: Mapping[Any, Any] | bool,
         projection_model: type[FindQueryProjectionType] | None = None,
+        sort: None | Any | list[tuple[Any, SortDirection]] = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -867,6 +875,9 @@ class FindOne(FindQuery[FindQueryResultType]):
 
         :param args: *Mapping[Any, Any] - search criteria
         :param projection_model: Optional[type[BaseModel]] - projection model
+        :param sort: Union[None, str, list[tuple[str, SortDirection]]] - A key
+        or a list of (key, direction) pairs specifying the sort order
+        for this query.
         :param session: Optional[AsyncClientSession] - pymongo session
         :param ignore_cache: bool
         :param **pymongo_kwargs: pymongo native parameters for find operation (if Document class contains links, this parameter must fit the respective parameter of the aggregate MongoDB function)
@@ -874,6 +885,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         """
         self.find_expressions += args  # type: ignore # bool workaround
         self.project(projection_model)
+        self.sort_expressions = build_sort_list(sort) if sort else []
         self.set_session(session=session)
         self.ignore_cache = ignore_cache
         self.fetch_links = fetch_links or self.fetch_links
@@ -1048,6 +1060,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         if self.fetch_links:
             return await self.document_model.find_many(
                 *self.find_expressions,
+                sort=self.sort_expressions,
                 session=self.session,
                 fetch_links=self.fetch_links,
                 projection_model=self.projection_model,
@@ -1058,6 +1071,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         return await self.document_model.get_pymongo_collection().find_one(
             filter=self.get_filter_query(),
             projection=get_projection(self.projection_model),
+            sort=self.sort_expressions,
             session=self.session,
             **self.pymongo_kwargs,
         )
@@ -1078,6 +1092,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 "FindOne",
                 self.get_filter_query(),
                 self.projection_model,
+                self.sort_expressions,
                 self.session,
                 self.fetch_links,
             )
