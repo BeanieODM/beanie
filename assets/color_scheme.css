@@ -1,0 +1,7 @@
+[data-md-color-scheme="slate"] {
+
+  --md-primary-fg-color:        #2e303e; /* Panel */
+  --md-default-bg-color:        #2e303e; /* BG */
+  --md-typeset-a-color:         #8e91aa;
+  --md-accent-fg-color:         #658eda
+}
