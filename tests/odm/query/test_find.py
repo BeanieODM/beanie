@@ -555,3 +555,146 @@ async def test_distinct_array_field():
     # distinct on an array field should return individual elements, not arrays
     values = await DocumentWithList.find().distinct("list_values")
     assert sorted(values) == ["a", "b", "c", "d"]
+
+
+# --- Exclusion projection tests ---
+
+
+async def test_find_many_with_exclude(preset_documents):
+    """Basic exclusion: excluded fields become None, others are populated.
+    Also verifies that ExpressionField references work as arguments."""
+    # String field names
+    result = (
+        await Sample.find_many(Sample.integer == 0)
+        .exclude("float_num", "geo")
+        .to_list()
+    )
+    assert len(result) > 0
+    for doc in result:
+        assert isinstance(doc, Sample)
+        assert doc.string == "test_0"
+        assert doc.integer == 0
+        assert doc.float_num is None
+        assert doc.geo is None
+
+    # ExpressionField references (Sample.field_name)
+    result2 = (
+        await Sample.find_many(Sample.integer == 0)
+        .exclude(Sample.float_num, Sample.geo)
+        .to_list()
+    )
+    assert len(result2) > 0
+    for doc in result2:
+        assert isinstance(doc, Sample)
+        assert doc.float_num is None
+        assert doc.geo is None
+
+
+async def test_find_one_with_exclude(preset_documents):
+    """Exclusion works with find_one."""
+    doc = await Sample.find_one(Sample.integer == 0).exclude("float_num")
+    assert doc is not None
+    assert isinstance(doc, Sample)
+    assert doc.string == "test_0"
+    assert doc.integer == 0
+    assert doc.float_num is None
+
+
+def test_exclude_with_project_raises():
+    """Using exclude() and project() together raises ValueError."""
+
+    class SampleProjection(BaseModel):
+        string: str
+        integer: int
+
+    with pytest.raises(
+        ValueError, match=r"Cannot use exclude.*together with project"
+    ):
+        Sample.find_many(Sample.integer == 0).project(
+            projection_model=SampleProjection
+        ).exclude("float_num")
+
+    with pytest.raises(
+        ValueError, match=r"Cannot use project.*together with exclude"
+    ):
+        Sample.find_many(Sample.integer == 0).exclude("float_num").project(
+            projection_model=SampleProjection
+        )
+
+
+async def test_find_many_exclude_with_fetch_links():
+    """Exclusion projection works when fetch_links is enabled."""
+    lock = await Lock(k=10).insert()
+    window = await Window(x=1, y=2, lock=lock).insert()
+    door = await Door(t=5, window=window, locks=[lock]).insert()
+    await House(
+        windows=[window], door=door, height=100, name="test_exclude"
+    ).insert()
+
+    result = (
+        await House.find(House.name == "test_exclude", fetch_links=True)
+        .exclude("height")
+        .to_list()
+    )
+    assert len(result) == 1
+    assert isinstance(result[0], House)
+    assert result[0].name == "test_exclude"
+    assert result[0].height is None
+
+
+def test_exclude_clone():
+    """Cloning a query preserves _exclude_fields."""
+    q = Sample.find_many(Sample.integer == 1).exclude("float_num", "geo")
+    cloned = q.clone()
+
+    assert cloned._exclude_fields == ["float_num", "geo"]
+    # Modifying the clone should not affect the original
+    cloned._exclude_fields = []
+    cloned.exclude("string")
+    assert q._exclude_fields == ["float_num", "geo"]
+    assert cloned._exclude_fields == ["string"]
+
+
+def test_exclude_accumulates():
+    """Multiple .exclude() calls accumulate fields, not replace."""
+    q = (
+        Sample.find_many(Sample.integer == 1)
+        .exclude("float_num")
+        .exclude("geo")
+    )
+    assert q._exclude_fields == ["float_num", "geo"]
+
+    # Duplicates are not added
+    q.exclude("float_num")
+    assert q._exclude_fields == ["float_num", "geo"]
+
+
+async def test_exclude_nonexistent_field(preset_documents):
+    """Excluding a field that doesn't exist on the model is silently ignored."""
+    result = (
+        await Sample.find_many(Sample.integer == 0)
+        .exclude("nonexistent_field")
+        .to_list()
+    )
+    assert len(result) > 0
+    for doc in result:
+        assert isinstance(doc, Sample)
+        assert doc.string == "test_0"
+
+
+async def test_find_one_exclude_with_fetch_links():
+    """Exclusion projection works with find_one + fetch_links."""
+    lock = await Lock(k=20).insert()
+    window = await Window(x=3, y=4, lock=lock).insert()
+    door = await Door(t=7, window=window, locks=[lock]).insert()
+    await House(
+        windows=[window], door=door, height=200, name="find_one_exclude"
+    ).insert()
+
+    result = await House.find_one(
+        House.name == "find_one_exclude", fetch_links=True
+    ).exclude("height")
+    assert result is not None
+    assert isinstance(result, House)
+    assert result.name == "find_one_exclude"
+    assert result.height is None
