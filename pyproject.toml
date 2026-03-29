@@ -7,7 +7,7 @@ name = "beanie"
 version = "2.1.0"
 description = "Asynchronous Python ODM for MongoDB"
 readme = "README.md"
-requires-python = ">=3.10,<3.15"
+requires-python = ">=3.10"
 license = { file="LICENSE" }
 authors = [
     {name = "Roman Right", email = "roman-right@protonmail.com"}
