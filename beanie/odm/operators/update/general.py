@@ -1,10 +1,16 @@
+from typing import Any, Generic, TypeVar
+
 from beanie.odm.operators.update import BaseUpdateOperator
 
+_UpdateExpressionType = TypeVar("_UpdateExpressionType", bound=dict[str, Any])
 
-class BaseUpdateGeneralOperator(BaseUpdateOperator):
+
+class BaseUpdateGeneralOperator(
+    BaseUpdateOperator, Generic[_UpdateExpressionType]
+):
     operator = ""
 
-    def __init__(self, expression):
+    def __init__(self, expression: _UpdateExpressionType):
         self.expression = expression
 
     @property
@@ -12,7 +18,7 @@ class BaseUpdateGeneralOperator(BaseUpdateOperator):
         return {self.operator: self.expression}
 
 
-class Set(BaseUpdateGeneralOperator):
+class Set(BaseUpdateGeneralOperator[_UpdateExpressionType]):
     """
     `$set` update query operator
 
@@ -61,7 +67,7 @@ class SetRevisionId:
     <https://docs.mongodb.com/manual/reference/operator/update/set/>
     """
 
-    def __init__(self, revision_id):
+    def __init__(self, revision_id: Any):
         self.revision_id = revision_id
         self.operator = "$set"
         self.expression = {"revision_id": self.revision_id}
@@ -71,7 +77,7 @@ class SetRevisionId:
         return {self.operator: self.expression}
 
 
-class CurrentDate(BaseUpdateGeneralOperator):
+class CurrentDate(BaseUpdateGeneralOperator[_UpdateExpressionType]):
     """
     `$currentDate` update query operator
 
@@ -97,7 +103,7 @@ class CurrentDate(BaseUpdateGeneralOperator):
     operator = "$currentDate"
 
 
-class Inc(BaseUpdateGeneralOperator):
+class Inc(BaseUpdateGeneralOperator[_UpdateExpressionType]):
     """
     `$inc` update query operator
 
@@ -123,7 +129,7 @@ class Inc(BaseUpdateGeneralOperator):
     operator = "$inc"
 
 
-class Min(BaseUpdateGeneralOperator):
+class Min(BaseUpdateGeneralOperator[_UpdateExpressionType]):
     """
     `$min` update query operator
 
@@ -149,7 +155,7 @@ class Min(BaseUpdateGeneralOperator):
     operator = "$min"
 
 
-class Max(BaseUpdateGeneralOperator):
+class Max(BaseUpdateGeneralOperator[_UpdateExpressionType]):
     """
     `$max` update query operator
 
@@ -175,7 +181,7 @@ class Max(BaseUpdateGeneralOperator):
     operator = "$max"
 
 
-class Mul(BaseUpdateGeneralOperator):
+class Mul(BaseUpdateGeneralOperator[_UpdateExpressionType]):
     """
     `$mul` update query operator
 
@@ -201,7 +207,7 @@ class Mul(BaseUpdateGeneralOperator):
     operator = "$mul"
 
 
-class Rename(BaseUpdateGeneralOperator):
+class Rename(BaseUpdateGeneralOperator[_UpdateExpressionType]):
     """
     `$rename` update query operator
 
@@ -212,7 +218,7 @@ class Rename(BaseUpdateGeneralOperator):
     operator = "$rename"
 
 
-class SetOnInsert(BaseUpdateGeneralOperator):
+class SetOnInsert(BaseUpdateGeneralOperator[_UpdateExpressionType]):
     """
     `$setOnInsert` update query operator
 
@@ -223,7 +229,7 @@ class SetOnInsert(BaseUpdateGeneralOperator):
     operator = "$setOnInsert"
 
 
-class Unset(BaseUpdateGeneralOperator):
+class Unset(BaseUpdateGeneralOperator[_UpdateExpressionType]):
     """
     `$unset` update query operator
 

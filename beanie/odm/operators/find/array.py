@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 from beanie.odm.operators.find import BaseFindOperator
 
@@ -7,7 +7,11 @@ from beanie.odm.operators.find import BaseFindOperator
 class BaseFindArrayOperator(BaseFindOperator, ABC): ...
 
 
-class All(BaseFindArrayOperator):
+_ArrayValuesType = TypeVar("_ArrayValuesType", bound=list[Any])
+_ArrayExpressionType = TypeVar("_ArrayExpressionType", bound=dict[str, Any])
+
+
+class All(BaseFindArrayOperator, Generic[_ArrayValuesType]):
     """
     `$all` array query operator
 
@@ -33,7 +37,7 @@ class All(BaseFindArrayOperator):
     def __init__(
         self,
         field,
-        values: list,
+        values: _ArrayValuesType,
     ):
         self.field = field
         self.values_list = values
@@ -43,7 +47,7 @@ class All(BaseFindArrayOperator):
         return {self.field: {"$all": self.values_list}}
 
 
-class ElemMatch(BaseFindArrayOperator):
+class ElemMatch(BaseFindArrayOperator, Generic[_ArrayExpressionType]):
     """
     `$elemMatch` array query operator
 
@@ -69,7 +73,7 @@ class ElemMatch(BaseFindArrayOperator):
     def __init__(
         self,
         field,
-        expression: dict | None = None,
+        expression: _ArrayExpressionType | None = None,
         **kwargs: Any,
     ):
         self.field = field
