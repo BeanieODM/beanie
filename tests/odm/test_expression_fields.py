@@ -1,3 +1,5 @@
+from bson import DBRef
+
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import ExpressionField, FieldResolution
 from beanie.odm.operators.find.comparison import In, NotIn
@@ -222,10 +224,13 @@ class TestResolveQueryPaths:
     """Tests for resolve_query_paths — DBRef translation at query time."""
 
     def test_link_id_without_fetch(self):
-        """Without fetch_links, door._id becomes door.$id."""
+        """Without fetch_links, door._id becomes a full DBRef match."""
+
         raw = {House.door.id: "some_id"}
         resolved = resolve_query_paths(raw, House, fetch_links=False)
-        assert resolved == {"door.$id": "some_id"}
+        assert resolved == {
+            "door": DBRef(Door.get_collection_name(), "some_id")
+        }
 
     def test_link_id_with_fetch(self):
         """With fetch_links, door._id stays as door._id."""
@@ -240,10 +245,14 @@ class TestResolveQueryPaths:
         assert resolved == {"integer": 42}
 
     def test_nested_operator_dict(self):
-        """Operator dicts (e.g., $gt) are recursed into."""
+        """Operator dicts (e.g., $in) have their values wrapped in DBRef."""
+
         raw = {House.door.id: {"$in": ["a", "b"]}}
         resolved = resolve_query_paths(raw, House, fetch_links=False)
-        assert resolved == {"door.$id": {"$in": ["a", "b"]}}
+        collection = Door.get_collection_name()
+        assert resolved == {
+            "door": {"$in": [DBRef(collection, "a"), DBRef(collection, "b")]}
+        }
 
     def test_list_values_recursed(self):
         """Lists containing dicts are recursed into."""
@@ -265,13 +274,41 @@ class TestResolveQueryPaths:
         resolved = resolve_query_paths(raw, House, fetch_links=False)
         assert resolved == {"door.t": 10}
 
+    def test_or_with_link_ids(self):
+        """Or() with link id conditions — recurses into list elements."""
+        raw = {"$or": [{House.door.id: "id1"}, {House.door.id: "id2"}]}
+        resolved = resolve_query_paths(raw, House, fetch_links=False)
+        collection = Door.get_collection_name()
+        assert resolved == {
+            "$or": [
+                {"door": DBRef(collection, "id1")},
+                {"door": DBRef(collection, "id2")},
+            ]
+        }
+
+    def test_ne_operator(self):
+        """$ne operator wraps value in DBRef."""
+        raw = {House.door.id: {"$ne": "id1"}}
+        resolved = resolve_query_paths(raw, House, fetch_links=False)
+        collection = Door.get_collection_name()
+        assert resolved == {"door": {"$ne": DBRef(collection, "id1")}}
+
+    def test_exists_not_wrapped_in_dbref(self):
+        """$exists is not a comparison op — value must NOT be wrapped."""
+        raw = {House.door.id: {"$exists": True}}
+        resolved = resolve_query_paths(raw, House, fetch_links=False)
+        assert resolved == {"door": {"$exists": True}}
+
     def test_aggregation_pipeline_without_fetch(self):
-        """End-to-end: aggregation pipeline uses $id without fetch_links."""
+        """End-to-end: aggregation pipeline uses full DBRef without fetch_links."""
+
         q = House.find(House.door.id == "abc123")
         pipeline = q.aggregate(
             [{"$group": {"_id": "$height", "count": {"$sum": 1}}}]
         ).get_aggregation_pipeline()
-        assert pipeline[0] == {"$match": {"door.$id": "abc123"}}
+        assert pipeline[0] == {
+            "$match": {"door": DBRef(Door.get_collection_name(), "abc123")}
+        }
 
     def test_aggregation_pipeline_with_fetch(self):
         """End-to-end: aggregation pipeline uses _id with fetch_links."""
