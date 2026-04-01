@@ -229,6 +229,44 @@ chocolates = await Product.find(
     Product.category.name == "Chocolate").project(ProductView).to_list()
 ```
 
+### Exclusion projections
+
+When you want to retrieve everything *except* a few fields, use the `.exclude()` method instead of defining a projection model that lists every field to include:
+
+```python
+# Exclude by field name
+products = await Product.find().exclude("internal_notes", "api_key").to_list()
+
+# Exclude using field references (catches typos at definition time)
+products = await Product.find().exclude(Product.internal_notes).to_list()
+```
+
+`.exclude()` works with `find_one` and `fetch_links` as well:
+
+```python
+product = await Product.find_one(
+    Product.id == product_id
+).exclude("internal_notes")
+
+products = await Product.find(
+    Product.category.name == "Chocolate", fetch_links=True
+).exclude("internal_notes").to_list()
+```
+
+Multiple `.exclude()` calls accumulate:
+
+```python
+# Excludes both fields
+products = await Product.find().exclude("field_a").exclude("field_b").to_list()
+```
+
+`.exclude()` and `.project()` cannot be combined — MongoDB does not allow mixing inclusion and exclusion projections in a single query.
+
+> **Note:** Excluded fields are set to `None` on the returned documents.
+> Saving such a document back to the database will overwrite the real
+> values with `None`. Use `.exclude()` for read-only queries (API
+> responses, reports, etc.).
+
 ### Chaining `.find()` with `fetch_links=True`
 
 You can now safely chain `.find()` calls and preserve the `fetch_links` flag automatically:
