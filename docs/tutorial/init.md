@@ -21,6 +21,17 @@ async def init():
 
 This creates the collection (if necessary) and sets up any indexes that are defined.
 
+### Async PyMongo vs Motor
+
+Beanie 2.x uses PyMongo's async driver under the hood. If you are
+upgrading an older project that initialized Beanie with a Motor database
+instance, replace it with `pymongo.AsyncMongoClient` as shown above.
+
+Passing a Motor database to `init_beanie(...)` can lead to initialization
+errors such as `TypeError: MotorDatabase object is not callable`, because
+the database object does not expose the same async PyMongo client API that
+Beanie expects.
+
 
 `init_beanie` supports not only a list of classes as the document_models argument, 
 but also strings with dot-separated paths:
