@@ -1,3 +1,4 @@
+from beanie.operators import And, Nor, Or
 from tests.typing.models import ProjectionTest, Test
 
 
@@ -29,3 +30,9 @@ async def find_one() -> Test | None:
 
 async def find_one_with_projection() -> ProjectionTest | None:
     return await Test.find_one().project(projection_model=ProjectionTest)
+
+
+def logical_operators_accept_document_field_comparisons() -> None:
+    Or(Test.foo == "foo", Test.bar == "bar")
+    And(Test.foo == "foo", Test.bar == "bar")
+    Nor(Test.foo == "foo", Test.bar == "bar")
