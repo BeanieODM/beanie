@@ -1,6 +1,14 @@
 ## Attention!
 
 
+## Install
+
+The migration CLI ships as an optional extra. Install Beanie with the `migrations` extra
+
+```shell
+pip install "beanie[migrations]"
+```
+
 ## Create
 
 To create a new migration, run:

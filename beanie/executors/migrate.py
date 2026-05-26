@@ -6,12 +6,18 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-import click
+try:
+    import click
 
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    import tomli as tomllib
+    if sys.version_info >= (3, 11):
+        import tomllib
+    else:
+        import tomli as tomllib
+except ImportError as exc:
+    raise ImportError(
+        "Beanie's migration CLI requires the `migrations` extra. "
+        "Install it with: pip install 'beanie[migrations]'"
+    ) from exc
 
 from beanie.migrations import template
 from beanie.migrations.database import DBHandler
