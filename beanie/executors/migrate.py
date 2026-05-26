@@ -16,7 +16,7 @@ try:
 except ImportError as exc:
     raise ImportError(
         "Beanie's migration CLI requires the `migrations` extra. "
-        "Install it with: pip install 'beanie[migrations]'"
+        'Install it with: pip install "beanie[migrations]"'
     ) from exc
 
 from beanie.migrations import template
