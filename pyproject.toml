@@ -52,7 +52,7 @@ test = [
     "pydantic-extra-types>=2",
     "pydantic[email]",
     "time-machine>=3.2.0",
-     "click>=7"
+    "click>=7"
 ]
 doc = [
     "Pygments>=2.8.0",

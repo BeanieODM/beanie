@@ -3,7 +3,7 @@
 
 ## Install
 
-The migration CLI ships as an optional extra. Install Beanie with the `migrations` extra
+The migration CLI ships as an optional extra. Install Beanie with the `migrations` extra to use the following migration commands:
 
 ```shell
 pip install "beanie[migrations]"
