@@ -77,6 +77,8 @@ renderer:
           source: docs/tutorial/soft_delete.md
         - title: Indexes
           source: docs/tutorial/indexes.md
+        - title: Bulk operations
+          source: docs/tutorial/bulk-writer.md
         - title: Multi-model pattern
           source: docs/tutorial/multi-model.md
         - title: Inheritance
