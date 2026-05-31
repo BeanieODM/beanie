@@ -1,3 +1,6 @@
+from collections.abc import Mapping
+from typing import Any
+
 from beanie.odm.operators.find import BaseFindOperator
 
 
@@ -6,14 +9,14 @@ class BaseFindComparisonOperator(BaseFindOperator):
 
     def __init__(
         self,
-        field,
-        other,
+        field: Any,
+        other: Any,
     ) -> None:
         self.field = field
         self.other = other
 
     @property
-    def query(self):
+    def query(self) -> Mapping[str, Any]:
         return {self.field: {self.operator: self.other}}
 
 
@@ -41,7 +44,7 @@ class Eq(BaseFindComparisonOperator):
     """
 
     @property
-    def query(self):
+    def query(self) -> Mapping[str, Any]:
         return {self.field: self.other}
 
 
