@@ -50,6 +50,26 @@ class Sample(Document):
     name: Indexed(str, unique=True)
 ```
 
+!!! warning "Don't pass the type when using `Annotated`"
+
+    The two syntaxes are not interchangeable. When wrapping with
+    `Annotated[...]`, do **not** pass the wrapped type to `Indexed()` —
+    in this position the first positional argument is interpreted as
+    `index_type` (the pymongo index direction / type), so passing
+    `str` silently changes the index meaning and the kwargs you pass
+    (like `unique=True`) won't apply to the field the way you expect.
+
+    ```python
+    # ✓ correct: kwargs go straight to Indexed, type is on Annotated
+    user_id: Annotated[str, Indexed(unique=True)]
+
+    # ✗ wrong: `str` here is treated as `index_type`, not as the field type;
+    # `unique=True` may not be enforced as you expect
+    user_id: Annotated[str, Indexed(str, unique=True)]
+    ```
+
+    Background: [#1036](https://github.com/BeanieODM/beanie/issues/1036).
+
 ### Multi-field indexes
 
 The `indexes` field of the inner `Settings` class is responsible for more complex indexes. 
