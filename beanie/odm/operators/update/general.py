@@ -1,14 +1,17 @@
+from collections.abc import Mapping
+from typing import Any
+
 from beanie.odm.operators.update import BaseUpdateOperator
 
 
 class BaseUpdateGeneralOperator(BaseUpdateOperator):
     operator = ""
 
-    def __init__(self, expression):
+    def __init__(self, expression: Mapping[Any, Any]) -> None:
         self.expression = expression
 
     @property
-    def query(self):
+    def query(self) -> Mapping[str, Any]:
         return {self.operator: self.expression}
 
 
@@ -61,13 +64,13 @@ class SetRevisionId:
     <https://docs.mongodb.com/manual/reference/operator/update/set/>
     """
 
-    def __init__(self, revision_id):
+    def __init__(self, revision_id: Any) -> None:
         self.revision_id = revision_id
         self.operator = "$set"
         self.expression = {"revision_id": self.revision_id}
 
     @property
-    def query(self):
+    def query(self) -> Mapping[str, Any]:
         return {self.operator: self.expression}
 
 
