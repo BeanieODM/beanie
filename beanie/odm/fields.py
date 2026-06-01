@@ -308,24 +308,24 @@ class ExpressionField(str):
     def __hash__(self):
         return hash(str(self))
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> Eq | bool:  # type: ignore[override]
         if isinstance(other, ExpressionField):
             return super().__eq__(other)
         return Eq(field=self, other=other)
 
-    def __gt__(self, other):
+    def __gt__(self, other: object) -> GT:  # type: ignore[override]
         return GT(field=self, other=other)
 
-    def __ge__(self, other):
+    def __ge__(self, other: object) -> GTE:  # type: ignore[override]
         return GTE(field=self, other=other)
 
-    def __lt__(self, other):
+    def __lt__(self, other: object) -> LT:  # type: ignore[override]
         return LT(field=self, other=other)
 
-    def __le__(self, other):
+    def __le__(self, other: object) -> LTE:  # type: ignore[override]
         return LTE(field=self, other=other)
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> NE:  # type: ignore[override]
         return NE(field=self, other=other)
 
     def __pos__(self):
