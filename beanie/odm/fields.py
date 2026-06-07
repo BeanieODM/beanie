@@ -1,4 +1,6 @@
 import asyncio
+import json
+import logging
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import Enum
@@ -39,6 +41,15 @@ from beanie.odm.utils.pydantic import get_model_fields
 
 if TYPE_CHECKING:
     from beanie.odm.documents import DocType
+
+logger = logging.getLogger(__name__)
+
+_DIRECTION_NAMES = {1: "ASCENDING", -1: "DESCENDING"}
+
+
+def _direction_name(direction: int) -> str:
+    """Return a human-readable name for a PyMongo direction constant."""
+    return _DIRECTION_NAMES.get(direction, str(direction))
 
 
 @dataclass(frozen=True)
@@ -585,7 +596,6 @@ class IndexModelField:
     def __init__(self, index: IndexModel):
         self.index = index
         self.name = index.document["name"]
-
         self.fields = tuple(sorted(self.index.document["key"]))
         self.options = tuple(
             sorted(
@@ -593,6 +603,26 @@ class IndexModelField:
                 for k, v in self.index.document.items()
                 if k not in ["key", "v"]
             )
+        )
+        # Pre-compute hashable canonical options (excluding name) for
+        # index merge deduplication.
+        # Dict/list values are JSON-serialized with sorted keys for
+        # order-independent comparison.
+        # Result is a flat tuple of (key, value) pairs, e.g.:
+        # _canonical_options =
+        # (
+        #     ("expireAfterSeconds", 30),
+        #     ("partialFilterExpression", '{"status": "pending"}'),
+        # )
+        self._canonical_options = tuple(
+            (
+                k,
+                json.dumps(v, sort_keys=True)
+                if isinstance(v, (dict, list))
+                else v,
+            )
+            for k, v in self.options
+            if k != "name"
         )
 
     def __eq__(self, other):
@@ -644,12 +674,71 @@ class IndexModelField:
 
     @staticmethod
     def merge_indexes(
-        left: list["IndexModelField"], right: list["IndexModelField"]
-    ):
-        left_dict = {index.fields: index for index in left}
-        right_dict = {index.fields: index for index in right}
-        left_dict.update(right_dict)
-        return list(left_dict.values())
+        existing_indexes: list["IndexModelField"],
+        new_indexes: list["IndexModelField"],
+    ) -> list["IndexModelField"]:
+        """Merge two lists of indexes, ensuring no duplicates.
+
+        Deduplication is based on the combination of field paths and index
+        options, with the following rules applied in order of precedence:
+
+        - Same fields, same options (modulo name): the later definition
+            takes precedence.
+        - Same fields, different options: both entries are retained as
+            distinct indexes.
+        - Single-field, direction difference only: treated as the same
+            index; the later definition takes precedence.
+        - Compound, direction difference on any field: treated as distinct
+            indexes; both entries are retained.
+
+        :param existing_indexes: list[IndexModelField] - Existing indexes.
+        :param new_indexes: list[IndexModelField] - New indexes to merge in.
+        :return: list[IndexModelField] - Merged deduplicated list of indexes.
+        """
+        merged: dict[tuple, IndexModelField] = {}
+
+        for index in existing_indexes + new_indexes:
+            key_doc = index.index.document["key"]
+            # Ordered list of (field, direction) pairs
+            items = tuple(key_doc.items())
+
+            if len(items) == 1:
+                # Single-field index: deduplicate regardless of direction,
+                # since MongoDB can satisfy both sort orders from one index.
+                # Warn if two definitions disagree on direction so the
+                # caller is aware one is being silently discarded.
+                field_name, direction = items[0]
+                canonical_fields = (field_name,)
+                canonical_key = (canonical_fields, index._canonical_options)
+
+                if canonical_key in merged:
+                    existing_dir = tuple(
+                        merged[canonical_key].index.document["key"].items()
+                    )[0][1]
+                    if existing_dir != direction:
+                        logger.warning(
+                            "Index on field '%s' is defined with conflicting "
+                            "directions (%s and %s). The later definition will "
+                            "be used. If both directions are needed, use a "
+                            "compound index or define them separately with "
+                            "explicit index names.",
+                            field_name,
+                            _direction_name(existing_dir),
+                            _direction_name(direction),
+                        )
+            else:
+                # Compound index: direction is significant per field because
+                # MongoDB cannot reverse a multi-field index to serve a
+                # query that requires a different per-field sort order.
+                # Keep the exact (field, direction) sequence as the key so
+                # that e.g. [(a, 1), (b, -1)] and [(a, 1), (b, 1)] are
+                # treated as distinct indexes and both are retained.
+                canonical_fields = items
+                canonical_key = (canonical_fields, index._canonical_options)
+
+            merged[canonical_key] = index
+
+        return list(merged.values())
 
     @classmethod
     def _validate(cls, v: Any) -> "IndexModelField":

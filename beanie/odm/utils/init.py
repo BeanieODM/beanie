@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import logging
 from importlib.metadata import version
 from types import UnionType
 from typing import (  # noqa: UP035
@@ -42,6 +43,8 @@ from beanie.odm.utils.typing import get_index_attributes, is_generic_alias
 from beanie.odm.views import View
 
 _DRIVER_METADATA = DriverInfo(name="beanie", version=version("beanie"))
+
+logger = logging.getLogger(__name__)
 
 
 class Output(BaseModel):
@@ -534,10 +537,20 @@ class Initializer:
             for index in IndexModelField.list_difference(
                 old_indexes, new_indexes
             ):
+                logger.warning(
+                    "%s: Dropping index '%s'", cls.__name__, index.name
+                )
                 await collection.drop_index(index.name)
 
         # create indices
         if found_indexes:
+            for index in found_indexes:
+                logger.debug(
+                    "%s: Creating index '%s' on %s",
+                    cls.__name__,
+                    index.name,
+                    list(index.index.document["key"].keys()),
+                )
             new_indexes += await collection.create_indexes(
                 IndexModelField.list_to_index_model(new_indexes)
             )
