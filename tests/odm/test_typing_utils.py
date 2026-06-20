@@ -14,6 +14,14 @@ class Lock(Document):
 
 
 class TestTyping:
+    def test_get_type_hints_document(self):
+        from typing import get_type_hints
+
+        from beanie import Document
+
+        # Should not raise NameError
+        get_type_hints(Document)
+
     def test_extract_id_class(self):
         # Union
         assert extract_id_class(Union[str, int]) is str  # noqa: UP007

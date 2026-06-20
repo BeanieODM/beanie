@@ -31,6 +31,8 @@ from pymongo.results import (
 )
 from typing_extensions import ParamSpec, Self
 
+import beanie.odm.interfaces.find as find_interface_module
+import beanie.odm.interfaces.inheritance as inheritance_interface_module
 from beanie.exceptions import (
     CollectionWasNotInitialized,
     DocumentNotFound,
@@ -1332,6 +1334,10 @@ class Document(
         return BulkWriter(
             session, ordered, cls, bypass_document_validation, comment
         )
+
+
+find_interface_module.Document = Document
+inheritance_interface_module.Document = Document
 
 
 class DocumentWithSoftDelete(Document):

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import abstractmethod
 from collections.abc import Iterable, Mapping
 from typing import (
@@ -35,7 +37,7 @@ class FindInterface:
 
     _inheritance_inited: bool = False
     _class_id: ClassVar[str | None]
-    _children: ClassVar[dict[str, type["Document"]]]
+    _children: ClassVar[dict[str, type[Document]]]
 
     @classmethod
     @abstractmethod
@@ -67,7 +69,7 @@ class FindInterface:
     def find_one(  # type: ignore
         cls: type[FindType],
         *args: Mapping[Any, Any] | bool,
-        projection_model: type["DocumentProjectionType"],
+        projection_model: type[DocumentProjectionType],
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -75,13 +77,13 @@ class FindInterface:
         nesting_depth: int | None = None,
         nesting_depths_per_field: dict[str, int] | None = None,
         **pymongo_kwargs: Any,
-    ) -> FindOne["DocumentProjectionType"]: ...
+    ) -> FindOne[DocumentProjectionType]: ...
 
     @classmethod
     def find_one(  # type: ignore
         cls: type[FindType],
         *args: Mapping[Any, Any] | bool,
-        projection_model: type["DocumentProjectionType"] | None = None,
+        projection_model: type[DocumentProjectionType] | None = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         fetch_links: bool = False,
@@ -89,7 +91,7 @@ class FindInterface:
         nesting_depth: int | None = None,
         nesting_depths_per_field: dict[str, int] | None = None,
         **pymongo_kwargs: Any,
-    ) -> FindOne[FindType] | FindOne["DocumentProjectionType"]:
+    ) -> FindOne[FindType] | FindOne[DocumentProjectionType]:
         """
         Find one document by criteria.
         Returns [FindOne](query.md#findone) query object.
@@ -138,7 +140,7 @@ class FindInterface:
     def find_many(  # type: ignore
         cls: type[FindType],
         *args: Mapping[Any, Any] | bool,
-        projection_model: type["DocumentProjectionType"] | None = None,
+        projection_model: type[DocumentProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
         sort: str | list[tuple[str, SortDirection]] | None = None,
@@ -150,13 +152,13 @@ class FindInterface:
         nesting_depth: int | None = None,
         nesting_depths_per_field: dict[str, int] | None = None,
         **pymongo_kwargs: Any,
-    ) -> FindMany["DocumentProjectionType"]: ...
+    ) -> FindMany[DocumentProjectionType]: ...
 
     @classmethod
     def find_many(  # type: ignore
         cls: type[FindType],
         *args: Mapping[Any, Any] | bool,
-        projection_model: type["DocumentProjectionType"] | None = None,
+        projection_model: type[DocumentProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
         sort: str | list[tuple[str, SortDirection]] | None = None,
@@ -168,7 +170,7 @@ class FindInterface:
         nesting_depth: int | None = None,
         nesting_depths_per_field: dict[str, int] | None = None,
         **pymongo_kwargs: Any,
-    ) -> FindMany[FindType] | FindMany["DocumentProjectionType"]:
+    ) -> FindMany[FindType] | FindMany[DocumentProjectionType]:
         """
         Find many documents by criteria.
         Returns [FindMany](query.md#findmany) query object
@@ -224,7 +226,7 @@ class FindInterface:
     def find(  # type: ignore
         cls: type[FindType],
         *args: Mapping[Any, Any] | bool,
-        projection_model: type["DocumentProjectionType"],
+        projection_model: type[DocumentProjectionType],
         skip: int | None = None,
         limit: int | None = None,
         sort: str | list[tuple[str, SortDirection]] | None = None,
@@ -236,13 +238,13 @@ class FindInterface:
         nesting_depth: int | None = None,
         nesting_depths_per_field: dict[str, int] | None = None,
         **pymongo_kwargs: Any,
-    ) -> FindMany["DocumentProjectionType"]: ...
+    ) -> FindMany[DocumentProjectionType]: ...
 
     @classmethod
     def find(  # type: ignore
         cls: type[FindType],
         *args: Mapping[Any, Any] | bool,
-        projection_model: type["DocumentProjectionType"] | None = None,
+        projection_model: type[DocumentProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
         sort: str | list[tuple[str, SortDirection]] | None = None,
@@ -254,7 +256,7 @@ class FindInterface:
         nesting_depth: int | None = None,
         nesting_depths_per_field: dict[str, int] | None = None,
         **pymongo_kwargs: Any,
-    ) -> FindMany[FindType] | FindMany["DocumentProjectionType"]:
+    ) -> FindMany[FindType] | FindMany[DocumentProjectionType]:
         """
         The same as find_many
         """
@@ -298,7 +300,7 @@ class FindInterface:
         skip: int | None = None,
         limit: int | None = None,
         sort: str | list[tuple[str, SortDirection]] | None = None,
-        projection_model: type["DocumentProjectionType"] | None = None,
+        projection_model: type[DocumentProjectionType] | None = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         with_children: bool = False,
@@ -306,7 +308,7 @@ class FindInterface:
         nesting_depth: int | None = None,
         nesting_depths_per_field: dict[str, int] | None = None,
         **pymongo_kwargs: Any,
-    ) -> FindMany["DocumentProjectionType"]: ...
+    ) -> FindMany[DocumentProjectionType]: ...
 
     @classmethod
     def find_all(  # type: ignore
@@ -314,7 +316,7 @@ class FindInterface:
         skip: int | None = None,
         limit: int | None = None,
         sort: str | list[tuple[str, SortDirection]] | None = None,
-        projection_model: type["DocumentProjectionType"] | None = None,
+        projection_model: type[DocumentProjectionType] | None = None,
         session: AsyncClientSession | None = None,
         ignore_cache: bool = False,
         with_children: bool = False,
@@ -322,7 +324,7 @@ class FindInterface:
         nesting_depth: int | None = None,
         nesting_depths_per_field: dict[str, int] | None = None,
         **pymongo_kwargs: Any,
-    ) -> FindMany[FindType] | FindMany["DocumentProjectionType"]:
+    ) -> FindMany[FindType] | FindMany[DocumentProjectionType]:
         """
         Get all the documents
 
@@ -370,7 +372,7 @@ class FindInterface:
     @classmethod
     def all(  # type: ignore
         cls: type[FindType],
-        projection_model: type["DocumentProjectionType"],
+        projection_model: type[DocumentProjectionType],
         skip: int | None = None,
         limit: int | None = None,
         sort: str | list[tuple[str, SortDirection]] | None = None,
@@ -381,12 +383,12 @@ class FindInterface:
         nesting_depth: int | None = None,
         nesting_depths_per_field: dict[str, int] | None = None,
         **pymongo_kwargs: Any,
-    ) -> FindMany["DocumentProjectionType"]: ...
+    ) -> FindMany[DocumentProjectionType]: ...
 
     @classmethod
     def all(  # type: ignore
         cls: type[FindType],
-        projection_model: type["DocumentProjectionType"] | None = None,
+        projection_model: type[DocumentProjectionType] | None = None,
         skip: int | None = None,
         limit: int | None = None,
         sort: str | list[tuple[str, SortDirection]] | None = None,
@@ -397,7 +399,7 @@ class FindInterface:
         nesting_depth: int | None = None,
         nesting_depths_per_field: dict[str, int] | None = None,
         **pymongo_kwargs: Any,
-    ) -> FindMany[FindType] | FindMany["DocumentProjectionType"]:
+    ) -> FindMany[FindType] | FindMany[DocumentProjectionType]:
         """
         the same as find_all
         """
