@@ -4,9 +4,11 @@ from enum import Enum
 from uuid import uuid4
 
 from bson import Binary, Regex
-from pydantic import AnyUrl
+from pydantic import AnyUrl, BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
 
 from beanie.odm.utils.encoder import Encoder
+from beanie.odm.documents import Document, document_alias_generator
 from tests.odm.models import (
     BsonRegexDoc,
     Child,
@@ -25,8 +27,35 @@ from tests.odm.models import (
     SampleWithMutableObjects,
 )
 
+# New test model for alias handling
+class TestModel(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel)
+    some_field: str
 
-async def test_encode_datetime():
+
+class TestDocument(Document):
+    some_field: str = Field(serialization_alias="mapped_field")
+    id: str = Field(default_factory=str)
+
+    class Settings:
+        use_state_management = True
+
+
+async def test_alias_serialization():
+    document = TestDocument(some_field="value")
+    encoded = Encoder(to_db=True).encode(document)
+
+    assert "_id" in encoded
+    assert encoded["mapped_field"] == "value"
+    assert "some_field" not in encoded
+
+
+async def test_validation_alias_handling():
+    model = TestModel.parse_obj({"someField": "value"})
+    assert model.some_field == "value"
+
+
+def test_encode_datetime():
     assert isinstance(Encoder().encode(datetime.now()), datetime)
 
     doc = DocumentForEncodingTest(datetime_field=datetime.now())

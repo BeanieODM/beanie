@@ -151,7 +151,7 @@ class Encoder:
         for key, value in obj.__iter__():
             field_info = get_model_field(key)
             if field_info is not None:
-                key = field_info.alias or key
+                key = _get_serialization_key(field_info, key)
             if not self._should_exclude_field(key, field_info) and (
                 value is not None or keep_nulls
             ):
@@ -179,3 +179,10 @@ def _get_encoder(
         if isinstance(obj, cls):
             return encoder
     return None
+
+
+def _get_serialization_key(field_info: pydantic.fields.FieldInfo, key: str) -> str:
+    """
+    Helper function to get the serialization key for a field.
+    """
+    return (field_info.serialization_alias or field_info.alias or key)
