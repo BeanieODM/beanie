@@ -181,8 +181,10 @@ def _get_encoder(
     return None
 
 
-def _get_serialization_key(field_info: pydantic.fields.FieldInfo, key: str) -> str:
+def _get_serialization_key(
+    field_info: pydantic.fields.FieldInfo, key: str
+) -> str:
     """
     Helper function to get the serialization key for a field.
     """
-    return (field_info.serialization_alias or field_info.alias or key)
+    return field_info.serialization_alias or field_info.alias or key

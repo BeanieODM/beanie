@@ -7,8 +7,8 @@ from bson import Binary, Regex
 from pydantic import AnyUrl, BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
+from beanie.odm.documents import Document
 from beanie.odm.utils.encoder import Encoder
-from beanie.odm.documents import Document, document_alias_generator
 from tests.odm.models import (
     BsonRegexDoc,
     Child,
@@ -26,6 +26,7 @@ from tests.odm.models import (
     NativeRegexDoc,
     SampleWithMutableObjects,
 )
+
 
 # New test model for alias handling
 class TestModel(BaseModel):
