@@ -260,3 +260,25 @@ class Sample(Document):
 ```
 
 Also, you can limit the nesting depth during find operations. You can read more about this [here](/tutorial/relations/#nested-links).
+
+## Computed fields and custom serializers
+
+Beanie documents inherit from Pydantic `BaseModel`, but Pydantic [computed fields](https://docs.pydantic.dev/2.0/usage/computed_fields/) (`@computed_field`) and [custom serializers](https://docs.pydantic.dev/latest/concepts/serialization/#custom-serializers) (`@field_serializer`, `@model_serializer`, `PlainSerializer`, `WrapSerializer`) are not supported. They are ignored when documents are converted to and from MongoDB.
+
+To compute values or transform fields before persistence, use Beanie's [event-based actions](/tutorial/actions/) instead. For example, you can populate a derived field before inserting or replacing a document:
+
+```python
+from beanie import Document, Insert, Replace, before_event
+
+
+class Sample(Document):
+    first_name: str
+    last_name: str
+    full_name: str = ""
+
+    @before_event(Insert, Replace)
+    def set_full_name(self):
+        self.full_name = f"{self.first_name} {self.last_name}"
+```
+
+See [Event-based actions](/tutorial/actions/) for more details.
