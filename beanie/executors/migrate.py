@@ -4,17 +4,36 @@ import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
 
 from beanie.migrations import template
 from beanie.migrations.database import DBHandler
 from beanie.migrations.models import RunningDirections, RunningMode
 from beanie.migrations.runner import MigrationNode
 
-MIGRATIONS_EXTRA_ERROR = (
-    "Beanie's migration CLI requires the `migrations` extra. "
-    'Install it with: pip install "beanie[migrations]"'
-)
+
+class _MissingClick:
+    def __call__(self) -> NoReturn:
+        raise ImportError(
+            "Beanie's migration CLI requires the `migrations` extra. "
+            'Install it with: pip install "beanie[migrations]"'
+        )
+
+    def group(self, *args: Any, **kwargs: Any) -> Any:
+        return lambda function: self
+
+    def command(self, *args: Any, **kwargs: Any) -> Any:
+        return lambda function: function
+
+    def option(self, *args: Any, **kwargs: Any) -> Any:
+        return lambda function: function
+
+
+try:
+    import click as _click
+except ImportError:
+    _click = _MissingClick()
+click: Any = _click
 
 
 class MigrationSettings:
@@ -88,7 +107,11 @@ class MigrationSettings:
                 else:
                     import tomli as tomllib
             except ImportError as exc:
-                raise ImportError(MIGRATIONS_EXTRA_ERROR) from exc
+                raise ImportError(
+                    "Reading migration settings from pyproject.toml on "
+                    "Python 3.10 requires `tomli`. "
+                    'Install it with: pip install "beanie[migrations]"'
+                ) from exc
 
             with path.open("rb") as f:
                 toml_data = tomllib.load(f)
@@ -100,6 +123,11 @@ class MigrationSettings:
         else:
             val = {}
         return val.get(field_name)
+
+
+@click.group()
+def migrations() -> None:
+    pass
 
 
 async def run_migrate(settings: MigrationSettings) -> None:
@@ -120,120 +148,103 @@ async def run_migrate(settings: MigrationSettings) -> None:
         await client.close()
 
 
-def migrations() -> None:
-    try:
-        import click
-    except ImportError as exc:
-        raise ImportError(MIGRATIONS_EXTRA_ERROR) from exc
+@migrations.command()
+@click.option(
+    "--forward",
+    "direction",
+    required=False,
+    flag_value="FORWARD",
+    help="Roll the migrations forward. This is default",
+)
+@click.option(
+    "--backward",
+    "direction",
+    required=False,
+    flag_value="BACKWARD",
+    help="Roll the migrations backward",
+)
+@click.option(
+    "-d",
+    "--distance",
+    required=False,
+    help="How many migrations should be done since the current? "
+    "0 - all the migrations. Default is 0",
+)
+@click.option(
+    "-uri",
+    "--connection-uri",
+    required=False,
+    type=str,
+    help="MongoDB connection URI",
+)
+@click.option(
+    "-db", "--database_name", required=False, type=str, help="DataBase name"
+)
+@click.option(
+    "-p",
+    "--path",
+    required=False,
+    type=str,
+    help="Path to the migrations directory",
+)
+@click.option(
+    "--allow-index-dropping/--forbid-index-dropping",
+    required=False,
+    default=False,
+    help="if allow-index-dropping is set, Beanie will drop indexes from your collection",
+)
+@click.option(
+    "--use-transaction/--no-use-transaction",
+    required=False,
+    default=True,
+    help="Enable or disable the use of transactions during migration. "
+    "When enabled (--use-transaction), Beanie uses transactions for migration, "
+    "which necessitates a replica set. When disabled (--no-use-transaction), "
+    "migrations occur without transactions.",
+)
+def migrate(
+    direction: str | None,
+    distance: str | None,
+    connection_uri: str | None,
+    database_name: str | None,
+    path: str | None,
+    allow_index_dropping: bool,
+    use_transaction: bool,
+) -> None:
+    settings_kwargs: dict[str, Any] = {}
+    if direction:
+        settings_kwargs["direction"] = direction
+    if distance:
+        settings_kwargs["distance"] = distance
+    if connection_uri:
+        settings_kwargs["connection_uri"] = connection_uri
+    if database_name:
+        settings_kwargs["database_name"] = database_name
+    if path:
+        settings_kwargs["path"] = path
+    if allow_index_dropping:
+        settings_kwargs["allow_index_dropping"] = allow_index_dropping
+    settings_kwargs["use_transaction"] = use_transaction
+    settings = MigrationSettings(**settings_kwargs)
 
-    @click.group(name="migrations")
-    def cli() -> None:
-        pass
+    asyncio.run(run_migrate(settings))
 
-    @cli.command()
-    @click.option(
-        "--forward",
-        "direction",
-        required=False,
-        flag_value="FORWARD",
-        help="Roll the migrations forward. This is default",
-    )
-    @click.option(
-        "--backward",
-        "direction",
-        required=False,
-        flag_value="BACKWARD",
-        help="Roll the migrations backward",
-    )
-    @click.option(
-        "-d",
-        "--distance",
-        required=False,
-        help="How many migrations should be done since the current? "
-        "0 - all the migrations. Default is 0",
-    )
-    @click.option(
-        "-uri",
-        "--connection-uri",
-        required=False,
-        type=str,
-        help="MongoDB connection URI",
-    )
-    @click.option(
-        "-db",
-        "--database_name",
-        required=False,
-        type=str,
-        help="DataBase name",
-    )
-    @click.option(
-        "-p",
-        "--path",
-        required=False,
-        type=str,
-        help="Path to the migrations directory",
-    )
-    @click.option(
-        "--allow-index-dropping/--forbid-index-dropping",
-        required=False,
-        default=False,
-        help="if allow-index-dropping is set, Beanie will drop indexes from your collection",
-    )
-    @click.option(
-        "--use-transaction/--no-use-transaction",
-        required=False,
-        default=True,
-        help="Enable or disable the use of transactions during migration. "
-        "When enabled (--use-transaction), Beanie uses transactions for migration, "
-        "which necessitates a replica set. When disabled (--no-use-transaction), "
-        "migrations occur without transactions.",
-    )
-    def migrate(
-        direction: str | None,
-        distance: str | None,
-        connection_uri: str | None,
-        database_name: str | None,
-        path: str | None,
-        allow_index_dropping: bool,
-        use_transaction: bool,
-    ) -> None:
-        settings_kwargs: dict[str, Any] = {}
-        if direction:
-            settings_kwargs["direction"] = direction
-        if distance:
-            settings_kwargs["distance"] = distance
-        if connection_uri:
-            settings_kwargs["connection_uri"] = connection_uri
-        if database_name:
-            settings_kwargs["database_name"] = database_name
-        if path:
-            settings_kwargs["path"] = path
-        if allow_index_dropping:
-            settings_kwargs["allow_index_dropping"] = allow_index_dropping
-        settings_kwargs["use_transaction"] = use_transaction
-        settings = MigrationSettings(**settings_kwargs)
 
-        asyncio.run(run_migrate(settings))
+@migrations.command()
+@click.option("-n", "--name", required=True, type=str, help="Migration name")
+@click.option(
+    "-p",
+    "--path",
+    required=True,
+    type=str,
+    help="Path to the migrations directory",
+)
+def new_migration(name: str, path: str) -> None:
+    migrations_directory_path = Path(path)
+    ts_string = datetime.now().strftime("%Y%m%d%H%M%S")
+    file_name = f"{ts_string}_{name}.py"
 
-    @cli.command()
-    @click.option(
-        "-n", "--name", required=True, type=str, help="Migration name"
-    )
-    @click.option(
-        "-p",
-        "--path",
-        required=True,
-        type=str,
-        help="Path to the migrations directory",
-    )
-    def new_migration(name: str, path: str) -> None:
-        migrations_directory_path = Path(path)
-        ts_string = datetime.now().strftime("%Y%m%d%H%M%S")
-        file_name = f"{ts_string}_{name}.py"
-
-        shutil.copy(template.__file__, migrations_directory_path / file_name)
-
-    cli()
+    shutil.copy(template.__file__, migrations_directory_path / file_name)
 
 
 if __name__ == "__main__":
