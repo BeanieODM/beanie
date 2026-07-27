@@ -21,7 +21,6 @@ import os
 import subprocess
 from dataclasses import dataclass
 from datetime import date
-from typing import List, Set
 
 import requests
 from openai import OpenAI
@@ -55,7 +54,7 @@ class PullRequest:
     url: str
 
 
-def get_commits_since_tag(tag: str) -> List[str]:
+def get_commits_since_tag(tag: str) -> list[str]:
     """Return list of commit SHAs merged after ``tag``."""
     result = subprocess.run(
         ["git", "log", f"{tag}..HEAD", "--pretty=format:%H"],
@@ -86,11 +85,11 @@ def get_pr_for_commit(
 
 
 def collect_prs(
-    commits: List[str], base_url: str, headers: dict
-) -> List[PullRequest]:
+    commits: list[str], base_url: str, headers: dict
+) -> list[PullRequest]:
     """Return deduplicated list of PRs for the given commits."""
-    prs: List[PullRequest] = []
-    seen: Set[int] = set()
+    prs: list[PullRequest] = []
+    seen: set[int] = set()
     for sha in commits:
         pr = get_pr_for_commit(sha, base_url, headers)
         if pr and pr.number not in seen:
@@ -120,7 +119,7 @@ def summarise_pr(pr: PullRequest, client: OpenAI) -> str:
 
 
 def build_changelog_block(
-    prs: List[PullRequest], version: str, client: OpenAI
+    prs: list[PullRequest], version: str, client: OpenAI
 ) -> str:
     """Build the full Markdown block for this release."""
     today = date.today().strftime("%Y-%m-%d")
