@@ -11,4 +11,5 @@ repos:
       - id: mypy
         additional_dependencies:
           - types-click
+          - types-requests
         exclude: ^tests/
