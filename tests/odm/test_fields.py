@@ -6,7 +6,6 @@ from uuid import uuid4
 
 import pytest
 from pydantic import BaseModel, ValidationError
-
 from pymongo import IndexModel
 
 from beanie import Document
