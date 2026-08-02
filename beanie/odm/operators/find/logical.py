@@ -144,7 +144,7 @@ class Not(BaseFindLogicalOperator):
     <https://docs.mongodb.com/manual/reference/operator/query/not/>
     """
 
-    def __init__(self, expression: Mapping[str, Any]):
+    def __init__(self, expression: Mapping[str, Any] | bool):
         self.expression = expression
 
     @property
