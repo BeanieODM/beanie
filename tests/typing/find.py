@@ -1,3 +1,4 @@
+from beanie.odm.queries.update import UpdateOne
 from tests.typing.models import ProjectionTest, Test
 
 
@@ -29,3 +30,14 @@ async def find_one() -> Test | None:
 
 async def find_one_with_projection() -> ProjectionTest | None:
     return await Test.find_one().project(projection_model=ProjectionTest)
+
+
+def find_one_update() -> UpdateOne:
+    return Test.find_one().update({"$set": {"bar": "updated"}})
+
+
+def find_one_upsert() -> UpdateOne:
+    return Test.find_one().upsert(
+        {"$set": {"bar": "updated"}},
+        on_insert=Test(foo="foo", bar="bar", baz="baz"),
+    )

@@ -889,7 +889,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         bulk_writer: BulkWriter | None = None,
         response_type: UpdateResponse | None = None,
         **pymongo_kwargs: Any,
-    ):
+    ) -> UpdateOne:
         """
         Create Update with modifications query
         and provide search criteria there
@@ -901,7 +901,8 @@ class FindOne(FindQuery[FindQueryResultType]):
         :return: UpdateMany query
         """
         self.set_session(session)
-        return (
+        return cast(
+            UpdateOne,
             self.UpdateQueryType(
                 document_model=self.document_model,
                 find_query=self.get_filter_query(),
@@ -912,7 +913,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 response_type=response_type,
                 **pymongo_kwargs,
             )
-            .set_session(session=self.session)
+            .set_session(session=self.session),
         )
 
     def upsert(
@@ -922,7 +923,7 @@ class FindOne(FindQuery[FindQueryResultType]):
         session: AsyncClientSession | None = None,
         response_type: UpdateResponse | None = None,
         **pymongo_kwargs: Any,
-    ):
+    ) -> UpdateOne:
         """
         Create Update with modifications query
         and provide search criteria there
@@ -935,7 +936,8 @@ class FindOne(FindQuery[FindQueryResultType]):
         :return: UpdateMany query
         """
         self.set_session(session)
-        return (
+        return cast(
+            UpdateOne,
             self.UpdateQueryType(
                 document_model=self.document_model,
                 find_query=self.get_filter_query(),
@@ -946,7 +948,7 @@ class FindOne(FindQuery[FindQueryResultType]):
                 response_type=response_type,
                 **pymongo_kwargs,
             )
-            .set_session(session=self.session)
+            .set_session(session=self.session),
         )
 
     def update_one(
