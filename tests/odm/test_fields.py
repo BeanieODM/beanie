@@ -231,3 +231,39 @@ def test_from_pymongo_index_information_float_matches_int_index_model():
 def test_index_model_rejects_float_direction_without_conversion():
     with pytest.raises(TypeError):
         IndexModel([("name", 1.0)], name="name_1")
+
+
+def test_from_pymongo_index_information_converts_all_compound_directions():
+    indexes = IndexModelField.from_pymongo_index_information(
+        {
+            "category_1_price_-1": {
+                "v": 2,
+                "key": [("category", 1.0), ("price", -1.0)],
+            },
+        }
+    )
+
+    assert len(indexes) == 1
+    assert indexes[0].index.document["key"] == {
+        "category": 1,
+        "price": -1,
+    }
+    assert isinstance(indexes[0].index.document["key"]["category"], int)
+    assert isinstance(indexes[0].index.document["key"]["price"], int)
+
+
+def test_from_pymongo_index_information_keeps_text_index_direction():
+    indexes = IndexModelField.from_pymongo_index_information(
+        {
+            "name_text": {
+                "v": 2,
+                "key": [("_fts", "text"), ("_ftsx", 1)],
+            },
+        }
+    )
+
+    assert len(indexes) == 1
+    assert indexes[0].index.document["key"] == {
+        "_fts": "text",
+        "_ftsx": 1,
+    }
