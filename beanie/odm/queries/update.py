@@ -218,7 +218,7 @@ class UpdateOne(UpdateQuery):
         bulk_writer: BulkWriter | None = None,
         response_type: UpdateResponse | None = None,
         **pymongo_kwargs: Any,
-    ) -> "UpdateQuery":
+    ) -> "UpdateOne":
         """
         Provide modifications to the update query.
 
@@ -245,7 +245,7 @@ class UpdateOne(UpdateQuery):
         session: AsyncClientSession | None = None,
         response_type: UpdateResponse | None = None,
         **pymongo_kwargs: Any,
-    ) -> "UpdateQuery":
+    ) -> "UpdateOne":
         """
         Provide modifications to the upsert query.
 
