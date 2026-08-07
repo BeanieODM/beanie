@@ -6,10 +6,11 @@ from uuid import uuid4
 
 import pytest
 from pydantic import BaseModel, ValidationError
+from pymongo import IndexModel
 
 from beanie import Document
 from beanie.exceptions import CollectionWasNotInitialized
-from beanie.odm.fields import PydanticObjectId
+from beanie.odm.fields import IndexModelField, PydanticObjectId
 from beanie.odm.utils.dump import get_dict
 from beanie.odm.utils.encoder import Encoder
 from tests.odm.models import (
@@ -176,3 +177,93 @@ def test_indexed_field() -> None:
         uuid_index=uuid4(),
         uuid_index_annotated=uuid4(),
     )
+
+
+def test_from_pymongo_index_information_converts_float_asc_direction():
+    indexes = IndexModelField.from_pymongo_index_information(
+        {
+            "_id_": {"v": 2, "key": [("_id", 1)]},
+            "name_1": {"v": 2, "key": [("name", 1.0)]},
+        }
+    )
+
+    assert len(indexes) == 1
+    assert indexes[0].index.document["key"] == {"name": 1}
+    assert isinstance(indexes[0].index.document["key"]["name"], int)
+
+
+def test_from_pymongo_index_information_converts_float_desc_direction():
+    indexes = IndexModelField.from_pymongo_index_information(
+        {
+            "created_at_-1": {"v": 2, "key": [("created_at", -1.0)]},
+        }
+    )
+
+    assert len(indexes) == 1
+    assert indexes[0].index.document["key"] == {"created_at": -1}
+    assert isinstance(indexes[0].index.document["key"]["created_at"], int)
+
+
+def test_from_pymongo_index_information_keeps_int_direction():
+    indexes = IndexModelField.from_pymongo_index_information(
+        {
+            "email_1": {"v": 2, "key": [("email", 1)], "unique": True},
+        }
+    )
+
+    assert len(indexes) == 1
+    assert indexes[0].index.document["key"] == {"email": 1}
+    assert indexes[0].index.document["unique"] is True
+
+
+def test_from_pymongo_index_information_float_matches_int_index_model():
+    existing = IndexModelField.from_pymongo_index_information(
+        {
+            "status_1": {"v": 2, "key": [("status", 1.0)]},
+        }
+    )
+    declared = IndexModelField(IndexModel([("status", 1)], name="status_1"))
+
+    assert existing[0] == declared
+    assert existing[0].same_fields(declared)
+
+
+def test_index_model_rejects_float_direction_without_conversion():
+    with pytest.raises(TypeError):
+        IndexModel([("name", 1.0)], name="name_1")
+
+
+def test_from_pymongo_index_information_converts_all_compound_directions():
+    indexes = IndexModelField.from_pymongo_index_information(
+        {
+            "category_1_price_-1": {
+                "v": 2,
+                "key": [("category", 1.0), ("price", -1.0)],
+            },
+        }
+    )
+
+    assert len(indexes) == 1
+    assert indexes[0].index.document["key"] == {
+        "category": 1,
+        "price": -1,
+    }
+    assert isinstance(indexes[0].index.document["key"]["category"], int)
+    assert isinstance(indexes[0].index.document["key"]["price"], int)
+
+
+def test_from_pymongo_index_information_keeps_text_index_direction():
+    indexes = IndexModelField.from_pymongo_index_information(
+        {
+            "name_text": {
+                "v": 2,
+                "key": [("_fts", "text"), ("_ftsx", 1)],
+            },
+        }
+    )
+
+    assert len(indexes) == 1
+    assert indexes[0].index.document["key"] == {
+        "_fts": "text",
+        "_ftsx": 1,
+    }

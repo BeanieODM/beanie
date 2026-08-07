@@ -623,6 +623,13 @@ class IndexModelField:
             if ("_id", 1) in fields:
                 continue
 
+            fields = [
+                (field_name, int(direction))
+                if isinstance(direction, float) and direction in (1.0, -1.0)
+                else (field_name, direction)
+                for field_name, direction in fields
+            ]
+
             options = {k: v for k, v in details.items() if k != "key"}
             index_model = IndexModelField(
                 IndexModel(fields, name=name, **options)
