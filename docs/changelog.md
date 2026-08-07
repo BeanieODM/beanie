@@ -2,6 +2,33 @@
 
 Beanie project
 
+## [2.2.0] - 2026-08-07
+### Add `distinct()` to chained find queries
+- Author - [smahn9123](https://github.com/smahn9123)
+- PR <https://github.com/BeanieODM/beanie/pull/1301>
+### Optimize `FindQuery.exists()`
+- Author - [gsakkis](https://github.com/gsakkis)
+- PR <https://github.com/BeanieODM/beanie/pull/1295>
+### Fix underscore-prefixed event hooks
+- Author - [tingQian](https://github.com/tingQian)
+- PR <https://github.com/BeanieODM/beanie/pull/1317>
+### Fix typing for `find_one()` upsert results
+- Author - [xianjianlf2](https://github.com/xianjianlf2)
+- PR <https://github.com/BeanieODM/beanie/pull/1346>
+### Fix logical `Not` operator type hint
+- Author - [0x5t4l1n](https://github.com/0x5t4l1n)
+- PR <https://github.com/BeanieODM/beanie/pull/1345>
+### Documentation and examples
+- Add a DocumentDB sample and clarify computed-field and serializer limitations.
+- Add Context7 documentation metadata.
+- Authors - [khelanmodi](https://github.com/khelanmodi), [pctablet505](https://github.com/pctablet505), [Sarthak-commits](https://github.com/Sarthak-commits)
+- PRs <https://github.com/BeanieODM/beanie/pull/1306>, <https://github.com/BeanieODM/beanie/pull/1341>, <https://github.com/BeanieODM/beanie/pull/1334>
+### Documentation: clarify `SetRevisionId` usage
+- Author - [j-vanrav](https://github.com/j-vanrav)
+- PR <https://github.com/BeanieODM/beanie/pull/1315>
+
+[2.2.0]: https://pypi.org/project/beanie/2.2.0
+
 ## [2.1.0] - 2026-03-20
 ### Drop EOL Python 3.9, MongoDB 4.4/5.0/6.0, Pydantic v1
 - Author - [roman-right](https://github.com/roman-right)
