@@ -1,0 +1,15 @@
+{
+    "$schema": "https://context7.com/schema/context7.json",
+    "projectTitle": "Beanie",
+    "description": "Asynchronous Python ODM for MongoDB, built on top of Motor and Pydantic, with a focus on type safety and developer experience.",
+    "folders": [
+        "docs"
+    ],
+    "excludeFolders": [
+        "**/__pycache__",
+        "**/.git"
+    ],
+    "excludeFiles": [
+        "CNAME"
+    ]
+}
