@@ -37,11 +37,12 @@ The workflow also checks the triggering GitHub account and runs only for
 
 1. Open the **Publish project** GitHub Actions workflow.
 2. Select **Run workflow**.
-3. Enter the exact tag name, for example `2.2.0`, and run it from `main`.
+3. Enter the exact annotated tag name, for example `2.2.0`, and run it from
+   `main`.
 
-The workflow checks out that immutable tag and verifies that the tag name,
-`pyproject.toml` version, and `beanie.__version__` all match before building
-and publishing with PyPI Trusted Publishing.
+The workflow rejects lightweight tags and tags outside `main` history. It then
+checks out the tag, builds the package, and verifies that the wheel metadata
+version matches the tag before publishing with PyPI Trusted Publishing.
 
 ## Create the GitHub release
 

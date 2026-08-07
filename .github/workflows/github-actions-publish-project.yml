@@ -2,8 +2,8 @@ name: Publish project
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "Existing release tag and package version (for example, 2.2.0)"
+      tag:
+        description: "Existing annotated release tag (for example, 2.2.0)"
         required: true
         type: string
 jobs:
@@ -18,21 +18,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: refs/tags/${{ inputs.version }}
+          ref: refs/tags/${{ inputs.tag }}
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: verify release tag and version
+      - name: verify release tag
         env:
-          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          test "$(git tag --points-at HEAD)" = "$RELEASE_VERSION"
-          test "$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')" = "$RELEASE_VERSION"
-          test "$(python -c 'from beanie import __version__; print(__version__)')" = "$RELEASE_VERSION"
+          git cat-file -e "${RELEASE_TAG}^{tag}"
+          test "$(git rev-parse "${RELEASE_TAG}^{commit}")" = "$(git rev-parse HEAD)"
+          git fetch origin main --quiet
+          git merge-base --is-ancestor HEAD FETCH_HEAD
       - name: install flit
         run: python -m pip install flit
       - name: build
         run: flit build
+      - name: verify built package version
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          python scripts/verify_package_version.py \
+            --wheel dist/*.whl \
+            --expected "$RELEASE_TAG"
       - name: publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
