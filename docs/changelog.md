@@ -18,6 +18,9 @@ Beanie project
 ### Fix logical `Not` operator type hint
 - Author - [0x5t4l1n](https://github.com/0x5t4l1n)
 - PR <https://github.com/BeanieODM/beanie/pull/1345>
+### Fix existing MongoDB indexes with float directions
+- Author - [gaurav-hub319](https://github.com/gaurav-hub319)
+- PR <https://github.com/BeanieODM/beanie/pull/1343>
 ### Documentation and examples
 - Add a DocumentDB sample and clarify computed-field and serializer limitations.
 - Add Context7 documentation metadata.
