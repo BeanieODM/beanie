@@ -2,6 +2,16 @@
 
 Beanie project
 
+## [2.1.1] - 2026-08-07
+### Fix: allow underscore-prefixed event hooks
+- Author - [tingQian](https://github.com/tingQian)
+- PR <https://github.com/BeanieODM/beanie/pull/1317>
+### Fix: clarify `SetRevisionId` usage with `revision_id`
+- Author - [j-vanrav](https://github.com/j-vanrav)
+- PR <https://github.com/BeanieODM/beanie/pull/1315>
+
+[2.1.1]: https://pypi.org/project/beanie/2.1.1
+
 ## [2.1.0] - 2026-03-20
 ### Drop EOL Python 3.9, MongoDB 4.4/5.0/6.0, Pydantic v1
 - Author - [roman-right](https://github.com/roman-right)
