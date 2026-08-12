@@ -7,6 +7,7 @@ from pymongo import ReturnDocument
 from pymongo import UpdateMany as UpdateManyPyMongo
 from pymongo import UpdateOne as UpdateOnePyMongo
 from pymongo.asynchronous.client_session import AsyncClientSession
+from pymongo.errors import DuplicateKeyError
 from pymongo.results import InsertOneResult, UpdateResult
 
 from beanie.odm.bulk import BulkWriter
@@ -84,6 +85,31 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
             else:
                 raise TypeError("Wrong expression type")
         return Encoder(custom_encoders=self.encoders).encode(query)
+
+    async def _insert_on_upsert(self) -> Any:
+        """
+        Insert the `on_insert` document, recovering if a concurrent caller
+        inserted a matching document first.
+        """
+        try:
+            return await self.document_model.insert_one(
+                document=self.upsert_insert_doc,  # type: ignore[arg-type]
+                session=self.session,
+                bulk_writer=self.bulk_writer,
+            )
+        except DuplicateKeyError:
+            # A concurrent caller inserted a matching document between our
+            # update and our insert. Re-run the update so the winning document
+            # receives the modifications instead of being duplicated.
+            retry_result = await self._update()
+            if (
+                retry_result is None
+                or getattr(retry_result, "matched_count", 1) == 0
+            ):
+                # Still nothing matched, so the duplicate key came from an
+                # unrelated unique index. Surface the original error.
+                raise
+            return retry_result
 
     @abstractmethod
     async def _update(self) -> UpdateResult: ...
@@ -191,13 +217,7 @@ class UpdateMany(UpdateQuery):
             return update_result
 
         if update_result is not None and update_result.matched_count == 0:
-            return (
-                yield from self.document_model.insert_one(
-                    document=self.upsert_insert_doc,
-                    session=self.session,
-                    bulk_writer=self.bulk_writer,
-                ).__await__()
-            )
+            return (yield from self._insert_on_upsert().__await__())
 
         return update_result
 
@@ -345,12 +365,6 @@ class UpdateOne(UpdateQuery):
             self.response_type is not UpdateResponse.UPDATE_RESULT
             and update_result is None
         ):
-            return (
-                yield from self.document_model.insert_one(
-                    document=self.upsert_insert_doc,
-                    session=self.session,
-                    bulk_writer=self.bulk_writer,
-                ).__await__()
-            )
+            return (yield from self._insert_on_upsert().__await__())
 
         return update_result
