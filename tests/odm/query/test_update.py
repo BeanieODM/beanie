@@ -221,6 +221,28 @@ async def test_update_one_upsert_without_insert_return_doc(
     assert len(docs) == 0
 
 
+async def test_update_one_upsert_with_native_upsert_kwarg(
+    preset_documents, sample_doc_not_saved
+):
+    await Sample.find_one(Sample.integer > 100000).upsert(
+        Set({Sample.integer: 100}),
+        on_insert=sample_doc_not_saved,
+        upsert=True,
+    )
+
+    # The server performed the upsert itself, so Beanie must not insert the
+    # on_insert document on top of it.
+    docs = await Sample.find_many(
+        Sample.string == sample_doc_not_saved.string
+    ).to_list()
+    assert len(docs) == 0
+
+    count = await Sample.get_pymongo_collection().count_documents(
+        {"integer": 100}
+    )
+    assert count == 1
+
+
 async def test_update_pymongo_kwargs(preset_documents):
     with pytest.raises(TypeError):
         await Sample.find_many(Sample.increment > 4).update(

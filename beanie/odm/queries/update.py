@@ -85,6 +85,14 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
                 raise TypeError("Wrong expression type")
         return Encoder(custom_encoders=self.encoders).encode(query)
 
+    @property
+    def _native_upsert(self) -> bool:
+        """
+        True if the caller passed pymongo's own `upsert=True`, so the server
+        performs the insert and Beanie must not insert a second document.
+        """
+        return bool(self.pymongo_kwargs.get("upsert", False))
+
     @abstractmethod
     async def _update(self) -> UpdateResult: ...
 
@@ -187,7 +195,7 @@ class UpdateMany(UpdateQuery):
         """
 
         update_result = yield from self._update().__await__()
-        if self.upsert_insert_doc is None:
+        if self.upsert_insert_doc is None or self._native_upsert:
             return update_result
 
         if update_result is not None and update_result.matched_count == 0:
@@ -334,7 +342,7 @@ class UpdateOne(UpdateQuery):
         :return:
         """
         update_result = yield from self._update().__await__()
-        if self.upsert_insert_doc is None:
+        if self.upsert_insert_doc is None or self._native_upsert:
             return update_result
 
         if (
