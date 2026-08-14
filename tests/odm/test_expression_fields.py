@@ -1,6 +1,6 @@
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import ExpressionField, FieldResolution
-from beanie.odm.operators.find.comparison import In, NotIn
+from beanie.odm.operators.find.comparison import Eq, In, NotIn
 from beanie.odm.utils.relations import resolve_query_paths
 from tests.odm.models import (
     DocumentWithDeepNestedAlias,
@@ -282,3 +282,51 @@ class TestResolveQueryPaths:
         # $lookup stages come first, then $match with _id
         match_stages = [s for s in pipeline if "$match" in s]
         assert {"$match": {"door._id": "abc123"}} in match_stages
+
+
+def test_str_method_names_are_nested_fields():
+    """#1261: names that exist on str must still build nested field paths."""
+    field = ExpressionField("subject")
+    for name in (
+        "title",
+        "count",
+        "index",
+        "format",
+        "find",
+        "join",
+        "split",
+        "replace",
+        "strip",
+        "lower",
+        "upper",
+    ):
+        nested = getattr(field, name)
+        assert isinstance(nested, ExpressionField)
+        assert str(nested) == f"subject.{name}"
+
+
+def test_str_method_name_equality_builds_query():
+    """#1261: Chapter.subject.title == value must produce an Eq query."""
+    expr = ExpressionField("subject").title == "Mathematics"
+    assert isinstance(expr, Eq)
+    assert expr.query == {"subject.title": "Mathematics"}
+
+
+def test_str_method_name_resolves_model_field():
+    """#1261: alias resolution still runs for shadowed names on the model."""
+    from pydantic import BaseModel, Field
+
+    class Subject(BaseModel):
+        title: str
+        count: int = 0
+        item_count: int = Field(default=0, alias="itemCount")
+
+    field = ExpressionField(
+        "subject",
+        field_resolution=FieldResolution(model_class=Subject, is_link=True),
+    )
+    assert isinstance(field.title, ExpressionField)
+    assert str(field.title) == "subject.title"
+    assert field.title._field_resolution.is_link is True
+    assert str(field.count) == "subject.count"
+    assert str(field.item_count) == "subject.itemCount"

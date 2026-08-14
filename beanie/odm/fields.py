@@ -257,6 +257,19 @@ class ExpressionField(str):
 
         return FieldResolution()
 
+    def __getattribute__(self, item):
+        """Prefer nested field paths over inherited ``str`` methods.
+
+        ``ExpressionField`` is a ``str`` subclass, so names such as
+        ``title``, ``count``, ``index``, and ``format`` would otherwise
+        resolve to ``str`` methods and never reach ``__getattr__``.
+        That breaks queries like ``Chapter.subject.title == "..."``
+        (GitHub #1261). Private/dunder names still use normal lookup.
+        """
+        if isinstance(item, str) and item.startswith("_"):
+            return super().__getattribute__(item)
+        return ExpressionField.__getattr__(self, item)
+
     def __getitem__(self, item):
         """
         Get sub field
