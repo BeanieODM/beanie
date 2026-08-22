@@ -279,8 +279,8 @@ class ExpressionField(str):
         from parent to child so that downstream query code can
         translate DBRef paths at runtime.
         """
-        if item.startswith("_"):
-            raise AttributeError(item)
+        if item.startswith("__"):
+            return super().__getattribute(item)
 
         resolution = self._field_resolution
         if resolution.model_class is not None:
