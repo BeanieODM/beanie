@@ -280,7 +280,7 @@ class ExpressionField(str):
         translate DBRef paths at runtime.
         """
         if item.startswith("__"):
-            return super().__getattribute(item)
+            return super().__getattr__(item)
 
         resolution = self._field_resolution
         if resolution.model_class is not None:
