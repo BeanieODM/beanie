@@ -283,7 +283,7 @@ class ExpressionField(str):
         if item.startswith("__"):
             return super().__getattribute__(item)
         return self.__getattr__(item)
-    
+
     def __getattr__(self, item):
         """Get sub field, resolving aliases from nested Pydantic models.
 
