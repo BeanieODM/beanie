@@ -271,7 +271,7 @@ class ExpressionField(str):
             ),
         )
 
-    def __getattr__(self, item):
+    def __getattribute__(self, item):
         """Get sub field, resolving aliases from nested Pydantic models.
 
         Alias resolution is performed through the model class carried
