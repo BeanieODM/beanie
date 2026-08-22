@@ -272,6 +272,19 @@ class ExpressionField(str):
         )
 
     def __getattribute__(self, item):
+        """Prefer nested field paths over inherited ``str`` methods.
+
+        ``ExpressionField`` is a ``str`` subclass, so names such as
+        ``title``, ``count``, ``index``, and ``format`` would otherwise
+        resolve to ``str`` methods and never reach ``__getattr__``.
+        That breaks queries like ``Chapter.subject.title == "..."``
+        (GitHub #1261). Private/dunder names still use normal lookup.
+        """
+        if item.startswith("__"):
+            return super().__getattribute__(item)
+        return self.__getattr__(item)
+    
+    def __getattr__(self, item):
         """Get sub field, resolving aliases from nested Pydantic models.
 
         Alias resolution is performed through the model class carried
@@ -279,8 +292,8 @@ class ExpressionField(str):
         from parent to child so that downstream query code can
         translate DBRef paths at runtime.
         """
-        if item.startswith("__"):
-            return super().__getattribute__(item)
+        if item.startswith("_"):
+            raise AttributeError(item)
 
         resolution = self._field_resolution
         if resolution.model_class is not None:
