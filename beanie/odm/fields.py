@@ -282,7 +282,6 @@ class ExpressionField(str):
         if item.startswith("_"):
             return super().__getattribute__(item)
 
-        
         resolution = self._field_resolution
         if resolution.model_class is not None:
             fields = get_model_fields(resolution.model_class)
