@@ -45,7 +45,7 @@ class UpdateQuery(UpdateMethods, SessionMethods, CloneInterface):
         self.update_expressions: list[Mapping[str, Any]] = []
         self.session = None
         self.is_upsert = False
-        self.upsert_insert_doc: "DocType | None" = None  # noqa: UP037
+        self.upsert_insert_doc: "DocType | None" = None  # ruff: ignore[quoted-annotation]
         self.encoders: dict[Any, Callable[[Any], Any]] = {}
         self.bulk_writer: BulkWriter | None = None
         self.encoders = self.document_model.get_settings().bson_encoders
