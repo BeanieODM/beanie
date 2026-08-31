@@ -466,6 +466,7 @@ class Initializer:
                     document_settings.name
                 )
             )
+            self._existing_collections.append(document_settings.name)
         else:
             collection = self.database[document_settings.name]
 
