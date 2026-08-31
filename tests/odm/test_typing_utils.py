@@ -16,11 +16,11 @@ class Lock(Document):
 class TestTyping:
     def test_extract_id_class(self):
         # Union
-        assert extract_id_class(Union[str, int]) is str  # noqa: UP007
-        assert extract_id_class(Union[str, None]) is str  # noqa: UP007
-        assert extract_id_class(Union[str, None, int]) is str  # noqa: UP007
+        assert extract_id_class(Union[str, int]) is str  # ruff: ignore[non-pep604-annotation-union]
+        assert extract_id_class(Union[str, None]) is str  # ruff: ignore[non-pep604-annotation-union]
+        assert extract_id_class(Union[str, None, int]) is str  # ruff: ignore[non-pep604-annotation-union]
         # Optional
-        assert extract_id_class(Optional[str]) is str  # noqa: UP045
+        assert extract_id_class(Optional[str]) is str  # ruff: ignore[non-pep604-annotation-optional]
         # Link
         assert extract_id_class(Link[Lock]) == Lock
 

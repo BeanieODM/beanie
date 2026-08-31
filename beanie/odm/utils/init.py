@@ -2,7 +2,7 @@ import importlib
 import inspect
 from importlib.metadata import version
 from types import UnionType
-from typing import (  # noqa: UP035
+from typing import (  # ruff: ignore[deprecated-import]
     List,
     Sequence,
     Union,
@@ -241,7 +241,7 @@ class Initializer:
 
             # Check if annotation is List[custom class] or list[custom class]
             elif (
-                origin in (List, list)  # noqa: UP006
+                origin in (List, list)  # ruff: ignore[non-pep585-annotation]
                 and len(args) == 1
                 and get_origin(args[0]) is cls
             ):
@@ -302,7 +302,7 @@ class Initializer:
                         )
 
                 elif (
-                    optional_origin in (List, list)  # noqa: UP006
+                    optional_origin in (List, list)  # ruff: ignore[non-pep585-annotation]
                     and len(optional_args) == 1
                     and get_origin(optional_args[0]) is cls
                 ):

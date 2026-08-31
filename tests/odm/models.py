@@ -10,7 +10,7 @@ from ipaddress import (
     IPv6Network,
 )
 from pathlib import Path
-from typing import (  # noqa: UP035
+from typing import (  # ruff: ignore[deprecated-import]
     Annotated,
     Any,
     ClassVar,
@@ -1018,8 +1018,8 @@ class DocumentWithUnionTypeExpressionOptionalLink(Document):
 
 
 class DocumentWithOptionalTypingOptionalLink(Document):
-    link: Optional[Link[DocumentToBeLinked]] = None  # noqa: UP045
-    link_list: Optional[List[Link[DocumentToBeLinked]]] = None  # noqa: UP006, UP045
+    link: Optional[Link[DocumentToBeLinked]] = None  # ruff: ignore[non-pep604-annotation-optional]
+    link_list: Optional[List[Link[DocumentToBeLinked]]] = None  # ruff: ignore[non-pep585-annotation, non-pep604-annotation-optional]
 
 
 class DocumentWithBackLink(Document):
@@ -1062,10 +1062,10 @@ class DocumentWithUnionTypeExpressionOptionalBackLink(Document):
 
 
 class DocumentWithOptionalTypingOptionalBackLink(Document):
-    back_link_list: Optional[List[BackLink[DocumentWithListLink]]] = Field(  # noqa: UP006, UP045
+    back_link_list: Optional[List[BackLink[DocumentWithListLink]]] = Field(  # ruff: ignore[non-pep585-annotation, non-pep604-annotation-optional]
         json_schema_extra={"original_field": "link"}
     )
-    back_link: Optional[BackLink[DocumentWithLink]] = Field(  # noqa: UP045
+    back_link: Optional[BackLink[DocumentWithLink]] = Field(  # ruff: ignore[non-pep604-annotation-optional]
         json_schema_extra={"original_field": "link"}
     )
     i: int = 1

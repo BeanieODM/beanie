@@ -71,12 +71,12 @@ class ExpectsDocumentSelf(Protocol):
 
 
 def test_document_insert_expects_self() -> None:
-    test_insert: ExpectsDocumentSelf = Document.insert  # noqa: F841
+    test_insert: ExpectsDocumentSelf = Document.insert  # ruff: ignore[unused-variable]
 
 
 def test_document_save_expects_self() -> None:
-    test_insert: ExpectsDocumentSelf = Document.save  # noqa: F841
+    test_insert: ExpectsDocumentSelf = Document.save  # ruff: ignore[unused-variable]
 
 
 def test_document_replace_expects_self() -> None:
-    test_insert: ExpectsDocumentSelf = Document.replace  # noqa: F841
+    test_insert: ExpectsDocumentSelf = Document.replace  # ruff: ignore[unused-variable]
