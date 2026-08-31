@@ -25,7 +25,10 @@ class LogicalOperatorForListOfExpressions(BaseFindLogicalOperator):
         if not self.expressions:
             raise AttributeError("At least one expression must be provided")
         if len(self.expressions) == 1:
-            return self.expressions[0]
+            expr = self.expressions[0]
+            if isinstance(expr, bool):
+                return {self.operator: [expr]}
+            return expr
         return {self.operator: self.expressions}
 
 
