@@ -4,19 +4,36 @@ import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
-
-import click
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    import tomli as tomllib
+from typing import Any, NoReturn
 
 from beanie.migrations import template
 from beanie.migrations.database import DBHandler
 from beanie.migrations.models import RunningDirections, RunningMode
 from beanie.migrations.runner import MigrationNode
+
+
+class _MissingClick:
+    def __call__(self) -> NoReturn:
+        raise ImportError(
+            "Beanie's migration CLI requires the `migrations` extra. "
+            'Install it with: pip install "beanie[migrations]"'
+        )
+
+    def group(self, *args: Any, **kwargs: Any) -> Any:
+        return lambda function: self
+
+    def command(self, *args: Any, **kwargs: Any) -> Any:
+        return lambda function: function
+
+    def option(self, *args: Any, **kwargs: Any) -> Any:
+        return lambda function: function
+
+
+try:
+    import click as _click
+except ImportError:
+    _click = _MissingClick()
+click: Any = _click
 
 
 class MigrationSettings:
@@ -84,6 +101,18 @@ class MigrationSettings:
     def get_from_toml(field_name: str) -> Any:
         path = Path("pyproject.toml")
         if path.is_file():
+            try:
+                if sys.version_info >= (3, 11):
+                    import tomllib
+                else:
+                    import tomli as tomllib
+            except ImportError as exc:
+                raise ImportError(
+                    "Reading migration settings from pyproject.toml on "
+                    "Python 3.10 requires `tomli`. "
+                    'Install it with: pip install "beanie[migrations]"'
+                ) from exc
+
             with path.open("rb") as f:
                 toml_data = tomllib.load(f)
             val = (

@@ -31,7 +31,6 @@ classifiers = [
 ]
 dependencies = [
     "pydantic>=2.4,<3.0",
-    "click>=7",
     "lazy-model>=0.4.0,<1.0.0",
     "pymongo>=4.11.0,!=4.15.0,<5.0.0",
     "typing-extensions>=4.7",
@@ -52,7 +51,8 @@ test = [
     "pydantic-settings>=2",
     "pydantic-extra-types>=2",
     "pydantic[email]",
-    "time-machine>=3.2.0"
+    "time-machine>=3.2.0",
+    "click>=7"
 ]
 doc = [
     "Pygments>=2.8.0",
@@ -63,6 +63,10 @@ doc = [
     "jinja2>=3.0.3"
 ]
 queue = ["beanie-batteries-queue>=0.2"]
+migrations = [
+    "click>=7",
+    "tomli>=2.2.1,<3.0.0; python_version < '3.11'",
+]
 ci = [
     "tomli>=2.2.1,<3.0.0; python_version < '3.11'",
     "tomli-w>=1.0.0,<2.0.0",

@@ -65,11 +65,17 @@ dependency:
 pip install "beanie[encryption]"
 ```
 
+The migration CLI requires the `migrations` extra dependency:
+
+```bash
+pip install "beanie[migrations]"
+```
+
 You can install all dependencies automatically with the following
 command:
 
 ```bash
-pip install "beanie[gssapi,aws,ocsp,snappy,srv,zstd,encryption]"
+pip install "beanie[gssapi,aws,ocsp,snappy,srv,zstd,encryption,migrations]"
 ```
 
 ## Initialization
