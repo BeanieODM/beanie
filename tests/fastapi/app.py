@@ -29,9 +29,10 @@ async def live_span(_: FastAPI):
     async with AsyncMongoClient(Settings().mongodb_dsn) as client:
         await init_beanie(client.beanie_db, document_models=MODELS)
 
-        yield
-
-        await clean_db()
+        try:
+            yield
+        finally:
+            await clean_db()
 
 
 app = FastAPI(lifespan=live_span)
