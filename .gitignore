@@ -186,3 +186,6 @@ tilt_modules
 # Poetry stuff
 poetry.lock
 .pdm-python
+
+# Git worktrees
+.worktrees/
