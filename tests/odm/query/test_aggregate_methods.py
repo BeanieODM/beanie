@@ -1,3 +1,5 @@
+import pytest
+
 from tests.odm.models import Sample
 
 
@@ -118,10 +120,10 @@ async def test_all_sum_without_docs(session):
 async def test_all_avg(preset_documents, session):
     n = await Sample.avg(Sample.increment)
 
-    assert n == 4.5
+    assert n == pytest.approx(4.5)
     n = await Sample.avg(Sample.increment, session=session)
 
-    assert n == 4.5
+    assert n == pytest.approx(4.5)
 
 
 async def test_all_avg_without_docs(session):
