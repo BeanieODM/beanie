@@ -35,6 +35,7 @@ from beanie.exceptions import (
     CollectionWasNotInitialized,
     DocumentNotFound,
     DocumentWasNotSaved,
+    DocumentWasPartiallyLoaded,
     NotSupported,
     ReplaceError,
     RevisionIdWasChanged,
@@ -290,6 +291,26 @@ class Document(
         else:
             raise ValueError("Invalid merge strategy")
 
+    def _assert_fully_loaded(self, operation: str) -> None:
+        """Refuse whole-document writes on a partially loaded document.
+
+        Documents fetched through an exclusion projection carry ``None``
+        for the excluded fields; writing the whole document back would
+        overwrite the real values. Partial writes (``save_changes``,
+        ``set``, ``update``) stay allowed because they only touch the
+        fields the caller names.
+        """
+        excluded = getattr(type(self), "_beanie_exclusion_fields", None)
+        if excluded:
+            raise DocumentWasPartiallyLoaded(
+                f"Cannot {operation}() a document loaded with "
+                f".exclude({', '.join(repr(f) for f in excluded)}): the "
+                f"excluded fields are None on this instance and would "
+                f"overwrite the stored values. Re-fetch the document "
+                f"without .exclude(), or use save_changes()/set() to "
+                f"write only the fields you changed."
+            )
+
     @validate_self_before
     @wrap_with_actions(EventTypes.INSERT)
     @save_state_after
@@ -306,6 +327,7 @@ class Document(
         :param session: AsyncClientSession - pymongo session
         :return: self
         """
+        self._assert_fully_loaded("insert")
         if self.get_settings().use_revision:
             self.revision_id = uuid4()
         if link_rule is WriteRules.WRITE:
@@ -383,6 +405,7 @@ class Document(
             raise TypeError(
                 "Inserting document must be of the original document class"
             )
+        document._assert_fully_loaded("insert")
         if bulk_writer is None:
             return await document.insert(link_rule=link_rule, session=session)
         else:
@@ -422,14 +445,16 @@ class Document(
             raise NotSupported(
                 "Cascade insert not supported for insert many method"
             )
-        documents_list = [
-            get_dict(
-                document,
-                to_db=True,
-                keep_nulls=document.get_settings().keep_nulls,
+        documents_list = []
+        for document in documents:
+            document._assert_fully_loaded("insert")
+            documents_list.append(
+                get_dict(
+                    document,
+                    to_db=True,
+                    keep_nulls=document.get_settings().keep_nulls,
+                )
             )
-            for document in documents
-        ]
         return await cls.get_pymongo_collection().insert_many(
             documents_list, session=session, **pymongo_kwargs
         )
@@ -454,6 +479,7 @@ class Document(
         :param bulk_writer: "BulkWriter" - Beanie bulk writer
         :return: self
         """
+        self._assert_fully_loaded("replace")
         if self.id is None:
             raise ValueError("Document must have an id")
 
@@ -536,6 +562,7 @@ class Document(
         :param ignore_revision: bool - do force save.
         :return: self
         """
+        self._assert_fully_loaded("save")
         if link_rule is WriteRules.WRITE:
             link_fields = self.get_link_fields()
             if link_fields is not None:
