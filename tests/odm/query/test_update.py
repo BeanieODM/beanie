@@ -4,7 +4,7 @@ import pytest
 
 from beanie.odm.operators.update.general import Max, Set
 from beanie.odm.queries.update import UpdateResponse
-from tests.odm.models import Sample
+from tests.odm.models import DocumentTestModelWithIndexFlags, Sample
 
 
 def test_update_query():
@@ -219,6 +219,45 @@ async def test_update_one_upsert_without_insert_return_doc(
         Sample.string == sample_doc_not_saved.string
     ).to_list()
     assert len(docs) == 0
+
+
+async def test_update_one_upsert_loses_insert_race():
+    query = DocumentTestModelWithIndexFlags.find_one(
+        DocumentTestModelWithIndexFlags.test_str == "concurrent"
+    ).upsert(
+        Set({DocumentTestModelWithIndexFlags.test_int: 5}),
+        on_insert=DocumentTestModelWithIndexFlags(
+            test_int=1, test_str="concurrent"
+        ),
+    )
+
+    # Simulate a concurrent caller inserting the same document between our
+    # update and our insert.
+    original_update = query._update
+    raced = []
+
+    async def racing_update():
+        result = await original_update()
+        if not raced:
+            raced.append(True)
+            await DocumentTestModelWithIndexFlags(
+                test_int=1, test_str="concurrent"
+            ).insert()
+        return result
+
+    query._update = racing_update
+    await query
+
+    assert (
+        await DocumentTestModelWithIndexFlags.find(
+            DocumentTestModelWithIndexFlags.test_str == "concurrent"
+        ).count()
+        == 1
+    )
+    doc = await DocumentTestModelWithIndexFlags.find_one(
+        DocumentTestModelWithIndexFlags.test_str == "concurrent"
+    )
+    assert doc.test_int == 5
 
 
 async def test_update_pymongo_kwargs(preset_documents):
