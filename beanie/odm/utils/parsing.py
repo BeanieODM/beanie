@@ -56,7 +56,9 @@ def merge_models(left: BaseModel, right: BaseModel) -> None:
         if isinstance(right_value, BaseModel) and isinstance(
             left_value, BaseModel
         ):
-            if get_config_value(left_value, "frozen"):
+            if get_config_value(left_value, "frozen") or type(
+                left_value
+            ) is not type(right_value):
                 _safe_setattr(left, k, right_value)
             else:
                 merge_models(left_value, right_value)

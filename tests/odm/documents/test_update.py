@@ -10,6 +10,7 @@ from tests.odm.models import (
     DocumentTestModelWithModelConfigExtraAllow,
     DocumentWithKeepNullsFalse,
     DocumentWithList,
+    DocumentWithMultiSubmodelTypingInTheField,
     ModelWithOptionalField,
     Sample,
 )
@@ -121,6 +122,30 @@ async def test_update_one_set_extra_field():
 
     await doc.update({"$set": {"my_extra_field": 12345}})
     assert doc.my_extra_field == 12345
+
+
+async def test_update_one_document_with_multi_submodel_typing_in_the_field():
+    doc = DocumentWithMultiSubmodelTypingInTheField(
+        field_with_submodels=DocumentWithMultiSubmodelTypingInTheField.Model1(
+            field1="field 1 value"
+        )
+    )
+    await doc.insert()
+
+    await doc.update(
+        {
+            "$set": {
+                "field_with_submodels": DocumentWithMultiSubmodelTypingInTheField.Model2(
+                    field2="field 2 value"
+                ).model_dump()
+            }
+        }
+    )
+
+    assert (
+        type(doc.field_with_submodels)
+        is DocumentWithMultiSubmodelTypingInTheField.Model2
+    )
 
 
 async def test_update_many(documents):

@@ -635,6 +635,16 @@ class DocumentTestModelWithModelConfigExtraAllow(Document):
     )
 
 
+class DocumentWithMultiSubmodelTypingInTheField(Document):
+    class Model1(BaseModel):
+        field1: str
+
+    class Model2(BaseModel):
+        field2: str
+
+    field_with_submodels: Model1 | Model2
+
+
 class YardWithRevision(Document):
     v: int
     w: int
