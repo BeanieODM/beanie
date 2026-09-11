@@ -9,6 +9,37 @@ All classes in the inheritance chain can be used as `Link` in foreign `Documents
 
 Depending on the business logic, parent `Document` can be like an "abstract" class that is not used to store objects of its type (like in the example below), as well as can be a full-fledged entity, like its children.
 
+### Initialization
+
+Beanie assigns the collection name and the class identifier only to the document classes that are passed to `init_beanie` (their ancestors are initialized as a side effect too). A subclass that is not initialized has no settings of its own: it falls back to the settings of the nearest initialized ancestor, and therefore reads from and writes to that ancestor's collection.
+
+On top of that, the `_class_id` discriminator is only set up inside an `is_root = True` hierarchy. Outside of such a hierarchy nothing in the database records which class a document was written by, so Beanie can only give back the class you query with.
+
+For example, if `A` is initialized but `B(A)` is not:
+
+```python
+class A(Document):
+    name: str
+
+
+class B(A):
+    extra: int
+
+
+await init_beanie(database=db, document_models=[A])  # B is not initialized
+
+b = await B(name="foo", extra=1).insert()  # stored in A's collection, without a _class_id
+a = await A.get(b.id)                      # an instance of A, not of B
+```
+
+The same document fetched through `B` is parsed as a `B`, so this can go unnoticed until something reads the collection through the parent class (a migration script, a background job, another service). Initialize every document class you use:
+
+```python
+await init_beanie(database=db, document_models=[A, B])
+```
+
+Inside an `is_root = True` hierarchy Beanie records the class identifier and resolves the concrete class when reading, but only among the classes known to the running process. Querying the root returns the documents of the root class; `with_children=True` extends the query to the subclasses that were initialized in the same process, so documents written by a subclass that is not initialized are not found this way. Marking the root with `is_root = True` and initializing every class in the hierarchy is what allows a document to be restored as the class that wrote it.
+
 ### Defining models
 
 To set the root model you have to set `is_root = True` in the inner Settings class. All the inherited documents (on any level) will be stored in the same collection.
