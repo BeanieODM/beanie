@@ -6,6 +6,14 @@
 
 
 
+> [!IMPORTANT]
+> **We are actively working on Beanie v3.** This is a major release -
+> it brings multiple significant new features and improvements across
+> the whole library. It's a substantial amount of work, and it has
+> most of our attention right now, so reviews and responses on open
+> pull requests and issues may be slower than usual. Thanks for your
+> patience - v3 will be worth the wait.
+
 ## Overview
 
 [Beanie](https://github.com/roman-right/beanie) - is an asynchronous Python object-document mapper (ODM) for MongoDB. Data models are based on [Pydantic](https://pydantic-docs.helpmanual.io/).
