@@ -594,6 +594,23 @@ class DocumentWithTimeseries(Document):
         timeseries = TimeSeriesConfig(time_field="ts", expire_after_seconds=2)
 
 
+class MeasurementWithTimeseries(Document):
+    ts: datetime.datetime = Field(default_factory=datetime.datetime.now)
+
+    class Settings:
+        name = "measurements"
+        is_root = True
+        timeseries = TimeSeriesConfig(time_field="ts", granularity="seconds")
+
+
+class TemperatureMeasurement(MeasurementWithTimeseries):
+    temperature: float
+
+
+class HumidityMeasurement(MeasurementWithTimeseries):
+    humidity: float
+
+
 class DocumentWithStringField(Document):
     string_field: str
 
