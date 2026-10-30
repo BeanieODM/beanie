@@ -1,6 +1,8 @@
+from pydantic import BaseModel, Field
+
 from beanie.odm.enums import SortDirection
 from beanie.odm.fields import ExpressionField, FieldResolution
-from beanie.odm.operators.find.comparison import In, NotIn
+from beanie.odm.operators.find.comparison import Eq, In, NotIn
 from beanie.odm.utils.relations import resolve_query_paths
 from tests.odm.models import (
     DocumentWithDeepNestedAlias,
@@ -282,3 +284,57 @@ class TestResolveQueryPaths:
         # $lookup stages come first, then $match with _id
         match_stages = [s for s in pipeline if "$match" in s]
         assert {"$match": {"door._id": "abc123"}} in match_stages
+
+
+class _Subject(BaseModel):
+    title: str
+    count: int = 0
+    kind: str = Field(default="x", alias="type_alias")
+
+
+class TestStrMethodFieldNames:
+    """Regression tests for #1261.
+
+    ``ExpressionField`` subclasses ``str``, so field names that are also
+    ``str`` attributes (``title``, ``count``, ``format``, ...) used to
+    resolve to the string method instead of a sub-field path.
+    """
+
+    def _subject_field(self):
+        return ExpressionField(
+            "subject",
+            field_resolution=FieldResolution(
+                model_class=_Subject, is_link=True
+            ),
+        )
+
+    def test_str_method_name_resolves_to_subfield(self):
+        field = self._subject_field()
+        for name in ("title", "count"):
+            sub = getattr(field, name)
+            assert isinstance(sub, ExpressionField)
+            assert sub == f"subject.{name}"
+
+    def test_str_method_name_builds_comparison(self):
+        field = self._subject_field()
+        expr = field.title == "Mathematics"
+        assert isinstance(expr, Eq)
+        assert dict(expr.query) == {"subject.title": "Mathematics"}
+
+    def test_is_link_propagated_to_str_method_subfield(self):
+        field = self._subject_field()
+        assert field.title._field_resolution.is_link is True
+
+    def test_alias_resolution_still_applies(self):
+        field = self._subject_field()
+        assert field.kind == "subject.type_alias"
+
+    def test_non_field_str_methods_preserved(self):
+        field = self._subject_field()
+        # No ``upper`` field on the model, so normal str behaviour stays.
+        assert field.upper() == "SUBJECT"
+        path = ExpressionField(
+            "subject._id",
+            field_resolution=FieldResolution(model_class=_Subject),
+        )
+        assert path.replace("._id", ".$id") == "subject.$id"
