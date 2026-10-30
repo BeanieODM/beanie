@@ -271,6 +271,49 @@ class ExpressionField(str):
             ),
         )
 
+    def _resolve_model_subfield(self, item):
+        """Build a sub field for a declared field of the nested model.
+
+        Returns an :class:`ExpressionField` for ``item`` when the model
+        class carried in ``_field_resolution`` declares it (resolving
+        the Pydantic alias), otherwise ``None``.
+        """
+        resolution = self._field_resolution
+        if resolution.model_class is None:
+            return None
+        fields = get_model_fields(resolution.model_class)
+        if item not in fields:
+            return None
+        field_info = fields[item]
+        alias = field_info.alias if field_info.alias else item
+        annotation = getattr(field_info, "annotation", None)
+        child = ExpressionField._resolve_field(annotation)
+        # Propagate is_link from parent when child is not itself a new
+        # link boundary.
+        if resolution.is_link and not child.is_link:
+            child = FieldResolution(
+                model_class=child.model_class, is_link=True
+            )
+        return ExpressionField(f"{self}.{alias}", field_resolution=child)
+
+    def __getattribute__(self, item):
+        """Give declared model fields priority over inherited ``str`` attrs.
+
+        ``ExpressionField`` subclasses ``str``, so names that also exist
+        on ``str`` (``title``, ``count``, ``format``, ...) would resolve
+        to the string method and never reach :meth:`__getattr__`. For a
+        public name that the nested model declares as a field, build the
+        sub-field path instead; everything else keeps normal ``str``
+        lookup, so internal string operations are unaffected.
+        """
+        if not item.startswith("_"):
+            subfield = str.__getattribute__(self, "_resolve_model_subfield")(
+                item
+            )
+            if subfield is not None:
+                return subfield
+        return str.__getattribute__(self, item)
+
     def __getattr__(self, item):
         """Get sub field, resolving aliases from nested Pydantic models.
 
@@ -283,23 +326,6 @@ class ExpressionField(str):
             raise AttributeError(item)
 
         resolution = self._field_resolution
-        if resolution.model_class is not None:
-            fields = get_model_fields(resolution.model_class)
-            if item in fields:
-                field_info = fields[item]
-                alias = field_info.alias if field_info.alias else item
-                annotation = getattr(field_info, "annotation", None)
-                child = ExpressionField._resolve_field(annotation)
-                # Propagate is_link from parent when child is not
-                # itself a new link boundary.
-                if resolution.is_link and not child.is_link:
-                    child = FieldResolution(
-                        model_class=child.model_class, is_link=True
-                    )
-                return ExpressionField(
-                    f"{self}.{alias}", field_resolution=child
-                )
-
         return ExpressionField(
             f"{self}.{item}",
             field_resolution=FieldResolution(is_link=resolution.is_link),
