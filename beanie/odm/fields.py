@@ -402,10 +402,8 @@ class Link(Generic[T]):
         :param fetch_links:
         :return:
         """
-        data = Link.repack_links(links)  # type: ignore
-        ids_to_fetch = []
         document_class = None
-        for _doc_id, link in data.items():
+        for link in links:
             if isinstance(link, Link):
                 if document_class is None:
                     document_class = link.document_class
@@ -414,7 +412,11 @@ class Link(Generic[T]):
                         raise ValueError(
                             "All the links must have the same model class"
                         )
-                ids_to_fetch.append(link.ref.id)
+
+        data = Link.repack_links(links)  # type: ignore
+        ids_to_fetch = [
+            link.ref.id for link in data.values() if isinstance(link, Link)
+        ]
 
         if ids_to_fetch:
             fetched_models = await document_class.find(  # type: ignore

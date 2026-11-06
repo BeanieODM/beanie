@@ -1,4 +1,5 @@
 import pytest
+from bson import DBRef, ObjectId
 from pydantic.fields import Field
 
 from beanie import Document, init_beanie
@@ -376,6 +377,30 @@ class TestFind:
         # test order
         for i in range(10):
             assert doc_with_links.links[i].id == docs[i].id
+
+    @pytest.mark.parametrize("same_id", [True, False])
+    async def test_fetch_list_rejects_mixed_models(self, same_id):
+        first_id = ObjectId()
+        second_id = first_id if same_id else ObjectId()
+        links = [
+            Link(DBRef(Lock.get_collection_name(), first_id), Lock),
+            Link(DBRef(Window.get_collection_name(), second_id), Window),
+        ]
+
+        with pytest.raises(
+            ValueError, match="All the links must have the same model class"
+        ):
+            await Link.fetch_list(links)
+
+    async def test_fetch_list_deduplicates_same_model_links(self):
+        lock = await Lock(k=10).insert()
+        link = Link(DBRef(Lock.get_collection_name(), lock.id), Lock)
+
+        fetched = await Link.fetch_list([link, link])
+
+        assert len(fetched) == 1
+        assert isinstance(fetched[0], Lock)
+        assert fetched[0].id == lock.id
 
     async def test_text_search(self):
         doc = DocumentWithTextIndexAndLink(
