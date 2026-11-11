@@ -1,9 +1,11 @@
 import datetime as dt
+from unittest.mock import patch
 
 import pytest
 
+from beanie import BulkWriter
 from beanie.odm.operators.update.general import Max, Set
-from beanie.odm.queries.update import UpdateResponse
+from beanie.odm.queries.update import UpdateOnePyMongo, UpdateResponse
 from tests.odm.models import Sample
 
 
@@ -99,6 +101,115 @@ async def test_update_one(preset_documents):
     result = await Sample.find_many(Sample.integer == 101).to_list()
     assert len(result) == 1
     assert result[0].integer == 101
+
+
+@pytest.mark.parametrize(
+    "response_type", [UpdateResponse.OLD_DOCUMENT, UpdateResponse.NEW_DOCUMENT]
+)
+@pytest.mark.parametrize("operation", ["update", "upsert"])
+async def test_update_one_preserves_find_sort(
+    preset_documents, sample_doc_not_saved, response_type, operation
+):
+    query = Sample.find_one(sort=[("increment", -1)])
+    expected = await query
+    updater = getattr(query, operation)
+    kwargs = (
+        {"on_insert": sample_doc_not_saved} if operation == "upsert" else {}
+    )
+    updated = await updater(
+        Set({Sample.integer: 100}), response_type=response_type, **kwargs
+    )
+    assert updated.id == expected.id
+    stored = await Sample.get(expected.id, ignore_cache=True)
+    assert stored.integer == 100
+
+
+@pytest.mark.parametrize("operation", ["update", "upsert"])
+@pytest.mark.parametrize("use_bulk", [False, True])
+async def test_update_one_find_sort_not_passed_to_update_result(
+    preset_documents, sample_doc_not_saved, operation, use_bulk
+):
+    updater = getattr(Sample.find_one(sort=[("increment", -1)]), operation)
+    kwargs = (
+        {"on_insert": sample_doc_not_saved} if operation == "upsert" else {}
+    )
+    if use_bulk:
+        kwargs.update(
+            bulk_writer=BulkWriter(), response_type=UpdateResponse.NEW_DOCUMENT
+        )
+    query = updater(Set({Sample.integer: 100}), **kwargs)
+    if use_bulk:
+        with patch(
+            "beanie.odm.queries.update.UpdateOnePyMongo",
+            wraps=UpdateOnePyMongo,
+        ) as update_one:
+            await query
+            update_one.assert_called_once()
+            assert "sort" not in update_one.call_args.kwargs
+    else:
+        collection = Sample.get_pymongo_collection()
+        with patch.object(
+            collection, "update_one", wraps=collection.update_one
+        ) as update_one:
+            await query
+            update_one.assert_awaited_once()
+            assert "sort" not in update_one.await_args.kwargs
+
+
+@pytest.mark.parametrize(
+    "initial_response",
+    [UpdateResponse.NEW_DOCUMENT, UpdateResponse.UPDATE_RESULT],
+)
+async def test_update_one_find_sort_follows_final_response(
+    preset_documents, initial_response
+):
+    query = Sample.find_one(sort=[("increment", -1)]).update(
+        Set({Sample.integer: 100}), response_type=initial_response
+    )
+    final_response = (
+        UpdateResponse.NEW_DOCUMENT
+        if initial_response is UpdateResponse.UPDATE_RESULT
+        else UpdateResponse.UPDATE_RESULT
+    )
+    query.update(response_type=final_response)
+    collection = Sample.get_pymongo_collection()
+    method = (
+        "find_one_and_update"
+        if final_response is UpdateResponse.NEW_DOCUMENT
+        else "update_one"
+    )
+    with patch.object(
+        collection, method, wraps=getattr(collection, method)
+    ) as update_one:
+        result = await query
+        update_one.assert_awaited_once()
+        if final_response is UpdateResponse.NEW_DOCUMENT:
+            assert result.increment == 9
+            assert update_one.await_args.kwargs["sort"] == [("increment", -1)]
+        else:
+            assert result.modified_count == 1
+            assert "sort" not in update_one.await_args.kwargs
+
+
+@pytest.mark.parametrize("sort", [None, []])
+async def test_update_one_without_find_sort(preset_documents, sort):
+    query = Sample.find_one(sort=sort)
+    expected = await query
+    updated = await query.update(
+        Set({Sample.integer: 100}), response_type=UpdateResponse.NEW_DOCUMENT
+    )
+    assert updated.id == expected.id
+
+
+async def test_update_one_explicit_sort_overrides_find(preset_documents):
+    query = Sample.find_one(sort=[("increment", -1)])
+    expected = await Sample.find_one(sort=[("increment", 1)])
+    updated = await query.update(
+        Set({Sample.integer: 100}),
+        response_type=UpdateResponse.NEW_DOCUMENT,
+        sort=[("increment", 1)],
+    )
+    assert updated.id == expected.id
 
 
 async def test_update_self(preset_documents):
