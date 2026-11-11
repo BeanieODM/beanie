@@ -894,6 +894,9 @@ class FindOne(FindQuery[FindQueryResultType]):
         Create Update with modifications query
         and provide search criteria there
 
+        The find sort is reused when returning an old or new document.
+        Default update results and bulk writes do not inherit the find sort.
+
         :param args: *Mapping[str,Any] - the modifications to apply.
         :param session: Optional[AsyncClientSession] - pymongo session
         :param bulk_writer: Optional[BulkWriter]
@@ -906,6 +909,7 @@ class FindOne(FindQuery[FindQueryResultType]):
             self.UpdateQueryType(
                 document_model=self.document_model,
                 find_query=self.get_filter_query(),
+                find_sort=self.pymongo_kwargs.get("sort"),
             )
             .update(
                 *args,
@@ -928,6 +932,9 @@ class FindOne(FindQuery[FindQueryResultType]):
         Create Update with modifications query
         and provide search criteria there
 
+        The find sort is reused when returning an old or new document.
+        Default update results and bulk writes do not inherit the find sort.
+
         :param args: *Mapping[str,Any] - the modifications to apply.
         :param on_insert: DocType - document to insert if there is no matched
         document in the collection
@@ -941,6 +948,7 @@ class FindOne(FindQuery[FindQueryResultType]):
             self.UpdateQueryType(
                 document_model=self.document_model,
                 find_query=self.get_filter_query(),
+                find_sort=self.pymongo_kwargs.get("sort"),
             )
             .upsert(
                 *args,

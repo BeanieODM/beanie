@@ -207,9 +207,10 @@ class UpdateOne(UpdateQuery):
     Update One query class
     """
 
-    def __init__(self, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any, find_sort: Any = None, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self.response_type = UpdateResponse.UPDATE_RESULT
+        self._find_sort = find_sort
 
     def update(
         self,
@@ -302,6 +303,9 @@ class UpdateOne(UpdateQuery):
                     **self.pymongo_kwargs,
                 )
             else:
+                pymongo_kwargs = self.pymongo_kwargs.copy()
+                if self._find_sort:
+                    pymongo_kwargs.setdefault("sort", self._find_sort)
                 result = await self.document_model.get_pymongo_collection().find_one_and_update(
                     self.find_query,
                     self.update_query,
@@ -311,7 +315,7 @@ class UpdateOne(UpdateQuery):
                         if self.response_type is UpdateResponse.OLD_DOCUMENT
                         else ReturnDocument.AFTER
                     ),
-                    **self.pymongo_kwargs,
+                    **pymongo_kwargs,
                 )
                 if result is not None:
                     result = parse_obj(self.document_model, result)
