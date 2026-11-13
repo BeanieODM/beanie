@@ -59,17 +59,22 @@ class BaseCursorQuery(Generic[CursorResultType]):
         self, length: int | None = None
     ) -> list[CursorResultType]:
         """
-        Get list of documents
+        Get list of documents. Bounded reads bypass the query cache so partial
+        results cannot be reused as complete results.
 
         :param length: Optional[int] - length of the list
         :return: Union[List[BaseModel], List[Dict[str, Any]]]
         """
         cursor = await self.get_cursor()
-        pymongo_list: list[dict[str, Any]] = self._get_cache()
+        pymongo_list: list[dict[str, Any]] | None = (
+            self._get_cache() if length is None else None
+        )
 
         if pymongo_list is None:
+            assert cursor is not None
             pymongo_list = await cursor.to_list(length)
-            self._set_cache(pymongo_list)
+            if length is None:
+                self._set_cache(pymongo_list)
         projection = self.get_projection_model()
         if projection is not None:
             return cast(
