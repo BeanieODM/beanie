@@ -40,3 +40,4 @@ await asyncio.sleep(15)
 # if the expiration time was reached it will go to the database again
 samples = await Sample.find(num>10).to_list()
 ```
+Calls to `to_list(length=...)` with an explicit length bypass caching. This keeps partial lists from being reused as complete query results.

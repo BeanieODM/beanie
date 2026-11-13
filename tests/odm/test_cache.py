@@ -1,5 +1,7 @@
 import datetime as dt
 
+import pytest
+
 from tests.odm.models import DocumentTestModel
 
 
@@ -111,3 +113,26 @@ async def test_capacity(documents):
 
     new_doc = await DocumentTestModel.find_one(DocumentTestModel.test_int == 9)
     assert docs[9] == new_doc
+
+
+@pytest.mark.parametrize("query_type", ["find", "aggregate"])
+@pytest.mark.parametrize("first_length,second_length", [(1, None), (None, 1)])
+async def test_to_list_length_does_not_share_cache(
+    documents, query_type, first_length, second_length
+):
+    await documents(5)
+
+    def query():
+        if query_type == "find":
+            return DocumentTestModel.find_all().sort("test_int")
+        return DocumentTestModel.aggregate([{"$sort": {"test_int": 1}}])
+
+    first = await query().to_list(length=first_length)
+    second = await query().to_list(length=second_length)
+
+    for result, length in [(first, first_length), (second, second_length)]:
+        values = [
+            doc.test_int if query_type == "find" else doc["test_int"]
+            for doc in result
+        ]
+        assert values == list(range(5 if length is None else length))
