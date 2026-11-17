@@ -95,6 +95,9 @@ class Bus(Vehicle):
 
 In this example, the `type` field will store the discriminator value for each document, and in the `Car` class, `"car"` will be used as the `type` field's value instead of an automatically calculated one.
 
+`class_id` only needs to be set on the root. Child classes use their parent's `class_id`,
+also when they declare their own `Settings` like `Car` does.
+
 ### Inserts
 
 Inserts work the same way as usual

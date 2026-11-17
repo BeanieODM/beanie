@@ -3,16 +3,20 @@ from tests.odm.models import (
     Bicycle,
     BicycleWithCustomClassId,
     Bike,
+    BikeInheritedClassId,
     BikeWithCustomClassId,
     Bus,
+    BusInheritedClassId,
     BusWithCustomClassId,
     Car,
+    CarInheritedClassId,
     CarWithCustomClassId,
     Doc2NonRoot,
     DocNonRoot,
     Owner,
     OwnerLinksToCustomClassId,
     Vehicle,
+    VehicleInheritedClassId,
     VehicleWithCustomClassId,
 )
 
@@ -294,3 +298,55 @@ class TestInheritanceWithCustomClassId:
             == "vehicles-custom-class-id"
         )
         assert OwnerLinksToCustomClassId._class_id is None
+
+
+class TestInheritanceWithInheritedClassId:
+    def test_children_inherit_class_id(self):
+        for model in (
+            CarInheritedClassId,
+            BusInheritedClassId,
+            BikeInheritedClassId,
+        ):
+            assert model.get_settings().class_id == "kind"
+
+    async def test_find_documents_written_by_other_clients(self):
+        await VehicleInheritedClassId.get_pymongo_collection().insert_many(
+            [
+                {"kind": "car", "color": "red"},
+                {"kind": "bus", "color": "yellow", "seats": 20},
+            ]
+        )
+
+        assert await CarInheritedClassId.count() == 1
+        car = await CarInheritedClassId.find_one()
+        assert car is not None
+        assert car.color == "red"
+
+        bus = await BusInheritedClassId.find_one()
+        assert bus is not None
+        assert bus.seats == 20
+
+        cars_and_buses = await CarInheritedClassId.find(
+            with_children=True
+        ).to_list()
+        assert len(cars_and_buses) == 2
+
+    async def test_insert_writes_root_class_id(self):
+        car = await CarInheritedClassId().insert()
+        bus = await BusInheritedClassId().insert()
+
+        collection = VehicleInheritedClassId.get_pymongo_collection()
+        raw_car = await collection.find_one({"_id": car.id})
+        raw_bus = await collection.find_one({"_id": bus.id})
+        assert raw_car["kind"] == "car"
+        assert "_class_id" not in raw_car
+        assert raw_bus["kind"] == "bus"
+        assert "_class_id" not in raw_bus
+
+        vehicles = await VehicleInheritedClassId.find(
+            with_children=True
+        ).to_list()
+        assert {type(v) for v in vehicles} == {
+            CarInheritedClassId,
+            BusInheritedClassId,
+        }

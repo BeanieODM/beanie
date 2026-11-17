@@ -629,6 +629,29 @@ class DocumentMultiModelTwo(Document):
         class_id = "123"
 
 
+class DocumentUnionCustomClassId(UnionDoc):
+    class Settings:
+        name = "multi_model_custom_class_id"
+        class_id = "kind"
+
+
+class DocumentMultiModelInheritedClassIdOne(Document):
+    int_field: int = 0
+
+    class Settings:
+        # no class_id here: it is taken from the union
+        union_doc = DocumentUnionCustomClassId
+        name = "inherited_one"
+
+
+class DocumentMultiModelInheritedClassIdTwo(Document):
+    str_field: str = "test"
+
+    class Settings:
+        union_doc = DocumentUnionCustomClassId
+        name = "inherited_two"
+
+
 class DocumentTestModelWithModelConfigExtraAllow(Document):
     model_config = ConfigDict(
         extra="allow",
@@ -781,6 +804,32 @@ class BusWithCustomClassId(CarWithCustomClassId, Fuelled):
 class OwnerLinksToCustomClassId(Document):
     name: str
     vehicles: list[Link[VehicleWithCustomClassId]] = []
+
+
+# classes for inheritance test where children set class_id_value only
+class VehicleInheritedClassId(Document):
+    color: str = "white"
+
+    class Settings:
+        is_root = True
+        name = "vehicles-inherited-class-id"
+        class_id = "kind"
+
+
+class CarInheritedClassId(VehicleInheritedClassId):
+    class Settings:
+        # no class_id here: it is taken from the root
+        class_id_value = "car"
+
+
+class BusInheritedClassId(CarInheritedClassId):
+    seats: int = 0
+
+    class Settings:
+        class_id_value = "bus"
+
+
+class BikeInheritedClassId(VehicleInheritedClassId): ...
 
 
 class MixinNonRoot(BaseModel):

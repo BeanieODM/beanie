@@ -436,6 +436,14 @@ class Initializer:
         # register in the Union Doc
 
         if document_settings.union_doc is not None:
+            # The discriminator field belongs to the union. A member that
+            # does not set its own class_id takes the union's, so member
+            # queries, inserts and union-level parsing use the same field.
+            if "class_id" not in document_settings.model_fields_set:
+                document_settings.class_id = (
+                    document_settings.union_doc.get_settings().class_id
+                )
+
             name = cls.get_settings().name or cls.__name__
             document_settings.name = document_settings.union_doc.register_doc(
                 name, cls
@@ -586,6 +594,12 @@ class Initializer:
                     else class_id_value
                 )
                 cls._class_id = output.class_name
+                # A child that does not set its own class_id takes the
+                # parent's, so the whole chain uses one discriminator field.
+                if "class_id" not in cls.get_settings().model_fields_set:
+                    cls.get_settings().class_id = (
+                        parent.get_settings().class_id
+                    )
                 cls.set_collection_name(output.collection_name)
                 parent.add_child(cls._class_id, cls)
                 cls._parent = parent  # type: ignore
