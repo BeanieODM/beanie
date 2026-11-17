@@ -80,3 +80,41 @@ print(len(docs))
 ```
 
 Aggregations will work separately for these two document classes too.
+
+## Discriminator field
+
+`UnionDoc` keeps the class of each document in one field of the collection.
+
+- `class_id` in the union's `Settings` is the **name** of that field. It defaults to `_class_id`.
+- `name` in a member's `Settings` is the **value** written to that field. It defaults to the class name.
+  Members are stored in the union's collection, so `name` is not a collection name here.
+- Members take `class_id` from their union. Set it once, on the union.
+
+A custom field name is useful when the collection already has a type field,
+for example when other services write to it:
+
+```python
+class Event(UnionDoc):
+    class Settings:
+        name = "events"  # Collection name
+        class_id = "type"  # Discriminator field
+
+
+class Created(Document):
+    created_at: datetime
+
+    class Settings:
+        name = "created"  # Stored as {"type": "created"}
+        union_doc = Event
+
+
+class Deleted(Document):
+    deleted_at: datetime
+
+    class Settings:
+        name = "deleted"  # Stored as {"type": "deleted"}
+        union_doc = Event
+```
+
+`Created.find()` adds `{"type": "created"}` to the query, `Created().insert()` writes it,
+and `Event.find()` picks the class of each document by its `type` value.

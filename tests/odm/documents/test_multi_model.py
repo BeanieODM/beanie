@@ -1,7 +1,10 @@
 from tests.odm.models import (
+    DocumentMultiModelInheritedClassIdOne,
+    DocumentMultiModelInheritedClassIdTwo,
     DocumentMultiModelOne,
     DocumentMultiModelTwo,
     DocumentUnion,
+    DocumentUnionCustomClassId,
 )
 
 
@@ -65,3 +68,47 @@ class TestMultiModel:
 
         docs = await DocumentMultiModelTwo.find({}, fetch_links=True).to_list()
         assert isinstance(docs[0].linked_doc, DocumentMultiModelOne)
+
+    async def test_union_doc_members_inherit_class_id(self):
+        assert (
+            DocumentMultiModelInheritedClassIdOne.get_settings().class_id
+            == "kind"
+        )
+        assert (
+            DocumentMultiModelInheritedClassIdTwo.get_settings().class_id
+            == "kind"
+        )
+
+    async def test_union_doc_inherited_class_id_find(self):
+        # Data written by another client, discriminated by the union's field
+        await DocumentUnionCustomClassId.get_pymongo_collection().insert_many(
+            [
+                {"kind": "inherited_one", "int_field": 1},
+                {"kind": "inherited_two", "str_field": "a"},
+            ]
+        )
+
+        assert await DocumentMultiModelInheritedClassIdOne.count() == 1
+        doc = await DocumentMultiModelInheritedClassIdOne.find_one()
+        assert doc is not None
+        assert doc.int_field == 1
+
+        docs = await DocumentMultiModelInheritedClassIdTwo.find_all().to_list()
+        assert len(docs) == 1
+        assert docs[0].str_field == "a"
+
+    async def test_union_doc_inherited_class_id_insert(self):
+        doc = await DocumentMultiModelInheritedClassIdOne().insert()
+
+        raw = (
+            await DocumentUnionCustomClassId.get_pymongo_collection().find_one(
+                {"_id": doc.id}
+            )
+        )
+        assert raw["kind"] == "inherited_one"
+        assert "_class_id" not in raw
+
+        await DocumentMultiModelInheritedClassIdTwo().insert()
+        docs = await DocumentUnionCustomClassId.all().to_list()
+        assert isinstance(docs[0], DocumentMultiModelInheritedClassIdOne)
+        assert isinstance(docs[1], DocumentMultiModelInheritedClassIdTwo)
