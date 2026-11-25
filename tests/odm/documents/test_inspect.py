@@ -1,4 +1,6 @@
-from beanie.odm.models import InspectionStatuses
+from uuid import uuid4
+
+from beanie.odm.models import InspectionError, InspectionStatuses
 from tests.odm.models import DocumentTestModel, DocumentTestModelFailInspection
 
 
@@ -25,3 +27,9 @@ async def test_inspect_ok_with_session(documents, session):
     result = await DocumentTestModel.inspect_collection(session=session)
     assert result.status == InspectionStatuses.OK
     assert result.errors == []
+
+
+def test_inspection_error_accepts_uuid_document_id():
+    document_id = uuid4()
+    error = InspectionError(document_id=document_id, error="invalid")
+    assert error.document_id == document_id

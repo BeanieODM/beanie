@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel
 
 from beanie.odm.enums import InspectionStatuses
@@ -9,7 +11,7 @@ class InspectionError(BaseModel):
     Inspection error details
     """
 
-    document_id: PydanticObjectId
+    document_id: PydanticObjectId | UUID
     error: str
 
 
